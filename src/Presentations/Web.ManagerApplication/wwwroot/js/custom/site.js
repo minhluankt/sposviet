@@ -10002,7 +10002,7 @@ var eventBanle = {
                 if (foundIndex != -1) {
                     let VATAmount = 0;
                     let VATRate = 0;
-                    if ($("#Vatrate").length > 0) {
+                    if ($("#Vatrate").length > NOVATRate) {
                         VATAmount = parseFloat($(".VATAmount").val().replaceAll(",", ""));
                         VATRate = parseFloat($("#Vatrate").val());
                     }
@@ -10033,6 +10033,7 @@ var eventBanle = {
     },
     payment: function () {//thanh toán
         $(".btn-payment").click(function () {
+            bắt đầu thanh toán luận nhé
             let idorder = $(".action-inv li.active").data("id");
             if (idorder == "0") {
                 toastrcus.error("Chưa có đơn hàng nào để thanh toán!");
@@ -11488,8 +11489,40 @@ var eventBanle = {
         }
 
         isLoadevent = true;
-    },// action xuất hDDT
+    },// action xuất h
+    loadEventChangePaymentMethod: function () {
+        $('input.icheckpayment').unbind();
+        $('input.icheckpayment').on('ifChecked', function (event) {
+            eventBanle.saveUpdateDataPaymentMethod();
+        });
 
+        $('.input.icheckpayment').on('ifUnchecked', function (event) {
+         
+        });
+    },// action xuất hDDT
+    saveUpdateDataPaymentMethod: function () {
+        var getippayment = parseInt($('input[name=idPaymentMethod]:checked', '.paymentMethod').data("id"));
+        let getidhoadon = $("ul.action-inv li.active").data("id");
+        let getloca = localStorage.getItem("ProductsArrays");
+        if (typeof getloca != "undefined" && getloca != null) {
+            let datas = JSON.parse(getloca);
+            if (datas.length > 0) {
+                let foundIndex = datas.findIndex(x => x.Id == getidhoadon);
+                if (foundIndex != -1) {
+                    let getdata = datas[foundIndex];
+                    getdata.IdPaymentMethod = getippayment;
+                    datas[foundIndex] = getdata;
+                    localStorage.setItem("ProductsArrays", JSON.stringify(datas));
+                } else {
+                    toastrcus.error("Đơn hàng không tồn tại vui lòng tải lại trang!");
+                }
+            } else {
+                toastrcus.error("Chưa có đơn được tạo!");
+            }
+        } else {
+            toastrcus.error("Lỗi hệ thống, vui lòng tải lại trang");
+        }
+    },
     saveUpdateDataVATMTT: function () {
         let VATMTT = false;
         if (localStorage.getItem("VATMTT") == "true") {
@@ -11826,7 +11859,13 @@ var eventBanle = {
        
         eventBanle.eventChangeCheckboxHDDTVAT();
         eventBanle.loadShowOrHideCheckVATMTT(json.VATMTT);//sau cái sự kiện
-        //---------load sự kiện
+       
+        $('#Vatrate option').each(function (i, e) {
+            e.selected = false
+        });
+        $("#Vatrate option[value='" + json.VATRate + "']").prop("selected", "selected");
+  
+        //---------thuế suất
         if (json.VATMTT) {
             $(".VATAmount").data("VATAmount", json.VATAmount);//đưa xuống vì phải load html vatamoutn ra mới có cái để đưa vào
         }
@@ -11835,14 +11874,13 @@ var eventBanle = {
                 $(".VATAmount").removeData("VATAmount");
             }
         });
-        //------------- load thuế suất
-        $('#Vatrate option').each(function (i, e) {
-            e.selected = false
-        });
-        $("#Vatrate option[value='" + json.VATRate + "']").prop("selected", "selected");
-      // load cả số tiền khách thanh toán, chỉ lưu khi khách kích vào hoặc thay đổi tiền thanh toán, k load khi thay dổi
-       // cái khác, cả phần có hiển thị xuất hóa đơn hay không, tiền mặt hay chuyển khoản theo từng tab luận
-
+        //------------- load hình thức thanh toán
+        var getippayment = parseInt($('input[name=idPaymentMethod]:checked', '.paymentMethod').data("id"));
+        if (getippayment != json.IdPaymentMethod) {
+            $('input[name=idPaymentMethod]:checked', '.paymentMethod').iCheck("uncheck");
+            $('input[data-id=' + json.IdPaymentMethod +']', '.paymentMethod').iCheck("check")
+        }
+        //---------
         _classPosEvent = {
             input_searchProduct: $(".search-product"),
             input_searchCustomer: $(".search-customer"),
