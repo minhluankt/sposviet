@@ -1,0 +1,289 @@
+﻿@model Model.ProductSearch
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+    ViewBag.title = "Báo cáo tồn kho";
+}
+
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="">
+                    <label>Thời gian</label>
+                    <input type="text" id="rangesDate" name="rangesDate" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="">
+                    <label for="" asp-for="idCategory">Danh mục sản phẩm</label>
+                    <select class="form-control idCategory" name="idCategory">
+                        <opiton></opiton>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="">
+                    <label>Mã sản phẩm</label>
+                    <input type="text" name="productcode" id="productcode" placeholder="Mã sản phẩm" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="">
+                    <label>Tên sản phẩm</label>
+                    <input type="text" name="productname" id="productname" placeholder="Tên sản phẩm......" class="form-control">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="card-footer text-center" style=" display: block;">
+        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div id="viewAll" class="card-body">
+        <table class="table table-bordered table-striped tableexportimportonhand" style=" " id="dataTable">
+            <thead>
+                <tr>
+                    <th rowspan="2"class="text-left" style="width:200px">Tên</th>
+                    <th rowspan="2" class="text-center" style="width:200px">Mã SP</th>
+                    <th rowspan="2"class="text-center" style="width:200px">Danh mục</th>
+                    <th rowspan="2" class="text-center">ĐVT</th>
+                    <th colspan="2" class="text-center">Tồn kho đầu kỳ</th>
+                    <th colspan="2" class="text-center">Tồn kho cuối kỳ</th>
+                    <th colspan="2" class="text-center">Số lượng nhập trong kỳ</th>
+                    <th colspan="2" class="text-center">Số lượng xuất trong kỳ</th>
+                    @* <th>Giá vốn</th>*@
+                </tr>
+                <tr>
+                    <th class="d-none"></th>
+                    <th class="d-none"></th>
+                    <th class="d-none"></th>
+                    <th class="d-none"></th>
+                    <th class="text-center">Số lượng</th>
+                    <th class="text-center">Giá trị</th>
+                    <th class="text-center">Số lượng</th>
+                    <th class="text-center">Giá trị</th>
+                    <th class="text-center">Số lượng</th>
+                    <th class="text-center">Giá trị</th>
+                    <th class="text-center">Số lượng</th>
+                    <th class="text-center">Giá trị</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts
+    {
+    <script src="~/lib/datatables/js/jszip.min.js"></script>
+    <script src="~/lib/datatables/js/pdfmake.min.js"></script>
+    <script src="~/lib/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatables/js/vfs_fonts.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", ".idCategory", @Model.idCategory, "Tất cả");
+            $('#rangesDate').daterangepicker({
+                ranges: {
+                    'Hôm nay': [moment(), moment()],
+                    'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '7 Ngày trước': [moment().subtract(6, 'days'), moment()],
+                    '30 ngày trước': [moment().subtract(29, 'days'), moment()],
+                    'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                    'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                // startDate: moment(date).add(1, 'days'),
+                // endDate: moment(date).add(2, 'days'),
+                "locale": {
+                    "format": "DD/MM/YYYY",
+                    "separator": " - ",
+                    "applyLabel": "Chọn",
+                    "cancelLabel": "Hủy bỏ",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "CN",
+                        "T2",
+                        "T3",
+                        "T4",
+                        "T5",
+                        "T6",
+                        "T7"
+                    ],
+                    "monthNames": [
+                        "Tháng 1",
+                        "Tháng 2",
+                        "Tháng 3",
+                        "Tháng 4",
+                        "Tháng 5",
+                        "Tháng 6",
+                        "Tháng 7",
+                        "Tháng 8",
+                        "Tháng 9",
+                        "Tháng 10",
+                        "Tháng 11",
+                        "Tháng 12"
+                    ],
+                    "firstDay": 1
+                },
+                "linkedCalendars": false,
+                "alwaysShowCalendars": true,
+
+            }, function (start, end, label) {
+                console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+            });
+        });
+        $(document).ready(function () {
+            dataTableOut = $('#dataTable').DataTable({
+                "responsive": true,
+                "processing": true,
+                stateSave: true,
+                "pagingType": "full_numbers",
+                paging: false,
+                "serverSide": true,
+                "filter": true,
+                "rowId": "id",
+                dom: 'Bfrtip',
+
+                select: true,
+                "orderMulti": false,
+                "ordering": false,
+                "order": [[0, "desc"]],
+                "language": {
+                    "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                    "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                    "zeroRecords": "Không tìm thấy dữ liệu nào",
+                    "emptyTable": "Không có dữ liệu",
+                    "search": "Tìm kiếm:",
+                    "processing": "Đang xử lý...",
+                    "lengthMenu": "Hiển thị _MENU_ dòng",
+                    "loadingRecords": "Vui lòng chờ...",
+                    "paginate": {
+                        "first": "Đầu tiên",
+                        "last": "Cuối cùng",
+                        "next": "Tiếp theo",
+                        "previous": "Về trước"
+                    },
+                },
+                "pageLength": 10,
+                "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+                "buttons": [
+                    'print', 'copy', 'excel', 'pdf'
+                ],
+                "columnDefs": [
+                    { className: "text-right", "targets": [5, 3, 4, 6, 7, 8, 9, -1, 10] },
+                    { className: "text-center", "targets": [ 4, 2,1 ]},
+                    { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+                    {
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": [-1, 0],
+                    },
+                    { "width": "100px", "targets": -1 },
+                    { "width": "200px", "targets": [0] }
+
+                ],
+                ajax: {
+                    url: "/Selling/ReportPos/GetReportExportImportOnhand",
+                    type: "POST",
+                    datatype: "json",
+                    data: {
+                        rangesDate: function () { return $('#rangesDate').val().trim() },
+                        productcode: function () { return $('#productcode').val().trim() },
+                        productname: function () { return $('#productname').val().trim() },
+                        idCategory: function () { return $('.idCategory').val() },
+                    }
+                },
+                "columns": [
+
+                    //{
+                    //    "data": "id", "name": "Id", "autoWidth": true
+                    //},
+                    {
+
+                        "data": "name", "name": "Name", 
+
+                    }, { "data": "code", "name": "code", "autoWidth": true }
+                    ,
+                    { "data": "categoryProductName", "name": "CategoryProductName", "autoWidth": true },
+
+                    {
+
+                        "data": "unit", "name": "Unit", "autoWidth": true,
+
+                    }
+                    ,
+                    {
+                        "data": "soLuongTonDauKy", "name": "SoLuongTonDauKy", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    {
+                        "data": "thanhTienTonDauKy", "name": "ThanhTienTonDauKy", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    {
+                        "data": "soLuongTonCuoiKy", "name": "SoLuongTonCuoiKy", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    {
+                        "data": "thanhTienTonCuoiKy", "name": "ThanhTienTonCuoiKy", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    
+                    {
+                        "data": "soLuongNhapTrongKy", "name": "SoLuongNhapTrongKy", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    {
+                        "data": "thanhTienNhapTrongKy", "name": "ThanhTienNhapTrongKy", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },{
+                        "data": "soLuongXuatTrongKy", "name": "SoLuongXuatTrongKy", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    {
+                        "data": "thanhTienXuatTrongKy", "name": "ThanhTienXuatTrongKy", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    }
+                ],
+                initComplete() {
+
+                }
+            });
+
+            $('#reload').on('click', function () {
+                dataTableOut.ajax.reload(null, false);
+
+            });
+            $('input').keyup(function (e) {
+                if (e.keyCode == 13) {
+                    dataTableOut.ajax.reload(null, false);
+                }
+            });
+        });
+
+                    //$(document).ready(function () {
+
+                    //    loadData();
+                    //    $('#reload').on('click', function () {
+                    //        loadData();
+                    //    });
+                    //});
+
+
+    </script>
+}

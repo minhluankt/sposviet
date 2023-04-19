@@ -1,0 +1,214 @@
+﻿@using Domain.ViewModel
+
+@model CompanyAdminInfoViewModel
+<style>
+    .modal-body {
+        padding-top: 0
+    }
+</style>
+<div class="card">
+    @*<div class="card-header">
+        <h5 class="font-weight-bold mt-0 mb-0">Thông tin công ty</h5>
+        </div>*@
+    <div class="card-body pt-0">
+        <form id="create-form" method="post" asp-controller="CompanyInfo" asp-action="OnPostCreateOrEdit" asp-route-id="@Model.Id" onsubmit="return jQueryModalPost(this)" enctype="multipart/form-data">
+            @Html.HiddenFor(m => m.Id)
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row" style="border-bottom: #ccc solid thin;">
+
+                        <div class="col-md-9" style="border-right:#ccc solid thin">
+                            <div class="card-header-tab card-header pl-0">
+                                <div class="card-header-title ">
+                                    @*<i class="header-icon lnr-bicycle icon-gradient bg-love-kiss"> </i>*@
+                                    Thông tin công ty
+                                </div>
+                                <ul class="nav">
+                                    <li class="nav-item"><a data-toggle="tab" href="#tab-eg5-0" class="active nav-link">Việt Nam</a></li>
+
+                                </ul>
+                            </div>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab-eg5-0" role="tabpanel">
+
+                                    <div class="form-row">
+
+                                        <div class="col-md-9">
+                                            <div class="position-relative form-group">
+                                                <label for="" class="col-form-label" asp-for="Name"></label> <span class="required">(*)</span>
+                                                <input asp-for="Name" placeholder="@Html.DisplayNameFor(m=>m.Name)" class="form-control">
+                                                <span asp-validation-for="Name" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label for="" asp-for="CusTaxCode" class="col-form-label"></label> <span class="required">(*)</span>
+                                                <input asp-for="CusTaxCode" placeholder="@Html.DisplayNameFor(m=>m.CusTaxCode)" class="form-control">
+                                                <span asp-validation-for="CusTaxCode" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-row">
+                                        <div class="col-md-9">
+                                            <div class="position-relative form-group">
+                                                <label for="exampleAddress" asp-for="Address" class=""></label> <span class="required">(*)</span>
+                                                <input placeholder="@Html.DisplayNameFor(m=>m.Address)" asp-for="Address" type="text" class="form-control">
+                                                <span asp-validation-for="Address" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label for="exampleAddress" asp-for="Website" class=""></label> <span class="required">(*)</span>
+                                                <input placeholder="@Html.DisplayNameFor(m=>m.Website)" asp-for="Website" type="text" class="form-control">
+                                                <span asp-validation-for="Website" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                  
+                                    
+
+                                    <div class="form-row">
+                                        <div class="col-md-5">
+                                            <div class="position-relative form-group">
+                                                <label for="exampleCity" class="" asp-for="Email"></label>
+                                                <input asp-for="Email" placeholder="@Html.DisplayNameFor(m=>m.Email)" type="email" class="form-control">
+                                                <span asp-validation-for="Email" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="position-relative form-group">
+                                                <label for="exampleState" class="" asp-for="PhoneNumber"></label>
+                                                <input asp-for="PhoneNumber" placeholder="@Html.DisplayNameFor(m=>m.PhoneNumber)" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="position-relative form-group">
+                                                <label for="" class="" asp-for="FaxNumber"></label>
+                                                <input placeholder="@Html.DisplayNameFor(m=>m.FaxNumber)" asp-for="FaxNumber" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h3>Thông tin seo</h3>
+                                    <div class="position-relative form-group">
+                                        <label for="exampleAddress" asp-for="Title" class=""></label> <span class="required">(*)</span>
+                                        <input placeholder="Nhập title seo không quá 60 ký tự" asp-for="Title" type="text" class="form-control">
+                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                    </div>
+                                      <div class="position-relative form-group">
+                                        <label for="exampleAddress" asp-for="Description" class=""></label> <span class="required">(*)</span>
+                                        <input placeholder="Nhập mô tả ngắn không quá 150 ký tự" asp-for="Description" type="text" class="form-control">
+                                        <span asp-validation-for="Keyword" class="text-danger"></span>
+                                    </div>
+                                      <div class="position-relative form-group">
+                                        <label for="exampleAddress" asp-for="Keyword" class=""></label> <span class="required">(*)</span>
+                                        <input placeholder="Nhập các từ khóa cần seo, không quá 150 ký tự" asp-for="Keyword" type="text" class="form-control">
+                                        <span asp-validation-for="Keyword" class="text-danger"></span>
+                                    </div>
+
+                                </div>
+                               
+
+                            </div>
+
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card-header">
+                                <h5 class="font-weight-bold mt-0 mb-0">Hình ảnh</h5>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-12 text-center">
+                                    <div class="uploadImg mb-3 mt-3">
+                                        <label asp-for="ImageUpload" class="text-center" style="width: 100%;"></label>
+                                        @if (Model.Image != null)
+                                        {
+                                            @*<img id="imgCompany" class="mb-2 daidien"rc="data:image/*;base64,@Model.Image">*@
+                                            <img id="imgCompany" class="mb-2 daidien" src="data:image/*;base64,@Model.Image">
+                                        }
+                                        else
+                                        {
+                                            <img id="imgCompany" class="mb-2 daidien">
+                                        }
+                                        <div class="custom-file">
+                                            <input accept=".png,.jpg,.jpeg,.gif,.tif"
+                                                   asp-for="ImageUpload"
+                                                   type="file" class="custom-file-input"
+                                                   onchange="document.getElementById('imgCompany').src = window.URL.createObjectURL(this.files[0])"
+                                                   id="customFile">
+                                            <label class="custom-file-label text-left" for="customFile">Chọn ảnh đại diện công ty</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 text-center">
+                                    <div class="uploadImg mb-3">
+                                        <label asp-for="Logo" class="text-center" style="width: 100%;"></label>
+                                        @if (Model.Logo != null)
+                                        {
+                                            <img id="logoCompany" class="mb-2 daidien" src="data:image/*;base64,@Model.Logo">
+                                        }
+                                        else
+                                        {
+                                            <img id="logoCompany" class="mb-2 daidien">
+                                        }
+                                        <div class="custom-file filelogoCompany">
+                                            <input accept=".png,.jpg,.jpeg,.gif,.tif"
+                                                   asp-for="LogoUpload"
+                                                   type="file" class="custom-file-input"
+                                                   onchange="document.getElementById('logoCompany').src = window.URL.createObjectURL(this.files[0])"
+                                                   id="customFilelogoCompany">
+                                            <label class="custom-file-label lablelogoCompany text-left" for="customFile">Chọn logo công ty</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                </div>
+
+            </div>
+            <div class="form-group justify-content-between mt-3" style="margin-bottom: 0px !important">
+                <div class="col-md-12">
+                    <div class="text-center">
+
+
+                        <button class="ladda-button btn btn-success" data-style="expand-left">
+                            <span class="ladda-label"><i class="fas fa-check mr-2"></i>Lưu</span>
+                            <span class="ladda-spinner"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+@section Scripts
+{
+<script type="text/javascript" language=javascript>
+    $.validator.unobtrusive.parse(document);
+
+    $('#imgCompany').click(function () { $('#customFile').trigger('click'); });
+    $("#customFile").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+
+    $('#logoCompany').click(function () { $('#customFilelogoCompany').trigger('click'); });
+    $("#customFilelogoCompany").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".lablelogoCompany").addClass("selected").html(fileName);
+    });
+</script>
+    }

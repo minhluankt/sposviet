@@ -1,0 +1,201 @@
+﻿@using Domain.Entities
+@using Domain.ViewModel
+@using Application.Hepers
+@model IEnumerable<CategoryPost>
+
+@{
+    var data = Model;
+    List<CategoryViewModel> lst = new List<CategoryViewModel>();
+    foreach (var item in data.Where(m => m.IdPattern == null))
+    {
+        var lstPattern = data.Where(m => m.IdPattern == item.Id).Select(x => new CategoryViewModel
+                {
+                    id = x.Id,
+                    fullName = x.Name,
+                    expanded = false
+                }).ToList();
+
+        CategoryViewModel category = new CategoryViewModel
+                {
+                    id = item.Id,
+                    fullName = item.Name,
+                    expanded = lstPattern.Count > 0,
+                    items = lstPattern,
+                };
+        lst.Add(category);
+    }
+
+    //var serializedEmployees = JsonConvert.SerializeObject(DataSourceLoader.Load(lst.AsEnumerable(), loadOptions));
+    var Jsondata = Common.ConverModelToJson(lst);
+
+}
+<input id="dataJson" type="hidden" value="@Jsondata" />
+<style>
+    .form > h4 {
+        margin-bottom: 20px;
+    }
+
+    .form > div, #treeview {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    #selected-employees {
+        margin-top: 20px;
+    }
+
+    .selected-container {
+        padding: 20px;
+        background-color: rgba(191, 191, 191, 0.15);
+        margin-left: 20px;
+        font-size: 115%;
+        font-weight: bold;
+    }
+
+    .dx-list-item-content {
+        padding-left: 0;
+    }
+
+    .options {
+        padding: 20px;
+        background-color: rgba(191, 191, 191, 0.15);
+        margin-top: 20px;
+        box-sizing: border-box;
+    }
+
+    .caption {
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    .option {
+        width: 24%;
+        display: inline-block;
+        margin-top: 10px;
+        margin-right: 5px;
+        box-sizing: border-box;
+    }
+
+    .recursive-option {
+        padding-left: 10px;
+    }
+
+    .option:last-of-type {
+        margin-right: 0px;
+    }
+</style>
+<div class="demo-container">
+    <div class="form">
+        <h4>Danh sách cây thư mục quản lý Danh mục</h4>
+        <div id="treeview"></div>
+        <div class="selected-container">
+            Selected employees
+            <div id="selected-employees"></div>
+        </div>
+    </div>
+
+    <div class="options">
+        <div class="caption">Options</div>
+        <div class="option">
+            <span>Show Check Boxes Mode:</span>
+            <div id="showCheckBoxesMode"></div>
+        </div>
+        <div class="option">
+            <span>Selection Mode:</span>
+            <div id="selectionMode"></div>
+        </div>
+        <div class="option recursive-option">
+            <div id="selectNodesRecursive"></div>
+        </div>
+        <div class="option">
+            <div id="selectByClick"></div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var selectedEmployeesList = $("#selected-employees").dxList({
+            width: 400,
+            height: 200,
+            showScrollbar: "always",
+            itemTemplate: function (item) {
+                //return "<div>" + item.prefix + " " + item.fullName + " (" + item.position + ")</div>";
+                return "<div>"+ item.fullName+" </div>";
+            }
+        }).dxList("instance");
+
+        var treeView = $("#treeview").dxTreeView({
+            items: JSON.parse($("#dataJson").val()),
+            expandNodesRecursive: false,
+            width: 700,
+            height: 380,
+            dataStructure: 'tree',
+            displayExpr: 'name',
+            showCheckBoxesMode: "none",
+            onSelectionChanged: function (e) {
+                syncSelection(e.component);
+            },
+            onContentReady: function (e) {
+                syncSelection(e.component);
+            },
+            itemTemplate: function (item) {
+                //return "<div>" + item.fullName + " (" + item.position + ")</div>";
+                // let button = '<button class="btn btn-sm mr-2 btn-primary" onclick="return treviewItem.Edit(' + item.id + ',' + item.IdPattern + ')"><i class="far fa-edit"></i></button><button onclick="return treviewItem.Delete(' + item.id + ',' + item.IdPattern + ')" class="btn btn-sm btn-danger"><i class="far fa-trash-alt"></i></button>';
+                let button = '<button class="btn btn-sm mr-2 btn-primary" onclick=jQueryModalGet(' + "'" + '/selling/CategorysProduct/CreateOrEdit?id=' + item.id + "'" + ',' + "'CreateCategory'" + ',' + false + ')><i class="far fa-edit"></i></button><button onclick= JqueryModal.Delete('+'"/selling/CategorysProduct/Delete"'+',' + item.id + ') class="btn btn-sm btn-danger"><i class="far fa-trash-alt"></i></button>';
+                return "<div>" + item.fullName + "<div class='treview_button'>" + button+"</div></div>";
+            }
+        }).dxTreeView('instance');
+
+        function syncSelection(treeView) {
+            var selectedEmployees = treeView.getSelectedNodes()
+                .map(function (node) { return node.itemData; });
+
+            selectedEmployeesList.option("items", selectedEmployees);
+        }
+
+        $("#showCheckBoxesMode").dxSelectBox({
+            items: ["selectAll", "normal", "none"],
+            value: "normal",
+            onValueChanged: function (e) {
+                treeView.option("showCheckBoxesMode", e.value);
+
+                if (e.value === 'selectAll') {
+                    selectionModeSelectBox.option('value', 'multiple');
+                    recursiveCheckBox.option('disabled', false);
+                }
+                selectionModeSelectBox.option('disabled', e.value === 'selectAll');
+            }
+        });
+
+        var selectionModeSelectBox = $("#selectionMode").dxSelectBox({
+            items: ["multiple", "single"],
+            value: "multiple",
+            onValueChanged: function (e) {
+                treeView.option("selectionMode", e.value);
+
+                if (e.value === 'single') {
+                    recursiveCheckBox.option('value', false);
+                    treeView.unselectAll();
+                }
+
+                recursiveCheckBox.option('disabled', e.value === 'single');
+            }
+        }).dxSelectBox('instance');
+
+        var recursiveCheckBox = $("#selectNodesRecursive").dxCheckBox({
+            text: "Select Nodes Recursive",
+            value: true,
+            onValueChanged: function (e) {
+                treeView.option("selectNodesRecursive", e.value);
+            }
+        }).dxCheckBox('instance');
+
+        $("#selectByClick").dxCheckBox({
+            text: "Select By Click",
+            value: false,
+            onValueChanged: function (e) {
+                treeView.option("selectByClick", e.value);
+            }
+        });
+    });
+</script>

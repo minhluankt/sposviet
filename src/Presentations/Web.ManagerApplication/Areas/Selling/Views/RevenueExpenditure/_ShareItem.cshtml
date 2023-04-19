@@ -1,0 +1,97 @@
+﻿@using Domain.ViewModel
+@model RevenueExpenditureModel
+<style>
+    .select2-dropdown {
+        z-index: 1060;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="fromOnetable">
+                    <div class="form-group">
+                        <label class="control-label">Mã @(Model.TypeName) <span class="required">(*)</span></label>
+                        <input asp-for="Code"  class="form-control" readonly placeholder="Mã phiếu @(Model.TypeName) (sinh tự động)" />
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                 <div class="fromOnetable">
+                    <div class="form-group">
+                        <label class="control-label">Giá trị @(Model.TypeName)<span class="required">(*)</span></label>
+                        <input asp-for="Amount" class="form-control number3 text-right" placeholder="Giá trị @(Model.TypeName)" required />
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="fromOnetable">
+                    <div class="form-group" id="">
+                        <label class="control-label">Loại phiếu @(Model.TypeName) <span class="required">(*)</span></label>
+                        <select asp-for="IdCategoryCevenue" id="formselectCategoryCevenues" class="form-control select2_form" style="width: 100%;" placeholder="Chọn loại phiếu @(Model.TypeName)" required
+                                aria-hidden="true" asp-items='new SelectList(Model.CategoryCevenues,"Id","Name",Model.IdCategoryCevenue)'>
+                                <option></option>
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="fromOnetable">
+                    <div class="form-group" id="">
+                        <label class="control-label">Nhóm người nộp <span class="required">(*)</span></label>
+                        <select asp-for="ObjectRevenueExpenditure" id="formObjectRevenueExpenditures" class="form-control" style="width: 100%;" required
+                                aria-hidden="true" asp-items='new SelectList(Model.ObjectRevenueExpenditures,"Value","Text",Model.ObjectRevenueExpenditure)'>
+                        </select>
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="fromOnetable">
+                    <div class="form-group" id="">
+                        <label class="control-label">Tên người nộp <span class="required">(*)</span></label>
+                        <div id="fomrCustomerName">
+                            <input asp-for="CustomerName" class="form-control" placeholder="Tên người nộp" required />
+                        </div>
+                        <span asp-validation-for="CustomerName" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="fromOnetable">
+                    <div class="form-group" id="">
+                        <label class="control-label">Hình thức thanh toán <span class="required">(*)</span></label>
+                        <select asp-for="IdPayment" id="formPaymentMethod" class="form-control" style="width: 100%;" required
+                                aria-hidden="true" asp-items='new SelectList(Model.PaymentMethods,"Id","Name",Model.IdPayment)'>
+                        </select>
+                        <span asp-validation-for="IdPayment" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="fromOnetable">
+            <div class="form-group" id="">
+                <label class="control-label">Ngày giao dịch/Thời gian nhận<span class="required">(*)</span></label>
+                <div class="">
+                    <input name="Date" value="@Model.Date.ToString("dd/MM/yyyy")" class="form-control fc-datetimepicker" placeholder="Ngày giao dịch" required />
+                </div>
+                <span asp-validation-for="CustomerName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Content" class="control-label">Mô tả/ghi chú</label>
+            <textarea asp-for="Content" class="form-control" placeholder="Mô tả"></textarea>
+        </div>
+    </div>
+</div>

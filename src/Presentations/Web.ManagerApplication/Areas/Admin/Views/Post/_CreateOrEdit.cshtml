@@ -1,0 +1,94 @@
+﻿@using Model
+@model PostModel
+@{
+    Layout = null;
+}
+<style>
+    .swal2-container {
+        z-index: 10 !important
+    }
+</style>
+<form method="post" asp-controller="Post" id="PostOnePage" asp-area="Admin" asp-route-id="@Model.Id" asp-action="OnPostCreateOrEdit" onsubmit="return jQueryModalPost(this);" enctype="multipart/form-data">
+    <div class="row justify-content-center">
+        <div class="col col-md-9">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+            @Html.Hidden("Category", Model.IdCategory, new { @id = "Category" })
+            <div class="content-left">
+                <div class="form-group">
+                    <label asp-for="IdCategory" class="control-label">Chuyên mục bài viết</label>
+                    <select class="form-control" style="width: 100%;" name="IdCategory"
+                            aria-hidden="true" id="IdCategory">
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col col-md-4">
+                            <label class="control-label">Ảnh đại diện</label>
+                            <div class="input-group mb-3">
+                                <input type="text" asp-for="Img" style="background-color:#fff" readonly id="elfinder-input" class="form-control" placeholder="Tên file" aria-describedby="basic-addon2">
+                                <div class="input-group-append" onclick="popupCenter('/Elfinder/browse?ckeditor=0&id=elfinder-input', 'myPop1',600,450);">
+                                    <span class="input-group-text" id="basic-addon2">Chọn file</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            @if (!string.IsNullOrEmpty(Model.Img))
+                            {
+                                <img src="/@Model.Img" id="Imgdata" style="width:200px;" />
+                            }
+                            else
+                            {
+                                <img src="../images/no-img.png" id="Imgdata" style="width:200px;" />
+                            }
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label">Tên bài viết</label>
+                    <input asp-for="Name" placeholder="Tên bài viết" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                @*  <div class="form-group">
+                    <label asp-for="Title" class="control-label">Tiêu đề bài viết</label>
+                    <input asp-for="Title" placeholder="Nhập tiêu đề" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>*@
+                <div class="form-group">
+                    <label asp-for="Decription" class="control-label">Nội dung</label>
+                    <textarea asp-for="Decription" placeholder="Nhập tiêu đề" class="form-control"></textarea>
+                    <span asp-validation-for="Decription" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label for="" asp-for="Name">Thứ tự hiển thị </label>
+                    <input type="text" asp-for="Sort" class="form-control" placeholder="Nhập thứ tự" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mt-0 mb-0">Cấu hình bài viết</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="card-body table-responsive">
+                            <div class="form-check">
+                                <input asp-for="Active" class="icheck" />
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Hiển thị
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+

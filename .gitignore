@@ -1,0 +1,93 @@
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+.vs
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+*.dll
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+/src/Presentations/Web.ManagerApplication/bin
+/src/core/Application/bin
+.vs/CoreWebAdmin/DesignTimeBuild/.dtbcache.v2
+.vs/CoreWebAdmin/DesignTimeBuild/.dtbcache.v2
+.vs/CoreWebAdmin/FileContentIndex/5621bce5-ed7e-4289-881d-b235a053d448.vsidx
+.vs/CoreWebAdmin/FileContentIndex/da340b25-a9c2-4b6c-9f69-af6574bf3ba0.vsidx
+.vs/CoreWebAdmin/v17/.futdcache.v2
+.vs/CoreWebAdmin/v17/.suo
+.vs/CoreWebAdmin/v17/fileList.bin
+.vs/ProjectEvaluation/corewebadmin.metadata.v5.2
+.vs/ProjectEvaluation/corewebadmin.projects.v5.2
+*.txt
+*.cache
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+.vs/

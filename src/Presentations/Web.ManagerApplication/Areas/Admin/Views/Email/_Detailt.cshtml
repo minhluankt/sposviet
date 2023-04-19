@@ -1,0 +1,36 @@
+﻿@using Domain.Entities
+@model Mailhistory
+
+<table class="table tab-content table-bordered table-striped">
+    <tr>
+        <th>Tiêu đề Mail</th>
+        <td>@Model.Title</td>
+    </tr>
+    <tr>
+        <th>Người nhận</th>
+        <td>@Model.To</td>
+    </tr>
+
+    <tr>
+        <th>Nội dung mail</th>
+        <td>@Html.Raw(Model.Body)</td>
+    </tr>
+    <tr>
+        <th>Trạng thái</th>
+        <td>
+            @if (Model.Status)
+            {
+                <span class="badge badge-success">Đã gửi</span>
+            }
+            else
+            {
+                <span class="badge badge-danger">Gửi lỗi</span>
+            }
+
+        </td>
+    </tr>
+    <tr>
+        <th>Ngày gửi</th>
+        <td>@Model.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss tt")</td>
+    </tr>
+</table>

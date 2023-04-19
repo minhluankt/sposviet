@@ -1,0 +1,36 @@
+﻿@model Model.PostModel
+<table class="table table-bordered table-striped dataTable no-footer">
+    <tr>
+        <th>Tên bài viết</th>
+        <td><a target="_blank" href="/@Model.Slug">@Model.Name</a></td>
+    </tr>
+    <tr>
+        <th>Chuyên mục</th>
+        <td>@Model.category</td>
+    </tr>
+    <tr>
+        <th>Ảnh đại diện</th>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.Img))
+            {
+                <img src="/@Model.Img" style="width:200px;" />
+            }
+            else
+            {
+                <img src="../images/no-img.png" style="width:200px;" />
+            }
+        </td>
+    </tr>
+    <tr>
+        <th>Ngày đăng</th>
+        <td>@Model.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss")</td>
+    </tr>
+    <tr>
+        <th>Hiển thị bài viết</th>
+        <td>@(Model.Active?Html.Raw("<span class='badge badge-success'>Có</span>"):Html.Raw("<span class='badge badge-secondary'>Không</span>"))</td>
+    </tr>
+    <tr>
+        <th>Nội dung bài viết</th>
+        <td>@Html.Raw(Model.Decription)</td>
+    </tr>
+</table>

@@ -1,0 +1,208 @@
+﻿@model Model.ProductSearch
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+    ViewBag.title = "Báo cáo tồn kho";
+}
+
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3 d-none">
+                <label>Ngày</label>
+                <div class="input-group">
+                    <div class="input-group-prepend datepicker-trigger">
+                        <div class="input-group-text">
+                            <i class="fa fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                    <input type="text" autocomplete="off" placeholder="Từ ngày" name="FromDate" id="FromDate" class="form-control fc-datepicker">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="">
+                    <label for="" asp-for="idCategory">Danh mục sản phẩm</label>
+                    <select class="form-control idCategory" name="idCategory">
+                        <opiton></opiton>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="">
+                    <label>Mã sản phẩm</label>
+                    <input type="text" name="productcode" id="productcode" placeholder="Mã sản phẩm" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="">
+                    <label>Tên sản phẩm</label>
+                    <input type="text" name="productname" id="productname" placeholder="Tên sản phẩm......" class="form-control">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="card-footer text-center" style=" display: block;">
+        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div id="viewAll" class="card-body">
+        <table class="table table-bordered table-striped" style=" " id="dataTable">
+            <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Danh mục</th>
+                    <th>ĐVT</th>
+                    <th>Mã SP</th>
+                    <th>Đơn giá vốn</th>
+                    <th>Đơn giá bán</th>
+                    <th>Sô lượng tồn</th>
+                   <th>Giá trị tồn</th>
+                    @* <th>Giá vốn</th>*@
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts
+    {
+    <script src="~/lib/datatables/js/jszip.min.js"></script>
+   <script src="~/lib/datatables/js/pdfmake.min.js"></script>
+    <script src="~/lib/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatables/js/vfs_fonts.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", ".idCategory", @Model.idCategory, "Tất cả");
+        });
+        $(document).ready(function () {
+            dataTableOut = $('#dataTable').DataTable({
+                "responsive": true,
+                "processing": true,
+                stateSave: true,
+                "pagingType": "full_numbers",
+                paging: false,
+                "serverSide": true,
+                "filter": true,
+                "rowId": "id",
+                dom: 'Bfrtip',
+              
+                select: true,
+                "orderMulti": false,
+                "ordering": false,
+                "order": [[0, "desc"]],
+                "language": {
+                    "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                    "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                    "zeroRecords": "Không tìm thấy dữ liệu nào",
+                    "emptyTable": "Không có dữ liệu",
+                    "search": "Tìm kiếm:",
+                    "processing": "Đang xử lý...",
+                    "lengthMenu": "Hiển thị _MENU_ dòng",
+                    "loadingRecords": "Vui lòng chờ...",
+                    "paginate": {
+                        "first": "Đầu tiên",
+                        "last": "Cuối cùng",
+                        "next": "Tiếp theo",
+                        "previous": "Về trước"
+                    },
+                },
+                "pageLength": 10,
+                "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+                "buttons": [
+                    'print' , 'copy', 'excel', 'pdf'
+                ],
+                "columnDefs": [
+                    { className: "text-right", "targets": [5,6] },
+                    { className: "text-center", "targets": [-1, 4, 2, 0, 1,3] },
+                    { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+                    {
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": [-1, 0],
+                    },
+                    { "width": "100px", "targets": -1 }
+
+                ],
+                ajax: {
+                    url: "/Selling/ReportPos/GetReportOnhand",
+                    type: "POST",
+                    datatype: "json",
+                    data: {
+                        FromDate: function () { return $('#FromDate').val().trim() },
+                        productcode: function () { return $('#productcode').val().trim() },
+                        productname: function () { return $('#productname').val().trim() },
+                        idCategory: function () { return $('.idCategory').val() },
+                    }
+                },
+                "columns": [
+
+                    //{
+                    //    "data": "id", "name": "Id", "autoWidth": true
+                    //},
+                    {
+
+                        "data": "name", "name": "Name", "autoWidth": true,
+                      
+                    },
+                    { "data": "nameCategory", "name": "NameCategory", "autoWidth": true },
+                    {
+
+                        "data": "unit", "name": "Unit", "autoWidth": true,
+                      
+                    },
+                    { "data": "code", "name": "code", "autoWidth": true },
+                    {
+                        "data": "retailPrice", "name": "RetailPrice", "autoWidth": true,
+                     render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    { "data": "price", "name": "Price", "autoWidth": true ,
+                     render: $.fn.dataTable.render.number(',', '.', 0)
+                    }, 
+                    { "data": "quantity", "name": "Quantity", "autoWidth": true,
+                     render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    {
+                        "data": "giatritk", "name": "giatritk", "autoWidth": true,
+                     render: $.fn.dataTable.render.number(',', '.', 0)
+                    }
+                ],
+                initComplete() {
+                   
+                }
+            });
+           
+            $('#reload').on('click', function () {
+                dataTableOut.ajax.reload(null, false);
+
+            });
+            $('input').keyup(function (e) {
+                if (e.keyCode == 13) {
+                    dataTableOut.ajax.reload(null, false);
+                }
+            });
+        });
+
+            //$(document).ready(function () {
+
+            //    loadData();
+            //    $('#reload').on('click', function () {
+            //        loadData();
+            //    });
+            //});
+
+
+    </script>
+}

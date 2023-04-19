@@ -1,0 +1,136 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Model
+@using Application.Enums
+@using Web.ManagerApplication.Views.Shared.Components.ProfileSlidebar
+
+@model CustomerModelView
+
+@{
+    DateTime dateValue = DateTime.Now;
+    var date = (int)dateValue.DayOfWeek;
+}
+<div class="container mt-3 payment_checkout">
+    <h5 class="title">Xác nhận đơn hàng - Đặt hàng</h5>
+    <div class="row">
+        <div class="col-xl-9">
+            <div class="row">
+                <div class="card shadow mb-3">
+                    <div class="card-body pt3 pb-3">
+                        <h3 class="title-cart">1. Thông tin sản phẩm - Giao hàng</h3>
+                        <div class="row product-shipping">
+                            <div class="col-md-7">
+                                <div class="left-pro">
+                                    @foreach (var item in Model.CartDetailts)
+                                    {
+
+
+
+
+                                        <div class="list-item">
+                                            <div class="img">
+                                                <img src="~/@item.Img" />
+
+                                            </div>
+
+                                            <div class="content">
+                                                <span class="name">@item.Name</span>
+                                                <div class="quantity-price">
+                                                    <span class="quantity">SL: @item.Quantity</span>
+                                                    <span class="price">@item.Amount.ToString("N0") vnđ</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="select-payment">
+                                    <b class="time"> Giao hàng vào thứ @HelperLibrary.LibraryCommon.GetDateInWeek(2), ngày @(DateTime.Now.AddDays(2).ToString("dd/MM/yyyy"))</b>
+                                    @if (Model.CompanyAdminInfo != null)
+                                    {
+                                        <span>
+                                            Giao hàng bỏi: @Model.CompanyAdminInfo.Name
+                                        </span>
+                                    }
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="list-btn">
+                            <a href="/Cart/Mycart"><button class="btn btn-default mr-3 btn-back"> <span class="btn-icon"><i class="icon-cd icon-back icon"></i> <span>Quay lại giỏ hàng</span></span></button></a>
+                            <form asp-action="ChekoutCart" method="post">
+                                <button class="btn btn-addorder"><span class="btn-icon"><i class="icon-cd icon-checkout icon"></i> <span>Đặt mua</span></span></button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 info-cart-payment">
+            <div class="card shadow mb-3">
+                <div class="card-body body-content">
+                    <div class="title">
+                        <span>Thông tin giao hàng</span>
+                        <a class="btn btn-primary-line" href="/Account/DeliveryAddress?payment=1">Thay đổi</a>
+                    </div>
+                    <div class="info-user-cart">
+                        <b class="contact"><span class="name">@Model.Customer.Name</span><span class="phone">@Model.Customer.PhoneNumber</span></b>
+                        <span class="adderss">@(Model.Customer.Address),</span>
+                        @if (Model.Customer.City != null)
+                        {
+                            <span class="adderss">
+
+                                @if (Model.Customer.Ward != null)
+                                {
+                                    @(Model.Customer.Ward.Prefix+" "+ Model.Customer.Ward.Name)
+
+                                    @:,
+                                }
+                                @if (Model.Customer.District != null)
+                                {
+                                    @(Model.Customer.District.Prefix+" "+@Model.Customer.District.Name)
+
+                                    @:,
+                                }
+                                @if (Model.Customer.City != null)
+                                {
+                                    @(Model.Customer.City.Prefix+" "+@Model.Customer.City.Name)
+                                }
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow">
+                <div class="card-body content-payment">
+                    <div class="total">
+                        <span class="text">Tạm tính</span>
+                        <span class="value-total">@Model.CartModel.Total.ToString("N0") vnđ</span>
+                    </div>
+                    <div class="total">
+                        <span class="text">Phí vận chuyển</span>
+                        <span class="value-total">0 vnđ</span>
+                    </div>
+                    <div class="total-payment">
+                        <span class="text">Tổng tiền</span>
+                        <span class="value-amount">@Model.CartModel.Amount.ToString("N0") vnđ</span>
+                    </div>
+                </div>
+            </div>
+            <form asp-action="ChekoutCart" method="post">
+                <button class="btn btn-addorder btn-order"><span class="btn-icon"><i class="icon-cd icon-checkout icon"></i> <span>Đặt mua</span></span></button>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+<script>
+
+    $().ready(function () {
+       loadeventCheckallCart()
+    });
+</script>
+}

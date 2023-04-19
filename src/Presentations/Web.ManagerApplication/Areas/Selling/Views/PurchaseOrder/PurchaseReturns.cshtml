@@ -1,0 +1,230 @@
+﻿@model Domain.ViewModel.PurchaseReturnsModel
+@using Application.Enums
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div>
+                <a href="/selling/PurchaseOrder"> <i class="fas fa-solid fa-arrow-left"></i>   Trả hàng nhập</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="PurchaseOrder">
+    <div id="parentautocomplete"></div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="">
+                <div class="card left-content">
+                    <div class="header-search col-md-6 p-0">
+                        <div class="input-group mb-2">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="form-control" id="txtPurchaseOrderSearch" placeholder="Nhập sản phẩm cần tìm">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><i class="fas fa-plus"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="body-list-product">
+                        <table class="table-data table table-bordered PurchaseReturns" id="tablePurchaseOrder">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã hàng</th>
+                                    <th>Tên hàng</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Giảm giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.PurchaseOrder != null)
+                                {
+                                    int i = 1;
+                                    foreach (var item in Model.PurchaseOrder.ItemPurchaseOrders)
+                                    {
+                                      @*  if (Model.PurchaseOrderItems.Count() > 0)
+                                        {
+                                            var gerpro = Model.PurchaseOrderItems.FirstOrDefault(x => x.Code == item.Code);
+                                            if (gerpro != null)
+                                            {
+                                                item.Quantity = item.Quantity - gerpro.Quantity;
+                                            }
+                                        }*@
+                                        <tr>
+                                            <td>@(i++)</td>
+                                            <td class="code">@item.Code</td>
+                                            <td class="name">@item.Name</td>
+                                            <td style="width: 175px;">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text minus-quantity" id="basic-addon1"><i class="fas fa-minus"></i></span>
+                                                    </div>
+                                                    <input type="text" class="form-control number3 quantity" data-quanold="@item.Quantity" data-quantity="0" placeholder="Nhập số lượng" value="0">
+                                                    <div class="oldquantity">/<span class="number3">@item.Quantity</span></div>
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text add-quantity" id="basic-addon1"><i class="fas fa-plus"></i></span>
+                                                    </div>
+                                                </div>
+
+                                            </td>
+                                            <td class=""><input type="text" class="text-right form-control number3 price" value="@item.Price" /></td>
+                                            <td class=""><input type="text" class="text-right form-control number3 discountpro" data-discount="0" value="0" /></td>
+                                            <td class=""><input type="text" readonly disabled class="text-right number3 form-control amount" value="0" /></td>
+                                        </tr>
+                                    }
+                                    if (Model.PurchaseOrder.ItemPurchaseOrders.Count()==0)
+                                    {
+                                        <tr class="nodata">
+                                            <td colspan="7">Đơn hàng hiện đã trả hết hàng, không có sản phẩm nào cần trả</td>
+                                        </tr>
+                                    }
+
+                                  
+
+                                }
+                                else
+                                {
+                                    <tr class="nodata">
+                                        <td colspan="7">Chưa có mặt hàng nào</td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 pl-lg-0">
+            <form id="create-formProduct" asp-controller="PurchaseOrder" asp-action="OnPostCreateOrEdit">
+                <div class="right-content card">
+                    <div class="header-search col-md-12 p-0 mb-3">
+                        @if (Model.PurchaseOrder?.Id == 0 || Model.PurchaseOrder == null || Model.PurchaseOrder?.IdSuppliers != null)
+                        {
+                            <div class="input-group">
+                                <select class="form-control select2 Suppliersid" placeholder="Search">
+                                    <option></option>
+                                </select>
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit">Chọn</button>
+                                </div>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <span>Nhà cung cấp</span>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <ul class="form-input">
+                            <li>
+                                <span>Ngày trả hàng</span>
+                                <div class="input-group">
+                                    <input class="form-control fc-datetimepicker" autocomplete="off" id="CreateDate" type="text" placeholder="Ngày trả hàng" />
+                                    <span class="input-group-addon ">
+                                        <span class="fa fa-calendar">
+                                        </span>
+                                    </span>
+                                </div>
+
+                            </li>
+                            <li>
+                                <span>Mã phiếu trả hàng</span>
+                                <input class="form-control" type="text" placeholder="Sinh tự động" />
+                            </li>
+                            <li>
+                                <span>Số lượng hàng</span>
+                                <b class="quantityAll">0</b>
+                            </li>
+                            <li>
+                                <span>Tổng tiền</span>
+                                <b class="totalAll">0</b>
+                            </li>
+                            <li>
+                                <span>Giảm giá</span>
+                                <input class="form-control discount" data-discount="0" type="text" value="0" />
+                            </li>
+                            <li>
+                                <span><strong>Tổng nhà cung cấp cần trả</strong></span>
+                                <b class="amountAll">0</b>
+                            </li>
+                            <li>
+                                <span>Số tiền  nhà cung cấp trả</span>
+                                <input class="form-control paymentSupplier number3" value="0" data-payment="0" type="text" />
+                            </li>
+                            <li>
+                                <span>Hình thức thanh toán</span>
+                                <div class="">
+                                    <select class="form-control PaymentMethod" placeholder="Search" style="width:100%">
+                                        <option></option>
+                                    </select>
+                                </div>
+                            </li>
+                            <li>
+                                <span>Tính vào công nợ</span>
+                                <b class="red paydebt">0</b>
+                            </li>
+                            <li>
+                                <span>Ghi chú</span>
+                                <textarea class="form-control notePurchaseOrder" type="text" placeholder="Ghi chú"></textarea>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="form-group text-center">
+                        <button class="btn btn-saves btn-success btn-mainl" type="button">
+                            <i class="fas fa-check-double"></i>
+                            Hoàn thành
+                        </button>
+                    </div>
+                </div>
+                <input type="hidden" id="EnumTypePurchaseOrder" data-id="@((int)EnumTypePurchaseOrder.TRA_HANG_NHAP)" />
+            </form>
+        </div>
+    </div>
+
+
+</div>
+<input type="hidden" id="iddataPurchaseReturns" data-id="@Model.PurchaseOrder?.Id" value="@Model.PurchaseOrder?.Id" />
+@section Scripts
+    {
+    @if (Model.PurchaseOrder?.Id == 0 || Model.PurchaseOrder==null || Model.PurchaseOrder?.IdSuppliers != null)
+    {
+        <script type="text/javascript" language=javascript>
+            loaddataSelect2("/API/Handling/GetAllSupller", ".Suppliersid", "@(Model.PurchaseOrder?.IdSuppliers)");
+        </script>
+    }
+
+    <script type="text/javascript" language=javascript>
+        loaddataSelect2("/API/Handling/GetAllPaymentMethod", ".PaymentMethod", '@(Model.PurchaseOrder?.IdPayment)',"Chọn hình thức thanh toán");
+        $("#tablePurchaseOrder tbody tr input").unbind();
+        PurchaseReturns.loadEvnetFormatTable();
+        let a = $("#iddataPurchaseReturns").data("id");
+        $("#iddataPurchaseReturns").removeAttr("data-id");
+        $("#iddataPurchaseReturns").data("id", a);
+
+        //$(".select2").select2({
+        //    theme: "bootstrap",
+        //    placeholder: "Lựa  chọn nhà cung cấp"
+        //});
+
+
+        PurchaseReturns.autocompleteproduct();
+        PurchaseReturns.loadEventChangeDisCount();
+        PurchaseReturns.loadeventbutonSubmit();
+
+        PurchaseReturns.loadEventChangeQuantity();
+        PurchaseReturns.loadEventChangePrice();
+        PurchaseReturns.loadEventChangediscountProduct();
+        PurchaseReturns.loadEventActionQuantity();
+        PurchaseReturns.loadCheckTrahangNhap();
+
+        $('.number3').each(function () {
+            let idtex = $(this).text().replaceAll(",", ".");
+            $(this).html(parseFloat(idtex).format0VND(3, 3, ""))
+        });
+    </script>
+    }

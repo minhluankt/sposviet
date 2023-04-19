@@ -1,0 +1,53 @@
+﻿@model Web.ManagerApplication.Areas.Admin.Models.FileModel;
+
+@{
+    Layout = null;
+}
+<table class="table table-bordered dataTable" id="TableData">
+    <thead>
+        <tr>
+            <th class="text-center">STT</th>
+            <th>Tên file</th>
+            <th class="text-center">Ngày tạo</th>
+            <th class="text-center">Update</th>
+            <th class="text-center">Size</th>
+            <th class="text-center">Công cụ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int i = 1;
+            string today = DateTime.Now.ToString("yyyy/MM/dd").Replace("/", "");
+        }
+        @foreach (var item in Model.FileAll.OrderByDescending(m => m.LastWriteTime))
+        {
+                                                        <tr>
+                                                            <td class="text-center"> @(i++)</td>
+                                                            <td class="text-primary"> @item.Name</td>
+                                                            <td class="text-center"> @item.CreationTime</td>
+                                                            <td class="text-center"> @item.LastWriteTime</td>
+                                                            <td class="text-right"> @(Math.Round(Convert.ToDecimal(item.Length / 1024f)).ToString("N0")) KB</td>
+                                                            <td class="text-center" style="display: flex;  text-align: center;  align-items: center;  justify-content: center;">
+                                                                <button class="btn btn-primary btn-sm" onclick="jQueryModalGet('/Admin/Log/SerilogView?fileName=@item.Name','Xem log',false)"><i class="fas fa-search-plus"></i></button>
+                    @if (!item.Name.Contains(today) && !item.Name.Contains("json"))
+                    {
+                                                                                                                <form id="form_delete_@item.Length" asp-controller="Log" asp-route-fileName="@item.Name" asp-area="Admin" method="post" asp-action="DeleteSerilog" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+                                                                                                                    <a href="javascript:$('#form_delete_@item.Length').submit();" style=" margin-left: 5px;">
+
+                                                                                                                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                                                                                                                    </a>
+                                                                                                                </form>
+                    }
+
+
+                                                            </td>
+
+                                                        </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        LoadDataTable();
+    });
+</script>

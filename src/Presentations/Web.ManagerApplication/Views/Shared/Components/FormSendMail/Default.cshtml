@@ -1,0 +1,24 @@
+﻿<div class="form-send-mail">
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-5 col-xs-12">
+            <div class="newsletter_sing_up">
+                <h3>Đăng ký nhận tin</h3>
+                <p>(Giảm <span>5%</span> với khách hàng mới)</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-7 col-xs-12">
+            <div class="subscribe_content">
+                <p>Nhận <strong>thông tin</strong> sản phẩm mới nhất, tin khuyến mãi và nhiều hơn nữa.</p>
+            </div>
+        </div>
+        <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+
+            <div class="subscribe_form">
+                <form action="/Home/SendMail" method="post" onsubmit="return jQueryModalPost(this);">
+                    <input type="email" class="form-control" value="" placeholder="Email của bạn" name="EMAIL" id="mail">
+                    <button name="subscribe" id="subscribe">Đăng ký</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

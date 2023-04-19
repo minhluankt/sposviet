@@ -1,0 +1,227 @@
+﻿
+@model Domain.ViewModel.PublishEInvoiceMergeModel
+@{
+    var selected = Model.SupplierEInvoice.ManagerPatternEInvoices.FirstOrDefault(x => x.Selected);
+    var selectList = new SelectList(
+               Model.SupplierEInvoice.ManagerPatternEInvoices.Select(c => new SelectListItem() { Text = $"{c.Pattern} - {c.Serial}", Value = c.Id.ToString() }), "Value", "Text", selected.Id);
+    string IsDelete = "false";
+    if (Model.IsDelete)
+    {
+        IsDelete = "true";
+    }
+    string nameinvoice = "HÓA ĐƠN GIÁ TRỊ GIA TĂNG";
+    if (selected!=null)
+    {
+        nameinvoice = HelperLibrary.LibraryCommon.GetNameInvoice(selected.Pattern);
+    }
+   
+}
+<form id="create-formProduct" asp-controller="Invoice" asp-action="PublishEInvoiceMerge">
+    <input type="hidden" name="JsonProduct" id="JsonProduct"/>
+    <input type="hidden" name="JsonInvoiceOld" id="JsonInvoiceOld" />
+    <input type="hidden" name="IsDelete" value="@IsDelete" id="IsDelete" data-value="@IsDelete" />
+    <div class="img-backgroud">
+    </div>
+    <div id="parentautocomplete"></div>
+<div class="card formeinvoice">
+    
+   <div class="row justify-content-between">
+       <div class="col-md-3 createinvoice-left-header">
+           <h5>Các mã hóa đơn liên quan</h5>
+           @foreach (var item in Model.LstInvoiceCode)
+           {
+              <a href="#" class="codeinvoiceold" data-invoice="@item">@item</a>
+           }
+       </div>
+        <div class="col-md-4 text-center">
+
+                <h3 class="mb-0+">@nameinvoice</h3>
+
+           <i style="font-size:23px">(VAT INVOICE)</i><br/>
+                @if (Model.IsDelete)
+                {
+                    <small class="text-danger text-center">
+                        Lưu ý: Hệ thống đang cấu hình tính năng xóa hóa đơn bán hàng sau khi phát hành gộp hóa đơn điện tử, do đó, các hóa đơn bạn vừa chọn sẽ bị xóa khỏi hệ thống
+                        và thay thế bởi hóa đơn mới này
+                    </small>
+                }
+                else
+                {
+                    <small class="text-warning">
+                        Lưu ý: Hệ thống đang cấu hình tính năng không xóa các hóa đơn gộp sau khi phát hành hóa đơn điện tử, hệ thống sẽ sinh ra một hóa đơn bán hàng tương ứng và sẽ được ghi nhận vào doanh thu.
+                    </small>
+                }
+
+       </div>
+       <div class="col-md-3">
+            <div class="form-group">
+                <label for="">Mẫu số ký hiệu<span class="required">(*)</span></label>
+                @Html.DropDownList("ManagerPatternEInvoices", selectList,"", new { @class = "mb-3",style="width:100%" })
+            </div>
+            <div class="form-group">
+                 <label for="">Số hóa đơn<span class="required">(*)</span></label>
+                <input type="text" class="form-control" value="00000000" readonly />
+            </div>
+       </div>
+   </div>
+   <hr/>
+        <div class="d-flex">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="checkbox" value="true"  name="IsCreateCustomer" id="IsCreateCustomer" class="icheck" />
+                    Thêm mới khách hàng <i class="fas fa-info-circle"></i>
+                    <small class="tooltipcus">
+                        Lưu ý: khi kích hoạt tính năng này, hệ thống sẽ tạo mới khách hàng theo thông tin bạn nhập, mã khách hàng là bắt buộc và duy nhất trên hệ thống,ngược lại hệ thống sẽ không tạo khách hàng, chỉ lưu vào hóa đơn
+                    </small>
+                </label>
+            </div>
+            <div class="form-check ml-2">
+                <label class="form-check-label">
+                    <input type="checkbox" value="true" name="IsRetailCustomer"  id="IsRetailCustomer" class="icheck" />
+                    Là khách lẻ<i class="fas fa-info-circle"></i>
+                    <small class="tooltipcus">
+                        Lưu ý: Khi chọn khách lẻ, hệ thống sẽ ghi nhận là <b>khách lẻ</b>, không lấy các thông tin bạn nhập bên dưới.
+                    </small>
+                </label>
+            </div>
+        </div>
+   <hr/>
+   <div class="row form-publishmegerinvoice">
+       <div class="col-md-8">
+            <div class="form-group">
+            <label for="">Tên đơn vị mua hàng</label>
+            <input type="text" name="CusName" id="CusName" class="form-control" placeholder="Nhập tên đơn vị mua hàng" />
+          </div>                                            
+       </div>
+        <div class="col-md-4">
+             <div class="form-group">
+            <label for="">Tên người mua hàng</label>
+            <input type="text" name="Buyer" id="Buyer" class="form-control"  placeholder="Nhập tên người mua hàng" />
+          </div>                                            
+       </div>
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="">Địa chỉ</label>
+                    <input type="text" name="Address" id="Address" class="form-control" placeholder="Nhập địa chỉ" />
+                </div>
+            </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">Mã số thuế</label>
+                    <input type="text" name="Taxcode" id="Taxcode" class="form-control" placeholder="Nhập mã số thuế" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="">Mã khách hàng</label>
+                <input type="text" name="CusCode" id="CusCode" class="form-control" placeholder="Nhập mã khách hàng" />
+            </div>
+        </div>
+        <div class="col-md-3">
+             <div class="form-group">
+                <label for="">Email</label>
+                <input type="text" name="Email" class="form-control" placeholder="Nhập email khách hàng" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="">CCCD/CMND</label>
+                <input type="text" name="CCCD" id="CCCD" class="form-control" placeholder="Nhập CCCD/CMND" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="">Số điện thoại</label>
+                <input type="text" name="PhoneNumber" id="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">Hình thức thanh toán</label>
+                <select class="form-control PaymentMethod" name="IdPaymentMethod" id="IdPaymentMethod" placeholder="Hình thức thanh toán" style="width:100%">
+                    <option></option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="">Số tài khoản</label>
+                <input type="text" name="CusBankNo"  id="CusBankNo" class="form-control" placeholder="Nhập số tài khoản" />
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="">Tên ngân hàng</label>
+                <input type="text" name="CusBankName" id="CusBankName" class="form-control" placeholder="Nhập tên tài khoản ngân hàng" />
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="">Ghi chú</label>
+                <textarea type="text" name="Note" class="form-control" placeholder="Nhập ghi chú"></textarea>
+            </div>
+        </div>
+   </div>
+    <hr />
+    <div class="">
+        <table class="table table-bordered" id="tableinvoicemerge">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Mã hàng hóa</th>
+                    <th scope="col">Tên hàng hóa</th>
+                    <th scope="col">Đơn vị tính</th>
+                    <th scope="col">Số lượng</th>
+                    <th scope="col">Đơn giá</th>
+                    <th scope="col">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                }
+                @foreach (var item in Model.Invoice.InvoiceItems)
+                {
+                    <tr>
+                        <td scope="row">@(i++)</td>
+                        <td class="code">@item.Code</td>
+                        <td class="name" data-typeProductCategory="@((int)item.TypeProductCategory)">@item.Name</td>
+                        <td class="number3 text-center unit">@item.Unit</td>
+                        <td class="number3 text-center quantity">@item.Quantity</td>
+                        <td class="number3 text-right price">@item.Price.ToString().Replace(",",".")</td>
+                        <td class="number3 text-right total">@item.Total.ToString().Replace(",",".")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="6" class="text-right">Tiền trước thuế</th>
+                    <th class="text-right"><input type="text" name="Total" id="Total" class="form-control font-weight-bold text-right Total number3" value="@Model.Invoice.Total.ToString().Replace(",",".")" /></th>
+                </tr> 
+                <tr>
+                    <th colspan="6" class="text-right">Giảm giá</th>
+                        <th class="text-right"><input type="text" name="DiscountAmount" id="DiscountAmount" class="font-weight-bold form-control text-right DiscountAmount number3" value="@Model.Invoice.DiscountAmount.ToString().Replace(",",".")" /></th>
+                </tr>
+                <tr>
+                    <th colspan="6" class="text-right">Thuế suất:
+                        <select class="Vatrate" id="Vatrate" name="Vatrate">
+                            <option></option>
+                            <option value="0">0%</option>
+                            <option value="5">5%</option>
+                            <option value="8">8%</option>
+                            <option value="10" selected>10%</option>
+                        </select>
+                    </th>
+                    <th class="text-right">
+                            <input type="text" name="VATAmount" id="VATAmount" class="form-control text-right VATAmount number3 font-weight-bold" value="@Model.Invoice.Amonut.ToString().Replace(",",".")" />
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="6"  class="text-right">Tổng tiền sau thuế</th>
+                        <th class="text-right"><input type="text" name="Amount" id="Amount" class="form-control font-weight-bold text-right Amount number3" value="@Model.Invoice.Amonut.ToString().Replace(",",".")" /></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+</form>

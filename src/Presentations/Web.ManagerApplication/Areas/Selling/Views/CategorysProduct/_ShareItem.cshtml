@@ -1,0 +1,104 @@
+﻿@using Domain.ViewModel
+@model CategoryViewModel
+@{
+    bool selected = true;
+    if (!Model.createItem)
+    {
+        selected = false;
+    }
+}
+<div class="row justify-content-center">
+    <div class="col col-md-6">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.id)
+        @Html.HiddenFor(m => m.IdLevel)
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+
+        <div class="form-group">
+            <label asp-for="fullName" class="control-label"></label>
+            <input asp-for="fullName" placeholder="Nhập tên" class="form-control" />
+            <span asp-validation-for="fullName" class="text-danger"></span>
+        </div>
+
+        @if (Model.IdPattern > 0 || Model.createItem)
+        {
+            if (Model.createItem || Model.IdPattern > 0)
+            {
+                if (Model.createItem)
+                {
+                    <input type="hidden" asp-for="IdPattern" />
+                }
+                <div class="form-group" id="divPattern">
+                    <label>Danh mục cha</label>
+                    <select class="form-control IdPattern select2" disabled="@selected" name="IdPattern" id="IdPattern" style="width:100%">
+                        <opiton></opiton>
+                    </select>
+                </div>
+            }
+
+        }
+        else
+        {
+            <div class="form-group" id="divPattern">
+                <label>Danh mục cha</label>
+                <select class="form-control IdPattern select2" name="IdPattern" id="IdPattern" style="width:100%">
+                    <opiton></opiton>
+                </select>
+            </div>
+        }
+
+
+        <div class="form-group">
+            <label asp-for="Sort" class="control-label">Thứ tự hiển thị</label>
+            <input asp-for="Sort" placeholder="Thứ tự hiển thị" class="form-control" />
+            <span asp-validation-for="Sort" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Sort" class="control-label">Hình ảnh</label>
+            <div class="input-group mb-3">
+                <input type="text" asp-for="Icon" style="background-color:#fff" readonly id="elfinder-input" class="form-control" placeholder="Tên file" aria-describedby="basic-addon2">
+                <div class="input-group-append" onclick="popupCenter('/Elfinder/browse?ckeditor=0&id=elfinder-input', 'myPop1',600,450);">
+                    <span class="input-group-text" id="basic-addon2">Chọn file</span>
+                </div>
+            </div>
+            @if (string.IsNullOrEmpty(Model.Icon))
+            {
+
+                <img id="Imgdata" class="mb-2 daidien" src="../@SystemVariable.SystemVariableHelper.UrlNoImg" style="height: 100px;min-width: 100px;">
+            }
+            else
+            {
+
+                <img id="Imgdata" class="mb-2 daidien" src="/@Model.Icon" style="height: 100px;min-width: 100px;">
+            }
+        </div>
+        <div class="form-group justify-content-center" style="margin-bottom: 0px !important">
+            <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Save</button>
+            <button type="submit" class="btn btn-default close-button" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" language=javascript>
+            $(document).ready(function () {
+        loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", ".IdPattern", @Model.IdPattern, "Tất cả", @Model.id, true)
+            }
+                 );
+                 function popupCenter(url, title, w, h) {
+        var left = (screen.width / 2) - (w / 2);
+        var top = (screen.height / 2) - (h / 2);
+        const myWindow = window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+    }
+    $("#elfinder-input").change(function(){
+      //  debugger
+       // let sel = $(this);
+       // let url =decodeURI(sel.data("path"));
+        $("#Imgdata").attr("src","/"+$(this).val());
+       // loadURLToInputField(url,sel.data("filename"),sel.data("mime"));
+    })
+        //           setTimeout(function myStopFunction() {
+        //                 loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct", ".IdPattern", @Model.IdPattern, "Tất cả");});
+        //}, 1000);
+</script>

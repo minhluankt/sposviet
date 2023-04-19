@@ -1,0 +1,414 @@
+﻿
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="card mb-2 einvoice-card">
+     <div class="card-header p-0 text-center" style=" display: block; height:auto">
+        @*<button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+
+            <span class="ladda-spinner"></span>
+        </button>*@
+        <h3 class="titledashboard">Thống kê tình trạng phát hành hóa đơn trong ngày @(DateTime.Now.ToString("dd/MM/yyyy"))</h3>
+        <ul class="dashboardEinvoice">
+            <li>Đã phát hành: <b class="text-primary SignedInv">0</b></li>
+            <li>Chưa gửi CQT: <b class="text-warning UnSendInv">0</b></li>
+            <li>Đã gửi CQT: <b class="text-info SentInv">0</b></li>
+            <li>CQT đã chấp nhận: <b class="text-success AcceptedInv">0</b></li>
+            <li>CQT từ chối: <b class="text-danger RejectedInv">0</b></li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="row einvoice-row">
+            <div class="col-md-3">
+                <div class="">
+                  @*  <label>Nhà cung cấp</label>*@
+                    <select id="supplereinvoice" class="form-control" data-toggle="tooltip" data-placement="top" title="Nhà cung cấp">
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="">
+                    @*<label>Số hóa đơn</label>*@
+                    <input type="text" name="Name" id="Name" placeholder="Mã hóa đơn, mã khach hàng, Mã CQT" class="form-control" data-toggle="tooltip" data-placement="top" title="Mã hóa đơn, mã khach hàng, Mã CQT">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="">
+                   @* <label>Thời gian</label>*@
+                    <input type="text" id="rangesDate" name="rangesDate" class="form-control" data-toggle="tooltip" data-placement="top" title="Thời gian" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="">
+                   @* <label>Thời gian</label>*@
+                    <input type="text" id="InvoiceNo" placeholder="Số hóa đơn" name="InvoiceNo" class="form-control" data-toggle="tooltip" data-placement="top" title="Số hóa đơn" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                 <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+                    <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+
+                    <span class="ladda-spinner"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+   
+</div>
+
+<div class="card einvoice-card">
+    <div class="col-sm-12 pt-2">
+        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-group mr-2" role="group" aria-label="First group">
+                <button class="ladda-button mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                    <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Load lại dữ liệu</span>
+                    <span class="ladda-spinner"></span>
+                </button>
+            </div>
+            <div class="btn-group lstbtnaction" role="group"  aria-label="Second group">
+                <button type="button" disabled class="btn btn-primary btn-publishEinvoice" data-toggle="tooltip" data-placement="top" title="Ghi chú: lựa chọn hóa đơn để phát hành">Phát hành hóa đơn</button>
+                <button type="button" disabled class="btn btn-primary btn-sendCQT" data-toggle="tooltip" data-placement="top" title="Ghi chú: lựa chọn hóa đơn để gửi lên cơ quan thuế">Gửi hóa đơn CQT</button>
+                <div class="dropdowncusomer">
+                    <button type="button" disabled class="btn btn-success productaddbtn">Đồng bộ hóa đơn</button>
+                    <div class="dropdown-menu-custom lst-action-synchronize d-none" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item btn-SyncEinvoice" data-type="0" href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Ghi chú: đồng bộ khi hóa đã đơn phát hành nhưng chưa nhận được kết quả"><i class="fas fa-plus mr-2"></i> Đồng bộ trạng thái hóa đơn</a>
+                        <a class="dropdown-item btn-SyncEinvoice" data-type="1" href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Ghi chú: đồng bộ khi hóa đã đơn phát hành và gửi thuế nhưng chưa nhận được kết quả CQT"><i class="fas fa-plus mr-2"></i> Đồng bộ trạng thái CQT</a>
+                    </div>
+                </div>
+               
+                <button type="button" disabled class="btn btn-secondary btn-printeinvoice">In hóa đơn</button>
+                <button type="button" disabled class="btn btn-info btn-printeinvoice">In hóa đơn chuyển đổi</button>
+                <button type="button" disabled class="btn btn-danger btn-cancelinvoice" data-toggle="tooltip" data-placement="top" title="Ghi chú: hủy hóa đơn điện tử từ nhà cung cấp">Hủy hóa đơn</button>
+                <button type="button" disabled class="btn btn-danger btn-removeinvoice" data-toggle="tooltip" data-placement="top" title="Ghi chú: xóa hóa đơn có trạng thái tạo mới, khi chưa phát hành lên nhà cung cấp">Xóa hóa đơn tạo mới</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewAll" class="card-body">
+        <table class="table table-bordered table-striped responsive nowrap" width="100%"id="dataTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Mã đơn hàng</th>
+                    @*<th>Mã hóa đơn</th>*@
+                    <th>Số hóa đơn</th>
+                    <th>Mẫu số</th>
+                    <th>Ký hiệu</th>
+                    <th>Tên khách</th>
+                    <th>Số tiền</th>
+                    <th>Ngày phát hành</th>
+                    <th>Trạng thái</th>
+                    <th>Công cụ</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts
+    {
+
+    <script src="~/js/custom/sposvietkyso.min.js?time=123"></script>
+
+    <script>
+
+        //sposvietkyso.connectwebSocket(listport[0], "data");
+        $(document).ready(function () {
+            loadeventEinvoice.loadSupllerEinvoice();
+            loadeventEinvoice.loadDashboardEinvoice();
+            loadeventEinvoice.loadEventbtnaction();
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var currentDate = date.getDate();
+            var currentYear = date.getFullYear();
+            $('#rangesDate').daterangepicker({
+                ranges: {
+                    'Hôm nay': [moment(), moment()],
+                    'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '7 Ngày trước': [moment().subtract(6, 'days'), moment()],
+                    '30 ngày trước': [moment().subtract(29, 'days'), moment()],
+                    'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                    'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                // startDate: moment(date).add(1, 'days'),
+                // endDate: moment(date).add(2, 'days'),
+                "locale": {
+                    "format": "DD/MM/YYYY",
+                    "separator": " - ",
+                    "applyLabel": "Chọn",
+                    "cancelLabel": "Hủy bỏ",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "CN",
+                        "T2",
+                        "T3",
+                        "T4",
+                        "T5",
+                        "T6",
+                        "T7"
+                    ],
+                    "monthNames": [
+                        "Tháng 1",
+                        "Tháng 2",
+                        "Tháng 3",
+                        "Tháng 4",
+                        "Tháng 5",
+                        "Tháng 6",
+                        "Tháng 7",
+                        "Tháng 8",
+                        "Tháng 9",
+                        "Tháng 10",
+                        "Tháng 11",
+                        "Tháng 12"
+                    ],
+                    "firstDay": 1
+                },
+                "linkedCalendars": false,
+                "alwaysShowCalendars": true,
+
+            }, function (start, end, label) {
+                console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+            });
+            // loaddataSelect2("/admin/users/getSelect2","#listUserselect2","@userId");
+        });
+
+        dataTableOut = $('#dataTable').DataTable({
+            
+            "responsive": true,
+            "processing": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "filter": true,
+            //"rowId": "id",
+            "orderMulti": false,
+            //"start": 0,
+            "ordering": true,
+            "order": [[0, "desc"]],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                "zeroRecords": "Không tìm thấy dữ liệu nào",
+                "emptyTable": "Không có dữ liệu",
+                "search": "Tìm kiếm:",
+                "processing": "Đang xử lý...",
+                "lengthMenu": "Hiển thị _MENU_ dòng",
+                "loadingRecords": "Vui lòng chờ...",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Tiếp theo",
+                    "previous": "Về trước"
+                },
+            },
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+            "buttons": [
+                {
+                    text: 'Reload',
+                    action: function (e, dt, node, config) {
+                        dataTableOut.ajax.reload();
+                    }
+                }
+            ],
+            "columnDefs": [
+                {
+                    'targets': 0,
+                    'checkboxes': {
+                        'selectRow': true,
+
+                    }
+                },
+                {
+                    "targets": [6], // your case first column
+                    "className": "text-right"
+                }, {
+                    "targets": [0, 1,2,3,4,7,8, -1], // your case first column
+                    "className": "text-center"
+                },
+                { responsivePriority: 5, targets: [-1,1,2,3,4, 0] },////define hiển thị mặc định column 1
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [-1, 0],
+                },
+                { "width": "100px", "targets": -1 }
+            ],
+            'select': {
+                'style': 'multi',
+                selector: 'td:first-child'
+            },
+            ajax: {
+                url: "/Selling/EInvoice/LoadAll",
+                type: "POST",
+                start: 0,
+                datatype: "json",
+                data: {
+                    Code: function () { return $('#Name').val().trim() },
+                    RangesDate: function () {
+                        if ($('#rangesDate').val().trim() == "") {
+                            return moment(new Date()).format("DD/MM/YYYY") + "-" + moment(new Date()).format("DD/MM/YYYY");
+                        }
+                        return $('#rangesDate').val().trim()
+                    },
+                } 
+            }, "columns": [
+                {
+                    "data": "id", "name": "Id", "autoWidth": true
+                },{
+                    "data": "invoiceCode", "name": "InvoiceCode", "autoWidth": true
+                },
+                //{
+                //    "data": "eInvoiceCode", "name": "EInvoiceCode", "autoWidth": true
+                //},  
+                {
+                    "data": "invoiceNo", "name": "InvoiceNo", "autoWidth": true,
+                    "render": function (data, type, full, meta) {
+                        return zeroPadInvoice(full.invoiceNo);
+                    }
+                }, {
+                    "data": "pattern", "name": "Pattern", "autoWidth": true
+                },{
+                    "data": "serial", "name": "Serial", "autoWidth": true
+                },
+                {
+                    "data": "buyer", "name": "Buyer", "autoWidth": true,
+                    "render": function (data, type, full, meta) {
+                        // console.log(full.id);
+                        if (full.cusname != null) {
+                            return full.cusname;
+                        }
+                        return full.buyer;
+                    }
+                }, {
+                    "data": "amount", "name": "Amount", "autoWidth": true,
+                    render: $.fn.dataTable.render.number(',', '.', 0)
+                },
+                {
+                    "data": "publishDate", "name": "PublishDate",
+                    "render": function (data, type, full, meta) {
+                        // console.log(full.id);
+                        if (full.publishDate != null) {
+                            data = moment(full.publishDate).format('DD/MM/YYYY HH:mm:ss');
+                            return data;
+                        }
+                        return "";
+                    }
+                },
+               
+               
+                {
+                    "data": "statusEinvoice", "name": "StatusEinvoice", "autoWidth": true,
+                    "render": function (data, type, full, meta) {
+                        switch (full.statusEinvoice) {
+                            case @((int)Application.Enums.StatusEinvoice.CanceledInv):
+                                return '<span class="badge badge-danger"><i class="fas fa-ban"></i> Đã hủy</span>';
+                                break;
+                            case @((int)Application.Enums.StatusEinvoice.NewInv):
+                                return '<span class="badge badge-warning"><i class="fas fa-ban"></i> Tạo mới</span>';
+                                break;
+                            case @((int)Application.Enums.StatusEinvoice.SignedInv):
+                                return '<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> Đã phát hành</span>  ';
+                                break;
+                            case @((int)Application.Enums.StatusEinvoice.SentInv):
+                                return '<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> Đã gửi thuế</span>  ';
+                                break;
+                            case @((int)Application.Enums.StatusEinvoice.AcceptedInv):
+                                return '<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> CQT đã chấp nhận</span>  ';
+                                break;
+                            case @((int)Application.Enums.StatusEinvoice.RejectedInv):
+                                return '<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> CQT từ chối</span>  ';
+                                break;
+                            default:
+                                return '';
+                        }
+                    }
+                },
+                {
+                    "data": null, "name": "",
+                    "render": function (data, type, full, meta) {
+                       // let cancelhtml = ` <a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.CancelInvoice('` + full.secret + `',` + EnumTypeEventInvoice.Cancel + `)"><i class="fas fa-power-off mr-2"></i> Hủy hóa đơn</a>`;
+                     
+                        let html = `<div class="btn-group dropleft">
+                                                                          <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> </button>
+                                                                              <div class="dropdown-menu">
+                                                                                   <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.viewInvoice('/Selling/EInvoice/ViewInvoice?secret=` + full.secret + `')"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
+                                                                                   <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.printInvoice('/Selling/EInvoice/PrintInvoice?secret=` + full.secret + `')"><i class="fas fa-print mr-2"></i> In hóa đơn</a>
+                                                                                   <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.exportPDF('/Selling/EInvoice/ExportPDF?secret=` + full.secret + `')"><i class="far fa-file-pdf mr-2"></i> Xuất PDF</a>
+                                                                                           <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.exportXML('/Selling/EInvoice/ExportXML?secret=` + full.secret + `')"><i class="far fa-file-alt mr-2"></i> Xuất XML</a>
+
+                                                                                </div>
+                                                                          </div>`;
+                        return html;
+                    }
+                },
+            ],
+            initComplete() {
+                $("#dataTable tbody").on("click", "td.dt-checkboxes-cell", function () {
+                    $(this).parent("tr").toggleClass("selected");
+                    let coutncheckbox = 0;
+                    $('#dataTable tbody tr').each(function () {
+                        if ($(this).hasClass("selected")) {
+                            coutncheckbox += 1;
+                            $(this).find("td:last-child").find(".dropleft").hide();
+                        } else {
+                            $(this).find("td:last-child").find(".dropleft").show();
+                        }
+                    });
+                    if (coutncheckbox > 0) {
+                        $(".lstbtnaction").find("button").removeAttr("disabled");
+                        $(".lst-action-synchronize").removeClass("d-none");
+
+                    } else {
+                        $(".lstbtnaction").find("button").attr("disabled", "disabled")
+                        $(".lst-action-synchronize").addClass("d-none");
+                    }
+                });
+
+                $("#dataTable").on('change', "input[type='checkbox']", function (e) {
+                    if (dataTableOut.column(0).checkboxes.selected().length > 0) {
+                          $(".lstbtnaction").find("button").removeAttr("disabled");
+                        $(".lst-action-synchronize").removeClass("d-none");
+                    } else {
+                        $(".lstbtnaction").find("button").attr("disabled", "disabled")
+                        $(".lst-action-synchronize").addClass("d-none");
+                    }
+                    $('#dataTable tbody tr').each(function () {
+                        let check = $(this).find("input[type='checkbox']");
+                        if (check.is(":checked")) {
+                            $(this).find("td:last-child").find(".dropleft").hide();
+                        } else {
+                            $(this).find("td:last-child").find(".dropleft").show();
+                        }
+                    });
+                });
+
+            }
+        });
+        $('#reload').on('click', function () {
+            dataTableOut.ajax.reload(null, false);
+        }); $('input').keyup(function (e) {
+            if (e.keyCode == 13) {
+                dataTableOut.ajax.reload(null, false);
+            }
+        });
+      
+    </script>
+}
+@*   //<form id="form_delete_`+ full.id + `" action="/Selling/Invoice/delete?secret=` + full.secret + `" asp-controller="Invoice" asp-area="Selling" method="post" asp-action="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+    // <a class="dropdown-item" href="javascript:$('#form_delete_`+ full.id + `').submit();">
+        //  <i class="fas fa-trash-alt mr-2"></i> Xóa
+        //
+    </a>
+    //
+</form>*@

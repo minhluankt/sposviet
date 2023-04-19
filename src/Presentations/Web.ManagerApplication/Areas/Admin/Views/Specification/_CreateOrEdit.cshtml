@@ -1,0 +1,59 @@
+﻿@model Web.ManagerApplication.Areas.Admin.Models.SpecificationsViewModel
+<form aria-hidden="true" method="post" asp-controller="Specification" asp-area="Admin" asp-route-id="@Model.Id" asp-action="OnPostCreateOrEdit" onsubmit="return jQueryModalPost(this);">
+    <div class="row justify-content-center">
+        <div class="col col-md-7">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.idTypeSpecifications)
+
+
+            @*      <div class="form-group flex">
+                <label class="control-label mr-2">Hãng</label>
+                <select asp-for="idBrand" class="form-control mr-2" asp-items='new SelectList(Model.Brands, "Id","Name", Model.idBrand)' style="width:200px">
+                </select>
+                <input name="checkBrand" style="height:34px;width:34px" type="checkbox" checked value="true" />
+                </div>
+            *@
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" placeholder="Nhập tên" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>  
+           
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="_from" class="control-label">Từ</label>
+                        <input asp-for="From" name="_from" placeholder="Nhập từ" class="form-control priceFormat" />
+                        <span asp-validation-for="_from" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="_to" class="control-label">Đến</label>
+                        <input asp-for="To" name="_to" placeholder="Nhập đến" class="form-control priceFormat" />
+                        <span asp-validation-for="_to" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                   <div class="form-group">
+                        <label asp-for="Sort" class="control-label">Thứ tự hiện thị</label>
+                        <input asp-for="Sort" placeholder="Thứ tự hiện thị" class="form-control" />
+                        <span asp-validation-for="Sort" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group justify-content-center" style="margin-bottom: 0px !important">
+                <button class="ladda-button mr-2 btn btn-primary" data-style="expand-left">
+                    <span class="ladda-label"><i class="fas fa-check"></i>  Lưu</span>
+                    <span class="ladda-spinner"></span>
+                </button>
+                <button type="submit" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+      priceFormat();
+</script>

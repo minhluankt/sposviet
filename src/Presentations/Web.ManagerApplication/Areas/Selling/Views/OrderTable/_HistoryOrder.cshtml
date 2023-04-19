@@ -1,0 +1,74 @@
+﻿@model Domain.Entities.OrderTable
+
+<div class="list-historyorderpos">
+    @{
+        var listhis = Model != null ? Model.HistoryOrders.GroupBy(x => x.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")):null;
+    }
+    @if (listhis!=null)
+    {
+        @foreach (var item in listhis)
+        {
+            <div class="header-po">
+                <small>Thời gian</small>
+                @if (item.First().CreateDate.Date == DateTime.Now.Date)
+                {
+                    <b>@item.First().CreateDate.ToString("HH:mm:ss")</b>
+                }
+                else
+                {
+                    <b>@item.First().CreateDate.ToString("dd/MM/yyyy HH:mm:ss")</b>
+                }
+                <small> thực hiện bởi</small> <span>@item.First().Carsher</span>
+            </div>
+            <ul>
+                @foreach (var hisDetail in item)
+                {
+                    if (hisDetail.Quantity > 0)
+                    {
+                        if (hisDetail.TypeKitchenOrder == Application.Enums.EnumTypeKitchenOrder.CHUYEN)
+                        {
+                            <li class="addFood">
+                                <small class="text-warning">(Chuyển món)</small>
+                                <span class="text-warning">@hisDetail.Name</span>
+                            </li>
+                        }
+                        else if (hisDetail.TypeKitchenOrder == Application.Enums.EnumTypeKitchenOrder.GHEP)
+                        {
+                            <li class="addFood">
+                                <small class="text-warning">(Ghép món)</small>
+                                <span class="text-warning">@hisDetail.Name</span>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="addFood">  <small>(Thêm món)</small> @hisDetail.Name</li>
+                        }
+
+                    }
+                    else
+                    {
+
+                        <li class="removeFood">
+                            @if (hisDetail.TypeKitchenOrder == Application.Enums.EnumTypeKitchenOrder.CHUYEN)
+                            {
+                                <small class="text-warning">(Chuyển món)</small>
+                                <span class="text-warning">@hisDetail.Name</span>
+                            }
+                            else
+                            {
+                                <small>(Hủy món)</small>
+                                @hisDetail.Name
+                            }
+                        </li>
+                    }
+                }
+            </ul>
+        }
+
+    }
+    else
+    {
+        <p>Bàn chưa có lịch sử nào</p>
+    }
+
+</div>

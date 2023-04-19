@@ -1,0 +1,143 @@
+﻿@model Model.ProductModelView
+
+<div class="card-header">
+    <ul class="nav nav-justified">
+        <li class="nav-item"><a data-toggle="tab" href="#tab-eg7-0" class="active nav-link">Thông tin chung</a></li>
+        <li class="nav-item"><a data-toggle="tab" href="#tab-eg7-2" class="nav-link">Album ảnh</a></li>
+    </ul>
+</div>
+<div class="card-body">
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab-eg7-0" role="tabpanel">
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th style="    width: 114px;">Tên bài</th>
+                    <td class="text-primary">@Model.Name</td>
+                </tr>
+                    <tr>
+                    <th>Ảnh đại diện</th>
+                    <td>
+                        <img class="mb-2 daidien" src="data:image/*;base64,@Model.Img" style=" max-width: 200px;">
+                    </td>
+                </tr>
+              
+                 <tr>
+                    <th>Danh mục</th>
+                    <td>@((Model.CategoryProduct.CategoryChild!=null? Model.CategoryProduct.CategoryChild.Name + "/" : "") + Model.CategoryProduct.Name)</td>
+                </tr>
+                  <tr>
+                    <th>Đơn giá</th>
+                    <td>@string.Format("{0:N0}",Model.Price)</td>
+                </tr>
+                 
+               
+                <tr>
+
+                    <th>Ngày đăng</th>
+                    <td>@Model.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                </tr>
+                <tr>
+                    <th>Lượt xem</th>
+                    <td>@Model.ViewNumber</td>
+                </tr>
+                <tr>
+                    <th>Hiến thị</th>
+                    <td>
+                        @if (Model.Active)
+                        {
+                            <span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> Có</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger"><i class="fas fa-check-circle" style=""></i> Không</span>
+                        }
+
+                    </td>
+                </tr>
+                @if (!string.IsNullOrEmpty(Model.Title))
+                {
+                     <tr>
+                        <th>Mô tả ngắn</th>
+                        <td>
+                            @Html.Raw(Model.Title)
+                        </td>
+                    </tr>
+                }
+                @if (!string.IsNullOrEmpty(Model.Promotion))
+                {
+                     <tr>
+                        <th>Mô tả ngắn</th>
+                        <td>
+                            @Html.Raw(Model.Promotion)
+                        </td>
+                    </tr>
+                }
+               
+
+                <tr>
+                    <th style="vertical-align:top">Nội dung</th>
+                    <td>
+                        @Html.Raw(Model.Description)
+                    </td>
+                </tr>
+            </table>
+        </div>
+      
+        <div class="tab-pane" id="tab-eg7-2" role="tabpanel">
+            @if (Model.UploadImgProducts.Count() > 0)
+            {
+                <table class="table table-bordered table-striped" id="dataTableImg">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Hình ảnh</th>
+                            <th>Dung lượng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int k = 1;
+                        }
+                        @foreach (var item in Model.UploadImgProducts)
+                        {
+                            <tr>
+                                <td>@(k++)</td>
+                                <td>
+                                    <img src="../Upload/Product/@item.FileName" style="width:100px" />
+                                </td>
+                                <td class="text-right">
+                                    @(Math.Round(Convert.ToDecimal(item.Size / 1024f)).ToString("N0")) KB
+                                </td>
+                              
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <h5>Không có ảnh nào!</h5>
+            }
+        </div>
+        
+    </div>
+</div>
+
+<script src="~/lib/pdfjs/pdfobject.js"></script>
+<script>
+    $(document).ready(function () {
+        LoadDataTableById("dataTableImg");
+        LoadDataTableById("dataTableDocument");
+        LoadDataTable();
+    });
+    //function ViewPDF(url) {
+    //    loadingStart();
+    //    let html = '<div id="ViewPDF"></div>';
+    //    jQueryModal.Show("Thông tin chi tiết", html, "modal-70");
+
+    //    setTimeout(function () { loadPDF(url); loadingStop() }, 1000);
+    //}
+    //function loadPDF(url) {
+    //    PDFObject.embed(url, "#ViewPDF");
+    //}
+</script>

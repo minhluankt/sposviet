@@ -1,0 +1,73 @@
+<?xml-stylesheet type='text/xsl' href='TT78_GTGTNT_A4_002_1.xslt' ?>
+<HDon>
+	 <DLHDon Id="DuLieuKy">
+		  <TTChung>
+				<PBan>2.0.0</PBan>
+				<THDon>Hóa đơn giá trị gia tăng</THDon>
+				<KHMSHDon></KHMSHDon>
+				<KHHDon></KHHDon>
+				<SHDon>0</SHDon>
+				<NLap></NLap>
+				<DVTTe>VND</DVTTe>
+				<TGia>1</TGia>
+				<HTTToan></HTTToan>
+				<TTHDLQuan>
+					 <TCHDon></TCHDon>
+					 <LHDCLQuan></LHDCLQuan>
+					 <KHMSHDCLQuan></KHMSHDCLQuan>
+					 <KHHDCLQuan></KHHDCLQuan>
+					 <SHDCLQuan></SHDCLQuan>
+					 <NLHDCLQuan></NLHDCLQuan>
+					 <GChu></GChu>
+				</TTHDLQuan>
+		  </TTChung>
+		  <NDHDon>
+				<NBan>
+					 <Ten>Công ty công nghệ thông tin VNPT</Ten>
+					 <MST>0106180698</MST>
+					 <DChi>57 Huỳnh Thúc Kháng - Đống Đa - Hà Nội</DChi>
+					 <SDThoai>0243.553.3388</SDThoai>
+					 <STKNHang></STKNHang>
+					 <TNHang></TNHang>
+				</NBan>
+				<NMua>
+					 <Ten></Ten>
+				</NMua>
+				<DSHHDVu>
+					 <HHDVu>
+						  <TChat></TChat>
+						  <STT></STT>
+						  <THHDVu></THHDVu>
+						  <DVTinh></DVTinh>
+						  <SLuong></SLuong>
+						  <DGia></DGia>
+						  <TLCKhau></TLCKhau>
+						  <STCKhau></STCKhau>
+						  <TSuat></TSuat>
+						  <ThTien></ThTien>
+						  <TTKhac>
+								<TTin>
+									 <TTruong>Amount</TTruong>
+									 <KDLieu>numeric</KDLieu>
+									 <DLieu></DLieu>
+								</TTin>
+						  </TTKhac>
+					 </HHDVu> 
+				</DSHHDVu>
+				<TToan>
+					 <THTTLTSuat>
+						  <LTSuat>
+								<TSuat></TSuat>
+								<TThue></TThue>
+								<ThTien></ThTien>
+						  </LTSuat> 
+					 </THTTLTSuat>
+					 <TgTCThue></TgTCThue>
+					 <TgTThue></TgTThue>
+					 <TgTTTBSo></TgTTTBSo>
+					 <TgTTTBChu></TgTTTBChu>
+				</TToan>
+		  </NDHDon>
+	 </DLHDon> 
+	  
+</HDon>

@@ -1,0 +1,290 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Features\**" />
+    <Compile Remove="Interfaces\Evaluators\**" />
+    <Compile Remove="Mappings\**" />
+    <EmbeddedResource Remove="Features\**" />
+    <EmbeddedResource Remove="Interfaces\Evaluators\**" />
+    <EmbeddedResource Remove="Mappings\**" />
+    <None Remove="Features\**" />
+    <None Remove="Interfaces\Evaluators\**" />
+    <None Remove="Mappings\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Features\Areas\Commands\CreateAreaCommand.cs" />
+    <Compile Include="Features\Areas\Commands\DeleteAreaCommand.cs" />
+    <Compile Include="Features\Areas\Commands\UpdateAreaCommand.cs" />
+    <Compile Include="Features\Areas\Query\GetAllAreaQuery.cs" />
+    <Compile Include="Features\Areas\Query\GetByIdAreaQuery.cs" />
+    <Compile Include="Features\Areas\Query\GetPageListQuery.cs" />
+    <Compile Include="Features\Banners\Commands\CreateBannerCommand.cs" />
+    <Compile Include="Features\Banners\Commands\DeleteBannerCommand.cs" />
+    <Compile Include="Features\Banners\Commands\UpdateBannerCommand.cs" />
+    <Compile Include="Features\Banners\Query\GetAllBannerCacheQuery.cs" />
+    <Compile Include="Features\Banners\Query\GetByIdBannerQuery.cs" />
+    <Compile Include="Features\Brands\Commands\CreateBrandCommand.cs" />
+    <Compile Include="Features\Brands\Commands\DeleteBrandCommand.cs" />
+    <Compile Include="Features\Brands\Commands\UpdateBrandCommand.cs" />
+    <Compile Include="Features\Brands\Query\GetAllBrandCacheQuery.cs" />
+    <Compile Include="Features\Brands\Query\GetAllBrandQuery.cs" />
+    <Compile Include="Features\Brands\Query\GetByIdBrandQuery.cs" />
+    <Compile Include="Features\CategoryCevenues\Commands\CreateCategoryCevenueCommand.cs" />
+    <Compile Include="Features\CategoryCevenues\Commands\DeleteCategoryCevenueCommand.cs" />
+    <Compile Include="Features\CategoryCevenues\Commands\UpdateCategoryCevenueCommand.cs" />
+    <Compile Include="Features\CategoryCevenues\Query\GetAllCategoryCevenueQuery.cs" />
+    <Compile Include="Features\CategoryCevenues\Query\GetByIdCategoryCevenueQuery.cs" />
+    <Compile Include="Features\CategorysPost\Commands\CreateCategorysPostCommand.cs" />
+    <Compile Include="Features\CategorysPost\Commands\DeleteCategorysPostCommand.cs" />
+    <Compile Include="Features\CategorysPost\Commands\UpdateCategorysPostCommand.cs" />
+    <Compile Include="Features\CategorysPost\Query\GetAllCategoryIncludePostQuery.cs" />
+    <Compile Include="Features\CategorysPost\Query\GetAllCategoryPostCacheQuery.cs" />
+    <Compile Include="Features\CategorysPost\Query\GetAllCategoryPostQuery.cs" />
+    <Compile Include="Features\CategorysPost\Query\GetByIdCategoryPostQuery.cs" />
+    <Compile Include="Features\CategorysPost\Query\GetListChildCategoryPostByIdCacheQuery.cs" />
+    <Compile Include="Features\Citys\Commands\CreateCityCommand.cs" />
+    <Compile Include="Features\Citys\Commands\DeleteCityCommand.cs" />
+    <Compile Include="Features\Citys\Commands\UpdateCityCommand.cs" />
+    <Compile Include="Features\Citys\Query\GetAllCountryCacheQuery.cs" />
+    <Compile Include="Features\Citys\Query\GetByIdCountryQuery.cs" />
+    <Compile Include="Features\Comments\Commands\CreateCommentProductCommand.cs" />
+    <Compile Include="Features\CompanyInfo\Commands\CreateCompanyInfoCommand.cs" />
+    <Compile Include="Features\CompanyInfo\Commands\DeleteCompanyCommnad.cs" />
+    <Compile Include="Features\CompanyInfo\Commands\UpdateCompanyInfoCommand.cs" />
+    <Compile Include="Features\CompanyInfo\Commands\UpdateCompanyInStortCommand.cs" />
+    <Compile Include="Features\CompanyInfo\Query\GetAllCompanyInfoCacheQuery.cs" />
+    <Compile Include="Features\CompanyInfo\Query\GetAllCompanyQuery.cs" />
+    <Compile Include="Features\CompanyInfo\Query\GetByIdCompanyInfoQuery.cs" />
+    <Compile Include="Features\ConfigSystems\Query\GetAllConfigQuery.cs" />
+    <Compile Include="Features\Customers\Commands\CreateCustomerCommand.cs" />
+    <Compile Include="Features\Customers\Commands\DeleteCustomerCommand.cs" />
+    <Compile Include="Features\Customers\Commands\UpdateCustomerCommand.cs" />
+    <Compile Include="Features\Customers\Commands\UpdateInfoDeliveryCustomerCommand.cs" />
+    <Compile Include="Features\Customers\Query\GetAllCustomerQuery.cs" />
+    <Compile Include="Features\Customers\Query\GetByCartCustomerQuery.cs" />
+    <Compile Include="Features\Customers\Query\GetByIdCustomerQuery.cs" />
+    <Compile Include="Features\CategorysProduct\Commands\CreateCategorysProductCommand.cs" />
+    <Compile Include="Features\CategorysProduct\Commands\DeleteCategorysProductCommand.cs" />
+    <Compile Include="Features\CategorysProduct\Commands\UpdateCategorysProductCommand.cs" />
+    <Compile Include="Features\CategorysProduct\Query\GetAllCategoryProductCacheQuery.cs" />
+    <Compile Include="Features\CategorysProduct\Query\GetAllCategoryIncludeProductQuery.cs" />
+    <Compile Include="Features\CategorysProduct\Query\GetAllCategoryProductQuery.cs" />
+    <Compile Include="Features\CategorysProduct\Query\GetByIdCategoryProductQuery.cs" />
+    <Compile Include="Features\ConfigSystems\Commands\CreateConfigSystemCommand.cs" />
+    <Compile Include="Features\ConfigSystems\Commands\DeleteConfigSystemCommand.cs" />
+    <Compile Include="Features\ConfigSystems\Commands\UpdateConfigSystemCommand.cs" />
+    <Compile Include="Features\ConfigSystems\Query\GetByKeyConfigSystemQuery.cs" />
+    <Compile Include="Features\Customers\Query\SearchCustomerQuery.cs" />
+    <Compile Include="Features\Districts\Commands\CreateDistrictCommand.cs" />
+    <Compile Include="Features\Districts\Commands\DeleteDistrictCommand.cs" />
+    <Compile Include="Features\Districts\Commands\UpdateDistrictCommand.cs" />
+    <Compile Include="Features\Districts\Query\GetAllDistrictCacheQuery.cs" />
+    <Compile Include="Features\Districts\Query\GetAllDistrictQuery.cs" />
+    <Compile Include="Features\Districts\Query\GetByIdDistrictQuery.cs" />
+    <Compile Include="Features\EInvoices\Commands\CancelEInvoiceCommand.cs" />
+    <Compile Include="Features\EInvoices\Commands\PublishEInvoiceCommand.cs" />
+    <Compile Include="Features\EInvoices\Commands\RemoveEInvoiceCommand.cs" />
+    <Compile Include="Features\EInvoices\Commands\SendCQTCommand.cs" />
+    <Compile Include="Features\EInvoices\Commands\SycnInvoiceCommand.cs" />
+    <Compile Include="Features\EInvoices\Query\GetAllEInvoiceQuery.cs" />
+    <Compile Include="Features\EInvoices\Query\GetByIdEInvoiceQuery.cs" />
+    <Compile Include="Features\EInvoices\Query\GetDashboardQuery.cs" />
+    <Compile Include="Features\EInvoices\Query\GetHashTokenQuery.cs" />
+    <Compile Include="Features\EInvoices\Query\ViewInvoiceQuery.cs" />
+    <Compile Include="Features\Invoices\Commands\PublishEInvoiceMergeCommand.cs" />
+    <Compile Include="Features\Invoices\Commands\PublishInvoiceCommand.cs" />
+    <Compile Include="Features\Invoices\Commands\UpdateInvoiceCommand.cs" />
+    <Compile Include="Features\Invoices\Query\GetAllInvoiceQuery.cs" />
+    <Compile Include="Features\Invoices\Query\GetByIdInvoiceQuery.cs" />
+    <Compile Include="Features\Invoices\Query\GetInvoiceArrayQuery.cs" />
+    <Compile Include="Features\Invoices\Query\GetInvoiceByCodeQuery.cs" />
+    <Compile Include="Features\Invoices\Query\PrintInvoicePos.cs" />
+    <Compile Include="Features\Kitchens\Commands\UpdateNotifyChitkenCommand.cs" />
+    <Compile Include="Features\Kitchens\Querys\GetOrderChitkenQuery.cs" />
+    <Compile Include="Features\Logs\Commands\AddActivityLog\AddActivityLogCommand.cs" />
+    <Compile Include="Features\Logs\QueriesDapper\GetAllQuery.cs" />
+    <Compile Include="Features\Logs\Queries\GetAllLogsQuery.cs" />
+    <Compile Include="Features\Logs\Queries\GetCurrentUserLogs\GetAuditLogsQuery.cs" />
+    <Compile Include="Features\Mail\Commands\CreateMailSettingCommand.cs" />
+    <Compile Include="Features\Mail\Commands\UpdateMailSettingCommand.cs" />
+    <Compile Include="Features\Mail\Querys\GetAllEmailHistoryQuery.cs" />
+    <Compile Include="Features\Mail\Querys\GetByIdMailHistoryQuery.cs" />
+    <Compile Include="Features\Mail\Querys\GetByIdMailSettingQuery.cs" />
+    <Compile Include="Features\ManagerPatternEInvoices\Commands\CreateManagerPatternEInvoiceCommand.cs" />
+    <Compile Include="Features\ManagerPatternEInvoices\Commands\DeleteManagerPatternEInvoiceCommand.cs" />
+    <Compile Include="Features\ManagerPatternEInvoices\Commands\UpdateManagerPatternEInvoiceCommand.cs" />
+    <Compile Include="Features\ManagerPatternEInvoices\Querys\GetAllManagerPatternEInvoiceQuery.cs" />
+    <Compile Include="Features\ManagerPatternEInvoices\Querys\GetByIdManagerPatternEInvoiceQuery.cs" />
+    <Compile Include="Features\NotificationNewsEmails\Command\CreateNotificationNewsEmailCommand.cs" />
+    <Compile Include="Features\NotificationNewsEmails\Command\DeleteNotificationNewsEmailCommand.cs" />
+    <Compile Include="Features\NotificationNewsEmails\Querys\GetAllNotificationNewsEmailQuery.cs" />
+    <Compile Include="Features\NotificationNewsEmails\Querys\GetByIdNotificationNewsEmailQuery.cs" />
+    <Compile Include="Features\Orders\Query\GetByIdOrderQuery.cs" />
+    <Compile Include="Features\Orders\Query\GetOrderQuery.cs" />
+    <Compile Include="Features\OrderTablePos\Commands\CheckOutOrderCommand.cs" />
+    <Compile Include="Features\OrderTablePos\Commands\CreateOrderTableCommand.cs" />
+    <Compile Include="Features\OrderTablePos\Commands\DeleteOrderTableCommand.cs" />
+    <Compile Include="Features\Kitchens\Commands\CreateNotifyChitkenCommand.cs" />
+    <Compile Include="Features\OrderTablePos\Commands\SplitOrderCommand.cs" />
+    <Compile Include="Features\OrderTablePos\Commands\UpdateOrderTableCommand.cs" />
+    <Compile Include="Features\OrderTablePos\Querys\GetByIdOrderTableQuery.cs" />
+    <Compile Include="Features\OrderTablePos\Querys\GetHistoryQuery.cs" />
+    <Compile Include="Features\OrderTablePos\Querys\GetOrderOneQuery.cs" />
+    <Compile Include="Features\OrderTablePos\Querys\GetOrderTableAllTableQuery.cs" />
+    <Compile Include="Features\OrderTablePos\Querys\PrintOrderTaleQuery.cs" />
+    <Compile Include="Features\ParametersEmails\Commands\CreateParameterEmailCommand.cs" />
+    <Compile Include="Features\ParametersEmails\Commands\DeleteParameterEmailCommand.cs" />
+    <Compile Include="Features\ParametersEmails\Commands\UpdateParameterEmailCommand.cs" />
+    <Compile Include="Features\ParametersEmails\Query\GetAllParametersEmailCacheQuery.cs" />
+    <Compile Include="Features\ParametersEmails\Query\GetAllParametersEmailQuery.cs" />
+    <Compile Include="Features\ParametersEmails\Query\GetByIdParametersEmailQuery.cs" />
+    <Compile Include="Features\PaymentMethods\Commands\CreatePaymentMethodCommand.cs" />
+    <Compile Include="Features\PaymentMethods\Commands\DeletePaymentMethodCommand.cs" />
+    <Compile Include="Features\PaymentMethods\Commands\UpdatePaymentMethodCommand.cs" />
+    <Compile Include="Features\PaymentMethods\Query\GetAllPaymentmethodQuery.cs" />
+    <Compile Include="Features\PaymentMethods\Query\GetByIdPaymentMethodQuery.cs" />
+    <Compile Include="Features\Permissions\Commands\CreatePermissionCommand.cs" />
+    <Compile Include="Features\Permissions\Commands\DeletePermissionCommand.cs" />
+    <Compile Include="Features\Permissions\Commands\UpdatePermissionCommand.cs" />
+    <Compile Include="Features\Permissions\Query\GetAllPermissionsCacheQuery.cs" />
+    <Compile Include="Features\Permissions\Query\GetAllPermissionsQuery.cs" />
+    <Compile Include="Features\Permissions\Query\GetByIdPermissionQuery.cs" />
+    <Compile Include="Features\PosSelling\Query\GetAllPosSellingQuery.cs" />
+    <Compile Include="Features\PostOnePages\Commands\CreatePostOnePageCommand.cs" />
+    <Compile Include="Features\PostOnePages\Commands\DeletePostOnePageCommand.cs" />
+    <Compile Include="Features\PostOnePages\Commands\UpdatePostOnePageCommand.cs" />
+    <Compile Include="Features\PostOnePages\Querys\GetAllIQueryablePostOnePage.cs" />
+    <Compile Include="Features\PostOnePages\Querys\GetAllPostOnePageQuery.cs" />
+    <Compile Include="Features\PostOnePages\Querys\GetByIdPostQuery.cs" />
+    <Compile Include="Features\PostOnePages\Querys\GetAllPagePostCacheQuery.cs" />
+    <Compile Include="Features\Posts\Commands\CreatePostCommand.cs" />
+    <Compile Include="Features\Posts\Commands\DeletePostCommand.cs" />
+    <Compile Include="Features\Posts\Commands\UpdatePostCommand.cs" />
+    <Compile Include="Features\Posts\Querys\GetAllIQueryablePost.cs" />
+    <Compile Include="Features\Posts\Querys\GetAllPostQuery.cs" />
+    <Compile Include="Features\Posts\Querys\GetByIdPostQuery.cs" />
+    <Compile Include="Features\Posts\Querys\GetListSearchPostCachedQuery.cs" />
+    <Compile Include="Features\Products\Commands\CreateProductCommand.cs" />
+    <Compile Include="Features\Products\Commands\DeleteProductCommand.cs" />
+    <Compile Include="Features\Products\Commands\UpdatePriceCommands.cs" />
+    <Compile Include="Features\Products\Commands\UpdateProductCommand.cs" />
+    <Compile Include="Features\Products\Commands\UpdateProductCommonCommand.cs" />
+    <Compile Include="Features\Products\Query\GetAllProductCacheQuery.cs" />
+    <Compile Include="Features\Products\Query\GetByIdProductQuery.cs" />
+    <Compile Include="Features\Products\Query\GetIQueryableProductQuery.cs" />
+    <Compile Include="Features\Products\Query\GetProductByCategoryQuery.cs" />
+    <Compile Include="Features\Products\Query\GetStyleProductQuery.cs" />
+    <Compile Include="Features\Products\Query\PrintBarCodeQuery.cs" />
+    <Compile Include="Features\Products\Query\QueryProductAutoComplete.cs" />
+    <Compile Include="Features\Products\Query\SearchProductQuery.cs" />
+    <Compile Include="Features\PromotionRuns\Commands\CreatePromotionRunCommand.cs" />
+    <Compile Include="Features\PromotionRuns\Commands\DeletePromotionRunCommand.cs" />
+    <Compile Include="Features\PromotionRuns\Commands\UpdatePromotionRunCommand.cs" />
+    <Compile Include="Features\PromotionRuns\Query\GetActivePromotionRunQuery.cs" />
+    <Compile Include="Features\PromotionRuns\Query\GetAllPromotionRunCacheQuery.cs" />
+    <Compile Include="Features\PromotionRuns\Query\GetAllPromotionRunQuery.cs" />
+    <Compile Include="Features\PromotionRuns\Query\GetByIdPromotionRunQuery.cs" />
+    <Compile Include="Features\PurchaseOrders\Commands\CreatePurchaseOrderCommand.cs" />
+    <Compile Include="Features\PurchaseOrders\Commands\DeletePurchaseOrderCommand.cs" />
+    <Compile Include="Features\PurchaseOrders\Commands\UpdatePurchaseOrderCommand.cs" />
+    <Compile Include="Features\PurchaseOrders\Query\GetAllPurchaseOrderQuery.cs" />
+    <Compile Include="Features\PurchaseOrders\Query\GetByCodePurchaseOrderQuery.cs" />
+    <Compile Include="Features\PurchaseOrders\Query\GetByIdPurchaseOrderQuery.cs" />
+    <Compile Include="Features\ReportPoss\Query\GetExportImportOnhandQuery.cs" />
+    <Compile Include="Features\ReportPoss\Query\GetReportDashboardQuery.cs" />
+    <Compile Include="Features\ReportPoss\Query\GetReportOnhandQuery.cs" />
+    <Compile Include="Features\ReportPoss\Query\GetReportsProductsQuery.cs" />
+    <Compile Include="Features\ReSearchs\Query\GetAllReSeachCacheQuery.cs" />
+    <Compile Include="Features\ReportPoss\Query\GetReportPosQuery.cs" />
+    <Compile Include="Features\RevenueExpenditures\Commands\CreateRevenueExpenditureCommand.cs" />
+    <Compile Include="Features\RevenueExpenditures\Commands\DeleteRevenueExpenditureCommand.cs" />
+    <Compile Include="Features\RevenueExpenditures\Commands\UpdateRevenueExpenditureCommand.cs" />
+    <Compile Include="Features\RevenueExpenditures\Query\GetAllRevenueExpenditureQuery.cs" />
+    <Compile Include="Features\RevenueExpenditures\Query\GetByIdRevenueExpenditureQuery.cs" />
+    <Compile Include="Features\RevenueExpenditures\Query\GetReportQuery.cs" />
+    <Compile Include="Features\RoomTables\Commands\CreateRoomTableCommand.cs" />
+    <Compile Include="Features\RoomTables\Commands\DeleteRoomTableCommand.cs" />
+    <Compile Include="Features\RoomTables\Commands\UpdateRoomTableCommand.cs" />
+    <Compile Include="Features\RoomTables\Query\GetAllRoomTableQuery.cs" />
+    <Compile Include="Features\RoomTables\Query\GetByIdRoomTableQuery.cs" />
+    <Compile Include="Features\Specification\Commands\CreateSpecificationsCommand.cs" />
+    <Compile Include="Features\Specification\Commands\DeleteSpecificationsCommand.cs" />
+    <Compile Include="Features\Specification\Commands\UpdateSpecificationsCommand.cs" />
+    <Compile Include="Features\Specification\Query\GetAllSpecificationsQuery.cs" />
+    <Compile Include="Features\Specification\Query\GetByCodeSpecificationsQuery.cs" />
+    <Compile Include="Features\Specification\Query\GetByIdSpecificationsQuery.cs" />
+    <Compile Include="Features\SupplierEInvoices\Commands\CreateSupplierEInvoiceCommand.cs" />
+    <Compile Include="Features\SupplierEInvoices\Commands\DeleteSupplierEInvoiceCommand.cs" />
+    <Compile Include="Features\SupplierEInvoices\Commands\UpdateSupplierEInvoiceCommand.cs" />
+    <Compile Include="Features\SupplierEInvoices\Querys\GetAllSupplierEInvoiceQuery.cs" />
+    <Compile Include="Features\SupplierEInvoices\Querys\GetByIdSupplierEInvoiceQuery.cs" />
+    <Compile Include="Features\Supplierss\Commands\CreateSupplierCommand.cs" />
+    <Compile Include="Features\Supplierss\Commands\DeleteSupplierCommand.cs" />
+    <Compile Include="Features\Supplierss\Commands\UpdateSupplierCommand.cs" />
+    <Compile Include="Features\Supplierss\Query\GetAllSuppliersQuery.cs" />
+    <Compile Include="Features\Supplierss\Query\GetByIdSuppliersQuery.cs" />
+    <Compile Include="Features\TemplateInvoices\Commands\CreateTemplateInvoiceCommand.cs" />
+    <Compile Include="Features\TemplateInvoices\Commands\DeleteTemplateInvoiceCommand.cs" />
+    <Compile Include="Features\TemplateInvoices\Commands\UpdateTemplateInvoiceCommand.cs" />
+    <Compile Include="Features\TemplateInvoices\Query\GetAllTemplateInvoiceQuery.cs" />
+    <Compile Include="Features\TemplateInvoices\Query\GetByIdTemplateInvoiceQuery.cs" />
+    <Compile Include="Features\TypeCategorys\Commands\CreateTypeCategoryCommand.cs" />
+    <Compile Include="Features\TypeCategorys\Commands\DeleteTypeCategoryCommand.cs" />
+    <Compile Include="Features\TypeCategorys\Commands\UpdateTypeCategoryCommand.cs" />
+    <Compile Include="Features\TypeCategorys\Query\GetAllTypeCategoryCacheQuery.cs" />
+    <Compile Include="Features\TypeCategorys\Query\GetByIdTypeCategoryQuery.cs" />
+    <Compile Include="Features\TypeSpecification\Commands\CreateTypeSpecificationsCommand.cs" />
+    <Compile Include="Features\TypeSpecification\Commands\DeleteTypeSpecificationsCommand.cs" />
+    <Compile Include="Features\TypeSpecification\Commands\UpdateTypeSpecificationsCommand.cs" />
+    <Compile Include="Features\TypeSpecification\Query\GetAllTypeSpecificationsCacheQuery.cs" />
+    <Compile Include="Features\TypeSpecification\Query\GetByIdTypeSpecificationsQuery.cs" />
+    <Compile Include="Features\Units\Commands\CreateUnitCommand.cs" />
+    <Compile Include="Features\Units\Commands\DeleteUnitCommand.cs" />
+    <Compile Include="Features\Units\Commands\UpdateUnitCommand.cs" />
+    <Compile Include="Features\Units\Query\GetAllUnitQuery.cs" />
+    <Compile Include="Features\Units\Query\GetByIdUnitQuery.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" Version="3.2.0" />
+    <PackageReference Include="Ardalis.Specification" Version="5.1.0" />
+    <PackageReference Include="AspNetCoreHero.Extensions.Caching" Version="1.1.0" />
+    <PackageReference Include="AspNetCoreHero.Results" Version="1.1.1" />
+    <PackageReference Include="AspNetCoreHero.ThrowR" Version="1.0.0" />
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="Dapper" Version="2.0.90" />
+    <PackageReference Include="FluentValidation" Version="10.2.3" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.2.3" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.28" />
+    <PackageReference Include="MailKit" Version="3.0.0" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="MimeKit" Version="3.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.14" />
+    <PackageReference Include="Telegram.Bot" Version="15.7.1" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\HelperLibrary\Library.csproj" />
+    <ProjectReference Include="..\PagedList.Core\PagedList.Core.csproj" />
+    <ProjectReference Include="..\Slugify.Core\Slugify.Core.csproj" />
+    <ProjectReference Include="..\SystemVariable\SystemVariable.csproj" />
+  </ItemGroup>
+
+</Project>

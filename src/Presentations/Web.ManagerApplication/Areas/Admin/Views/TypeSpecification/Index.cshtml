@@ -1,0 +1,48 @@
+﻿
+@{ ViewData["Title"] = localizer["Users"];
+    ViewData["Caption"] = localizer["Manage Users here"];
+   
+    }
+<div class="card">
+    <div class="card-header">
+        <h5 class="font-weight-bold mt-0 mb-0">Danh sách các tiêu chí thông số kỹ thuật</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-12 pt-2">
+
+
+                <a onclick="jQueryModalGet('/admin/TypeSpecification/CreateOrEdit','Create TypeSpecifications',false)">
+                    <button class="mb-2 mr-2 btn-icon btn btn-success"><i class="fas fa-plus-circle"> </i> Thêm mới</button>
+                </a>
+
+                <button class="ladda-button mb-2 mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                    <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Reload</span>
+
+                    <span class="ladda-spinner"></span>
+                </button>
+
+
+            </div>
+            <div id="viewAll" class="card-body">
+            </div>
+            </div>
+            </div>
+        </div>
+
+        @section Scripts
+{
+            <script>
+    $(document).ready(function () {
+                    // $("#userTable").DataTable();
+                    loadData();
+                    $('#reload').on('click', function () {
+                        loadData();
+                    });
+                });
+                function loadData() {
+                    loadDataAjax("/admin/TypeSpecification/LoadAll");
+
+                }
+            </script>
+        }

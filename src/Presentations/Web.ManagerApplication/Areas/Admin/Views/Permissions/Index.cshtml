@@ -1,0 +1,54 @@
+﻿@{ ViewData["Title"] = localizer["Permission"];
+    ViewData["Caption"] = localizer["Manage Users here"]; }
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="font-weight-bold mt-0 mb-0">Danh sách quyền</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-12" >
+                <a onclick="jQueryModalGet('/admin/permissions/Create','Thêm mới quyền')" class="btn bg-success text-white">
+                    <i class="fa fa-plus-square"></i> Create
+                </a>
+                <a id="reload" class="btn btn-primary text-white">
+                    <i class="fa fas fa-bolt"></i>
+                    Reload
+                </a>
+            </div>
+            <div id="viewAll" class="card-body table-responsive">
+            </div>
+        </div>
+        </div>
+        </div>
+        @section Scripts
+{
+            <script>
+                $(document).ready(function () {
+
+                    loadData();
+                    $('#reload').on('click', function () {
+                        loadData();
+                    });
+                });
+                function loadData() {
+                    loadDataAjax("/admin/permissions/LoadAll");
+                    //$.ajax({
+                    //    global: false,
+                    //    type: "GET",
+                    //    url: "/admin/permissions/LoadAll",
+                    //    beforeSend: function () {
+                    //        $("#viewAll").block({
+                    //            message: $('<div class="loader mx-auto">\n<div class="ball-pulse-sync">\n<div class="bg-white"></div>\n<div class="bg-white"></div>\n<div class="bg-white"></div>\n</div>\n</div>')
+                    //        })
+                    //    },
+                    //    success: function (msg) {
+                    //        $('#viewAll').html(msg);
+                    //        $.unblockUI();
+                    //        //$("#loading-image").hide();
+                    //    }
+                    //});
+
+                }
+            </script>
+        }

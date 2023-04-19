@@ -1,0 +1,52 @@
+﻿@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Access denied";
+    Layout = null;
+}
+<style>
+    .w3-display-middle {
+        max-width: 370px;
+        text-align: center;
+        margin: auto;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        ,:;
+        height: max-content;
+    }
+
+    body {
+        background-color: black;
+        color: white;
+    }
+
+    h1 {
+        color: red;
+    }
+
+    h6 {
+        color: red;
+        text-decoration: underline;
+    }
+
+</style>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Access Denied</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="w3-display-middle">
+        <h1 class="w3-jumbo w3-animate-top w3-center"><code>Access Denied</code></h1>
+        <hr class="w3-border-white w3-animate-left" style="margin:auto;width:50%">
+        <h3 class="w3-center w3-animate-right">BẠN KHÔNG CÓ QUYỀN TRUY CẬP TÍNH NĂNG NÀY.</h3>
+        <h3 class="w3-center w3-animate-zoom">🚫🚫🚫🚫</h3>
+        <H3 class="w3-center w3-animate-zoom"><a href="javascript:history.back()">Quay lại trang</a></H3>
+    </div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phần mềm quản lý bán hàng giá rẻ | Phần mềm quản lý bán hàng tốt nhất</title>
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="Phần mềm quản lý bán hàng giá rẻ, tốt nhất hiện nay, dành cho loại hình nhà hàng, cafe, bida,quán ăn, tạp hóa, siêu thị, vật tư xây dựng, mẹ và bé" />
+    <meta name="keywords" content="Phần mềm quản lý bán hàng giá rẻ, Phần mềm quản lý bán hàng tốt nhất" />
+    <meta property="og:title" content="Phần mềm quản lý bán hàng giá rẻ | Phần mềm quản lý bán hàng tốt nhất" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://sposviet.vn" />
+    <meta property="fb:app_id" content="http://sposviet.vn" />
+    <meta property="og:image" content="http://sposviet.vn/img/logosposviet.png" />
+    <meta property="og:description" content="Phần mềm quản lý bán hàng giá rẻ, tốt nhất hiện nay, dành cho loại hình nhà hàng, cafe, bida,quán ăn, tạp hóa, siêu thị, vật tư xây dựng, mẹ và bé" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/all.css" />
+    <link rel="stylesheet" href="~/css/animate.min.css" />
+    <link rel="stylesheet" href="~/Langdingpagecss/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Langdingpage.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white box-shadow">
+            <div class="container">
+                <a class="navbar-brand"  asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/img/logo1.png" class="logo" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse ms-lg-5 collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Sản phẩm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Thiết kế web</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Tin tức</a>
+                        </li>
+                        
+                    </ul>
+                    <a href="http://fnb.sposviet.vn" class="loginFnb">Đăng nhập</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer text-muted">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="infocompany">
+                      
+                        <h3> SposViet - Phần mềm quản lý bán hàng.</h3>
+                      <div class="info">
+                        <i class="fas fa-phone-alt"></i>    Hotline: <a href="tel:0918796393" class="color-primary">0918.796.393</a><br />
+                            <i class="fas fa-address-book"></i>    Địa chỉ: 78 Nguyễn Tri Phương, Thành Phố Đà Nẵng.<br />
+                            <i class="fab fa-chrome"></i>    Website: <a href="https://sposviet.vn">https://sposviet.vn</a>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="fb-page" data-href="https://www.facebook.com/phanemquanlybanhangsposviet" data-tabs="timeline" data-width="" data-height="300px" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/phanemquanlybanhangsposviet" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/phanemquanlybanhangsposviet">SposViet-Phần mềm quản lý bán hàng toàn quốc</a></blockquote></div>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <div class="container">
+                &copy; 2022 - SposViet - All Right Reserved
+            </div>
+        </div> 
+        
+    </footer>
+    <!-- Messenger Plugin chat Code -->
+    <div id="fb-root"></div>
+
+    <!-- Your Plugin chat code -->
+    <div id="fb-customer-chat" class="fb-customerchat">
+    </div>
+
+    <script>
+        var chatbox = document.getElementById('fb-customer-chat');
+        chatbox.setAttribute("page_id", "101717976176704");
+        chatbox.setAttribute("attribution", "biz_inbox");
+    </script>
+
+    <!-- Your SDK code -->
+    <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+                xfbml: true,
+                version: 'v16.0'
+            });
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = 'https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js';
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/wow/wow.min.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        new WOW().init();
+
+        wow = new WOW({
+            boxClass: 'wow', // default
+            animateClass: 'animated', // default
+            offset: 0, // default
+            mobile: true, // default
+            live: true // default
+        })
+        wow.init();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

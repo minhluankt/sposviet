@@ -1,0 +1,106 @@
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+@inject IHtmlLocalizer<SharedResource> localizer
+@inject IViewLocalizer Localizer
+@inject IOptions<RequestLocalizationOptions> LocOptions
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{ var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var cultureItems = LocOptions.Value.SupportedUICultures
+        .Select(c => new SelectListItem { Value = c.Name, Text = Localizer.GetString(c.NativeName) })
+        .ToList();
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "" : $"{Context.Request.Path.Value}{Context.Request.QueryString}"; }
+
+<a class="nav-link dropdown-toggle pclanguae" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="mr-2 text-gray-600 small flex">
+        @if (requestCulture != null)
+        {
+            @if (requestCulture.RequestCulture.UICulture.Name == "en") { 
+    
+                <img src="~/images/icon/anh.png" class="mr-2" /> 
+                @localizer["English"]
+            }
+            else if (requestCulture.RequestCulture.UICulture.Name == "vi")
+            {
+                <img src="~/images/icon/viet_nam.png" class="mr-2" />
+                 @localizer["Vietnamese"]
+            }
+
+           @*@requestCulture.RequestCulture.UICulture.NativeName*@
+        }
+    </span>
+</a>
+<!-- Dropdown - User Information -->     @*asp-route-returnUrl="@returnUrl"
+    asp-route-culture="@culture.Value"*@
+<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+    @foreach (var culture in cultureItems)
+    {
+<form style="padding:0px!important"
+   action="/Culture/SetCulture"
+      method="post"
+      class="form-horizontal"
+      role="form">
+    <input type="hidden" name="returnUrl" value="@returnUrl" />
+    <input type="hidden" name="culture" value="@culture.Value" />
+    <button type="submit" class="dropdown-item">
+        @if (culture.Value == "en" || culture.Value == "en-US")
+        {
+        <img src="~/images/icon/anh.png" /> }
+        else if (culture.Value == "vi")
+        {
+        <img src="~/images/icon/viet_nam.png" />}
+                    @if (culture.Value == "vi")
+                    {
+                        @localizer["Vietnamese"]
+                    }
+                    else
+                    {
+                        @localizer["English"]
+                    }
+               @* @culture.Text*@
+            </button>
+</form>     }
+</div>
+
+<div class="mobileLanguae">
+    @foreach (var culture in cultureItems)
+    {
+        if (culture.Text != requestCulture.RequestCulture.UICulture.NativeName)
+        {
+            <form style="padding:0px!important"
+                  action="/Culture/SetCulture"
+                  method="post"
+                  class="form-horizontal"
+                  role="form">
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <input type="hidden" name="culture" value="@culture.Value" />
+                <button type="submit" class="dropdown-item" style="
+    padding: 10px;
+    font-size: 15px;
+    color: #333333;
+">
+                    @if (culture.Value == "en" || culture.Value == "en-US")
+                    {
+                        <img src="~/images/icon/anh.png" style="margin-right: 10px;" /> }
+                        else if (culture.Value == "vi")
+                        {
+                        <img src="~/images/icon/viet_nam.png" style="margin-right: 10px;" />}
+
+                <span>
+                    @if (culture.Value == "vi")
+                    {
+                        @localizer["Vietnamese"]
+                    }
+                    else
+                    {
+                        @localizer["English"]
+                    }
+                    @*@culture.Text*@
+                </span>
+                </button>
+            </form>
+        }
+    }
+</div>
+

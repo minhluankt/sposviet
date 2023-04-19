@@ -1,0 +1,9 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<form id="FormValidate" method="post" asp-controller="Users" asp-action="Edit" onsubmit="return jQueryModalPost(this);">
+    <partial name="_ShareItem" />
+</form>
+<script type="text/javascript" language=javascript>$.validator.unobtrusive.parse(document);</script>

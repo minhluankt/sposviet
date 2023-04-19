@@ -1,0 +1,87 @@
+﻿@model Web.ManagerApplication.Areas.Selling.Models.OrderTableViewModel
+@{
+    bool isCus = false;
+    string _clas = string.Empty;
+    if (Model.OrderTables.Count() > 0)
+    {
+        if (Model.OrderTables[0].Customer != null)
+        {
+            _clas = $"{Model.OrderTables[0].Customer.Code} {Model.OrderTables[0].Customer.Name}";
+        }
+    }
+}
+<ul class="tabs-animated-shadow tabs-animated nav" id="ul-tab-order">
+    @foreach (var item in Model.OrderTables)
+    {
+        <li class="nav-item">
+            <a role="tab" class="nav-link" data-id="@item.IdGuid" data-toggle="tab" href="#tab-order-@item.Id">
+                <span class="orderCode">@item.OrderTableCode</span>
+                <span class="btn-removeTab"><i class="fas fa-times"></i></span>
+            </a>
+        </li>
+    }
+    @if (Model.OrderTables.Count() == 0)
+    {
+        <li class="nav-item" data-title="newtab">
+            <a role="tab" class="nav-link" data-toggle="tab" href="#tab-order-0">
+                <span class="orderCode">OD-New</span>
+                @*<span>OD-@Model.OrderTableCode</span>*@
+                <span class="btn-removeTab"><i class="fas fa-times"></i></span>
+            </a>
+        </li>
+    }
+    <li class="add-tab">
+        <i class="fas fa-plus"></i>
+    </li>
+</ul>
+<div class="cashier-payment-info-top">
+    <button data-id="" class="btn btn-info btn-showttable"><i class="fas fa-table mr-2"></i><span class="showTableOrder"></span></button>
+    <div class="input-group box-data-customer">
+        <div class="input-group-append btnsearch">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+        </div>
+
+        <input type="text" value="@_clas" class="form-control search-customer" placeholder="Tìm khách hàng (F4)">
+
+        <div class="input-group-append btnadd">
+            <span class="input-group-text btn-addCus"><i class="fas fa-plus"></i></span>
+            <span class="input-group-text btn-cleardata"><i class="fas fa-times"></i></span>
+        </div>
+    </div>
+    <button class="btn btn-primary btn-sort"><i class="fas fa-ellipsis-v"></i></button>
+    <button class="btnfullScreen btn"><i class="fas fa-expand"></i></button>
+</div>
+<div class="tab-content tab-content-order">
+    @foreach (var items in Model.OrderTables)
+    {
+        <div class="tab-pane " id="tab-order-@items.Id" data-id="@items.IdGuid" role="tabpanel">
+            <ul id="item-mon">
+                @{
+                    int i = 1;
+                }
+                @foreach (var item in items.OrderTableItems)
+                {
+
+                    <li data-id="@item.IdGuid" data-idpro="@item.IdProduct" data-slNotify="@item.QuantityNotifyKitchen.ToString("0.###").Replace(",",".")" data-sl="@item.Quantity.ToString("0.###").Replace(",",".")">
+                        <div data-idquan="@item.Quantity.ToString().Replace(",",".")" class="btn-remove"><i data-idquan="@item.Quantity.ToString("0.###").Replace(",",".")" class="fas fa-trash-alt"></i></div>
+                        <div class="name"><b>@(i++). @item.Name</b></div>
+                        @*<div class="item_action"><i class="fas fa-minus"></i><span class="quantity">@item.Quantity</span> <i class="fas fa-plus"></i></div>*@
+                        <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="@item.Quantity.ToString("0.###").Replace(",",".")"> <i class="fas fa-plus"></i></div>
+                        <div><input type="text" class="form-control priceFormat" readonly value="@item.Price.ToString("N0")" /></div>
+                        <div class="amount"><b class="priceFormat">@item.Total.ToString("N0")</b></div>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    @if (Model.OrderTables.Count() == 0)
+    {
+        <div class="tab-pane " id="tab-order-0" role="tabpanel">
+            <div class="no-order">
+                <img src="~/images/ristorante_old.png" />
+                <b>Chưa có món nào được chọn</b>
+                <span>Vui lòng chọn món trong thực đơn</span>
+            </div>
+        </div>
+    }
+</div>

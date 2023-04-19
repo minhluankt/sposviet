@@ -1,0 +1,224 @@
+﻿@using Application.Enums;
+@using Domain.ViewModel;
+@model Domain.ViewModel.PublishInvoiceModelView
+@{
+    var gr = Model.DetailInvoices.GroupBy(x => x.TypePublishEinvoice).ToList();
+    var lstdatphathanh = new List<DetailInvoice>();
+    var TAOMOIPHATHANHLOI = new List<DetailInvoice>();
+    var TAOMOIOK = new List<DetailInvoice>();
+    var KHONGCOSANPHAM = new List<DetailInvoice>();
+    var DONDAHUY = new List<DetailInvoice>();
+    var DAPHATHANHROI = new List<DetailInvoice>();
+    var PHATHANHLOI = new List<DetailInvoice>();
+    var ERROR = new List<DetailInvoice>();
+    foreach (var item in gr)
+    {
+        switch (item.Key)
+        {
+            case ENumTypePublishEinvoice.PHATHANHOK:
+                lstdatphathanh = item.ToList();
+                break;
+            case ENumTypePublishEinvoice.PHATHANHLOI:
+                PHATHANHLOI = item.ToList();
+                break;
+            case ENumTypePublishEinvoice.TAOMOIPHATHANHLOI:
+                TAOMOIPHATHANHLOI = item.ToList();
+                break;
+             case ENumTypePublishEinvoice.TAOMOIOK:
+                TAOMOIOK = item.ToList();
+                break;
+             case ENumTypePublishEinvoice.KHONGCOSANPHAM:
+                KHONGCOSANPHAM = item.ToList();
+                break; 
+             case ENumTypePublishEinvoice.DONDAHUY:
+                DONDAHUY = item.ToList();
+                break;
+             case ENumTypePublishEinvoice.DAPHATHANHROI:
+                DAPHATHANHROI = item.ToList();
+                break;  
+            case ENumTypePublishEinvoice.ERROR:
+                ERROR = item.ToList();
+                break;
+            default:
+                break;
+        }
+    }
+}
+<h4 class="mb-3">Kết quả xử lý dữ liệu đã hoàn tất!</h4>
+<div id="accordionkqpubinv">
+   
+    @if (lstdatphathanh.Count()>0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0"><i class="fas fa-chevron-down mr-2"></i>Phát hành thành công hóa đơn điện tử <span class="text-muted font-14">(@lstdatphathanh.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in lstdatphathanh)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+             </div>
+        </div>
+    }
+    @if (PHATHANHLOI.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0 text-danger"><i class="fas fa-chevron-down mr-2"></i>Phát hành hóa đơn điện tử thất bại <span class="text-muted font-14">(@PHATHANHLOI.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in PHATHANHLOI)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    @if (TAOMOIPHATHANHLOI.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0 text-danger"><i class="fas fa-chevron-down mr-2"></i>Tạo mới hóa đơn điện tử thành công có lỗi trong lúc phát hành <span class="text-muted font-14">(@TAOMOIPHATHANHLOI.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in TAOMOIPHATHANHLOI)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        
+    }
+    @if (TAOMOIOK.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#">
+                <h5 class="m-0">
+                    <i class="fas fa-chevron-down mr-2"></i>Tạo mới hóa đơn điện tử thành công 
+                    <span class="text-muted font-14">(@TAOMOIOK.Count())</span>
+                </h5>
+            </a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in TAOMOIOK)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        
+    }
+    @if (DAPHATHANHROI.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0 text-warning"><i class="fas fa-chevron-down mr-2"></i>Hóa đơn đã tồn tại hóa đơn điện tử không thể @(Model.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoice ? "phát hành" : "tạo mới") <span class="text-muted font-14">(@DAPHATHANHROI.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in DAPHATHANHROI)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+             </div>
+        </div>
+
+    }
+    @if (KHONGCOSANPHAM.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#">
+                <h5 class="m-0 text-warning">
+                    <i class="fas fa-chevron-down mr-2"></i>Hóa đơn không có hàng hóa, @(Model.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoice ? "phát hành" : "tạo mới") lỗi
+                    <span class="text-muted font-14">(@KHONGCOSANPHAM.Count())</span>
+                </h5>
+            </a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in KHONGCOSANPHAM)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+       
+    }
+    @if (DONDAHUY.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#">
+                <h5 class="m-0 text-warning">
+                    <i class="fas fa-chevron-down mr-2"></i>Hóa đơn đã bị hủy không thể @(Model.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoice ? "phát hành" : "tạo mới")
+                    <span class="text-muted font-14">(@DONDAHUY.Count())</span>
+                </h5>
+            </a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in DONDAHUY)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+       
+    }
+    @if (ERROR.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#">
+                <h5 class="m-0 text-danger">
+                    <i class="fas fa-chevron-down mr-2"></i>Hóa đơn lỗi dữ liệu, không thể @(Model.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoice ? "phát hành" : "tạo mới")
+                    <span class="text-muted font-14">(@ERROR.Count())</span>
+                </h5>
+            </a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in ERROR)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+       
+    }
+
+</div>

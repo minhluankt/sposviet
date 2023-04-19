@@ -1,0 +1,170 @@
+﻿@using SystemVariable
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Application.Hepers
+@using Application.Enums
+@using System.Collections;
+@using Domain.Entities;
+@using Web.ManagerApplication.Views.Shared.Components.ProfileSlidebar
+@inject IHtmlLocalizer<SharedResource> localizer
+@model Domain.ViewModel.CartModelIndex
+@{
+    ViewData["Title"] = "Danh sách đơn hàng";
+    var list = Common.GetListStatus();
+    int maxid = 0;
+    if (Model.StatusOrders != null && Model.StatusOrders.Count() > 0)
+    {
+        maxid = Model.StatusOrders.Max(x => x.Id);
+    }
+}
+<style>
+</style>
+<link href="~/lib/smartWizard/4.0/smart_wizard.min.css" rel="stylesheet" />
+<link href="~/lib/smartWizard/4.0/smart_wizard_theme_dots.min.css" rel="stylesheet" />
+<div class="container mt-3">
+    <div class="row">
+        @(await Component.InvokeAsync<ProfileSlidebarViewComponent>())
+        <div class="col-lg-9 mt-4">
+            <div class="body-track">
+                @if (Model.StatusOrders != null)
+                {
+                    <div id="smartwizard">
+                        <h4>
+                            Theo dõi đơn hàng #@Model.Order.OrderCode
+                        </h4>
+                        <div class="curent-status">
+                            <div class="left-title">
+                                @if ((EnumStatusOrder)Model.Order.Status == EnumStatusOrder.Cancel)
+                                {
+                                    <b class="text-danger">@Application.Hepers.GeneralMess.ConvertStatusOrder((EnumStatusOrder)Model.Order.Status)</b>
+                                }
+                                else
+                                {
+                                    <b class="text-success">@Application.Hepers.GeneralMess.ConvertStatusOrder((EnumStatusOrder)Model.Order.Status)</b>
+                                }
+                                <small>(Trạng thai đơn hàng hiện tại)</small>
+                                <p>Ngày đặt hàng: <span>@Model.Order.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss")</span></p>
+                                @if ((EnumStatusOrder)Model.Order.Status == EnumStatusOrder.AwaitingConfirmation)
+                                {
+                                    <form id="form_delete" action="/OrderCustomer/Cancel?secret=` + full.secretId + `" class="d-inline">
+                                        <a class="btn-cancel" href="javascript:void(0)" onclick="return commonfunc.cancelOrder(this,1)">
+                                            <i class="fas fa-trash-alt mr-2"></i> Hủy đơn hàng
+                                        </a>
+                                    </form>
+                                }
+
+                            </div>
+
+                            <a href="/tracking?secret=@Model.secret">Xem nhanh</a>
+                        </div>
+                        <div id="TrackingStaus">
+                            <ul>
+                                @foreach (var item in Model.StatusOrders.OrderByDescending(m => m.Id))
+                                {
+                                    //if (item.Value <= Model.Order.Status)
+                                    // {
+                                    string class_ = "";
+                                    string text_ = Application.Hepers.GeneralMess.ConvertStatusOrder((EnumStatusOrder)item.Status);
+                                    if (item.Id == maxid)
+                                    {
+                                        if ((EnumStatusOrder)item.Status == EnumStatusOrder.Delivered)
+                                        {
+                                            class_ = "active done";
+                                        }
+                                        else
+                                        {
+                                            class_ = "active";
+                                        }
+                                    }
+                                    else if (item.Id < maxid)
+                                    {
+                                        class_ = "donecus";
+                                    }
+
+                                    if (item.Status == (int)EnumStatusOrder.Cancel && Model.Order.Status == (int)EnumStatusOrder.Cancel)
+                                    {
+                                        <li class="cancel @class_">
+                                            <a href="#step-1">
+                                                @text_
+                                                <br />
+                                                <small>@item.Note</small> <br />
+                                                <small class="time">(@(item.UpdateDate==null? item.CreateDate.ToString("dd/MM/yyyy HH:mm:ss"): item.UpdateDate.Value.ToString("dd/MM/yyyy HH:mm:ss")))</small>
+                                            </a>
+                                        </li>
+                                    }
+                                    else if (item.Status != (int)EnumStatusOrder.Cancel)
+                                    {
+                                        <li class="@class_">
+                                            <a href="#step-1">
+                                                @text_
+                                                <br />
+                                                <small>@item.Note</small> <br />
+                                                <small class="time">(@(item.UpdateDate==null? item.CreateDate.ToString("dd/MM/yyyy HH:mm:ss"): item.UpdateDate.Value.ToString("dd/MM/yyyy HH:mm:ss")))</small>
+                                            </a>
+                                        </li>
+                                    }
+                                }
+
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="infoorderlist">
+                        <h4>Đơn hàng gồm</h4>
+                        <ul>
+                            @foreach (var item in Model.Order.OrderDetailts)
+                            {
+                                <li>
+                                    <img src="~/@item.Img" alt="@item.ProdName" />
+                                    <div>
+                                        <span>@item.ProdName</span>
+                                        <span class="text-danger">@(string.Format("{0:N0}", item.Amount)) vnđ</span>
+                                    </div>
+                                </li>
+                            }
+
+                        </ul>
+                        <div class="amount-text">
+                            <span>Tổng tiền:</span>
+                            <b class="float-right text-danger amout">@(string.Format("{0:N0}", Model.Order.Amount)) VND</b>
+                        </div>
+
+                    </div>
+
+                }
+                else
+                {
+                    <p>Đơn hàng không tồn tại</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/smartWizard/4.0/jquery.smartWizard.min.js"></script>
+@section Scripts
+{
+<script>
+
+    $('#v-pills-tab a').removeClass("active");
+    $('#v-pills-tab a').each(function (index, tr) {
+        let url = $(tr).attr('href');
+        if (url.includes("OrderMy")) {
+            $(tr).addClass("active");
+        }
+    });
+    $(document).ready(function () {
+
+        $('#TrackingStaus').smartWizard({
+           // selected: -1,
+            theme: 'dots',
+            autoAdjustHeight: true,
+            transitionEffect: 'fade',
+            showStepURLhash: false,
+            showNextButton: false, // show/hide a Next button
+            showPreviousButton: false, // show/hide a Previous button
+        });
+        var height = $("ul.nav.nav-tabs.step-anchor li:last-child").height();
+
+    });
+</script>
+}

@@ -1,0 +1,771 @@
+﻿@using Model
+@model ProductModelView
+@{
+    bool textclassrunsell = true;
+    bool textclasssell = true;
+    if (Model.isRunPromotion)
+    {
+        textclassrunsell = false;
+    }
+    if (Model.isPromotion)
+    {
+        textclasssell = false;
+    }
+}
+<style>
+    #tab-eg2-3 .jFiler-input {
+        text-align: center;
+        margin: auto;
+        margin-bottom: 20px;
+    }
+
+    .modal-content {
+        border: none;
+    }
+
+    span.custom-file-input-button.btn.btn-success {
+        line-height: 21px;
+        border-radius: 0;
+    }
+
+    .modal-body {
+        height: 100%;
+        /* min-height: 45vh; */
+        display: flex;
+    }
+
+    #form-modal.modal-body {
+        padding-top: 0;
+        height: 99.8vh;
+        overflow: auto;
+        padding-bottom: 0;
+        padding: 0px !important;
+    }
+
+    #form-modal .card-footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        left: 0;
+    }
+
+    .main-card.card {
+        height: 100%;
+        padding-bottom: 48px;
+        overflow: auto;
+    }
+
+    #form-modal .modal-dialog.modal-dialog-centered.modal-xl.modal-lg {
+        margin-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+
+    .jFiler-input-dragDrop {
+        width: 100% !important;
+    }
+
+    #form-modal .modal-header {
+        display: none;
+    }
+
+    #create-formProduct {
+        width: 100%
+    }
+</style>
+<link href="@Url.Content("~/summernote/summernote-bs4.min.css")" rel="stylesheet">
+<link href="~/lib/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
+<link href="~/lib/jquery.filer/css/jquery.filer.css" rel="stylesheet" />
+@*<form id="create-form" method="post" asp-controller="Product" asp-action="OnPostCreateOrEdit" asp-route-id="@Model.Id" onsubmit="return jQueryModalPost(this)" enctype="multipart/form-data">*@
+<form id="create-formProduct" method="post" asp-controller="Product" asp-action="OnPostCreateOrEdit" asp-route-id="@Model.Id" novalidate onsubmit="return AddProduct(this)" enctype="multipart/form-data">
+    @Html.HiddenFor(m => m.Id)
+    <div class="main-card card">
+        <div class="card-header">
+            <i class="header-icon fas fa-plus-square icon-gradient bg-primary"> </i>Thêm mới sản phẩm
+            <div class="btn-actions-pane-right">
+                <div class="nav">
+                    <a data-toggle="tab" href="#tab-eg2-0" class="btn-pill btn-wide active btn btn-outline-primary btn-sm">Thông tin chung</a>
+                    <a data-toggle="tab" href="#tab-eg2-1" class="btn-pill btn-wide mr-1 ml-1  btn btn-outline-primary btn-sm" id="tab-img">Hình ảnh</a>
+                    <a data-toggle="tab" href="#tab-eg2-2" class="btn-pill btn-wide mr-1 ml-1  btn btn-outline-primary btn-sm">Thông tin seo</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body" id="fromcreatePro">
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab-eg2-0" role="tabpanel">
+                    <div class="row">
+
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label for="" asp-for="Name">Tên sản phẩm <span class="required">(*)</span></label>
+                                <input type="text" asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="" asp-for="Name">Mã sản phẩm <span class="required">(*)</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <label for="" asp-for="Code" class="col-form-label"></label><span class="required">(*)</span>
+                                        </div>
+                                    </div>
+                                    @if (Model.Id > 0)
+                                    {
+                                        <input readonly="readonly" asp-for="Code" placeholder="@Html.DisplayNameFor(m=>m.Code)" class="form-control">
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="Code" placeholder="@Html.DisplayNameFor(m=>m.Code)" class="form-control code">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text"><span id="basic-addon2" onclick="return RandomString(this)"><i class="fa fas fa-bolt"></i></span></div>
+                                        </div>
+                                    }
+                                    <span asp-validation-for="Code" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="" asp-for="Name">Mô tả ngắn </label>
+                                <textarea type="text" class="tinyMCE" asp-for="Title" placeholder="Nhập mô tả ngắn, tóm tắt về sản phẩm"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="" asp-for="idCategory">Danh mục sản phẩm<span class="required">(*)</span></label>
+                                        <select class="form-control select2_cre" name="idCategory" id="idCategory" style="width:100%">
+                                            <opiton></opiton>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="" asp-for="idCategory">Xuất xứ<span class="required">(*)</span></label>
+                                        <select class="form-control select2_cre" style="width: 100%;" name="IdBrand"
+                                                aria-hidden="true" id="IdBrand" asp-items='new SelectList(Model.Brands,"Id","Name",Model.IdBrand)'>
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="" asp-for="idPrice">Mức giá <span class="required">(*)</span></label>
+                                        <select class="form-control select2_cre" style="width: 100%;" name="idPrice"
+                                                aria-hidden="true" id="idPrice" asp-items='new SelectList(Model.PriceICs,"Id","Name",Model.idPrice)'>
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="" asp-for="Name">Giá <span class="required">(*)</span></label>
+                                        <input type="text" name="_Price" class="form-control priceFormat" asp-for="Price" id="_Price" placeholder="Nhập giá" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="" asp-for="Name">Số lượng </label>
+                                        <input type="text" class="form-control priceFormat" asp-for="Quantity" id="Quantity" placeholder="Nhập số lượng" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="" asp-for="Name">Quy cách <span class="required">(*)</span></label>
+                                        <input type="text" class="form-control" asp-for="Packing" placeholder="Nhập quy cách" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-2">
+                            <fieldset class="discountsell">
+                                <legend>Sản phẩm chương trình sell</legend>
+                                <div class="form-group flex">
+                                    <input asp-for="isRunPromotion" /> Kích hoạt
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Chọn chương trình sell</label>
+                                    @if (Model.PromotionRuns == null)
+                                    {
+                                        <select class="form-control select2_cre" name="IdPromotionRun" id="IdPromotionRun" style="width: 100%;" disabled="@textclassrunsell">
+                                            <option></option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <select class="form-control select2_cre" style="width: 100%;" name="IdPromotionRun"
+                                            aria-hidden="true" id="IdPromotionRun"
+                                            asp-items='new SelectList(Model.PromotionRuns,"Id","Name",Model.IdPromotionRun)' disabled="@textclassrunsell">
+                                            <option></option>
+                                        </select>
+                                    }
+
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="" asp-for="Name">Chiết khấu (nếu có)</label>
+                                    <input type="text" class="form-control priceFormat" asp-for="DiscountRun" placeholder="Chiết khấu (nếu có)" disabled="@textclassrunsell" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="" asp-for="Name">Đơn giá</label>
+                                    <input type="text" class="form-control priceFormat" asp-for="PriceDiscountRun" placeholder="Nhập giá khuyến mãi" disabled="@textclassrunsell" />
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <fieldset class="discountsell">
+                                <legend>Sản phẩm khuyến mãi</legend>
+                                <div class="form-group flex">
+                                    <input asp-for="isPromotion" /> Kích hoạt
+                                </div>
+                                <div class="form-group">
+                                    <label for="" asp-for="Name">Chiết khấu (nếu có)</label>
+                                    <input type="text" class="form-control priceFormat" asp-for="Discount" placeholder="Chiết khấu (nếu có)" disabled="@textclasssell" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="" asp-for="Name">Đơn giá<span class="required">(*)</span></label>
+                                    <input type="text" class="form-control priceFormat" asp-for="PriceDiscount" placeholder="Nhập giá khuyến mãi" disabled="@textclasssell" />
+                                </div>
+                            </fieldset>
+                        </div>
+
+
+
+
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="" asp-for="Description">Mô tả sản phẩm</label>
+                                <textarea asp-for="Description" class="tinyMCE" placeholder="Nội dung"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="" asp-for="Promotion">Nội dung khuyến mãi</label>
+                                <textarea asp-for="Promotion" class="tinyMCE" placeholder="Nội dung"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group" style="display: flex;    align-items: center;">
+                                <label for="" asp-for="Name">Hiển thị bài viết <span class="required">(*)</span></label>
+                                <input type="checkbox" asp-for="Active" class="checkboxcustom" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab-eg2-2" role="tabpanel">
+                    <div class="row">
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Title </label>
+                                <input type="text" asp-for="seotitle" placeholder="Nhập tiêu đề không quá 160 ký tự là chuẩn nhất." class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Từ khóa</label>
+                                <input type="text" asp-for="seokeyword" class="form-control" placeholder="Nhập từ khóa">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Mô tả</label>
+                                <textarea rows="3" asp-for="seoDescription" class="form-control" placeholder="Nhập mô tả từ 50  đến 160 ký tự là chuẩn nhất."></textarea>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab-eg2-1" role="tabpanel">
+
+                    <div class="row">
+                        <label asp-for="ImgUpload"></label>
+                        <div class="well col-md-12">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="custom-file">
+                                        <input accept="image/*"
+                                               asp-for="ImgUpload"
+                                               type="file" class="custom-file-input"
+                                               onchange="document.getElementById('imgCompany').src = window.URL.createObjectURL(this.files[0])"
+                                               id="customFile">
+                                        <label class="custom-file-label text-left" for="customFile">Chọn ảnh đại diện</label>
+                                    </div>
+
+
+                                </div>
+                                <div class="col-md-6">
+                                    @if (Model.Img != null)
+                                    {
+
+                                        <img id="imgCompany" class="mb-2 daidien" src="data:image/*;base64,@Model.Img" style=" max-width: 200px;">
+                                    }
+                                    else
+                                    {
+                                        <img id="imgCompany" class="mb-2 daidien" style=" max-width: 200px;">
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><div class="row">
+                        <div class="mt-3 w-100">
+
+                            <label asp-for="albumImgUpload">Chọn nhiều hình ảnh</label>
+                            <input type="file" asp-for="albumImgUpload" id="ProductAlbum" multiple="multiple" accept="image/*">
+
+                            @if (Model.UploadImgProducts != null && Model.UploadImgProducts.Count() > 0)
+                            {
+                                <label class="mb-3">Danh sách hình ảnh</label>
+                                <table class="table table-bordered table-striped" id="tableImg">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Hình ảnh</th>
+                                            <th>Dung lượng</th>
+                                            <th>Công cụ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int k = 1;
+                                        }
+                                        @foreach (var item in Model.UploadImgProducts)
+                                        {
+                                            <tr>
+                                                <td>@(k++)</td>
+                                                <td class="text-center">
+                                                    <img src="../Upload/Product/@item.FileName" style="width:100px" />
+                                                    <br />
+                                                    @item.FileName
+                                                </td>
+                                                <td class="text-right">
+                                                    @(Math.Round(Convert.ToDecimal(item.Size / 1024f)).ToString("N0")) KB
+                                                </td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-danger btn-sm" type="button" onclick="return DeleteImg(this,@(item.Id),@(item.IdProduct))">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    <div class="d-block text-center card-footer">
+        @*<a href="javascript:void(0);" class="btn-wide btn btn-success">Save</a>*@
+        <button type="submit" class="btn btn-secondary close-button  mr-2" data-dismiss="modal"><i class="far fa-times-circle"></i> Hủy bỏ</button>
+        <button class="ladda-button btn btn-success" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-check"></i> Lưu</span>
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+</form>
+
+@*@section Scripts
+    {*@
+<script src="~/lib/knockout/knockout-min.js"></script>
+<script src="~/lib/knockout/knockout-file-bindings.js"></script>
+<script src="~/lib/knockout/upload.js"></script>
+<script src="~/lib/pdfjs/pdfobject.js"></script>
+<script src="~/assets/scripts/inputmask/jquery.inputmask.bundle.min.js"></script>
+<script src="~/lib/jquery.filer/js/jquery.filer.js"></script>
+@*<script src="~/ckeditor/ckeditor.js"></script>*@
+<script src="@Url.Content("~/summernote/summernote-bs4.js")"></script>
+
+@*<script src="~/tinymce/js/tinymce/tinymce.min.js"></script>*@
+
+<script src="~/js/upload.js?time=1237455"></script>
+
+<script type="text/javascript" language=javascript>
+    // $.validator.unobtrusive.parse(document);
+
+
+     $('#Description').summernote({
+            height: 200
+    });
+
+
+
+
+        priceFormat();
+     LoadDataTableById("tableImg");
+     function DeleteImg(sel, id,idProduct) {
+         confirms("Xác nhận", "Bạn có chắc chắn muốn xóa không?", "<i class='far fa-times-circle'></i> Hủy", "<i class='fas fa-check-circle'></i> Đồng ý", function () {
+             let _delete = Product.Delete("/Api/Handling/DeleteImg", id,idProduct);
+             if (_delete) {
+                 dataTable
+                     .row($(sel).parents('tr'))
+                     .remove()
+                     .draw();
+               //  $(sel).parents("tr").remove();
+               //  $("#tableImg").DataTable().destroy();
+               //  LoadDataTableById("tableImg");
+             }
+         });
+     }
+      loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct", "#idCategory", @Model.idCategory, "Tất cả");
+     function DeleteDocument(sel, id) {
+         var _delete = JqueryModal.DeleteRemove('/Api/GetDataManage/DeleteDocumentProduct', id, sel);
+         //if (_delete) {
+         //    cosole.log($(sel).parents("tr"));
+         //    $(sel).parents("tr").remove();
+         //}
+     }
+     function RandomString(sel) {
+         $.ajax({
+             type: 'GET',
+             url: "/admin/Product/RandomStringCode",
+             contentType: false,
+             processData: false,
+             global: false,
+             beforeSend: function () {
+                 loadingElementStart("tab-eg2-0");
+             },
+             success: function (res) {
+                 if (res.isValid) {
+                     $(".code").val(res.data);
+                     loadingStopElement("tab-eg2-0");
+                 }
+             },
+             error: function (err) {
+                 console.log(err)
+             }
+         });
+         $.unblockUI();
+     }
+    // var table = $('#dataTablePhuTung').DataTable();
+     $.ajax({
+         type: 'GET',
+         url: "/admin/Product/LoadFullDataTable?idProduct=" +@Model.Id,
+         contentType: false,
+         processData: false,
+         global: false,
+         beforeSend: function () {
+             loadingElementStart("dataAccessary");
+         },
+         success: function (res) {
+             if (res.isValid) {
+                 $("#dataAccessary").html(res.html);
+                 $('#dataTableAccessary').DataTable({
+                     "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+                     "pageLength": 10,
+                     "pagingType": "full_numbers",
+                     "language": {
+                         "oPaginate": {
+                             "sFirst": "Đầu",
+                             "sPrevious": "Trước",
+                             "sNext": "Tiếp",
+                             "sLast": "Cuối"
+                         },
+
+                         "sSearch": "Tìm kiếm:",
+                         "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+                         "lengthMenu": "Hiển thị _MENU_ dòng trên một trang",
+                         "zeroRecords": "Không tìm thấy kết quả nào",
+                         "sInfo": "Hiển thị dòng _START_  đến dòng _END_  trên tổng số _TOTAL_ dòng (Trang _PAGE_/_PAGES_)",
+                         //"info": "Hiển thị trang _PAGE_ trên tổng _PAGES_ trang",
+
+                         "infoEmpty": "Không có dữ liệu",
+                         "infoFiltered": "(Lọc được từ _MAX_ tổng số mục )"
+                     }
+                     //deferRender: true,
+                    // scrollY: 200,
+                    // scrollCollapse: true,
+                   //  scroller: true
+                 });
+               //  loadCheck();
+             }
+             loadingStop();
+         },
+         error: function (err) {
+             console.log(err)
+         }
+     });
+
+     $('#form-modal').modal({ backdrop: 'static', keyboard: false })
+     $(".input-mask-trigger").inputmask()
+     $(".select2_cre").select2({
+         placeholder: "Chọn giá trị",
+         allowClear: true,
+         language: {
+             noResults: function () {
+                 return "Không tìm thấy dữ liệu";
+             }
+         },
+     });
+
+
+     // $(".idCity").select2({
+     //    placeholder: "Chọn giá trị",
+     //    allowClear: true,
+     //    language: {
+     //        noResults: function () {
+     //            return "Không tìm thấy dữ liệu";
+     //        }
+     //    },
+     //}).on('change', function (e) {
+     //    $('.idDistrict').empty().append('<option selected="selected" value=""></option>');
+     //   // let url_seri = "/Admin/District/GetDataDistrictByIdCity?idcity=" + this.value;
+     //    let url_seri = "/API/Handling/GetDataDistrictByIdCity?idcity=" + this.value;
+     //    loaddataSelect2(url_seri, ".idDistrict");
+
+     //});
+
+     //$('.idCity').trigger("change");
+     //$('#imgCompany').click(function () { $('#customFile').trigger('click'); });
+     $("#customFile").on("change", function () {
+         var fileName = $(this).val().split("\\").pop();
+         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+     });
+
+     //function loadCheck() {
+     //    $("#checkAllItem").change(function () {
+     //        if (this.checked) {
+     //            $(".checkItem").each(function () {
+     //                this.checked = true;
+     //            });
+     //        } else {
+     //            $(".checkItem").each(function () {
+     //                this.checked = false;
+     //            });
+     //        }
+     //        var array = [];
+     //        $("input[name='checkItem']:checked").each(function () {
+     //            array.push(parseInt(this.value));
+     //        });
+     //        $("#idAccessary").val(JSON.stringify(array));
+     //       // $("#idAccessary").val(array.join(', '));
+     //    });
+
+     //    $(".checkItem").click(function () {
+     //        if ($(this).is(":checked")) {
+     //            var isAllChecked = 0;
+
+     //            $(".checkItem").each(function () {
+     //                if (!this.checked)
+     //                    isAllChecked = 1;
+     //            });
+
+     //            if (isAllChecked == 0) {
+     //                $("#checkAllItem").prop("checked", true);
+     //            }
+     //        }
+     //        else {
+     //            $("#checkAllItem").prop("checked", false);
+     //        }
+     //        var array = [];
+     //        $("input[name='checkItem']:checked").each(function () {
+     //            array.push(parseInt(this.value));
+     //        });
+     //        $("#idAccessary").val(JSON.stringify(array));
+     //    });
+     //}
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        loadeventAddSell()
+        $('#Document').filer({
+            showThumbs: true,
+            addMore: true,
+            allowDuplicates: false,
+            captions: {
+                button: "Chọn tập tin",
+                feedback: "Chọn tập tin cần upload",
+                feedback2: "tập tin đã được chọn",
+                removeConfirmation: "Bạn có chắc chắn muốn xóa tệp không?",
+            }
+        });
+        //$('#idBrand').on("change", function (e) { log("change"); });
+        // $('#idBrand').on("#idBrand:select", function (e) { log("#idBrand:select", e); });
+        $('#ProductAlbum').trigger("filer.append", {
+            files: [{
+                name: "appended_file.jpg",
+
+                type: "image/jpg",
+                file: "https://dummyimage.com/158x113/f9f9f9/191a1a.jpg",
+            }, {
+                name: "appended_file_2.png",
+
+                type: "image/png",
+                file: "https://dummyimage.com/158x113/f9f9f9/191a1a.png",
+            }]
+        })
+        loadLadda();
+        uploadImageCustom("ProductAlbum");
+        //  uploadImageCustom("Document","Chọn tệp (PDF,Image)");
+    });
+    var toolbarGroups = [
+
+        { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi', 'paragraph'] },
+        { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
+        '/',
+        { name: 'styles', groups: ['styles'] },
+        { name: 'colors', groups: ['colors'] },
+        { name: 'tools', groups: ['tools'] },
+        { name: 'others', groups: ['others'] },
+        { name: 'about', groups: ['about'] }
+    ];
+
+
+
+
+    // tinymce.init({
+    //          selector:'textarea#Description',
+    //          inline: false,
+    //        plugins: [ 'quickbars','image','table','preview','code','emoticons','searchreplace','autolink','link','media' ,'wordcount','directionality'],
+    //            image_title: true,
+    //            automatic_uploads: true,
+    //          //   toolbar: 'table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+    //            file_picker_types: 'image',
+    //            file_picker_callback: function(cb, value, meta) {
+    //                var input = document.createElement('input');
+    //                input.setAttribute('type', 'file');
+    //                input.setAttribute('accept', 'image/*');
+    //                input.onchange = function () {
+    //                    var file = this.files[0];
+    //                    var reader = new FileReader();
+
+    //                    reader.onload = function () {
+    //                        var id = 'blobid' + (new Date()).getTime();
+    //                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+    //                        var base64 = reader.result.split(',')[1];
+    //                        var blobInfo = blobCache.create(id, file, base64);
+    //                        blobCache.add(blobInfo);
+    //                        cb(blobInfo.blobUri(), {title: file.name});
+    //                    };
+    //                    reader.readAsDataURL(file);
+    //                };
+    //    input.click();
+    //}
+
+    //      });
+
+
+
+
+
+
+    //       tinymce.init({
+    //          selector:'textarea#Title',
+    //          inline: false,  height: 280,
+    //        plugins: [ 'quickbars','image','table','preview','code','emoticons','searchreplace','autolink','link','media' ,'wordcount','directionality'],
+    //            image_title: true,
+    //            automatic_uploads: true,
+    //          //   toolbar: 'table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+    //            file_picker_types: 'image',
+    //            file_picker_callback: function(cb, value, meta) {
+    //                var input = document.createElement('input');
+    //                input.setAttribute('type', 'file');
+    //                input.setAttribute('accept', 'image/*');
+    //                input.onchange = function () {
+    //                    var file = this.files[0];
+    //                    var reader = new FileReader();
+
+    //                    reader.onload = function () {
+    //                        var id = 'blobid' + (new Date()).getTime();
+    //                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+    //                        var base64 = reader.result.split(',')[1];
+    //                        var blobInfo = blobCache.create(id, file, base64);
+    //                        blobCache.add(blobInfo);
+    //                        cb(blobInfo.blobUri(), {title: file.name});
+    //                    };
+    //                    reader.readAsDataURL(file);
+    //                };
+    //    input.click();
+    //}
+
+    //      });
+
+
+
+
+
+
+    //        tinymce.init({
+    //          selector:'textarea#Promotion',
+    //          inline: false,
+    //        plugins: [ 'quickbars','image','table','preview','code','emoticons','searchreplace','autolink','link','media' ,'wordcount','directionality'],
+    //            image_title: true,
+    //            automatic_uploads: true,
+    //          //   toolbar: 'table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+    //            file_picker_types: 'image',
+    //            file_picker_callback: function(cb, value, meta) {
+    //                var input = document.createElement('input');
+    //                input.setAttribute('type', 'file');
+    //                input.setAttribute('accept', 'image/*');
+    //                input.onchange = function () {
+    //                    var file = this.files[0];
+    //                    var reader = new FileReader();
+
+    //                    reader.onload = function () {
+    //                        var id = 'blobid' + (new Date()).getTime();
+    //                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+    //                        var base64 = reader.result.split(',')[1];
+    //                        var blobInfo = blobCache.create(id, file, base64);
+    //                        blobCache.add(blobInfo);
+    //                        cb(blobInfo.blobUri(), {title: file.name});
+    //                    };
+    //                    reader.readAsDataURL(file);
+    //                };
+    //    input.click();
+    //}
+
+    //      })
+
+
+
+
+
+
+
+
+    //var initEditor = function () {
+    //    return CKEDITOR.replace('Description', {
+    //     //   removePlugins: 'elementspath',
+    //       // toolbarGroups,
+    //    });
+    //}
+    //initEditor();
+    //CKEDITOR.replace('Title');
+    //CKEDITOR.replace('Promotion');
+        //var editor = CKEDITOR.replace('promotion'
+        //    ,
+        //    {
+        //        filebrowserBrowseUrl: '/ckfinder/ckfinder.html',
+        //        filebrowserImageBrowseUrl: '/ckfinder/ckfinder.html?type=Images',
+        //        filebrowserUploadUrl: '/ckfinder/connector?command=QuickUpload&type=Files',
+        //        filebrowserImageUploadUrl: '/ckfinder/connector?command=QuickUpload&type=Images'
+        //    }
+        //);
+       // CKFinder.setupCKEditor(editor, { basePath: '../ckfinder/', rememberLastFolder: true });
+                        // CKFinder.setupCKEditor(editor);
+</script>
+@*}*@
+

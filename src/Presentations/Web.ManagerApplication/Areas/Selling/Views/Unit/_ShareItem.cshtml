@@ -1,0 +1,26 @@
+﻿@using Domain.Entities
+@model Unit
+<div class="row">
+    <div class="col-md-12">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="fromOnetable">
+            <div class="form-group">
+                <label class="control-label">Tên đơn vị tính <span class="required">(*)</span></label>
+                <input asp-for="Name" class="form-control" placeholder="Tên đơn vị tính" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="fromOnetable">
+            <div class="form-group">
+                <label class="control-label">Tên gọi đầy đủ</label>
+                <input asp-for="FullName" class="form-control" placeholder="Tên gọi đầy đủ"  />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+        </div>
+      
+    </div>
+</div>

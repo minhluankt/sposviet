@@ -1,0 +1,91 @@
+﻿@model Domain.ViewModel.DashboardModel
+@{
+    
+}
+<h5 class="mt-3">Kết quả hôm nay</h5>
+<div class="app-inner-layout homelayoout">
+    <div class="indexdashboad">
+
+    </div>
+
+    <div class="row mt-3  mb-3">
+    <div class="col-md-12">
+        <div class="card">
+                <div class="card-header" style="
+    white-space: nowrap;
+    display: flex;
+    gap: 20px;">
+                    Thời gian: <input type="text" id="rangesDate" name="rangesDate" class="form-control width-max-content" />
+            </div>
+            <div class="card-body">
+                    <div id="reportAverage"></div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</div>
+@section Scripts
+    {
+    <script src="~/lib/highcharts/highcharts.js"></script>
+    <script src="~/lib/highcharts/exporting.js"></script>
+    <script src="~/lib/highcharts/export-data.js"></script>
+    <script src="~/lib/highcharts/accessibility.js"></script>
+    <script src="~/js/custom/report.min.js?time=6"></script>
+    <script>
+        $('#rangesDate').daterangepicker({
+            ranges: {
+                'Hôm nay': [moment(), moment()],
+                'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                '7 Ngày trước': [moment().subtract(6, 'days'), moment()],
+                '30 ngày trước': [moment().subtract(29, 'days'), moment()],
+                'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            // startDate: moment(date).add(1, 'days'),
+            // endDate: moment(date).add(2, 'days'),
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Chọn",
+                "cancelLabel": "Hủy bỏ",
+                "fromLabel": "From",
+                "toLabel": "To",
+                "customRangeLabel": "Custom",
+                "weekLabel": "W",
+                "daysOfWeek": [
+                    "CN",
+                    "T2",
+                    "T3",
+                    "T4",
+                    "T5",
+                    "T6",
+                    "T7"
+                ],
+                "monthNames": [
+                    "Tháng 1",
+                    "Tháng 2",
+                    "Tháng 3",
+                    "Tháng 4",
+                    "Tháng 5",
+                    "Tháng 6",
+                    "Tháng 7",
+                    "Tháng 8",
+                    "Tháng 9",
+                    "Tháng 10",
+                    "Tháng 11",
+                    "Tháng 12"
+                ],
+                "firstDay": 1
+            },
+            "linkedCalendars": false,
+            "alwaysShowCalendars": true,
+
+        }, function (start, end, label) {
+            console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+        });
+        dashboardreport.GetDashBoardIndex();
+        dashboardreport.reportdoanhthu();
+        dashboardreport.eventChangrInput();
+    </script>
+    }

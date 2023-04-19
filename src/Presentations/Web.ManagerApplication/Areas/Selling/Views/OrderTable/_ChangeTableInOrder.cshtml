@@ -1,0 +1,41 @@
+﻿@model Web.ManagerApplication.Areas.Selling.Models.ChangeTableInOrderModel
+@using Application.Enums
+@{
+    Layout = null;
+}
+<style>
+    .swal2-container {
+        z-index: 30 !important;
+    }
+</style>
+@Html.Hidden("OldIdTable",(Model.OrderTable.IsBringBack?"-1":Model.OrderTable.IdRoomAndTableGuid.ToString()))
+<h4 class="mb-3">Đơn @Model.OrderTable.OrderTableCode - @(Model.OrderTable.IsBringBack ? "Mang về" : Model.OrderTable.RoomAndTable?.Name)</h4>
+<h6>Lựa chọn bàn cần thay đổi</h6>
+<div class="form-splitOrder">
+    <div class="header-tab">
+        <div class="form-check pl-0">
+            <input class="form-check-input icheck-table mangve" type="radio"  data-id="0"  name="orderActions" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                Mang về
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input icheck-table bankhac" type="radio" data-id="1" name="orderActions" id="flexCheckDefault2">
+            <label class="form-check-label" for="flexCheckDefault2">
+                Chuyển đến bàn khác
+            </label>
+        </div>
+    </div>
+
+    <div class="body-tab mt-3">
+        <div class="tabtachdon d-none">
+            <div class="input-group mb-3 w-5">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Lựa chọn bàn cần chuyển</label>
+                </div>
+                <select asp-items='new SelectList(Model.RoomAndTables,"IdGuid","Name")' class="custom-select" id="lstroomselect" style="width:250px">
+                </select>
+            </div>
+        </div>
+    </div>
+</div>

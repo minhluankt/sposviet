@@ -1,0 +1,74 @@
+﻿@using Web.ManagerApplication.Views.Shared.Components.Header
+@using Web.ManagerApplication.Views.Shared.Components.Footer
+@using Web.ManagerApplication.Views.Shared.Components.FormModal;
+@using Web.ManagerApplication.Views.Shared.Components.Logout;
+@using Web.ManagerApplication.Views.Shared.Components.Title;
+@{ 
+    string url = Context.Request.Scheme +"://"+ Context.Request.Host+Context.Request.Path;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>@ViewBag.Title</title>
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="@Html.Raw(ViewBag.description)" />
+    <meta name="keywords" content="@(ViewBag.Keyword)" />
+    <meta property="og:title" content="@ViewBag.Title" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@url" />
+    <meta property="og:image" content="@ViewBag.Website/@(ViewBag.image)" />
+    <meta property="og:description" content="@Html.Raw(ViewBag.description)" />
+    <meta property="fb:app_id" content="1541355726195025" />
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+   @* <link rel="manifest" href="/favicon/site.webmanifest">*@
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <partial name="_Styles" />
+    <script src="~/lib/jquery/jquery.js"></script>
+</head>
+<body class="hold-transition sidebar-mini">
+  
+    <div class="main">
+
+    
+        @(await Component.InvokeAsync<HeaderViewComponent>())
+  
+       @* <div style=" background-color: #e9ecef;" class="breadcrumbTitle">
+            <div class="container">
+                <div class="row">
+                    @(await Component.InvokeAsync<TitleViewComponent>())
+                </div>
+            </div>
+        </div>*@
+        <main>
+            @RenderBody()
+        </main>
+        @(await Component.InvokeAsync<FooterViewComponent>())
+        @(await Component.InvokeAsync<LogoutViewComponent>())
+        @(await Component.InvokeAsync<FormModalViewComponent>())
+        @*<partial name="AdminLTE/_LogoutModal" />
+            <partial name="AdminLTE/Modals/_FormModal" />
+            <partial name="AdminLTE/_ImageModal" />*@
+    </div>
+    <!-- Messenger Plugin chat Code -->
+    <div id="fb-root"></div>
+
+    <!-- Your Plugin chat code -->
+    <div id="fb-customer-chat" class="fb-customerchat">
+    </div>
+
+ 
+    <partial name="_Scripts" />
+    @await Component.InvokeAsync("Notyf")
+    @RenderSection("Scripts", required: false)
+    <script>'serviceWorker'in navigator&&navigator.serviceWorker.register('/serviceworker')</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+﻿@{
+      var keyword = Context.Request.Query["keyword"].ToString();
+}
+<form action="/search">
+    <div class="header-search mobi-search">
+        <div class="container">
+            <div class="row">
+                <div class="list-select form-search">
+                     <div class="title-seach">
+                        Tìm kiếm bất động sản
+                        <img src="~/icon/icon_luantm/close_black_24dp.svg"/>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                             <div class="col-md-3">  
+                                 <div class="row input-seach">
+                                     <i class="fas fa-search"></i>
+                                     <input class="form-control" id="keyword" value="@keyword" name="keyword" placeholder="Nhập nội dung tìm kiếm" /> 
+                               </div>
+                            </div>
+                            <div class="col">
+                                <span>Loại nhà đất</span>
+                                <select name="nhadat" style="width:100%" class="form-control loainhadat">
+                                    <opiton></opiton>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <span>Khu vực</span>
+                                <select class="form-control quanhuyen" style="width:100%" name="qh">
+                                    <opiton></opiton>
+                                </select>
+                            </div>
+                            <div class="col">
+                                 <span>Mức giá</span>
+                                <select class="form-control mucgia" style="width:100%" name="mg">
+                                    <opiton></opiton>
+                                </select>
+                            </div>
+                            <div class="col">
+                                 <span>Diện tích</span>
+                                <select class="form-control dientich" style="width:100%" name="dt">
+                                    <opiton></opiton>
+                                </select>
+                            </div>
+                            <div class="col">
+                                 <span>Hướng</span>
+                                <select class="form-control huongdat"  style="width:100%" name="huong">
+                                    <opiton></opiton>
+                                </select>
+                            </div>
+                             <div class="col">
+                               <button type="button" class="btn btn-primary"><i class="fas fa-search"></i> Tìm kiếm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+

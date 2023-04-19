@@ -1,0 +1,292 @@
+﻿@model Domain.ViewModel.PosModel
+@using Application.Enums;
+@using System.Security.Claims;
+@{
+    Layout = null;
+    string roles = string.Empty;
+    string Image = string.Empty;
+    bool login = false;
+    if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        login = true;
+        roles = ((ClaimsIdentity)User.Identity).Claims
+       .Where(c => c.Type == ClaimTypes.Role)
+       .Select(c => c.Value).FirstOrDefault();
+        Image = ((ClaimsIdentity)User.Identity).Claims
+        .Where(c => c.Type == Application.Constants.ConfigCustomerLogin.Image)
+        .Select(c => c.Value).FirstOrDefault();
+
+    }
+}@{
+    int i = 0;
+    var lstamount = new List<double>();
+    lstamount.Add(50000);
+    lstamount.Add(100000);
+    lstamount.Add(150000);
+    lstamount.Add(200000);
+    lstamount.Add(250000);
+    lstamount.Add(300000);
+    lstamount.Add(500000);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Bán hàng tại quầy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="Wide selection of cards with multiple styles, borders, actions and hover effects.">
+    <meta name="msapplication-tap-highlight" content="no">
+    <partial name="Admin/_Styles" />
+    <style>
+        .select2-dropdown {
+            z-index: 1060;
+        }
+
+        .actionheader {
+            margin-left: 10px;
+        }
+        .modal-header .close {
+            margin: 0;
+            padding: 0px;
+        }
+
+        .modal-header {
+            align-items: center;
+        }
+
+        h4 {
+            margin-bottom: 0px;
+        }
+
+        :focus-visible {
+            outline: -webkit-focus-ring-color auto 0px;
+        }
+    </style>
+</head>
+<body id="sellting-banle" class="skill-pos">
+    <div id="parentautocomplete"></div>
+    <div class="">
+        <div class="header-pos">
+            <div class="search-product-pos">
+                <div class="body-content">
+                    <div class="input-group">
+                        <div class="input-group-append btnsearch">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        </div>
+                        <input type="text" name="search-product" data-toggle="tooltip" title="Tìm hàng hóa (F2)" class="form-control search-product" placeholder="Tìm hàng hóa (F2)">
+                    </div>
+                   
+                    <i class="fas fa-barcode btn-barcode" data-toggle="tooltip" title="Chế độ quét mã barcode/qrcode (Ctrl+B)"></i>
+                </div>
+            </div>
+           
+            <ul class="action-inv">
+               
+                @*@if (Model.OrderTables.Count() > 0) //dành cho online
+                {
+                    foreach (var item in Model.OrderTables)
+                    {
+                        i++;
+
+                        <li data-id="@item.IdGuid" class="item-order">
+                            <i class="fa fa-exchange"></i>
+                            <span>Hóa đơn @(i)</span>
+                            <i class="fas fa-times"></i>
+                        </li>
+                    }
+
+                }
+                else
+                {
+                    <li data-id="0" class="active item-order">
+                        <i class="fa fa-exchange"></i>
+                        <span>Hóa đơn 1</span>
+                        <i class="fas fa-times"></i>
+                    </li>
+                }*@
+
+
+                <li class="add-tab">
+                    <i class="fas fa-plus btn-addInvoice"></i>
+                    <i class="fas fa-caret-down ml-2"></i>
+                </li>
+            </ul>
+            <div class="actionheader">
+                <button class="btnfullScreen btn"><i class="fas fa-expand"></i></button>
+            </div>
+            <div class="info-login">
+               
+                @if (login)
+                {
+                    <div class="user-name">
+                        @User.Identity.Name  <i class="fas fa-bars"></i>
+                        <ul class="">
+                            <li><a href="/Selling/Dashboard"><i class="fas fa-address-card"></i> Quản trị</a></li>
+                            <li><a href="/Identity/Account/Logout?returnUrl=@Url.Page("/account/login", new { area = "identity" })"><i class="fas fa-sign-out-alt"></i>  Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="content-pos">
+            <div class="row">
+                <div class="col-md-8 col-lg-9">
+                    <div class="body-data" id="container-tableOder">
+                        <div role="tabpanel">
+                             <div class="tab-pane " id="tab-order-0" role="tabpanel">
+                                <div class="no-order">
+                                    <img src="~/images/shopping.png" />
+                                    <b>Chưa có hàng hóa nào được chọn</b>
+                                    <span>Vui lòng chọn hàng hóa</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-3 p-0">
+                    <div class="body-payment">
+                        <div class="cashier-payment-info-top">
+                            <div class="input-group box-data-customer">
+                                <div class="input-group-append btnsearch">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input type="text" class="form-control search-customer" placeholder="Tìm khách hàng (F4)">
+                                <div class="input-group-append btnadd">
+                                    <span class="input-group-text btn-addCus"><i class="fas fa-plus"></i></span>
+                                    <span class="input-group-text btn-cleardata"><i class="fas fa-times"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-inputpayment">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Tổng tiền hàng</span>
+                                </div>
+                                <span class="form-control txt-data fullamount"></span>
+                            </div>
+                            <div class="input-group mb-3 elemdiscount">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Giảm giá (F8)</span>
+                                </div>
+                                <input type="text" class="form-control discountamount number3" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                            </div>
+                            
+                           
+
+                            <div class="input-group mb-3 ele_cuspay">
+                                <div class="input-group-prepend">
+                                    <b class="input-group-text" id="basic-addon1">Khách cần trả</b>
+                                </div>
+                                <span class="form-control txt-data cuspayment"></span>
+                            </div>
+                            <div class="input-group mb-3 elCassh">
+                                <div class="input-group-prepend">
+                                    <b class="input-group-text" id="basic-addon1">Khách thanh toán (F9)</b>
+                                </div>
+                                <input type="text" class="form-control cussendamount number3" placeholder="" value="0" aria-label="" aria-describedby="basic-addon1">
+                            </div>
+                            <div class="paymentMethod mb-3">
+                                @foreach (var item in Model.PaymentMethods)
+                                {
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input data-id="@item.Id" checked="@(item.Code=="TM"?true:false)" type="radio" name="idPaymentMethod" class="form-check-input icheckpayment icheck" /> @item.Name
+                                        </label>
+                                    </div>
+
+                                   
+                                }
+                            </div>
+                            <div class="mb-3 vatmtt-ele d-none">
+                               @* <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="radio" class="icheck isCheckVAT form-check-input" value="@((int)EnumTypeVATEinvoice.VAT)" name="isCheckVAT" /> Xuất hóa đơn
+                                    </label>
+                                </div>*@
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="icheck isCheckVAT form-check-input"  name="isCheckVAT" /> Xuất hóa đơn
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="lst-amount-paycus mb-3">
+                                @foreach (var item in lstamount)
+                                {
+                                        <span data-value="@item">@item.ToString("N0")</span>
+                                }
+                            </div>
+                            <div class="mb-3 flex tien-thua">
+                                <label>Tiền thừa trả khách</label>
+                                <b class="amoutchange"></b>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-payment">THANH TOÁN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-pos">
+            Liên hệ hỗ trợ: <a href="tel:0949906004">0949.906.004 Mr. Luận</a>
+        </div>
+
+    </div>
+    <div id="loadingpos">
+        <span>
+            <img src="~/images/preview.gif" /><br />
+            Đang tải dữ liệu
+        </span>
+    </div>
+
+
+    <script id="tabTemplate" type="text/x-jquery-tmpl">
+        <div class='tab-pane' role='tabpanel' id='tab${device}'>${device}</div>
+    </script>
+    <script type="text/javascript" src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+    <partial name="Admin/_Scripts" />
+    <script type="text/javascript" src="~/lib/scannerdetection/jquery.scannerdetection.js"></script>
+    <script src="~/js/custom/sposvietkyso.min.js?time=123"></script>
+    <script>
+        document.onreadystatechange = function () {
+            var state = document.readyState
+            if (state == 'complete') {
+                setTimeout(function () {
+                    document.getElementById('loadingpos');
+                    document.getElementById('loadingpos').style.visibility = "hidden";
+                }, 100);
+            }
+        }
+        $(".btnfullScreen").click(function () {
+            $(this).find("i").toggleClass("fa-compress");
+            $(this).find("i").toggleClass("fa-expand");
+            toggleFullScreen();
+        });
+
+        //loadEventadmin.evnetFullscreen();
+        eventBanle.eventChangeCheckbocVAT();//check có cấu hình mtt
+        eventBanle.loadClicktabInvoice();// load data tìm ở hàm này, load data lầnd dầu tiên
+        eventBanle.loadAutocomplete(true, true);
+        loadeventPos.loadEventkeyCode();
+        eventBanle.loadEventChangeSelectAmoutpaycus();
+        eventBanle.loadEventChangePaumentDiscount();
+        eventBanle.loadEventremoveCustomer();
+        eventBanle.loadEventCheckEnableBarcode();
+        eventBanle.loadAddTabOrderInvoice();
+        eventBanle.payment();
+        eventBanle.loadEventAddCustomer();
+        eventBanle.loadeventClickBarcode();
+        eventBanle.loadeventclickdiscount();//sự kiện click vào đơn giá
+        //eventBanle.loadEventRemoveTaborder($(".action-inv"),false)
+        ////
+        document.addEventListener('DOMContentLoaded', function () {
+
+        });
+
+
+    </script>
+    @await Component.InvokeAsync("Notyf")
+</body>
+</html>

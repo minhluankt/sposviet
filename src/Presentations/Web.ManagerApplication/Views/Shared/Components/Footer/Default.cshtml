@@ -1,0 +1,81 @@
+﻿@using Web.ManagerApplication.Views.Shared.Components.Culture;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Web.ManagerApplication.Views.Shared.Components.FormSendMail
+@inject IHtmlLocalizer<SharedResource> localizer
+@model Domain.Entities.CompanyAdminInfo
+
+<footer>
+    <div class="container-5 container">
+   
+        <div class="col-row">
+                  @(await Component.InvokeAsync<FormSendMailViewComponent>())
+            <div class="col-md-4">
+                <div class="col-row">
+                    <h3 class="infocom">@localizer["Contactinformation"]</h3>
+                    <ul class="litsinfo">
+                        @if (Model != null)
+                        {
+                            <li style="font-weight:bold"><i class="far fa-building"></i> @Model.Name</li>
+                            <li><i class="fas fa-map-marker-alt" style=""></i> @localizer["Address"]: @Model.Address</li>
+                            <li><i class="fas fa-phone-alt"></i> @localizer["phone"]: @Model.PhoneNumber</li>
+                            <li><i class="far fa-envelope"></i> Email: @Model.Email</li>
+                            <li><i class="fas fa-fax"></i> Fax: @Model.FaxNumber</li>   
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4 col-footer">
+                <h3 class="title">Chính sách</h3>
+                <ul>
+                    <li>
+                        <a href="">Hướng dẫn mua hàng</a>
+                    </li>
+                    <li>
+                        <a href="">
+                            Điều kiện giao dịch chung
+                        </a>
+                    </li>
+                    <li>
+                        <a href="">
+                            Phương thức thanh toán
+                        </a>
+                    </li>
+                    <li>
+                        <a href="">
+                            Chính sách bảo mật
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4 col-footer">
+                <h3 class="title">Kênh truyền thông</h3>
+                <div class="list-img">
+                    <img src="~/images/icon/Social Icons.png" />
+                    <img src="~/images/icon/Social Icons (1).png" />
+                    <img src="~/images/icon/Social Icons (2).png" />
+                </div>
+                <div>
+                    <img src="~/images/image 117.png" />
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+<div class="menu-mobi">
+    <ul>
+        <li><a href="/"><div><span class="icon-home icon-cd"></span> Trang chủ</div></a></li>
+        <li><div class="menu-category"><span class="icon-category icon-cd"></span> Danh mục</div></li>
+        <li><div class="menu-alert"><span class="icon-notif icon-cd"></span> Thông báo</div></li>
+        <li><div class="menu-reviewold"><span class="icon-view_black icon-cd"></span> Đã xem</div></li>
+@*        <li><a href="/quan-ly-tin-dang"><div><span class="icon-create icon-cd"></span> Đăng tin</div></a></li>*@
+@*        <li><div class="menu-infouser"><span class="icon-user icon-cd"></span> Cá nhân</div></li>*@
+    </ul>
+</div>
+
+<div class="d-none">
+    <span id="errrequired">@localizer["errrequired"]</span>
+    <span id="emailformat">@localizer["EmailFormat"]</span>
+</div>

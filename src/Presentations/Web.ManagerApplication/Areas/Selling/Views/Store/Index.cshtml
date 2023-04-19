@@ -1,0 +1,63 @@
+﻿@using Domain.Entities
+@model CompanyAdminInfo
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/selling/restaurantsetting">< Trở lại thiết lập nhà hàng</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cấu hình thông tin của hàng</li>
+    </ol>
+</nav>
+
+<div class="col-md-6 mr-auto">
+    <form asp-controller="Store" id="submitstort" asp-action="Index" method="post">
+        @Html.HiddenFor(x=>x.Id)
+    <div class="card">
+        <div class="card-header">
+            <h5>Thông tin của hàng</h5>
+        </div>
+        <div class="card-body">
+            <div class="formAddSupplierEInvoice">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Tên của hàng</label>
+                    <input type="text" class="form-control" asp-for="Name" placeholder="Tên cửa hàng">
+                </div>
+                 <div class="form-group">
+                    <label for="exampleInputEmail1">Tên hiển thị <small>(Hiển thị lên bill thanh toán)</small></label>
+                        <input type="text" class="form-control" asp-for="Title" placeholder="Tên hiển thị">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Số điện thoại</label>
+                        <input type="text" readonly class="form-control" asp-for="PhoneNumber" placeholder="SĐT">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Địa chỉ</label>
+                    <input type="text" class="form-control" asp-for="Address" placeholder="Địa chỉ">
+                </div>
+                 <div class="form-group">
+                    <label for="exampleInputPassword1">Email</label>
+                    <input type="text" class="form-control" asp-for="Email" placeholder="Địa chỉ">
+                </div>  
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Mã số thuế</label>
+                        <input type="text" readonly class="form-control" asp-for="CusTaxCode" placeholder="Mã số thuế">
+                </div>
+                 <div class="form-group">
+                    <label for="exampleInputPassword1">Ngày hết hạn</label>
+                    <input type="date" readonly class="form-control" asp-for="DateExpiration">
+                </div>
+            </div>
+        </div> 
+        <div class="card-footer text-center">
+                <buton type="submit" id="btnsavestort" class="btn btn-success">Lưu thông tin</buton>
+        </div>
+    </div>
+    </form>
+</div>
+@section Scripts
+{
+<script>
+    $(document).on("click", '#btnsavestort', function (event) {
+        $(this).parents("form").submit();
+    });
+</script>
+}

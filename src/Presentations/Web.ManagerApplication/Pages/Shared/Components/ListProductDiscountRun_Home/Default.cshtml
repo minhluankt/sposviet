@@ -1,0 +1,225 @@
+﻿@using SystemVariable
+@using Application.Constants
+@model Web.ManagerApplication.Models.HomeViewModel
+
+@{
+    double totalsecounds = 0;
+}
+
+@if (Model.Products.Count() > 0)
+{
+
+    TimeSpan time;
+    if (DateTime.Now > Model.PromotionRun.StartDate)
+    {
+        time = Model.PromotionRun.EndDate.Subtract(DateTime.Now);
+    }
+    else
+    {
+        time = Model.PromotionRun.EndDate.Subtract(Model.PromotionRun.StartDate);
+    }
+    totalsecounds = time.TotalSeconds;
+
+    <section class="section-item-Product-RunPromotion">
+        <div class="container pr-lg-0 pl-lg-0">
+
+            <div class="index-block-product">
+                <div class="header-run">
+                    <h2>Giảm sốc <img src="~/icon/dealFlashIcon.svg" class="flash" /></h2>
+                    <div class="time-run">
+                        <span>Kết thúc sau</span>
+                        <ul class="countdown">
+                            <li><span id="hours"></span>Giờ</li>
+                            <li><span id="minutes"></span>Phút</li>
+                            <li><span id="seconds"></span>Giây</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="block-product">
+                    <div class="col-row">
+                        @foreach (var product in Model.Products)
+                        {
+                            <div class="col-product col-item">
+                                <div class="body">
+                                    <div class="product_thumb">
+                                        <a href="/@(product.Slug)">
+                                            <img src="~/@product.Img" />
+                                        </a>
+                                        @if ((product.DiscountRun > 0 && product.isRunPromotion))
+                                        {
+                                            <div class="label_product">
+                                                <span class="label_sale"> @(product.DiscountRun)% </span>
+                                            </div>
+                                        }
+                                        <div class="item-addcart">
+                                            <a href="javascript:void(0)" class="add-to-cart" data-name="@product.Name" data-id="@(product.Id)">
+                                                <i class="fas fa-cart-arrow-down"></i>
+                                                <span>Thêm vào giỏ</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="product_content">
+                                        <a class="product_name" href="/@(product.Slug)" title="@(product.Name)" tabindex="0"> @(product.Name)</a>
+                                        <div style="display: flex;" class="star"><div style="position: relative;"><div style="display: flex; align-items: center;"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg></div><div style="width: 96%; white-space: nowrap; position: absolute; left: 0px; top: -2px; overflow: hidden;"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg></div></div></div>
+                                        <div class="price-container">
+
+                                            @if (product.isRunPromotion)
+                                            {
+                                                <span class="current_price">@(product.PriceDiscountRun>0?product.PriceDiscountRun.ToString("N0"):(product.Price-Convert.ToDecimal((product.DiscountRun /100)) * product.Price).ToString("N0"))₫</span>
+
+                                                <span class="old_price">@(product.Price.ToString("N0"))₫</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="current_price">@(product.Price.ToString("N0"))₫</span>
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+}
+@if (Model != null && Model.ProductSell.Count() > 0)
+{
+
+
+    <section class="section-item-Product-Promotion">
+        <div class="container pr-lg-0 pl-lg-0">
+
+            <div class="index-block-product" style="background-color:@(Model.SellModelSetting.Color)">
+                <div class="header-run">
+                    @if (Model.SellModelSetting.ShowTitle)
+                    {
+                        <h2 style="color:@(Model.SellModelSetting.ColorTitle)">Sản phẩm khuyến mãi</h2>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.SellModelSetting.ImgSell))
+                    {
+                        <img class="img-sell" src="/@Model.SellModelSetting.ImgSell" />
+                    }
+                </div>
+                <div class="block-product">
+                    @*<div class="col-row product-slide">*@
+                    <div class="product-slide">
+                        @foreach (var product in Model.ProductSell)
+                        {
+                            decimal price = product.Price;
+                            bool discountrate = false;
+                            bool isPromotion = false;
+                            @* if (product.isRunPromotion)
+                                {
+                                if (product.PriceDiscountRun > 0)
+                                {
+                                price = product.PriceDiscountRun;
+                                }
+                                else if (product.DiscountRun > 0)
+                                {
+                                price = product.Price - ((decimal)(product.DiscountRun / 100) * product.Price);
+                                }
+                                }
+                                else*@
+                            if (product.isPromotion && product.ExpirationDateDiscount != null)
+                            {
+                                if (product.ExpirationDateDiscount.Value >= DateTime.Now)
+                                {   // tức là còn hạn mới áp dụng
+                                    isPromotion = true;
+                                    if (product.PriceDiscount > 0)
+                                    {
+                                        price = product.PriceDiscount;
+                                    }
+                                    else if (product.Discount > 0)
+                                    {
+                                        discountrate = true;
+                                        price = product.Price - ((decimal)(product.Discount / 100) * product.Price);
+                                    }
+                                }
+                            }
+
+                            <div class="col-product col-item">
+                                <div class="body">
+                                    <div class="product_thumb">
+                                        <a href="/@(product.Slug)">
+                                            <img src="~/@product.Img" />
+                                        </a>
+                                        @if (discountrate && product.isPromotion)
+                                        {
+                                            <div class="label_product">
+                                                <span class="label_sale"> @(product.Discount)% </span>
+                                            </div>
+                                        }
+                                        <div class="item-addcart">
+                                            <a href="javascript:void(0)" class="add-to-cart" data-id="@(product.Id)"
+                                       data-name="@product.Name" data-price="@price.ToString("N0")" data-img="/@product.Img">
+                                                <i class="fas fa-cart-arrow-down"></i>
+                                                <span>Thêm vào giỏ</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="product_content">
+                                        <a class="product_name" href="/@(product.Slug)" title="@(product.Name)" tabindex="0"> @(product.Name)</a>
+                                        <div style="display: flex;" class="star"><div style="position: relative;"><div style="display: flex; align-items: center;"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg></div><div style="width: 96%; white-space: nowrap; position: absolute; left: 0px; top: -2px; overflow: hidden;"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg></div></div></div>
+                                        <div class="price-container">
+
+                                            @if (isPromotion)
+                                            {
+                                                <span class="current_price">@(price.ToString("N0"))₫</span>
+
+                                                <span class="old_price">@(product.Price.ToString("N0"))₫</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="current_price">@(product.Price.ToString("N0"))₫</span>
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <a href="/@(Model.SellModelSetting.UrlSell)" class="btn btn-more">Xem tất cả</a>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+}
+<script>
+    var timese = @(totalsecounds.ToString().Replace(",","."));
+    function secondsTohms(seconds) {
+        seconds = Number(seconds);
+        var h = Math.floor(seconds / 3600);
+        var m = Math.floor(seconds % 3600 / 60);
+        var s = Math.floor(seconds % 60);
+
+        var hDisplay = h > 0 ? h.toString().padStart(2, '0') + "|" : "00|";
+        var mDisplay = m > 0 ? m.toString().padStart(2, '0') + "|" : "00|";
+        var sDisplay = s > 0 ? s.toString().padStart(2, '0') + "" : "00";
+        return hDisplay + mDisplay + sDisplay;
+    }
+    if(parseInt(timese.toString()) > 0){
+         setInterval(function time(){
+            let text = secondsTohms(parseInt(timese.toString()));
+            timese=parseInt(timese)-1;
+            let arr = text.split("|");
+            $("#hours").html(arr[0]);
+            $("#minutes").html(arr[1]);
+            $("#seconds").html(arr[2]);
+        }, 1000);
+    }
+
+</script>

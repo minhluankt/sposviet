@@ -1,0 +1,160 @@
+﻿@using Application.DTOs.Logs;
+@model IPagedList<AuditLogByUser>
+@*import this so we get our HTML Helper*@
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@using X.PagedList.Web.Common;
+
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+    var FromDate = Context.Request.Query["FromDate"].ToString();
+    var ToDate = Context.Request.Query["ToDate"].ToString();
+    var textSearch = Context.Request.Query["textSearch"].ToString();
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="card mb-2">
+    <form class="/admin/log/historyoperation" method="get">
+        <div class="card-body">
+
+            <input type="hidden" name="pageSize" value="@Model.PageSize" />
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="">
+                        <label>Người dùng</label>
+                        <select class="form-control" style="width: 100%;" name="userId" aria-hidden="true" id="listUserselect2">
+                   
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label>Từ ngày</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend datepicker-trigger">
+                            <div class="input-group-text">
+                                <i class="fa fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                        <input type="text" autocomplete="off" placeholder="Từ ngày" name="FromDate" value="@FromDate" class="form-control fc-datepicker">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label>Đến ngày</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend datepicker-trigger">
+                            <div class="input-group-text">
+                                <i class="fa fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                        <input type="text" autocomplete="off" name="ToDate" placeholder="Đến ngày" value="@ToDate" class="form-control fc-datepicker">
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <label>Nhập nội dung cần tìm</label>
+                    <input type="text" name="textSearch" placeholder="Nội dung tìm kiếm......" value="@textSearch" class="form-control">
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer text-center" style="display:inherit">
+            <button class="ladda-button btn btn-primary" data-style="expand-left">
+                <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+
+                <span class="ladda-spinner"></span>
+            </button>
+
+        </div>
+    </form>
+</div>
+
+<div class="card">
+
+    <div id="viewAll" class="card-body">
+
+
+        <table class="table table-bordered table-striped table-log" style=" ">
+            <thead>
+                <tr>
+                    <th>UserId</th>
+                    <th>Type</th>
+                    <th>Thời gian</th>
+                    <th>Table</th>
+                    <th>Giá trị cũ</th>
+                    <th>Giá trị mới</th>
+                    <th>Columns thay đổi</th>
+              
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var name in Model)
+                {
+                    <tr>
+                        <td>@(!string.IsNullOrEmpty(name.FullName)? name.FullName: string.Format("{0} {1}", name.FirstName,name.LastName))</td>
+                        <td>@name.Type</td>
+                        <td>
+                            @{
+                                DateTime runtimeKnowsThisIsUtc = DateTime.SpecifyKind(name.DateTime, DateTimeKind.Utc);
+                                DateTime localVersion = runtimeKnowsThisIsUtc.ToLocalTime();
+                            }
+                            @localVersion.ToString("dd/MM/yyyy HH:mm:ss")
+                            @*  @name.DateTime.ToString("dd/MM/yyyy HH:mm:ss")*@
+                        </td>
+                        <td>@name.TableName</td>
+                        <td>@name.OldValues</td>
+                        <td>@name.NewValues</td>
+                        <td>@name.AffectedColumns</td>
+                        @*<td>@name.PrimaryKey</td>*@
+                        <td></td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+
+
+    </div>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+
+                Hiển thị @Model.FirstItemOnPage  đến @Model.LastItemOnPage dòng
+                của tổng số @Model.TotalItemCount dòng ( trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount)
+            </div>
+            <div class="col-md-6">
+                @Html.PagedListPager(Model, page => Url.Action("Historyoperation", new { page, pageSize = Model.PageSize, userId = userId, FromDate = FromDate, ToDate = ToDate }),
+                PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+                {
+                MaximumPageNumbersToDisplay = 10,
+                DisplayPageCountAndCurrentLocation = false,
+                UlElementClasses = new[] { "pagination" },
+                DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                LinkToFirstPageFormat = "«",
+                LinkToLastPageFormat = "»",
+                LiElementClasses = new[] { "page-item" },
+                HtmlEncoder = System.Text.Encodings.Web.HtmlEncoder.Default,
+                EllipsesFormat = "&#8230;",
+                PageClasses = new[] { "page-link" },
+                ContainerDivClasses = new[] { "pagination-container" }
+                },
+                new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "nameListContainer" }))
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+
+<script>
+    $(document).ready(function () {
+
+        loaddataSelect2("/admin/users/getSelect2","#listUserselect2","@userId");
+    });
+</script>
+}

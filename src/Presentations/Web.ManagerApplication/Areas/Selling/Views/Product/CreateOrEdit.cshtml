@@ -1,0 +1,570 @@
+﻿@using Model
+@using Application.Hepers;
+@model ProductModelView
+@{
+    var user = User.Identity.GetUserClaimLogin();
+    bool textclassrunsell = true;
+    bool textclasssell = true;
+    if (Model.isRunPromotion)
+    {
+        textclassrunsell = false;
+    }
+    if (Model.isPromotion)
+    {
+        textclasssell = false;
+    }
+
+}
+<link href="@Url.Content("~/summernote/summernote-bs4.min.css")" rel="stylesheet">
+<link href="~/lib/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
+<link href="~/lib/jquery.filer/css/jquery.filer.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/lib/elFinder/css/elfinder.full.min.css" />
+<link rel="stylesheet" href="~/lib/elFinder/css/theme.min.css" />
+<link rel="stylesheet" href="~/lib/elFinder/Material/theme-gray.css" />
+<div id="parentautocomplete" class="list-proauto"></div>
+<style>
+    div#parentautocomplete .ui-autocomplete {
+        max-height: 500px;
+    }
+
+    .file-upload {
+        background-color: #ffffff;
+        width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .file-upload-btn {
+        width: 100%;
+        margin: 0;
+        color: #fff;
+        background: #1FB264;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        border-bottom: 4px solid #15824B;
+        transition: all .2s ease;
+        outline: none;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+        .file-upload-btn:hover {
+            background: #1AA059;
+            color: #ffffff;
+            transition: all .2s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-btn:active {
+            border: 0;
+            transition: all .2s ease;
+        }
+
+    .file-upload-content {
+        display: none;
+        text-align: center;
+    }
+
+    .file-upload-input {
+        position: absolute;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        outline: none;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .image-upload-wrap {
+        margin-top: 0px;
+        border: 2px dashed #C8CBCE;
+        position: relative;
+        background: #F9FBFE;
+    }
+
+        .image-dropping,
+        .image-upload-wrap:hover {
+            background: #F9FBFE;
+            border: 2px dashed #C8CBCE;
+        }
+
+    .image-title-wrap {
+        padding: 0 15px 15px 15px;
+        color: #222;
+    }
+
+    .image-dropping h3, .image-upload-wrap:hover h3 {
+        color: #000;
+    }
+
+    .drag-text {
+        text-align: center;
+    }
+
+        .drag-text h3 {
+            font-weight: 100;
+            text-transform: uppercase;
+            color: #15824B;
+            padding: 60px 0;
+        }
+
+    .file-upload-image {
+        max-height: 200px;
+        max-width: 200px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .remove-image {
+        width: 200px;
+        margin: 0;
+        color: #fff;
+        background: #cd4535;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        border-bottom: 4px solid #b02818;
+        transition: all .2s ease;
+        outline: none;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+        .remove-image:hover {
+            background: #c13b2a;
+            color: #ffffff;
+            transition: all .2s ease;
+            cursor: pointer;
+        }
+
+        .remove-image:active {
+            border: 0;
+            transition: all .2s ease;
+        }
+</style>
+<form asp-area="Selling" id="create-formProduct" asp-controller="Product" onsubmit="return AddProduct(this)" asp-action="OnPostCreateOrEdit">
+    @Html.HiddenFor(x=>x.Id)
+    @Html.HiddenFor(x=>x.TypeProductCategory)
+    <input type="hidden" name="JsonTableByStylePro" id="JsonTableByStylePro" />
+    <input type="hidden" name="JsonListStylePro" id="JsonListStylePro" />
+    <input type="hidden" name="JsonListComboProduct" id="JsonListComboProduct" />
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="mb-3">
+                    <div class="card-header " style="border-bottom:none">
+                        <h5 class="font-weight-bold mt-0 mb-0"><i class="fas fa-edit"></i> Cập nhật sản phẩm</h5>
+                        <div class="btn-actions-pane-right">
+                            <div class="nav">
+                                <a data-toggle="tab" href="#tab-eg2-0" class="btn-pill btn-wide active btn btn-outline-primary btn-sm">Thông tin chung</a>
+                                <a data-toggle="tab" href="#tab-eg2-1" class="btn-pill btn-wide mr-1 ml-1  btn btn-outline-primary btn-sm" id="tab-img">Mô tả sản phẩm</a>
+                                @if (Model.TypeProductCategory == Application.Enums.EnumTypeProductCategory.COMBO)
+                                {
+                                    <a data-toggle="tab" href="#tab-eg2-2" class="btn-pill btn-wide mr-1 ml-1  btn btn-outline-primary btn-sm">Thành phần combo</a>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-0 table-responsive bg-card-cust">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab-eg2-0" role="tabpanel">
+                                <div class="bg-white">
+                                    <div class="row m-0">
+
+                                        <div class="d-flex">
+                                            <div class="form-check pl-0">
+                                                <input type="checkbox" asp-for="DirectSales" class="checkboxcustom icheck" />
+                                                Bán trực tiếp tại cửa hàng
+                                            </div>
+                                            @if (Model.TypeProductCategory == Application.Enums.EnumTypeProductCategory.PRODUCT ||
+                                            Model.TypeProductCategory == Application.Enums.EnumTypeProductCategory.COOKING)
+                                            {
+                                                @if (user.IdDichVu == Application.Enums.EnumTypeProduct.AMTHUC)
+                                                {
+                                                    <div class="form-check ml-2">
+                                                        <input type="checkbox" asp-for="ExtraTopping" class="checkboxcustom icheck" />
+                                                        Là món thêm (Topping) <i class="fas fa-info" data-toggle="tooltip" data-placement="top"
+                                                                         title="Là sản phẩm có thể bán kèm cùng với sản phẩm khác.
+                                                                        Ví dụ hàng topping như lẩu thêm rau, trà sữa thêm trân châu, thạch,.."></i>
+                                                    </div>
+
+                                                }
+                                            }
+                                            else if (Model.TypeProductCategory == Application.Enums.EnumTypeProductCategory.SERVICE && user.IdDichVu == Application.Enums.EnumTypeProduct.AMTHUC)
+                                            {
+                                                <div class="form-check ml-2">
+                                                    <input type="checkbox" asp-for="IsServiceDate" class="checkboxcustom icheck" />
+                                                    Sản phẩm tính theo giờ
+                                                </div>
+                                            }
+
+                                            @if (Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.COMBO && Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.SERVICE)
+                                            {
+
+                                                <div class="form-check ml-2">
+                                                    <input type="checkbox" asp-for="IsInventory" class="checkboxIsInventory icheck" />
+                                                    Sản phẩm không quản lý tồn kho
+                                                </div>
+                                            }
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="bg-white">
+                                    <div class="row m-0">
+
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <label for="" asp-for="Name">Tên hàng hóa<span class="required">(*)</span></label>
+                                                <input type="text" asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" data-toggle="tooltip" data-placement="top"
+                                                       title="Tên hàng hóa là tên sản phẩm" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label for="" asp-for="Name">Mã hàng hóa<span class="required">(*)</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <div class="input-group-text" style="    padding: 0px 3px;">
+                                                            <label for="" asp-for="Code" class="col-form-label p-0"></label><span class="required">(*)</span>
+                                                        </div>
+                                                    </div>
+                                                    @if (Model.Id > 0)
+                                                    {
+                                                        <input asp-for="Code" placeholder="@Html.DisplayNameFor(m=>m.Code)" class="form-control">
+                                                    }
+                                                    else
+                                                    {
+                                                        <input asp-for="Code" placeholder="Mã hàng hóa tự sinh" data-toggle="tooltip" data-placement="top"
+                                                           title="Mã hàng hóa là mã sản phẩm duy nhất trên hệ thống" class="form-control code">
+
+                                                    }
+                                                    <span asp-validation-for="Code" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @if (user.IdDichVu == Application.Enums.EnumTypeProduct.AMTHUC)
+                                                        {
+                                                            <label for="" asp-for="idCategory">Thực đơn<span class="required">(*)</span></label>
+                                                        }
+                                                        else
+                                                            {
+                                                                <label for="" asp-for="idCategory">Danh mục hàng hóa<span class="required">(*)</span></label>
+                                                            }
+
+
+                                                        <select class="form-control select2_cre" name="idCategory" id="idCategory" style="width:100%">
+                                                            <opiton></opiton>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                @if (Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.COMBO)
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label for="" asp-for="_RetailPrice">Giá vốn</label>
+                                                            <input type="text" name="_RetailPrice" id="_RetailPrice" class="form-control number3 text-right" value='@Model._RetailPrice?.Replace(",",".")' placeholder="Nhập giá vốn" />
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="" asp-for="Name">Giá bán</label>
+                                                        <input type="text" name="_Price" class="form-control number3 text-right" asp-for="_Price" value='@Model._Price?.Replace(",",".")' id="_Price" placeholder="Nhập giá bán" />
+                                                    </div>
+                                                </div>
+                                                @if (Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.COMBO && Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.SERVICE)
+                                                {
+                                                    <div class='col-md-3'>
+                                                        <div class='form-group @(Model.IsInventory?"d-none":"")'>
+                                                            <label for="" asp-for="Name">Số lượng tồn</label>
+                                                            <input type="text" class="form-control number3 text-right" asp-for="_Quantity" value='@Model._Quantity?.Replace(",",".")'  id="Quantity" placeholder="Nhập số lượng" />
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (user.IdDichVu == Application.Enums.EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == Application.Enums.EnumTypeProduct.BAN_LE || user.IdDichVu == Application.Enums.EnumTypeProduct.VATLIEU_XAYDUNG)
+                                                {
+                                                     <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label for="" asp-for="Weight">Trọng lượng</label>
+                                                            <input type="text" name="Weight" class="form-control number3 text-right" asp-for="Weight" value='@Model.Weight.ToString().Replace(",","")' id="_Price" placeholder="Nhập trọng lượng" />
+                                                        </div>
+                                                    </div>
+                                                }
+                                               
+                                                  <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="" asp-for="IdUnit">Đơn vị tính</label>
+                                                        <select class="form-control select2_cre" name="IdUnit" id="IdUnit" style="width:100%">
+                                                            <opiton></opiton>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    @if (!string.IsNullOrEmpty(Model.Img))
+                                                    {
+                                                        @:<div class="image-upload-wrap" style="display:none">
+                                                    }
+                                                    else
+                                                    {
+                                                        @:<div class="image-upload-wrap">
+                                                    }
+
+                                                            <input class="file-upload-input" asp-for="ImgUpload" type='file' onchange="readURL(this);" accept="image/*" />
+                                                            <div class="drag-text">
+                                                                <h3>Kéo và thả hình ảnh vào đây hoặc kích vào đây để chọn</h3>
+                                                            </div>
+                                                        </div>
+                                                @if (!string.IsNullOrEmpty(Model.Img))
+                                                {
+                                                    @:<div class="file-upload-content" style="display:block">
+                                                                <img class="file-upload-image" data-id="1" src="data:image/*;base64,@Model.Img" alt="your image" />
+                                                }
+                                                else
+                                                {
+                                                    @:<div class="file-upload-content">
+                                                                    <img class="file-upload-image" data-id="0" src="#" alt="your image" />
+                                                }
+
+
+
+                                                                <div class="image-title-wrap">
+                                                                    <button type="button" onclick="removeUpload()" class="remove-image">Xóa file <span class="image-title">Uploaded Image</span></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="bg-white">
+                                            <div class="row m-0">
+                                                <div class="option-add w-100">
+                                                    <div class="pb-2">
+                                                        <div>
+                                                            <label for="" class="mb-0" asp-for="Packing">Sản phẩm này có các tùy chọn, như kích thước hoặc màu sắc.. <span class="required">(*)</span></label>
+                                                            <input class="icheck" asp-for="IsAddingOptions" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body p-0" id="add-option-body">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                @if (Model.TypeProductCategory == Application.Enums.EnumTypeProductCategory.COMBO)
+                                {
+                                        <div class="tab-pane bg-white p-3" id="tab-eg2-2" role="tabpanel">
+                                            <div class="form-group">
+                                                <label for="">Lựa chọn hàng hóa<span class="required">(*)</span></label>
+                                                <input type="text" name="search-product" data-toggle="tooltip" title="Tìm hàng hóa" class="form-control search-product" placeholder="Tìm hàng hóa (F2)">
+                                            </div>
+                                            <div class="">
+                                                <table class="table table-bordered table-combo">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th style="width: 50px;">STT</th>
+                                                            <th style="width: 112px;">Mã hàng hóa</th>
+                                                            <th style="width: 240px;">Tên hàng hóa</th>
+                                                            <th>Số lượng</th>
+                                                            <th>Giá vốn</th>
+                                                            <th>Giá bán</th>
+                                                            <th>Thành tiền</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                @{
+                                                    int i = 1;
+                                                    decimal tiengiabans = 0;
+                                                        decimal tiengianhaps = 0;
+                                                }
+                                                @if (Model.JsonListComboProductModel !=null)
+                                                {
+                                            @foreach (var item in Model.JsonListComboProductModel)
+                                            {
+                                                decimal tiengiaban = item.Quantity * item.Price;
+                                                decimal tiengianhap = item.Quantity * item.RetailPrice;
+                                                tiengiabans+=tiengiaban;
+                                                tiengianhaps += tiengianhap;
+                                                <tr>
+                                                                    <td><i class="fas fa-trash fa-remove"></i></td>
+                                                                    <td>@(i++)</td>
+                                                                    <td class="code" data-idpro="@item.IdPro" data-id="@item.Id">@item.Code</td>
+                                                                    <td class="name" data-name="@item.Name">@item.Name</td>
+                                                                    <td style="width: 175px;">
+                                                                        <div class="input-group">
+                                                                            <div class="input-group-prepend">
+                                                                                <span class="input-group-text minus-quantity" id="basic-addon1"><i class="fas fa-minus"></i></span>
+                                                                            </div>
+                                                                            <input type="text" class="form-control number3 text-center quantity" data-quantity="@item.Quantity.ToString().Replace(",",".")" placeholder="Nhập số lượng" value="@item.Quantity.ToString().Replace(",",".")">
+                                                                            <div class="input-group-prepend">
+                                                                                <span class="input-group-text add-quantity" id="basic-addon1"><i class="fas fa-plus"></i></span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class=""><input type="text" readonly disabled class="text-right form-control number3 retailPrice" data-retailPrice="@item.RetailPrice.ToString().Replace(",",".")" value="@item.RetailPrice.ToString().Replace(",",".")" /></td>
+                                                                    <td class=""><input type="text" readonly disabled class="text-right form-control number3 price" data-price="@item.Price.ToString().Replace(",",".")" value="@item.Price.ToString().Replace(",",".")" /></td>
+                                                                    <td class=""><input type="text" readonly disabled class="text-right number3 form-control amount" data-amount="@tiengiaban.ToString().Replace(",",".")" value="@tiengianhap.ToString().Replace(",",".")" /></td>
+                                                                </tr>
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                                            <tr class="nodata">
+                                                                <td colspan="7">Chưa có hàng hoá nào</td>
+                                                            </tr>
+                                        }
+
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td class="text-right" colspan="7">Tổng giá vốn</td>
+                                                            <td class="text-right"><b id="giavon" class="number3">@tiengianhaps</b></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-right" colspan="7">Tổng giá bán</td>
+                                                            <td class="text-right"><b id="giaban" class="number3">@tiengiabans</b></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+
+                                            </div>
+                                        </div>
+                    }
+                    @if (Model.TypeProductCategory == Application.Enums.EnumTypeProductCategory.SERVICE)
+                    {
+                                        <div class="tab-pane bg-white p-3" id="tab-eg2-2" role="tabpanel">
+                                            <div class="form-group">
+                                                <label for="">Lựa chọn hàng hóa<span class="required">(*)</span></label>
+                                                <input type="text" name="search-product" data-toggle="tooltip" title="Tìm hàng hóa" class="form-control search-product" placeholder="Tìm hàng hóa (F2)">
+                                            </div>
+                                            <div class="">
+                                                <table class="table table-bordered table-combo">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th style="width: 50px;">STT</th>
+                                                            <th style="width: 112px;">Mã hàng hóa</th>
+                                                            <th style="width: 240px;">Tên hàng hóa</th>
+                                                            <th>Giá vốn</th>
+                                                            <th>Giá bán</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                        @{
+                                            int i = 1;
+                                            decimal tiengiabans = 0;
+                                            decimal tiengianhaps = 0;
+                                        }
+                                        @if (Model.JsonListExtraToppingProductModel != null)
+                                        {
+                                            @foreach (var item in Model.JsonListExtraToppingProductModel)
+                                            {
+                                                decimal tiengiaban = item.Quantity * item.Price;
+                                                decimal tiengianhap = item.Quantity * item.RetailPrice;
+                                                tiengiabans += tiengiaban;
+                                                tiengianhaps += tiengianhap;
+                                                                <tr>
+                                                                    <td><i class="fas fa-trash fa-remove"></i></td>
+                                                                    <td>@(i++)</td>
+                                                                    <td class="code" data-idpro="@item.IdPro" data-id="@item.Id">@item.Code</td>
+                                                                    <td class="name" data-name="@item.Name">@item.Name</td>
+                                                                    <td class=""><input type="text" readonly disabled class="text-right form-control number3 retailPrice" data-retailPrice="@item.RetailPrice.ToString().Replace(",",".")" value="@item.RetailPrice.ToString().Replace(",",".")" /></td>
+                                                                    <td class=""><input type="text" readonly disabled class="text-right form-control number3 price" data-price="@item.Price.ToString().Replace(",",".")" value="@item.Price.ToString().Replace(",",".")" /></td>
+
+                                                                </tr>
+                                            }
+
+                                                        }
+                                                        else
+                                                        {
+                                                          <tr class="nodata">
+                                                                                <td colspan="6">Chưa có hàng hoá nào</td>
+                                                                            </tr>                 
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+                                        </div>
+                    }
+
+                                    <div class="tab-pane" id="tab-eg2-1" role="tabpanel" style="    padding: 10px 15px;">
+                                        <div class="form-group">
+                                            <label for="" asp-for="Description">Mô tả sản phẩm</label>
+                                            <textarea asp-for="Description" class="ckeditor" placeholder="Nội dung"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+            @* <div class="card-footer">
+                            <button class="ladda-button btn btn-success" data-style="expand-left">
+                            <span class="ladda-label"><i class="fas fa-check"></i> Lưu</span>
+                            <span class="ladda-spinner"></span>
+                            </button>
+                            </div>*@
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('.image-upload-wrap').hide();
+
+                $('.file-upload-image').attr('src', e.target.result);
+                $('.file-upload-content').show();
+
+                $('.image-title').html(input.files[0].name);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+
+        } else {
+            removeUpload();
+        }
+    }
+
+    function removeUpload() {
+        $('.file-upload-input').replaceWith($('.file-upload-input').clone());
+        $('.file-upload-content').hide();
+        $('.image-upload-wrap').show();
+    }
+    $('.image-upload-wrap').bind('dragover', function () {
+        $('.image-upload-wrap').addClass('image-dropping');
+    });
+    $('.image-upload-wrap').bind('dragleave', function () {
+        $('.image-upload-wrap').removeClass('image-dropping');
+    });
+</script>
+
+

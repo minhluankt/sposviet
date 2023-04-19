@@ -1,0 +1,156 @@
+﻿@using Model
+@model IEnumerable<UserViewModel>
+<table class="table table-striped table-bordered" id="userTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(modelItem => modelItem.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(modelItem => modelItem.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(modelItem => modelItem.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(modelItem => modelItem.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(modelItem => modelItem.CreatedOn)
+            </th>
+            <th style="width:100px">
+                Công cụ
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    <div class="row">
+                        @if (@user.ProfilePicture != null && user.ProfilePicture.Length > 0)
+                        {
+                            <div class="col-sm" style=" max-width: 80px;margin-right: 20px;">
+                                <img class="img-profile rounded-circle" style="height:50px;width:50px;object-fit: cover;" src="data:image/*;base64,@(Convert.ToBase64String(@user.ProfilePicture))">
+                            </div>
+                        }
+                        else
+
+                        {
+                            <div class="col-sm" style="max-width:80px; margin-right: 20px;">
+                                <img class="img-profile rounded-circle" style="height: 50px; width: 50px; object-fit: cover;" src="~/images/default-user.png">
+                            </div>
+                        }
+                        <div class="col-sm">
+                            <a>
+                                @if (!string.IsNullOrEmpty(user.FullName))
+                                {
+                                    @user.FullName
+                                }
+                                else
+                                {
+                                    @user.FirstName
+                                    @user.LastName
+                                }
+
+                            </a>
+                            <br>
+                            <small>
+                                @user.Id
+                            </small>
+                        </div>
+                    </div>
+                </td>
+                <td>@user.UserName </td>
+                <td>
+                    <a>
+                        @user.Email
+                    </a>
+                    <br>
+                    <small>
+                        @if (user.EmailConfirmed)
+                        {
+                            <span class="badge badge-success">@localizer["Email Confirmed"]</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger">@localizer["Email Not Confirmed"]</span>
+                        }
+                    </small>
+                </td>
+                <td class="text-center">
+                    @if (user.IsActive)
+                    {
+                        <span class="badge badge-success">Kích hoạt</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger">Chưa kích hoạt</span>
+                    }
+                </td>
+                <td class="text-center">
+                    @user.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss")
+                </td>
+                <td class="text-center">
+                    <div class="btn-group btn_table dropleft">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu shadow animated--grow-in ">
+                            <a style='margin-right:16px' asp-area="Identity" asp-page="/Profile" asp-route-userId="@user.Id" class="dropdown-item">
+                                <i class="fas fa-user mr-2"></i> @localizer["Profile"]
+                            </a>
+                            <a style='margin-right:16px' onclick="jQueryModalGet('/Selling/users/Edit?id=@user.Id','Chỉnh sửa')" class="dropdown-item">
+                                <i class="fas fa-edit mr-2"></i> @localizer["Edit"]
+                            </a>
+                            @if (user.UserName.ToLower().Trim() != "superadmin" && User.IsInRole("SuperAdmin") && user.UserName.ToLower().Trim() != User.Identity.Name)
+                            {
+                                if (user.IsActive)
+                                {
+                                    if (user.LockoutForever)
+                                    {
+
+                                        <form id="form_lock_@user.Id" asp-controller="Users" method="post" asp-action="LockAccount" asp-route-userId="@user.Id" class="d-inline">
+                                            <input type="hidden" name="lockacc" value="0" />
+                                            <a class="dropdown-item" onclick="return confirmcustom(this,'Bạn có chắc chắn muốn khóa tài khoản không!')"><i class="fas fa-lock-open mr-2"></i> Mở khóa tài khoản</a>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form id="form_lock_@user.Id" asp-controller="Users" method="post" asp-action="LockAccount" asp-route-userId="@user.Id" class="d-inline">
+                                            <input type="hidden" name="lockacc" value="1" />
+                                            <a class="dropdown-item" onclick="return confirmcustom(this,'Bạn có chắc chắn muốn khóa tài khoản không!')"><i class="fas fa-lock mr-2"></i> Khóa tài khoản</a>
+                                        </form>
+                                    }
+                                }
+                                else
+                                {
+                                    <form id="form_active_@user.Id" asp-controller="Users" method="post" asp-action="ActiveAccount" asp-route-userId="@user.Id" class="d-inline">
+
+                                        <a class="dropdown-item" onclick="return confirmcustom(this,'Bạn có chắc chắn muốn kích hoạt tài khoản không!')"><i class="far fa-check-circle mr-2"></i> Kích hoạt</a>
+                                    </form>
+                                }
+
+
+
+                                <form id="form_delete_@user.Id" asp-controller="Users" method="post" asp-action="OnPostDelete" asp-route-id="@user.Id" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+                                    <a href="javascript:$('#form_delete_@user.Id').submit();" class="dropdown-item"><i class="fas fa-trash-alt mr-2"></i> @localizer["Delete"]</a>
+                                </form>
+
+                                <a style='margin-right:16px' asp-controller="UserRole" asp-action="Index" asp-route-userId="@user.Id" class="dropdown-item">
+                                    <i class="fas fa-wrench mr-2"></i> @localizer["Manage Roles"]
+                                </a>
+                            }
+
+
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>    $(document).ready(function () {
+            $("#userTable").DataTable();
+        });</script>

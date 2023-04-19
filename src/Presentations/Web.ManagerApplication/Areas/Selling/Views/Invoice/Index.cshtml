@@ -1,0 +1,422 @@
+﻿@model Model.ProductSearch
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="">
+                    <label>Mã hóa đơn</label>
+                    <input type="text" name="Name" id="Name" placeholder="Mã hóa đơn......" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="">
+                    <label>Thời gian</label>
+                    <input type="text" id="rangesDate" name="rangesDate" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center" style=" display: block;">
+        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+</div>
+<div class="card">
+    <div class="col-sm-12 pt-2 list-action-card">
+        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-group mr-2 " role="group" aria-label="First group">
+                <button class="ladda-button mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                    <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Load lại dữ liệu</span>
+                    <span class="ladda-spinner"></span>
+                </button>
+            </div>
+            <div class="btn-group lstbtnaction" role="group" aria-label="Second group">
+                <div class="dropdowncusomer">
+                    <button type="button" disabled class="btn btn-success productaddbtn">Hóa đơn điện tử</button>
+                    <div class="dropdown-menu-custom lst-action-button lst-action-buttonpublishinvoice d-none" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item btn-publishinvoice" data-type="0" href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Ghi chú: lựa chọn hóa đơn để phát hành, mỗi hóa đơn bán hàng tương ứng một hóa đơn điện tử"><i class="fas fa-plus mr-2"></i> Phát hành hóa đơn điện tử</a>
+                        
+                        @*<a class="dropdown-item btn-createinvoice" data-type="1" href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Ghi chú: đồng bộ khi hóa đã đơn phát hành và gửi thuế nhưng chưa nhận được kết quả CQT"><i class="fas fa-plus mr-2"></i> Tạo mới hóa đơn điện tử</a>*@
+                    </div>
+                </div>
+                <button type="button" disabled class="btn btn-warning btn-cancelinvoice">Hủy hóa đơn</button>
+                
+            </div>
+        </div>
+        <div class="notecl">
+            <a href="#">Giải thích thuật ngữ</a>
+            <ul>
+                <li>
+                    <i class="fas fa-share checkinv mr-2"></i>
+                    <span>Hóa đơn này là hóa đơn đã bị gộp</span>
+                </li>
+                <li>
+                    <i class="fas fa-check-double checkinv mr-2"></i>
+                    <span>Hóa đơn đã phát hành hóa đơn điện tử</span>
+                </li>
+                <li>
+                    <i class="fas fa-ban checkinv mr-2"></i>
+                    <span>Hóa đơn có hóa đơn điện tử đã bị hủy</span>
+                </li> 
+                <li>
+                    <i class="fas fa-check-circle checkinv mr-2"></i>
+                    <span>Hóa đơn đã tạo mới hóa đơn điện tử</span>
+                </li> 
+                <li>
+                    <i class="fas fa-tasks checkinv mr-2"></i>
+                    <span>Hóa đơn mới được gộp từ các hóa đơn khác</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="viewAll" class="card-body">
+        <table class="table table-bordered table-striped" style=" " id="dataTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Mã hóa đơn</th>
+                    <th>Thời gian xuất</th>
+                    <th>Tên khách</th>
+                    <th>Khu vực</th>
+                    <th>Tổng tiền</th>
+                    <th>Giảm giá</th>
+                    <th>Khách trả</th>
+                    <th>Trạng thái</th>
+                    <th>Công cụ</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts
+    {
+    <script src="~/js/custom/sposvietkyso.min.js?time=123"></script>
+    <script>
+        $(document).ready(function () {
+            eventInvocie.loadEventMutiaction();
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var currentDate = date.getDate();
+            var currentYear = date.getFullYear();
+            $('#rangesDate').daterangepicker({
+                ranges: {
+                    'Hôm nay': [moment(), moment()],
+                    'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '7 Ngày trước': [moment().subtract(6, 'days'), moment()],
+                    '30 ngày trước': [moment().subtract(29, 'days'), moment()],
+                    'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                    'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                // startDate: moment(date).add(1, 'days'),
+                // endDate: moment(date).add(2, 'days'),
+                "locale": {
+                    "format": "DD/MM/YYYY",
+                    "separator": " - ",
+                    "applyLabel": "Chọn",
+                    "cancelLabel": "Hủy bỏ",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "CN",
+                        "T2",
+                        "T3",
+                        "T4",
+                        "T5",
+                        "T6",
+                        "T7"
+                    ],
+                    "monthNames": [
+                        "Tháng 1",
+                        "Tháng 2",
+                        "Tháng 3",
+                        "Tháng 4",
+                        "Tháng 5",
+                        "Tháng 6",
+                        "Tháng 7",
+                        "Tháng 8",
+                        "Tháng 9",
+                        "Tháng 10",
+                        "Tháng 11",
+                        "Tháng 12"
+                    ],
+                    "firstDay": 1
+                },
+                "linkedCalendars": false,
+                "alwaysShowCalendars": true,
+
+            }, function (start, end, label) {
+                console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+            });
+            // loaddataSelect2("/admin/users/getSelect2","#listUserselect2","@userId");
+        });
+
+        dataTableOut = $('#dataTable').DataTable({
+            "responsive": true,
+            "processing": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "filter": true,
+            "rowId": "id",
+            "orderMulti": false,
+            "start": 0,
+            "ordering": false,
+            // "order": [[0, "desc"]],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                "zeroRecords": "Không tìm thấy dữ liệu nào",
+                "emptyTable": "Không có dữ liệu",
+                "search": "Tìm kiếm:",
+                "processing": "Đang xử lý...",
+                "lengthMenu": "Hiển thị _MENU_ dòng",
+                "loadingRecords": "Vui lòng chờ...",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Tiếp theo",
+                    "previous": "Về trước"
+                },
+            },
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+            "buttons": [
+                {
+                    text: 'Reload',
+                    action: function (e, dt, node, config) {
+                        dataTableOut.ajax.reload();
+                    }
+                }
+            ],
+            "columnDefs": [
+                {
+                    'targets': 0,
+                    'checkboxes': {
+                        'selectRow': true
+                    }
+                },
+                {
+                    "targets": [  5,7,6], // your case first column
+                    "className": "text-right"
+                }, {
+                    "targets": [0, 1,2,8, -1], // your case first column
+                    "className": "text-center"
+                },
+                { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [-1, 0],
+                },
+                { "width": "100px", "targets": -1 }
+            ],
+            'select': {
+                'style': 'multi',
+                 selector: 'td:first-child'
+            },
+            ajax: {
+                url: "/Selling/Invoice/LoadAll",
+                type: "POST",
+                start: 0,
+                datatype: "json",
+                data:
+                {
+                    Code: function () { return $('#Name').val().trim() },
+                    RangesDate: function () {
+                        if ($('#rangesDate').val().trim() == "") {
+                            return moment(new Date()).format("DD/MM/YYYY") + "-" + moment(new Date()).format("DD/MM/YYYY");
+                        }
+                        return $('#rangesDate').val().trim()
+                    },
+                }
+            },
+            "columns": [
+                {
+                    "data": "id", "name": "Id", "autoWidth": true
+                },
+                {
+                    "data": "invoiceCode", "name": "InvoiceCode", "autoWidth": true
+                },
+                {
+                    "data": "createdOn", "name": "createdOn",
+                    "render": function (data, type, full, meta) {
+                        // console.log(full.id);
+                        if (full.createdOn != null) {
+                            data = moment(full.createdOn).format('DD/MM/YYYY HH:mm:ss');
+                            return data;
+                        }
+                        return "";
+                    }
+                },
+                {
+                    "data": "buyer", "name": "Buyer", "autoWidth": true,
+                     "render": function (data, type, full, meta) {
+                        if (full.cusName != null && full.cusName!="") {
+
+                            return full.cusName;
+                        }
+                        return full.buyer;
+                    }
+                },
+                {
+                    "data": "tableNameArea", "name": "TableNameArea", "autoWidth": true
+                },
+                {
+                    "data": "total", "name": "Total", "autoWidth": true,
+                    render: $.fn.dataTable.render.number('.', ',', 0)
+                },
+                {
+                    "data": "discountAmount", "name": "DiscountAmount", "autoWidth": true,
+                    render: $.fn.dataTable.render.number('.', ',', 0)
+                },
+                {
+                    "data": "amonut", "name": "Amonut", "autoWidth": true,
+                    render: $.fn.dataTable.render.number('.', ',', 0)
+                },
+                {
+                    "data": "status", "name": "Status", "autoWidth": true,
+                    "render": function (data, type, full, meta) {
+                        html="";
+                        switch (full.status) {
+                            case @((int)Application.Enums.EnumStatusInvoice.HUY_BO):
+                                html ='<span class="badge badge-danger"><i class="fas fa-ban"></i> Đã hủy</span>';
+                                break;
+                            case @((int)Application.Enums.EnumStatusInvoice.DA_THANH_TOAN):
+                                        html ='<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> Đã thanh toán</span>  ';
+                                break;
+                            default:
+                                return '';
+                        }
+                        if (full.statusPublishInvoiceOrder == @((int)Application.Enums.EnumStatusPublishInvoiceOrder.PUBLISH)) {
+                            html += '<i class="fas fa-check-double checkinv ml-2" data-toggle="tooltip" data-placement="top" title="Đã phát hành hóa đơn điện tử"></i>';
+                        }
+                        else if (full.statusPublishInvoiceOrder == @((int)Application.Enums.EnumStatusPublishInvoiceOrder.CREATE)) {
+                            html += '<i class="fas fa-check-circle checkinv ml-2" data-toggle="tooltip" data-placement="top" title="Đã tạo mới hóa đơn điện tử"></i>';
+                        }
+                        else if (full.statusPublishInvoiceOrder == @((int)Application.Enums.EnumStatusPublishInvoiceOrder.CANCEL)) {
+                            html += '<i class="fas fa-ban checkinv ml-2" data-toggle="tooltip" data-placement="top" title="Đã hủy hóa đơn điện tử"></i>';
+                        }
+                        if (full.invoiceCodePatern != null && full.invoiceCodePatern != "") {
+                            
+                            html += '<i class="fas fa-share checkinv ml-2" data-toggle="tooltip" data-placement="top" title="Đã xuất gộp, đơn mới là: '+full.invoiceCodePatern+'"></i>';
+                        }
+                        if (full.isMerge && (full.invoiceCodePatern == null || full.invoiceCodePatern == "")) {
+                            html += '<i class="fas fa-tasks checkinv ml-2" data-toggle="tooltip" data-placement="top" title="Hóa đơn mới được gộp từ các hóa đơn khác"></i>';
+                        }
+                        return html;
+                    }
+                },
+                {
+                    "data": null, "name": "",
+                    "render": function (data, type, full, meta) {
+                        
+                        let cancelhtml = ` <a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.CancelInvoice('` + full.secret + `',` + EnumTypeEventInvoice.Cancel + `)"><i class="fas fa-power-off mr-2"></i> Hủy hóa đơn</a>`;
+                        if (full.status == @((int)Application.Enums.EnumStatusInvoice.HUY_BO)) {
+                            cancelhtml = ` <a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.CancelInvoice('` + full.secret + `',` + EnumTypeEventInvoice.Restore + `)"><i class="fas fa-undo mr-2"></i>Khôi phục hóa đơn</a>`;
+                        }
+                        let xoaIsMerge = "";
+
+                        if (!full.isDeleteMerge && full.isMerge &&( full.invoiceCodePatern==null || full.invoiceCodePatern=="")) {
+                            xoaIsMerge = `<a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.DeleteIsMerge('` + full.secret + `')"><i class="fas fa-trash mr-2"></i></i>Xóa hóa đơn đã xuất gộp</a>`;
+                        }
+                        let htmleinvoice ="";
+                        if(full.statusPublishInvoiceOrder == @((int)Application.Enums.EnumStatusPublishInvoiceOrder.PUBLISH)){
+                         
+                            htmleinvoice =`<a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.viewInvoice('/Selling/EInvoice/ViewInvoice?secret=` + full.secretEinvoice + `')"><i class="fas fa-info-circle mr-2"></i> Xem hóa đơn điện tử</a>
+                                          <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.printInvoice('/Selling/EInvoice/PrintInvoice?secret=` + full.secretEinvoice + `')"><i class="fas fa-print mr-2"></i> In hóa đơn điện tử</a>`;
+                                        
+                        }
+                       let html = `
+                                    <div class="btn-group dropleft">
+                                       <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-vertical"></i> </button>
+                                       <div class="dropdown-menu">
+                                          <a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.viewInvoice('/Selling/Invoice/details?secret=` + full.secret + `')"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
+                                          <a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.printInvoice('/Selling/Invoice/PrintInvoice?secret=` + full.secret + `')"><i class="fas fa-print mr-2"></i> In hóa đơn</a>
+                                          `+ cancelhtml + `
+                                          `+ htmleinvoice + `
+                                          `+ xoaIsMerge + `
+                                       </div>
+                                    </div>
+                                    `;
+                        return html;
+                    }
+                },
+            ],
+            initComplete() {
+                $("#dataTable tbody").on("click", "td.dt-checkboxes-cell", function () {
+                    $(this).parent("tr").toggleClass("selected");
+                    let coutncheckbox = 0;
+                    $('#dataTable tbody tr').each(function () {
+                        if ($(this).hasClass("selected")) {
+                            coutncheckbox += 1;
+                            $(this).find("td:last-child").find(".dropleft").hide();
+                        } else {
+                            $(this).find("td:last-child").find(".dropleft").show();
+                        }
+
+                       
+                    });
+                    if (coutncheckbox > 0) {
+                        $(".lstbtnaction").find("button").removeAttr("disabled")
+                        $(".lst-action-button").removeClass("d-none");
+                    } else {
+                        $(".lstbtnaction").find("button").attr("disabled", "disabled")
+                        $(".lst-action-button").addClass("d-none");
+                    }
+                   
+                });
+
+                $("#dataTable").on('change', "input[type='checkbox']", function (e) {
+                    if (dataTableOut.column(0).checkboxes.selected().length > 0) {
+                        $(".lstbtnaction").find("button").removeAttr("disabled")
+                        $(".lst-action-button").removeClass("d-none");
+                    } else {
+                      $(".lstbtnaction").find("button").attr("disabled", "disabled");
+                        $(".lst-action-button").addClass("d-none");
+                    }
+                    $('#dataTable tbody tr').each(function () {
+                        let check = $(this).find("input[type='checkbox']");
+                        if (check.is(":checked")) {
+                            $(this).find("td:last-child").find(".dropleft").hide();
+                        } else {
+                            $(this).find("td:last-child").find(".dropleft").show();
+                        }
+                    });
+                });
+
+            }
+
+        });
+
+     
+        $('#reload').on('click', function () {
+            dataTableOut.ajax.reload(null, false);
+        }); $('input').keyup(function (e) {
+            if (e.keyCode == 13) {
+                dataTableOut.ajax.reload(null, false);
+            }
+        });
+    </script>
+}
+@*   //
+<form id="form_delete_`+ full.id + `" action="/Selling/Invoice/delete?secret=` + full.secret + `" asp-controller="Invoice" asp-area="Selling" method="post" asp-action="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+   // <a class="dropdown-item" href="javascript:$('#form_delete_`+ full.id + `').submit();">
+   //  <i class="fas fa-trash-alt mr-2"></i> Xóa
+   //
+   </a>
+   //
+</form>
+*@

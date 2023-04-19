@@ -1,0 +1,72 @@
+﻿@{
+    Layout = null;
+}
+<form id="create-form" method="post" asp-controller="CategorysPost" asp-action="OnPostCreateOrEdit" onsubmit="return jQueryModalPostCategory(this);">
+    <partial name="_ShareItem" />
+</form>
+<script>
+    $(document).ready(function () {
+        $("#btnCheck").click(function () {
+            $("#divPattern").toggleClass("d-none");
+        });
+        $("#IdPattern").select2({
+            placeholder: "Chọn chuyên mục cha",
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "Không tìm thấy dữ liệu";
+                }
+            },
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        jQueryModalPostCategory = form => {
+
+            try {
+                //for (instance in CKEDITOR.instances) {
+                //    CKEDITOR.instances[instance].updateElement();
+                //    $('#' + instance).val(CKEDITOR.instances[instance].getData());
+                //}
+                $.ajax({
+                    type: 'POST',
+                    url: form.action,
+                    data: new FormData(form),
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+
+                        if (res.isValid) {
+                            loadData()
+                            $('#form-modal').modal('hide');
+                            $('#myModalShowMess').modal('hide');
+                            $('#myModalShowMess').unbind();
+                            $('#myModalShowMess').remove();
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                })
+                return false;
+            } catch (ex) {
+                console.log(ex)
+            }
+        }
+        $("#btnCheck").click(function () {
+            $("#divPattern").toggleClass("d-none");
+        });
+        $("#IdPattern").select2({
+            placeholder: "Chọn chuyên mục cha",
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "Không tìm thấy dữ liệu";
+                }
+            },
+        });
+    });
+</script>

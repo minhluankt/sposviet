@@ -1,0 +1,57 @@
+﻿@model List<Domain.ViewModel.SupplierEInvoiceModel>
+<style>
+    .swal2-container {
+        z-index: 30 !important;
+    }
+</style>
+<div class="selectSupplerInoice">
+    @if (Model.Count()==0)
+    {
+        <h5> Bạn chưa cấu hình hóa đơn điện tử vui lòng cấu hình, kích vào -> <a href="/Selling/SupplierEInvoice">Tại đây</a> </h5>
+    }
+    else
+    {
+       
+        @foreach (var item in Model)
+        {
+            if (item.ManagerPatternEInvoices.Count()==0)
+            {
+                <h5> Bạn chưa cấu hình mẫu số ký hiệu vui lòng cấu hình, kích vào -> <a href="/Selling/SupplierEInvoice">Tại đây</a>, và chọn quản lý mẫu số ký hiệu</h5>
+            }
+            else
+            {
+                var selected = item.ManagerPatternEInvoices.FirstOrDefault(x=>x.Selected);
+                var selectList = new SelectList(
+                item.ManagerPatternEInvoices.Select(c => new SelectListItem() { Text = $"{c.Pattern} - {c.Serial}", Value = c.Id.ToString() }), "Value", "Text", selected.Id);
+                // var select2 = item.ManagerPatternEInvoices.Select(c => new SelectListItem() { Text = $"{c.Pattern} - {c.Serial}", Value = c.Id.ToString() })
+                        // .ToList();
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="~/images/VNPT_Logo.png" style="width:100px">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="mb-1">Mẫu số ký hiệu hóa đơn</label>
+                        @Html.DropDownList("ManagerPatternEInvoices", selectList,"", new { @class = "mb-3",style="width:100%" })
+                        @if (item.SaleRetail==0)
+                        {
+                            <label class="mb-1 mt-3">Thuế  suất GTGT</label>
+                            <select class="Vatrate" id="Vatrate" name="Vatrate" style="width:100%">
+                                <option></option>
+                                @*<option value="-2">Không kê khai nộp thuế</option>
+                                    <option value="-1">Không chịu thuế</option>*@
+                                <option value="0">0%</option>
+                                <option value="5">5%</option>
+                                <option value="8">8%</option>
+                                <option value="10" selected>10%</option>
+                            </select>
+                        }
+                        
+                    </div>
+                </div>
+
+            }
+            
+        }
+    }
+
+</div>

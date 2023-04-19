@@ -1,0 +1,138 @@
+﻿@model Domain.ViewModel.ReportPosModel
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="">
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="">
+                        <label for="">Loại báo cáo</label>
+                        @Html.DropDownList("TypeReport", (IEnumerable<SelectListItem>)ViewBag.SelectList,  new { @style = "width:100%" ,@class="SelectListIdType select2 form-control"} )
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="">
+                        <label>Thời gian</label>
+                        <input type="text" id="rangesDate" name="rangesDate" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="">
+                        <label style="height: 21.11px;display: block;"></label>
+                        <button type="button" class="btn-primary btn btn-report">Báo cáo</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div id="contentDatareport">
+       
+    </div>
+</div>
+
+
+
+@section Scripts
+    {
+    <script src="~/lib/highcharts/highcharts.js"></script>
+    <script src="~/lib/highcharts/exporting.js"></script>
+    <script src="~/lib/highcharts/export-data.js"></script>
+    <script src="~/lib/highcharts/accessibility.js"></script>
+    <script src="~/lib/datatables/js/jszip.min.js"></script>
+    <script src="~/lib/datatables/js/pdfmake.min.js"></script>
+    <script src="~/lib/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatables/js/vfs_fonts.js"></script>
+    <script src="~/js/custom/report.min.js?time=244542"></script>
+    <script>
+        report.getReportProduct();
+       
+        $(document).ready(function () {
+            $(".select2").select2({
+                placeholder: "Chọn loại báo cáo",
+                allowClear: true,
+                language: {
+                    noResults: function () {
+                        return "Không tìm thấy dữ liệu";
+                    }
+                }
+            });
+            $('.select2').val(null).trigger('change');
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var currentDate = date.getDate();
+            var currentYear = date.getFullYear();
+            $('#rangesDate').daterangepicker({
+                ranges: {
+                    'Hôm nay': [moment(), moment()],
+                    'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '7 Ngày trước': [moment().subtract(6, 'days'), moment()],
+                    '30 ngày trước': [moment().subtract(29, 'days'), moment()],
+                    'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                    'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                // startDate: moment(date).add(1, 'days'),
+                // endDate: moment(date).add(2, 'days'),
+                "locale": {
+                    "format": "DD/MM/YYYY",
+                    "separator": " - ",
+                    "applyLabel": "Chọn",
+                    "cancelLabel": "Hủy bỏ",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom",
+                    "weekLabel": "W",
+                    "daysOfWeek": [
+                        "CN",
+                        "T2",
+                        "T3",
+                        "T4",
+                        "T5",
+                        "T6",
+                        "T7"
+                    ],
+                    "monthNames": [
+                        "Tháng 1",
+                        "Tháng 2",
+                        "Tháng 3",
+                        "Tháng 4",
+                        "Tháng 5",
+                        "Tháng 6",
+                        "Tháng 7",
+                        "Tháng 8",
+                        "Tháng 9",
+                        "Tháng 10",
+                        "Tháng 11",
+                        "Tháng 12"
+                    ],
+                    "firstDay": 1
+                },
+                "linkedCalendars": false,
+                "alwaysShowCalendars": true,
+
+            }, function (start, end, label) {
+                console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+            });
+            // loaddataSelect2("/admin/users/getSelect2","#listUserselect2","@userId");
+            $(".btn-report").trigger("click");
+        });
+            //$(document).ready(function () {
+
+            //    loadData();
+            //    $('#reload').on('click', function () {
+            //        loadData();
+            //    });
+            //});
+
+
+    </script>
+}

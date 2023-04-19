@@ -1,0 +1,20 @@
+﻿@model Web.ManagerApplication.Areas.Admin.Models.RoleViewModel
+<div class="row">
+    <div class="col-md-4">
+
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="Tên vai trò" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group justify-content-between" style="margin-bottom: 0px !important">
+            <button type="submit" class="btn btn-dark close-button" data-dismiss="modal"> <i class="fas fa-close"></i> Cancel</button>
+            <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Save</button>
+        </div>
+
+    </div>
+</div>

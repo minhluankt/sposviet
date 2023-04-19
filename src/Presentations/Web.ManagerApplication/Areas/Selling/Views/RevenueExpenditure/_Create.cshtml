@@ -1,0 +1,10 @@
+﻿@model Domain.ViewModel.RevenueExpenditureModel
+
+<form id="create-form" method="post" asp-controller="RevenueExpenditure" asp-action="OnPostCreateOrEdit" onsubmit="return jQueryModalPost(this);">
+        @Html.HiddenFor(x=>x.Type)
+        <partial name="_ShareItem" />
+    </form>
+    <script type="text/javascript" language=javascript>$.validator.unobtrusive.parse(document);</script>
+
+
+

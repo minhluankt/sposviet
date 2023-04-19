@@ -1,0 +1,94 @@
+﻿@using Domain.Entities
+@model PaymentMethod
+@{
+
+    var _cltype = 0;
+}
+<style>
+    .modal-body {
+        padding-top: 0
+    }
+</style>
+<form id="create-form" method="post" asp-controller="PaymentMethod" asp-action="OnPostCreateOrEdit" asp-route-id="@Model.Id" onsubmit="return jQueryModalPost(this)" enctype="multipart/form-data">
+    @Html.HiddenFor(m => m.Id)
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row" style="">
+                <div class="col-md-5" style="">
+                    <div class="form-row">
+                        <div class="col-md-12 text-center">
+                            <div class="uploadImg mb-3 mt-3">
+                                <label asp-for="Avatar" class="text-center" style="width: 100%;">Ảnh đại diện</label>
+                                @if (Model.Avatar != null)
+                                {
+                                    <img id="imgCompany" class="mb-2 daidien" src="data:image/*;base64,@Model.Avatar">
+                                }
+                                else
+                                {
+                                    <img id="imgCompany" class="mb-2 daidien" src="~/images/no-img.png">
+                                }
+                                <div class="custom-file">
+                                    <input accept=".png,.jpg,.jpeg,.gif,.tif"
+                                           asp-for="ImageUpload"
+                                           type="file" class="custom-file-input"
+                                           onchange="document.getElementById('imgCompany').src = window.URL.createObjectURL(this.files[0])"
+                                           id="customFile">
+                                    <label class="custom-file-label text-left" for="customFile">Chọn ảnh</label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-7" style="">
+                    <h4 class="font-weight-bold mt-3 mb-4">Thông tin hình thức thanh toán</h4>
+
+                    <div class="position-relative form-group">
+                        <label for="" class="col-form-label" asp-for="Name">Tên hình thức thanh toán</label>
+                        <input asp-for="Name" placeholder="Tên hình thức thanh toán" class="form-control">
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="position-relative form-group">
+                        <label for="" class="col-form-label" asp-for="Code">Mã hình thức thanh toán</label>
+                        @if (!string.IsNullOrEmpty(Model.Code))
+                        {
+                            <input asp-for="Code" placeholder="Mã hình thức thanh toán" readonly  class="form-control">
+                        }else{
+                            <input asp-for="Code" placeholder="Mã hình thức thanh toán" class="form-control">
+                        }
+                        
+
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="position-relative form-group">
+                        <label for="Content" asp-for="Content" class="">Mô tả</label>
+                        <textarea placeholder="Mô tả (nếu có)" asp-for="Content" type="text" class="form-control"></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                    </div>
+                    <div class="position-relative form-group">
+                        <label for="" class="col-form-label" asp-for="Name">Hiển thị <i>(Hiển thị lên bill khi thanh toán)</i></label>
+                        <input asp-for="Active" class="form-control">
+                        <span asp-validation-for="Active" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script type="text/javascript" language=javascript>
+    $.validator.unobtrusive.parse(document);
+
+    $('#imgCompany').click(function () { $('#customFile').trigger('click'); });
+    $("#customFile").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+
+   
+</script>

@@ -1,0 +1,68 @@
+﻿
+@model Domain.Entities.ParametersEmail
+<style>
+
+    .student-profile .card {
+        border-radius: 10px;
+    }
+
+        .student-profile .card .card-header .profile_img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin: 10px auto;
+            border: 10px solid #ccc;
+            border-radius: 50%;
+        }
+
+        .student-profile .card h3 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .student-profile .card p {
+            font-size: 16px;
+            color: #000;
+        }
+
+    .student-profile .table th,
+    .student-profile .table td {
+        font-size: 14px;
+        padding: 5px 10px;
+        color: #000;
+    }.card-header.bg-transparent.text-center {
+    flex-direction: column;
+    height: auto;
+}
+@@media (min-width: 992px){
+    .modal-lg, .modal-xl {
+    max-width: 1000px;
+}
+}
+
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Student Profile -->
+            <table class="table table-striped table-bordered">
+                <tbody>
+                    <tr>
+                        <th>Tiêu đề email</th>
+                        <td>@Model.Title</td>
+                    </tr>
+                     <tr>
+                        <th>Mô tả </th>
+                        <td>@Model.Content</td>
+                    </tr>
+                     <tr>
+                        <th>Nội dung </th>
+                        <td>@Html.Raw(Model.Value)</td>
+                    </tr>  
+                  
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

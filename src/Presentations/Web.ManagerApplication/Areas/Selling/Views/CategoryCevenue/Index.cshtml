@@ -1,0 +1,58 @@
+﻿@using Application.Enums
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav" id="tabthuchi">
+    <li class="nav-item">
+        <a role="tab" class="nav-link active" data-id="@((int)EnumTypeRevenueExpenditure.THU)" id="tab-0" data-toggle="tab" href="#tab-content-0" aria-selected="true">
+            <span>Loại phiếu thu</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" data-id="@((int)EnumTypeRevenueExpenditure.CHI)" href="#tab-content-1" aria-selected="false">
+            <span>Loại phiếu chi</span>
+        </a>
+    </li>
+</ul>
+
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="">
+                    <label>Mã phiếu</label>
+                    <input type="text" name="Code" id="Code" placeholder="Mã phiếu......" class="form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center" style=" display: block;">
+        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+</div>
+<div class="tab-datacontent">
+</div>
+
+@section Scripts
+    {
+    <script>
+        thuchipos.loadEventCategoryTabThuChi();
+        $(document).ready(function () {
+            let type = $("#tabthuchi li a.active").data("id");
+            thuchipos.loadDataCategoryTabThuChi(type);
+        });
+        $(document).ready(function () {
+            
+        });
+
+
+    </script>
+}

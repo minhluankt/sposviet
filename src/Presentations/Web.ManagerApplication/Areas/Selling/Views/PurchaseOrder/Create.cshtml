@@ -1,0 +1,33 @@
+﻿@using  Application.Enums
+@model Domain.Entities.PurchaseOrder
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div>
+                <a href="/selling/PurchaseOrder"> <i class="fas fa-solid fa-arrow-left"></i>   Nhập hàng</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="PurchaseOrder">
+    
+        <partial name="Share" model="@Model" />
+    <input type="hidden" id="EnumTypePurchaseOrder" data-id="@((int)EnumTypePurchaseOrder.NHAP_HANG)"/>
+</div>
+@section Scripts
+    {
+    <script type="text/javascript" language=javascript>
+        //$(".select2").select2({
+        //    theme: "bootstrap",
+        //    placeholder: "Lựa  chọn nhà cung cấp"
+        //});
+        loaddataSelect2("/API/Handling/GetAllSupller", ".Suppliersid", "0", "Chọn nhà cung cấp");
+        loaddataSelect2("/API/Handling/GetAllPaymentMethod", ".PaymentMethod", "0","Chọn hình thức thanh toán");
+        PurchaseOrder.autocompleteproduct();
+        PurchaseOrder.loadEventChangeDisCount();
+        PurchaseOrder.loadeventbutonSubmit();
+        loaddaterangepicker(true);
+    </script>
+    }

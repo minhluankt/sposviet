@@ -1,0 +1,74 @@
+﻿@model Web.ManagerApplication.Areas.Selling.Models.SplitOrderModelView
+@using Application.Enums
+@{
+    Layout = null;
+}
+<style>
+    .swal2-container {
+        z-index: 30 !important;
+    }
+</style>
+<h4 class="mb-3">Phiếu @Model.OrderTable.OrderTableCode - @(Model.OrderTable.IsBringBack ? "Mang về" : Model.OrderTable.RoomAndTable?.Name)</h4>
+<div class="form-splitOrder">
+    <div class="header-tab">
+        <div class="form-check pl-0">
+            <input class="form-check-input icheck" type="radio" value="@((int)EnumTypeSpitOrder.Graft)" checked name="orderActions" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                Ghép đơn
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input icheck" type="radio" value="@((int)EnumTypeSpitOrder.Separate)" name="orderActions" id="flexCheckDefault2">
+            <label class="form-check-label" for="flexCheckDefault2">
+                Tách đơn
+            </label>
+        </div>
+    </div>
+
+    <div class="body-tab mt-3">
+        <div class="tabtachdon">
+            <div class="input-group mb-3 w-5">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Ghép đến</label>
+                </div>
+                <select class="custom-select" id="lstroomselect" style="width:250px">
+                </select>
+            </div>
+            <div class="tableOrderRoom">
+                <table class="table table-bordered">
+                    <thead class="">
+                        <tr>
+                            <th>Khách hàng</th>
+                            <th>Mã đơn</th>
+                            <th>Số lượng</th>
+                            <th>Tổng tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4">
+                                Chưa có đơn nào
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tabghepdon d-none">
+            <div class="input-group mb-3 w-5">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Tách đến</label>
+                </div>
+                <select class="custom-select" id="listOrderNew" style="width:250px">
+                </select>
+                <div class="elepaternlstroomselectTach">
+
+                    <select class="custom-select" id="lstroomselectTach" style="width:250px">
+                    </select>
+                </div>
+            </div>
+            <div class="table-tachdon">
+            </div>
+        </div>
+    </div>
+</div>

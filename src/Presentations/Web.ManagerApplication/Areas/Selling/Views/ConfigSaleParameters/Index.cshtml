@@ -1,0 +1,149 @@
+﻿@*https://gitbrent.github.io/bootstrap4-toggle/*@
+@model List<Domain.Entities.ConfigSystem>
+@using Application.Enums
+@{
+    bool DELETEINVOICENOPAYMENT = false;//XÓA HÓA ĐƠN SAU KHI CHỌN XÓA
+    string DELETEIPUBLISHMERGEINVOICEAFTER = "";//XÓA HÓA ĐƠN CŨ SAU KHI GỘP
+    string ACCEPTPAYMENTDELETEINVOICE = "";
+    string AUTOVATINPAYMENT = "";
+    bool PUBLISHMERGEINVOICE = false;
+    foreach (var item in Model)
+    {
+        switch (item.Key)
+        {
+            case nameof(EnumConfigParameters.DELETEINVOICENOPAYMENT):
+                DELETEINVOICENOPAYMENT = Convert.ToBoolean(item.Value);
+                break;
+            case nameof(EnumConfigParameters.DELETEIPUBLISHMERGEINVOICEAFTER):
+                if (Convert.ToBoolean(item.Value))
+                {
+                    DELETEIPUBLISHMERGEINVOICEAFTER = "checked";
+                }
+            break;
+            case nameof(EnumConfigParameters.ACCEPTPAYMENTDELETEINVOICE):
+                if (Convert.ToBoolean(item.Value))
+                {
+                    ACCEPTPAYMENTDELETEINVOICE = "checked";
+                } 
+                break;
+            case nameof(EnumConfigParameters.AUTOVATINPAYMENT):
+                if (Convert.ToBoolean(item.Value))
+                {
+                    AUTOVATINPAYMENT = "checked";
+                }
+            break; 
+            case nameof(EnumConfigParameters.PUBLISHMERGEINVOICE):
+                if (Convert.ToBoolean(item.Value))
+                {
+                    PUBLISHMERGEINVOICE = Convert.ToBoolean(item.Value); ;
+                }
+            break;
+            default:
+                break;
+        }
+    
+    }
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/selling/restaurantsetting">< Trở lại thiết lập nhà hàng</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cấu hình thông tin bán hàng</li>
+    </ol>
+</nav>
+
+<div class="card mt-3 ConfigSaleParameter">
+    <div class="card-body">
+        <div class="item-col">
+            <div>
+                <span>
+                    Cho phép xóa đơn khi chưa xuất VAT
+                </span>
+                <small>Tính năng cho phép xóa hóa đơn đã thanh toán nhưng chưa xuất hóa đơn điện tử khỏi hệ thống</small>
+            </div>
+            <div class="check-b">
+                <label class="switch-custom">
+                    <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()" class="toggleConfigSaleParameter" data-parent="" data-key="@EnumConfigParameters.DELETEINVOICENOPAYMENT.ToString()" @(DELETEINVOICENOPAYMENT?"checked":"")>
+                    <span class="slider"></span>
+                </label>
+             
+            </div>
+        </div>
+       
+        <div class="childrenconfig@(DELETEINVOICENOPAYMENT?"":" d-none")">
+            <div class="item-col">
+                <div>
+                    <span>
+                        Ghi nhận doanh thu khi xóa hóa đơn
+                    </span>
+                    <small>Tính năng cho phép lựa chọn ghi nhận doanh hay không khi xóa hóa đơn, mặc định nếu không bật thì khi xóa hệ thống sẽ không ghi nhận doanh thu</small>
+                </div>
+                <div class="check-b">
+                    <label class="switch-custom">
+                        <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()"  data-key="@EnumConfigParameters.ACCEPTPAYMENTDELETEINVOICE.ToString()" data-parent="@EnumConfigParameters.DELETEINVOICENOPAYMENT.ToString()" @ACCEPTPAYMENTDELETEINVOICE>
+                        <span class="slider"></span>
+                    </label>
+                   
+                </div>
+            </div>
+        </div>
+        
+        <div class="item-col">
+            <div>
+                <span>
+                    Mặc định xuất hóa đơn máy tính tiền khi thanh toán
+                </span>
+                <small>Tính năng cho phép mặc định xuất hóa đơn khi thanh toán, ẩn cấu hình tùy chọn xuất hóa đơn tại màn hình bán hàng, nếu không bật tính năng này thì tại từng màn hình bán hàng cho phép lựa chọn xuất hóa đơn hay không</small>
+            </div>
+            <div class="check-b">
+                <label class="switch-custom">
+                    <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()" class="toggleConfigSaleParameter" data-parent="" data-key="@EnumConfigParameters.AUTOVATINPAYMENT.ToString()" @AUTOVATINPAYMENT>
+                    <span class="slider"></span>
+                </label>
+             
+            </div>
+        </div>
+        <div class="item-col">
+            <div>
+                <span>
+                    Tính năng xuất gộp HDDT
+                </span>
+                <small>Tính năng cho phép chọn nhiều hóa đơn bán hàng xuất gộp thành một hóa đơn điện tử</small>
+            </div>
+            <div class="check-b">
+                <label class="switch-custom">
+                    <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()" class="toggleConfigSaleParameter" data-parent="" data-key="@EnumConfigParameters.PUBLISHMERGEINVOICE.ToString()" @(PUBLISHMERGEINVOICE?"checked":"")>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="childrenconfig@(PUBLISHMERGEINVOICE?"":" d-none")">
+            <div class="item-col">
+                <div>
+                    <span>
+                        Xóa các hóa đơn bán hàng sau khi gộp
+                    </span>
+                    <small>Tính năng cho phép tự động xóa các hóa đơn bán hàng sau khi gộp, nếu không bật mặc định hệ thống không xóa và có hiển thị dòng cảnh báo khi gộp</small>
+                </div>
+                <div class="check-b">
+                    <label class="switch-custom">
+                        <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()" data-key="@EnumConfigParameters.DELETEIPUBLISHMERGEINVOICEAFTER.ToString()" data-parent="@EnumConfigParameters.PUBLISHMERGEINVOICE.ToString()" @DELETEIPUBLISHMERGEINVOICEAFTER>
+                        <span class="slider"></span>
+                    </label>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts
+    {
+  @*<script src="~/lib/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>*@
+   <script>
+   
+        
+        eventConfigSaleParameters.eventUpdatecheckbox();
+   </script>
+}

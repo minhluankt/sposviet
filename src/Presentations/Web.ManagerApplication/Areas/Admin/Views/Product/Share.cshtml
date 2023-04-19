@@ -1,0 +1,488 @@
+﻿ @using Model
+@model ProductModelView
+@{
+    bool textclassrunsell = true;
+    bool textclasssell = true;
+    if (Model.isRunPromotion)
+    {
+        textclassrunsell = false;
+    }
+    if (Model.isPromotion)
+    {
+        textclasssell = false;
+    }
+}
+<link href="@Url.Content("~/summernote/summernote-bs4.min.css")" rel="stylesheet">
+<link href="~/lib/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
+<link href="~/lib/jquery.filer/css/jquery.filer.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/lib/elFinder/css/elfinder.full.min.css" />
+<link rel="stylesheet" href="~/lib/elFinder/css/theme.min.css" />
+<link rel="stylesheet" href="~/lib/elFinder/Material/theme-gray.css" />
+@Html.HiddenFor(x=>x.Id)
+<input type="hidden" name="JsonTableByStylePro" id="JsonTableByStylePro" />
+<input type="hidden" name="JsonListStylePro" id="JsonListStylePro" />
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="font-weight-bold mt-0 mb-0">Thông tin sản phẩm</h5>
+                    <div class="btn-actions-pane-right">
+                        <div class="nav">
+                            <a data-toggle="tab" href="#tab-eg2-0" class="btn-pill btn-wide active btn btn-outline-primary btn-sm">Thông tin chung</a>
+                            <a data-toggle="tab" href="#tab-eg2-1" class="btn-pill btn-wide mr-1 ml-1  btn btn-outline-primary btn-sm" id="tab-img">Hình ảnh</a>
+                            <a data-toggle="tab" href="#tab-eg2-2" class="btn-pill btn-wide mr-1 ml-1  btn btn-outline-primary btn-sm">Thông tin seo</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="card-body table-responsive">
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab-eg2-0" role="tabpanel">
+                                    <div class="row">
+
+                                        <div class="col-md-9">
+                                            <div class="form-group">
+                                                <label for="" asp-for="Name">Tên sản phẩm <span class="required">(*)</span></label>
+                                                <input type="text" asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="" asp-for="Name">Mã sản phẩm <span class="required">(*)</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <div class="input-group-text">
+                                                            <label for="" asp-for="Code" class="col-form-label"></label><span class="required">(*)</span>
+                                                        </div>
+                                                    </div>
+                                                    @if (Model.Id > 0)
+                                                    {
+                                                        <input readonly="readonly" asp-for="Code" placeholder="@Html.DisplayNameFor(m=>m.Code)" class="form-control">
+                                                    }
+                                                    else
+                                                    {
+                                                        <input asp-for="Code" placeholder="@Html.DisplayNameFor(m=>m.Code)" class="form-control code">
+                                                        <div class="input-group-prepend">
+                                                            <div class="input-group-text"><span id="basic-addon2" onclick="return RandomString(this)"><i class="fa fas fa-bolt"></i></span></div>
+                                                        </div>
+                                                    }
+                                                    <span asp-validation-for="Code" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="" asp-for="Name">Mô tả ngắn </label>
+                                                <textarea type="text" class="ckeditor" asp-for="Title" placeholder="Nhập mô tả ngắn, tóm tắt về sản phẩm"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="" asp-for="idCategory">Danh mục sản phẩm<span class="required">(*)</span></label>
+                                                        <select class="form-control select2_cre" name="idCategory" id="idCategory" style="width:100%">
+                                                            <opiton></opiton>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="" asp-for="idCategory">Xuất xứ<span class="required">(*)</span></label>
+                                                        <select class="form-control select2_cre" style="width: 100%;" name="IdBrand"
+                                                                aria-hidden="true" id="IdBrand" asp-items='new SelectList(Model.Brands,"Id","Name",Model.IdBrand)'>
+                                                            <option></option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="" asp-for="idPrice">Mức giá <span class="required">(*)</span></label>
+                                                        <select class="form-control select2_cre" style="width: 100%;" name="idPrice"
+                                                                aria-hidden="true" id="idPrice" asp-items='new SelectList(Model.PriceICs,"Id","Name",Model.idPrice)'>
+                                                            <option></option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="" asp-for="Name">Giá <span class="required">(*)</span></label>
+                                                        <input type="text" name="_Price" class="form-control priceFormat" asp-for="Price" id="_Price" placeholder="Nhập giá" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="" asp-for="Name">Số lượng </label>
+                                                        <input type="text" class="form-control priceFormat" asp-for="Quantity" id="Quantity" placeholder="Nhập số lượng" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="" asp-for="Packing">Quy cách <span class="required">(*)</span></label>
+                                                        <input type="text" class="form-control" asp-for="Packing" placeholder="Nhập quy cách" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="option-add pt-3 pb-3 w-100" style="background-color: #f3f3f6;">
+                                            <div class="card" style="box-shadow:none">
+                                                <div class="card-header">
+                                                    <div>
+                                                        <label for="" class="mb-0" asp-for="Packing">Sản phẩm này có các tùy chọn, như kích thước hoặc màu sắc.. <span class="required">(*)</span></label>
+                                                        <input class="icheck" asp-for="IsAddingOptions" />
+                                                    </div>
+                                                </div>
+                                                <div class="card-body p-0" id="add-option-body">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+                                        <div class="col-md-12 mt-3 group-contentpro">
+                                            <div class="mb-3 card">
+                                                <div class="card-header">
+                                                    <ul class="nav nav-justified">
+                                                        <li class="nav-item"><a data-toggle="tab" href="#tab-eg7-0" class="nav-link active">Mô tả sản phẩm</a></li>
+                                                        <li class="nav-item"><a data-toggle="tab" href="#tab-eg7-1" class="nav-link">Khuyến mãi sản phẩm</a></li>
+                                                        <li class="nav-item"><a data-toggle="tab" href="#tab-eg7-2" class="nav-link">Thông số kỹ thuật</a></li>
+                                                    </ul>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane active" id="tab-eg7-0" role="tabpanel">
+                                                            <div class="form-group">
+                                                                <label for="" asp-for="Description">Mô tả sản phẩm</label>
+                                                                <textarea asp-for="Description" class="ckeditor" placeholder="Nội dung"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane" id="tab-eg7-1" role="tabpanel">
+                                                            <div class="col-md-12">
+                                                                <div class="row">
+                                                                    <div class="col-md-9">
+                                                                        <div class="form-group">
+                                                                            <label for="" asp-for="Promotion">Nội dung khuyến mãi</label>
+                                                                            <textarea asp-for="Promotion" class="ckeditor" placeholder="Nội dung"></textarea>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <div class="form-group">
+                                                                            <label for="">Thời gian bắt đầu</label>
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-prepend datepicker-trigger">
+                                                                                    <div class="input-group-text">
+                                                                                        <i class="fa fa-calendar-alt"></i>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <input type="text" autocomplete="off" asp-for="PromotionFromDate" placeholder="Từ ngày" class="form-control fc-datepicker">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="">Thời gian kết thúc</label>
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-prepend datepicker-trigger">
+                                                                                    <div class="input-group-text">
+                                                                                        <i class="fa fa-calendar-alt"></i>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <input type="text" autocomplete="off" asp-for="PromotionToDate" placeholder="Đến ngày" class="form-control fc-datepicker">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane" id="tab-eg7-2" role="tabpanel">
+                                                            <div class="form-group">
+                                                                <label for="" asp-for="TechnicialParameter">Thông số kỹ thuật</label>
+                                                                <textarea asp-for="TechnicialParameter" class="ckeditor" placeholder="Nội dung"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input type="checkbox" asp-for="Active" class="checkboxcustom icheck" />
+                                                Hiển thị bài viết <span class="required">(*)</span>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input type="checkbox" asp-for="IsOutstock" class="checkboxcustom icheck ml-2" />
+                                                <label for="" asp-for="IsOutstock">Sản phẩm hết hàng</label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab-eg2-2" role="tabpanel">
+                                    <div class="row">
+
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Title </label>
+                                                <input type="text" asp-for="seotitle" placeholder="Nhập tiêu đề không quá 160 ký tự là chuẩn nhất." class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Từ khóa</label>
+                                                <input type="text" asp-for="seokeyword" class="form-control" placeholder="Nhập từ khóa">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Mô tả</label>
+                                                <textarea rows="3" asp-for="seoDescription" class="form-control" placeholder="Nhập mô tả từ 50  đến 160 ký tự là chuẩn nhất."></textarea>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab-eg2-1" role="tabpanel">
+
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <label asp-for="ImgUpload">Chọn ảnh đại diện</label>
+                                            <div class="well col-md-12">
+                                                <div class="row" style="    align-items: center;">
+                                                    <div class="col-md-6">
+                                                        @* <input type="text" id="elfinder-input" class="elfinder form-control" />
+                                                            <a onclick="popupCenter('/Elfinder/browse?ckeditor=0&id=elfinder-input', 'myPop1',600,450);" href="javascript:void(0);">CLICK TO OPEN POPUP</a>
+                                                        *@
+                                                        @*  <div class="custom-file">
+                                                            <input accept="image/*"
+                                                            asp-for="ImgUpload"
+                                                            type="file" class="custom-file-input"
+                                                            onchange="document.getElementById('imgCompany').src = window.URL.createObjectURL(this.files[0])"
+                                                            id="customFile">
+
+                                                            <label class="custom-file-label text-left" for="customFile">Chọn ảnh đại diện</label>
+                                                            </div>*@
+                                                        @*  <input type="file" name="ImgUpload" id="elfinderfile" class="form-control" /> test*@
+                                                        <div class="input-group mb-3">
+                                                            <input type="text" name="Img" style="background-color:#fff" readonly id="elfinder-input" class="form-control" placeholder="Tên file" aria-describedby="basic-addon2">
+                                                            <div class="input-group-append" onclick="popupCenter('/Elfinder/browse?ckeditor=0&id=elfinder-input', 'myPop1',600,450);">
+                                                                <span class="input-group-text" id="basic-addon2">Chọn file</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        @if (Model.Img != null)
+                                                        {
+
+                                                            <img id="imgCompany" class="mb-2 daidien" src="data:image/*;base64,@Model.Img" style=" max-width: 200px;">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img id="imgCompany" class="mb-2 daidien" style=" max-width: 200px;">
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="mt-3 w-100">
+
+                                                <label asp-for="albumImgUpload">Chọn nhiều hình ảnh minh họa</label>
+                                                <input type="file" asp-for="albumImgUpload" id="ProductAlbum" multiple="multiple" accept="image/*">
+                                                <div id="elfinder"></div>
+                                                @if (Model.UploadImgProducts != null && Model.UploadImgProducts.Count() > 0)
+                                                {
+                                                    <label class="mb-3">Danh sách hình ảnh</label>
+                                                    <table class="table table-bordered table-striped" id="tableImg">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>STT</th>
+                                                                <th>Hình ảnh</th>
+                                                                <th>Dung lượng</th>
+                                                                <th>Công cụ</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                int k = 1;
+                                                            }
+                                                            @foreach (var item in Model.UploadImgProducts)
+                                                            {
+                                                                <tr>
+                                                                    <td>@(k++)</td>
+                                                                    <td class="text-center">
+                                                                        <img src="~/Upload/Product/@item.FileName" style="width:100px" />
+                                                                        <br />
+                                                                        @item.FileName
+                                                                    </td>
+                                                                    <td class="text-right">
+                                                                        @(Math.Round(Convert.ToDecimal(item.Size / 1024f)).ToString("N0")) KB
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <button class="btn btn-danger btn-sm" type="button" onclick="return DeleteImg(this,@(item.Id),@(item.IdProduct))">
+                                                                            <i class="fas fa-trash-alt"></i>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="/admin/product" class="btn btn-default mr-2"><i class="fas fa-back"></i> Trở về</a>
+                    <button class="ladda-button btn btn-success" data-style="expand-left">
+                        <span class="ladda-label"><i class="fas fa-check"></i> Lưu</span>
+                        <span class="ladda-spinner"></span>
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="font-weight-bold mt-0 mb-0">Sản phẩm thuộc các block</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="card-body table-responsive">
+                            <div class="form-check">
+                                <input class="form-check-input icheck" asp-for="isHotNew" type="checkbox" id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Sản phẩm hot
+                                </label>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input icheck" type="checkbox" asp-for="isBestseller" id="flexCheckChecked">
+                                <label class="form-check-label" for="flexCheckChecked">
+                                    Sản phẩm bán chạy
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="font-weight-bold mt-0 mb-0">Chương trình sell theo sự kiện</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="card-body table-responsive">
+
+                            <fieldset class="discountsell">
+                                <div class="form-group flex">
+                                    <input asp-for="isRunPromotion" class="icheck" /> Kích hoạt
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Chọn chương trình sell</label>
+                                    @if (Model.PromotionRuns == null)
+                                    {
+                                        <select class="form-control select2_cre" name="IdPromotionRun" id="IdPromotionRun" style="width: 100%;" disabled="@textclassrunsell">
+                                            <option></option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <select class="form-control select2_cre" style="width: 100%;" name="IdPromotionRun"
+                                            aria-hidden="true" id="IdPromotionRun"
+                                            asp-items='new SelectList(Model.PromotionRuns,"Id","Name",Model.IdPromotionRun)' disabled="@textclassrunsell">
+                                            <option></option>
+                                        </select>
+                                    }
+
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="" asp-for="Name">Chiết khấu (nếu có)</label>
+                                    <input type="text" class="form-control priceFormat" asp-for="DiscountRun" placeholder="Chiết khấu (nếu có)" disabled="@textclassrunsell" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="" asp-for="Name">Đơn giá</label>
+                                    <input type="text" class="form-control priceFormat" asp-for="PriceDiscountRun" placeholder="Nhập giá khuyến mãi" disabled="@textclassrunsell" />
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="font-weight-bold mt-0 mb-0">Chương trình sell theo ngày</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="card-body table-responsive">
+                            <fieldset class="discountsell">
+                                <div class="form-group flex">
+                                    <input asp-for="isPromotion" class="icheck" /> Kích hoạt
+                                </div>
+                                <div class="form-group">
+                                    <label for="" asp-for="Name">Chiết khấu (nếu có)</label>
+                                    <input type="text" class="form-control priceFormat" asp-for="Discount" placeholder="Chiết khấu (nếu có)" disabled="@textclasssell" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="" asp-for="Name">Đơn giá<span class="required">(*)</span></label>
+                                    <input type="text" class="form-control priceFormat" asp-for="PriceDiscount" placeholder="Nhập giá khuyến mãi" disabled="@textclasssell" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="" asp-for="Name">Ngày hết hạn<span class="required">(*)</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend datepicker-trigger">
+                                            <div class="input-group-text">
+                                                <i class="fa fa-calendar-alt"></i>
+                                            </div>
+                                        </div>
+                                        @*  @if (Model.ExpirationDateDiscount.HasValue)
+                                            {
+
+                                            @(Model.ExpirationDateDiscount.HasValue?((Model.ExpirationDateDiscount.Value.Year==1)?null:Model.ExpirationDateDiscount.Value):null)
+                                            }*@
+                                        <input type="text" autocomplete="off" placeholder="Từ ngày" asp-for="ExpirationDateDiscount" disabled="@textclasssell" class="form-control fc-datetimepicker">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+

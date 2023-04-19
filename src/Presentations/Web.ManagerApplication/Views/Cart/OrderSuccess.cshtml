@@ -1,0 +1,90 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Domain.ViewModel
+@using Application.Providers
+@using Application.Enums
+@using Web.ManagerApplication.Views.Shared.Components.ProfileSlidebar
+@inject Microsoft.Extensions.Options.IOptions<CryptoEngine.Secrets> _config
+@model OrderModelView
+
+@{
+    DateTime dateValue = DateTime.Now;
+    var date = (int)dateValue.DayOfWeek;
+      string param = Application.Providers.CryptoEngine.Encrypt("?code=" + Model.Order.OrderCode, _config.Value.Key);
+            string urldonhang = "/theo-doi-don-hang?secret=" + param;
+          //  string urldonhang = "OrderCustomer/Tracking?secret=" + param;
+
+}
+<div class="container mt-3 order-success">
+    <h5 class="title text-center">Xác nhận đặt hàng thành công</h5>
+    <div class="row">
+        <div class="col-xl-8 m-auto">
+            <div class="row">
+                <div class="card shadow mb-3">
+                    <div class="card-body pt3 pb-3">
+                           <h3 class="title-cart text-center text-success">Chúc mừng quý khách <b>@(Model.Order.CusName)</b>, đặt hàng thành công</h3>
+                           <div class="row">
+                              <table class="table table-bordered table-hover">
+                                  <tbody>
+                                      <tr>
+                                          <th>Mã đơn hàng</th>
+                                          <td><span class="badge badge-success">@Model.Order.OrderCode</span></td>
+                                      </tr>
+                                       <tr>
+                                          <th>Số lượng sản phẩm</th>
+                                          <td>@Model.Order.Quantity</td>
+                                      </tr>
+                                      <tr>
+                                          <th>Tổng tiền</th>
+                                          <td><b class="text-danger">@Model.Order.Amount.ToString("N0")</b> vnđ</td>
+                                      </tr>
+                                       <tr>
+                                          <th>Thời gian đặt</th>
+                                          <td>@Model.Order.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                      </tr>
+                                       <tr>
+                                          <th colspan="2" style="    background-color: #dfdfdf;">Thông tin giao hàng</th>
+                                      </tr>
+                                       <tr>
+                                          <th>
+                                              Tên khách hàng
+                                          </th>
+                                          <td>@Model.Order.CusName</td>
+                                      </tr>
+                                       <tr>
+                                          <th>
+                                              Số điện thoại
+                                          </th>
+                                          <td>@Model.Order.PhoneNumber</td>
+                                      </tr>
+                                       <tr>
+                                          <th>
+                                              Email
+                                          </th>
+                                          <td>@Model.Order.Email</td>
+                                      </tr>
+                                      <tr>
+                                          <th>
+                                              Địa chỉ giao
+                                          </th>
+                                          <td>
+                                              @Model.Order.Address
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                            <p> Để theo dõi đơn hàng vui lòng kích vào đây, <a class="btn btn-danger" href="@urldonhang">Theo dõi đơn hàng</a> hoặc truy cập đơn danh sách các đơn hàng của bạn để theo dõi từng đơn hàng.</p> 
+                           </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+@section Scripts
+    {
+    <script>
+      
+     
+    </script>
+}

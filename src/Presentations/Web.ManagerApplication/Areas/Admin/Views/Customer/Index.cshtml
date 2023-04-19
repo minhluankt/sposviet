@@ -1,0 +1,241 @@
+﻿@{
+    ViewData["Title"] = localizer["Customer"];
+    ViewData["Caption"] = localizer["Manage Customer here"];
+}
+@*import this so we get our HTML Helper*@
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+    var FromDate = Context.Request.Query["FromDate"].ToString();
+    var ToDate = Context.Request.Query["ToDate"].ToString();
+    var textSearch = Context.Request.Query["textSearch"].ToString();
+}
+<style>
+    .pagination {
+        float: right;
+    }
+
+    .table {
+        width: 100% !important;
+    }
+</style>
+<div class="card mb-2">
+    <form>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Email/Số điện thoại</label>
+                    <input type="text" id="TextPhoneOrEmail" placeholder="Email hoặc số điện thoại" class="form-control">
+                </div>
+
+                <div class="col-md-7">
+                    <label>Tên khách hàng/Tên đăng nhập</label>
+                    <input type="text" id="Name" placeholder="Tên khách hoặc tên đăng nhập"  class="form-control">
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer text-center" style="display:inherit">
+
+            <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+                <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+
+                <span class="ladda-spinner"></span>
+            </button>
+
+        </div>
+    </form>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="font-weight-bold mt-0 mb-0">Danh sách khách hàng</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-12 pt-2">
+                <a onclick="jQueryModalGet('/admin/Customer/Create','Thêm mới',false,'modal-90')" class="btn bg-success text-white">
+                    <i class="fa fa-plus-square"></i> Create
+                </a>
+                <button class="ladda-button mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                    <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Reload</span>
+
+                    <span class="ladda-spinner"></span>
+                </button>
+            </div>
+            <div id="viewAll" class="card-body">
+                <table class="table table-bordered table-striped" id="dataTable" style=" ">
+                    <thead>
+                        <tr>
+                            <th class="d-none">Tên khách hàng</th>
+                            <th>Tên khách hàng</th>
+                            <th>Tài khoản</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th>Địa chỉ</th>
+                            <th>Login bằng</th>
+                            <th>Login cuối</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+
+<script>
+
+    $(document).ready(function () {
+
+        loaddataSelect2("/admin/users/getSelect2","#listUserselect2","@userId");
+    });
+    $(document).ready(function () {
+        dataTableOut = $('#dataTable').DataTable({
+            "responsive": true,
+            "processing": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "filter": true, "rowId": "id",
+            "orderMulti": false,
+            "order": [[0, "desc"]],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                "zeroRecords": "Không tìm thấy dữ liệu nào",
+                "emptyTable": "Không có dữ liệu",
+                "search": "Tìm kiếm:",
+                "processing": "Đang xử lý...",
+                "lengthMenu": "Hiển thị _MENU_ dòng",
+                "loadingRecords": "Vui lòng chờ...",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Tiếp theo",
+                    "previous": "Về trước"
+                },
+            },
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+            "buttons": [
+                {
+                    text: 'Reload',
+                    action: function (e, dt, node, config) {
+                        dataTableOut.ajax.reload();
+                    }
+                }
+            ],
+            "columnDefs": [
+
+              /*  { className: "text-right", "targets":0 },*/
+                { className: "text-center", "targets": [-1,0] },
+
+                { responsivePriority: 4, targets: [-1,  0] },////define hiển thị mặc định column 1
+
+                 {
+                    "targets": [ 0 ],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [-1],
+
+                },
+                { "width": "100px", "targets": -1 }
+
+            ],
+            ajax: {
+                url: "/admin/Customer/LoadAll",
+                type: "POST",
+                datatype: "json",
+                data: {
+                    TextPhoneOrEmail: function () { return $('#TextPhoneOrEmail').val().trim() },
+                    Name: function () { return $('#Name').val().trim() },
+                }
+            },
+            "columns": [
+                { "data": "id", "name": "id", "autoWidth": true },
+                { "data": "name", "name": "Name", "autoWidth": true },
+                { "data": "userName", "name": "UserName", "autoWidth": true },
+                { "data": "email", "name": "Email", "autoWidth": true },
+                { "data": "phoneNumber", "name": "PhoneNumber", "autoWidth": true },
+                { "data": "address", "name": "Address", "autoWidth": true },
+                { "data": "loginProvider", "name": "loginProvider", "autoWidth": true },
+                 {
+                    "render": function (data, type, full, meta) {
+                       // console.log(full.id);
+                        if (full.loginLast != null) {
+                            data = moment(full.loginLast).format('DD/MM/YYYY HH:mm:ss');
+                            return data;
+                        }
+                        return "";
+                    }
+
+                },
+                { "data": "createdate", "name": "createdate", "autoWidth": true },
+                {
+                     "render": function (data, type, full, meta) {
+                     
+                            switch (full.status) {
+                                case 0:
+                                    return '<span class="badge badge-warning"><i class="fas fa-ban"></i> Chưa xác nhận</span>';
+                                    break;
+                                case 1:
+                                    return '<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> Đang hoạt động</span>  ';
+                                    break;
+                                case2:
+                                    return '<span class="badge badge-danger"><i class="fas fa-lock" style=""></i> Đang khóa</span>  ';
+                                    break;
+                                default:
+                                    return '';
+                            }
+
+                        }
+                },
+              
+              
+                {
+                    "render": function (data, type, full, meta) {
+                        let html = `<div class="btn-group dropleft">
+                                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    </button>
+                                        <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="javascript:void(0)" onclick="jQueryModalGet('/admin/Customer/details?id=` + full.id + `','Thông tin công ty')"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
+                                        <a class="dropdown-item" onclick="jQueryModalGet('/admin/Customer/Edit?id=`+ full.id +`','Chỉnh sửa',false,'modal-90')"
+                                        href="javascript:void(0)"><i class="fas fa-edit mr-2"></i> Sửa</a>
+
+                                         <form id="form_delete_`+ full.id + `" action="/admin/Customer/delete?id=` + full.id + `"  asp-controller="Customer" asp-area="Admin" method="post" asp-action="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+                                            <a  class="dropdown-item"  href="javascript:$('#form_delete_`+ full.id +`').submit();">
+                                              <i class="fas fa-trash-alt mr-2"></i> Xóa
+                                            </a>
+                                        </form>
+
+
+                                    </div>
+                                </div>`;
+                        return html;
+                    }
+                },
+            ]
+
+        });
+        $('#reload').on('click', function () {
+            dataTableOut.ajax.reload();
+        });
+    });
+
+    //$(document).ready(function () {
+
+    //    loadData();
+    //    $('#reload').on('click', function () {
+    //        loadData();
+    //    });
+    //});
+
+
+</script>
+}

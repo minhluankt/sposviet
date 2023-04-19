@@ -1,0 +1,108 @@
+﻿@{
+    Layout = null;
+}
+@model Domain.Entities.Order
+<div class="view-details-order">
+    <table class="table table-hover table-bordered table-inf">
+        <thead>
+            <tr style="background-color: #4799e1;">
+                <th style="width:40%">
+                    Thông tin người nhận
+                </th>
+                <th style="width:30%">
+                    Hình thức giao hàng
+                </th>
+                <th style="width:30%">
+                    Hình thức thanh toán
+                </th>
+            </tr>
+
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <b>@Model.CusName</b><br />
+                    <span><b>Địa chỉ:</b> @Model.Address</span><br />
+                    <span><b>Email:</b> @Model.Email</span><br />
+                    <span><b>Điện thoại:</b> @Model.PhoneNumber</span>
+                </td>
+                <td>
+                    Giao hàng thứ 3
+                </td>
+                <td>
+                    Thanh toán tiền mặt khi nhận hàng
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    Sản phẩm
+                </th>
+                <th>
+                    Giá
+                </th>
+                <th>
+                    Số lượng
+                </th>
+                <th>
+                    Giảm giá
+                </th>
+                <th>
+                    Thành tiền
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderDetailts)
+            {
+                <tr>
+                    <td>
+                        <div class="list-img">
+                            <img src="~/@item.Img" />
+                            <span> @item.ProdName</span>
+                        </div>
+
+
+                    </td>
+                    <td class="text-right">
+                        @item.Price.ToString("N0")
+                    </td>
+                    <td class="text-center">
+                        @item.Quantity
+                    </td>
+                    <td>
+                        @item.DiscountAmonnt.ToString("N0")
+                    </td>
+                    <td class="text-right">
+                        @item.Amount.ToString("N0")
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" class="text-right">
+                    Tổng cộng tiền
+                </td>
+                <td class="text-right">@Model.Amount.ToString("N0")</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-right">
+                    Phí vận chuyển
+                </td>
+                <td class="text-right">@Model.TransportFeeAmount.ToString("N0")</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-right">
+                    Tổng cộng tiền
+                </td>
+                <td class="text-right text-bold text-danger">@Model.Amount.ToString("N0")</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

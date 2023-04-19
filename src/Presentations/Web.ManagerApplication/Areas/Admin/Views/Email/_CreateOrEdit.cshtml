@@ -1,0 +1,134 @@
+﻿@using Web.ManagerApplication.Areas.Admin.Models
+@model MailSettingViewModel
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Cấu hình tài khoản email</h5>
+            </div>
+            <div class="card-body">
+                <div class="main-card mb-3 card">
+                    <div class="card-body">
+                        <form class="" asp-controller="Email" asp-action="OnPostCreateOrEdit" asp-area="Admin" asp-route-id="@Model.Id" onsubmit="return jQueryModalPost(this)">
+                            <input type="hidden" asp-for="Id" />
+                            <div class="position-relative form-group">
+                                <label for="examplePassword" class="" asp-for="UserName"></label> <span class="required">(*)</span>
+                                <input asp-for="UserName" placeholder="@Html.DisplayNameFor(m=>m.UserName)" class="form-control">
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+
+
+                            @if (Model.Id > 0)
+                            {
+                                <div class="position-relative">
+                                    <label for="examplePassword" class="">Đổi mật khẩu</label>
+                                    <input asp-for="ChangePass" id="ChangePassmail" autocomplete="off" placeholder="@Html.DisplayNameFor(m => m.ChangePass)">
+
+                                </div>
+                            }
+                            <div class="position-relative form-group">
+                                <label for="examplePassword" class="" asp-for="Password"></label>
+                                @if (Model.Id == 0)
+                                {
+                                    <span class="required">(*)</span>
+                                    <input asp-for="Password" type="password" autocomplete="off" placeholder="@Html.DisplayNameFor(m => m.Password)" class="form-control">
+                                }
+                                else
+                                {
+                                    <input asp-for="Password" type="password" autocomplete="off" readonly="readonly" placeholder="@Html.DisplayNameFor(m => m.Password)" class="form-control">
+                                }
+
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="position-relative form-group">
+                                <label for="examplePassword" class="" asp-for="From"></label>
+                                <input asp-for="From" placeholder="@Html.DisplayNameFor(m=>m.From)" class="form-control">
+                                <span asp-validation-for="From" class="text-danger"></span>
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="examplePassword" class="" asp-for="DisplayName"></label><span class="required">(*)</span>
+                                <input asp-for="DisplayName" placeholder="@Html.DisplayNameFor(m=>m.DisplayName)" class="form-control">
+                                <span asp-validation-for="DisplayName" class="text-danger"></span>
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="examplePassword" class="" asp-for="Host"></label><span class="required">(*)</span>
+                                <input asp-for="Host" placeholder="@Html.DisplayNameFor(m=>m.Host)" class="form-control">
+                                <span asp-validation-for="Host" class="text-danger"></span>
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="examplePassword" class="" asp-for="Port"></label><span class="required">(*)</span>
+                                <input asp-for="Port" type="text" placeholder="@Html.DisplayNameFor(m=>m.Port)" class="form-control">
+                                <span asp-validation-for="Port" class="text-danger"></span>
+                            </div>
+                            <button class="ladda-button mb-2 mr-2 btn btn-primary" data-style="expand-left">
+                                <span class="ladda-label"><i class="fas fa-check"></i>  Lưu</span>
+
+                                <span class="ladda-spinner"></span>
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    @if (Model.Id > 0)
+    {
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Test email</h5>
+                </div>
+                <div class="card-body">
+                    <div class="main-card mb-3 card">
+                        <div class="card-body">
+                            <form class="" asp-controller="Email" asp-action="TestEmail" asp-area="Admin" onsubmit="return jQueryModalPost(this)">
+                                <div class="position-relative form-group">
+                                    <label for="examplePassword" class="">To Email</label> <span class="required">(*)</span>
+                                    <input type="email" name="ToEmail" placeholder="Nhập email nhận" required class="form-control">
+                                </div>
+                                <div class="position-relative form-group">
+                                    <label for="examplePassword" class="">Title Email</label>
+                                    <input type="text" name="Title" placeholder="Title email" value="Test email" class="form-control">
+                                </div>
+                                <div class="position-relative form-group">
+                                    <label for="examplePassword" class="">Nội dung email</label> <span class="required">(*)</span>
+                                    <input name="Content" placeholder="Nội dung email" required class="form-control">
+                                </div>
+
+                                <button class="ladda-button mb-2 mr-2 btn btn-primary" data-style="expand-left">
+                                    <span class="ladda-label"><i class="fas fa-check"></i>  Gửi</span>
+                                    <span class="ladda-spinner"></span>
+                                </button>
+
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+@section Scripts
+{
+<script type="text/javascript" language=javascript>
+
+    $(document).ready(function () {
+        //set initial state.
+
+        $('#ChangePassmail').change(function () {
+            if (this.checked) {
+                $('#Password').removeAttr("readonly");
+            }
+            else {
+                $('#Password').attr("readonly", "readonly");
+            }
+        });
+    });
+</script>
+}

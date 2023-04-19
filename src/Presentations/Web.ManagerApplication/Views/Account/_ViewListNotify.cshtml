@@ -1,0 +1,63 @@
+﻿@using Application.Hepers
+@using Application.Providers
+@using PagedList.Core
+@using PagedList.Web.Common
+@using Microsoft.Extensions.Options
+
+
+@model PaginatedList<Domain.Entities.NotifiUser>;
+@inject IOptions<CryptoEngine.Secrets> _config;
+@{
+    Layout = null;
+    string classtext = "review";
+}
+<ul class="lstPaginatedListcontent">
+    @foreach (var item in Model.Items)
+    {
+        string value = $"code={item.OrderCode}&idnotify={item.Id}";
+        string OrderCode = CryptoEngine.Encrypt(value, _config.Value.Key);
+        if (!item.IsReview)
+        {
+            classtext = "noreview";
+        }
+        <li class="@classtext">
+            <a href="theo-doi-don-hang?secret=@OrderCode">
+                <span class="time">@item.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                <div class="content">
+                    <span>@item.Title</span>
+                    <p>@Html.Raw(item.Content)</p>
+                </div>
+                <div class="btn-action">
+                    @if (!item.IsReview)
+                    {
+                        <span class="read">Đánh dấu đã dọc</span>
+
+                    }
+                </div>
+            </a>
+            <span class="delete" data-id="@item.Id">Xóa</span>
+        </li>
+
+        classtext = "review";
+
+    }
+</ul>
+<div class="PaginatedList">
+    @Html.PagedListPager(Model, page => Url.Action("Historyoperation", new { page, pageSize = Model.PageSize }),
+    PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+    {
+    MaximumPageNumbersToDisplay = 10,
+    DisplayPageCountAndCurrentLocation = false,
+    UlElementClasses = new[] { "pagination" },
+    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+    LinkToFirstPageFormat = "«",
+    LinkToLastPageFormat = "»",
+    LiElementClasses = new[] { "page-item" },
+    HtmlEncoder = System.Text.Encodings.Web.HtmlEncoder.Default,
+    EllipsesFormat = "&#8230;",
+    PageClasses = new[] { "page-link" },
+    ContainerDivClasses = new[] { "pagination-container" }
+    },
+    new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "nameListContainer" }))
+</div>

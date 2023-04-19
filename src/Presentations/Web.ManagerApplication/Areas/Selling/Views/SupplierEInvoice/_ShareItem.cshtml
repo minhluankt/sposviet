@@ -1,0 +1,38 @@
+﻿@using Domain.Entities
+@model SupplierEInvoice
+@Html.HiddenFor(x=>x.Id)
+@Html.HiddenFor(x=>x.TypeSupplierEInvoice)
+<div class="formAddSupplierEInvoice">
+    <div class="form-group">
+        <label for="exampleInputEmail1">Link phát hành hóa đơn VNPT</label>
+        <input asp-for="DomainName" class="form-control" placeholder="https://xxxx-tt78admin.vnpt-invoice.com.vn" />
+        <small id="emailHelp" class="form-text text-muted">Ví dụ: https://xxxx-tt78admin.vnpt-invoice.com.vn</small>
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">Tên đăng nhập phát hành hóa đơn</label>
+        <input type="text" class="form-control" asp-for="UserNameAdmin" placeholder="Tên đăng nhập phát hành hóa đơn">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">Mật khẩu phát hành hóa đơn</label>
+        <input type="password" class="form-control" asp-for="PassWordAdmin" value="@Model.PassWordAdmin" placeholder="Mật khẩu phát hành hóa đơn">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">Tên đăng nhập webservice</label>
+        <input type="text" class="form-control" asp-for="UserNameService" placeholder="Tên đăng nhập webservice">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">Mật khẩu webservice</label>
+        <input type="password" class="form-control" asp-for="PassWordService" value="@Model.PassWordService" placeholder="Mật khẩu webservice">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">Loại chữ ký số</label>
+        <select asp-items="(IEnumerable<SelectListItem>)Model.Selectlist" asp-for="TypeSeri" style="width:100%" class="SelectListIdType select2 form-control" id="SelectlistSeri">
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="exampleInputPassword1">Seri chứng thư số</label>
+        <input type="text" class="form-control" asp-for="SerialCert" value="@Model.SerialCert" placeholder="Seri chứng thư số">
+    </div>
+
+</div>

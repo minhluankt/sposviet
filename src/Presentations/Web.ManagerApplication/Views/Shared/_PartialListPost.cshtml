@@ -1,0 +1,61 @@
+﻿@using Application.Constants
+@using Domain.Entities
+@using Application.Enums
+@using HelperLibrary;
+@model Web.ManagerApplication.Models.PostViewModel;
+@using SystemVariable
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+<div class="body-item">
+    @if (Model.PostsIPagedList.TotalItemCount > 0)
+    {
+
+
+        @foreach (var item in Model.PostsIPagedList)
+        {
+
+            <div class="col-item">
+                <a href="/@item.Slug">
+                    <div class="content-img">
+                        <img src="/@item.Img" />
+                    </div>
+                    <h3>@item.Name</h3>
+                    <small><i class="fas fa-eye"></i> @item.ViewNumber</small>
+                </a>
+            </div>
+
+
+        }
+
+    }
+    else
+    {
+        @if (ViewBag.Img != null)
+        {
+            <img src="/@(SystemVariable.SystemVariableHelper.FolderUpload)/@(Application.Constants.FolderUploadConstants.ComPany)/@ViewBag.Img">
+        }
+        <span class="no-cate">Chuyên mục chưa có bài viết nào!</span>
+    }
+</div>
+@if (Model.PostsIPagedList.TotalItemCount > 0)
+{
+    Html.PagedListPager(Model.PostsIPagedList, page => Url.Action("/Index", "", new { page, pageSize = Model.PostsIPagedList.PageSize }),
+            PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+                        {
+                // Display = PagedListDisplayMode.IfNeeded,
+                // DisplayItemSliceAndTotal = true  ,
+                MaximumPageNumbersToDisplay = 10,
+                            DisplayPageCountAndCurrentLocation = false,
+                            UlElementClasses = new[] { "pagination" },
+                            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                            DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                            LinkToFirstPageFormat = "«",
+                            LinkToLastPageFormat = "»",
+                            LiElementClasses = new[] { "page-item" },
+                            HtmlEncoder = System.Text.Encodings.Web.HtmlEncoder.Default,
+                            EllipsesFormat = "&#8230;",
+                            PageClasses = new[] { "page-link" },
+                            ContainerDivClasses = new[] { "pagination-container" }
+                        },
+            new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "nameListContainer" }));
+}

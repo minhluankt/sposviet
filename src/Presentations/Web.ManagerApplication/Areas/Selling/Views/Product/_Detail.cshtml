@@ -1,0 +1,194 @@
+﻿@model Model.ProductModelView
+
+<div class="card-header">
+    <ul class="nav nav-justified">
+        <li class="nav-item"><a data-toggle="tab" href="#tab-eg7-0" class="active nav-link">Thông tin chung</a></li>
+        @if (Model.TypeProductCategory==Application.Enums.EnumTypeProductCategory.COMBO)
+        {
+            <li class="nav-item"><a data-toggle="tab" href="#tab-eg7-2" class="nav-link">Thành phần combo</a></li>
+        }
+    </ul>
+</div>
+<div class="card-body">
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab-eg7-0" role="tabpanel">
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th style="    width: 130px;">Loại hàng hóa</th>
+                    <td class="text-primary">
+                   
+                        <span> @if (Model.DirectSales)
+                            {
+                                <i class="fa fa-check text-success"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-ban text-danger"></i>
+                            }       Bán trực tiếp <b></b></span>
+                        <span>
+                            @if (Model.ExtraTopping)
+                            {
+                                <i class="fa fa-check text-success"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-ban text-danger"></i>
+                            }     Là món thêm   <b></b>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="    width: 130px;">Tên hàng hóa</th>
+                    <td class="text-primary">@Model.Name</td>
+                </tr>
+                <tr>
+                    <th style="    width: 130px;">Mã hàng hóa</th>
+                    <td class="text-primary">@Model.Code</td>
+                </tr>
+                    <tr>
+                    <th>Ảnh đại diện</th>
+                    <td>
+                        <img class="mb-2 daidien" src="data:image/*;base64,@Model.Img" style=" max-width: 200px;">
+                    </td>
+                </tr>
+              
+                 <tr>
+                    <th>Danh mục</th>
+                    <td>@((Model.CategoryProduct.CategoryChild!=null? Model.CategoryProduct.CategoryChild.Name + "/" : "") + Model.CategoryProduct.Name)</td>
+                </tr>
+               
+                  <tr>
+                    <th>Đơn giá bán</th>
+                    <td>@string.Format("{0:N0}",Model.Price)</td>
+                </tr>
+                 
+                <tr>
+                    <th>Đơn giá nhập vào</th>
+                    <td>@string.Format("{0:N0}",Model.RetailPrice)</td>
+                </tr>
+              
+                <tr>
+                    <th>Ngày tạo</th>
+                    <td>@Model.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                </tr>
+              
+                <tr>
+                    <th>Trạng thái</th>
+                    <td>
+                        @if (!Model.StopBusiness)
+                        {
+                            <span class="badge badge-success"><i class="fas fa-check-circle" style=""></i>  Hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger"><i class="fas fa-check-circle" style=""></i>Ngừng kinh doanh</span>
+                        }
+
+                    </td>
+                </tr>
+                @if (!string.IsNullOrEmpty(Model.Title))
+                {
+                     <tr>
+                        <th>Mô tả ngắn</th>
+                        <td>
+                            @Html.Raw(Model.Title)
+                        </td>
+                    </tr>
+                }
+                @if (!string.IsNullOrEmpty(Model.Promotion))
+                {
+                     <tr>
+                        <th>Mô tả ngắn</th>
+                        <td>
+                            @Html.Raw(Model.Promotion)
+                        </td>
+                    </tr>
+                }
+               
+
+                <tr>
+                    <th style="vertical-align:top">Nội dung</th>
+                    <td>
+                        @Html.Raw(Model.Description)
+                    </td>
+                </tr>
+            </table>
+        </div>
+        @if (Model.TypeProductCategory == Application.Enums.EnumTypeProductCategory.COMBO)
+        {
+          <div class="tab-pane" id="tab-eg7-2" role="tabpanel">
+                @if (Model.JsonListComboProductModel.Count() > 0)
+            {
+                <table class="table table-bordered table-striped" id="dataTableImg">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên hàng hóa</th>
+                            <th>Số lượng</th>
+                            <th>Giá vốn</th>
+                            <th>Giá bán</th>
+                            <th>Thành tiền (giá vốn)</th>
+                            <th>Thành tiền (giá bán)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int k = 1;
+                        }
+                            @foreach (var item in Model.JsonListComboProductModel)
+                        {
+                            <tr>
+                                <td>@(k++)</td>
+                                <td>
+                                   @item.Name
+                                </td>
+                                <td class="text-righ number3">
+                                        @item.Quantity.ToString().Replace(",",".")
+                                </td>
+                                    <td class="text-right number3">
+                                        @item.RetailPrice.ToString().Replace(",",".")
+                                </td>
+                                <td class="text-right number3">
+                                        @item.Price.ToString().Replace(",",".")
+                                </td>
+                                 <td class="text-right number3">
+                                        @((item.RetailPrice * item.Quantity).ToString().Replace(",","."))
+                                 </td>
+                                <td class="text-right number3">
+                                        @((item.Price * item.Quantity).ToString().Replace(",","."))
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <h5>Không có thành phần nào!</h5>
+            }
+        </div>
+        }
+        
+        
+    </div>
+</div>
+
+<script src="~/lib/pdfjs/pdfobject.js"></script>
+<script>
+    $(document).ready(function () {
+        LoadDataTableById("dataTableImg");
+        LoadDataTableById("dataTableDocument");
+        LoadDataTable();
+        evetnFormatTextnumber3decimal();
+    });
+    //function ViewPDF(url) {
+    //    loadingStart();
+    //    let html = '<div id="ViewPDF"></div>';
+    //    jQueryModal.Show("Thông tin chi tiết", html, "modal-70");
+
+    //    setTimeout(function () { loadPDF(url); loadingStop() }, 1000);
+    //}
+    //function loadPDF(url) {
+    //    PDFObject.embed(url, "#ViewPDF");
+    //}
+</script>

@@ -1,0 +1,159 @@
+﻿@using Application.Enums
+@model Web.ManagerApplication.Areas.Selling.Models.PaymentModelView
+@{
+    bool isVAT = false;
+    var lstamount = new List<double>();
+    lstamount.Add(50000);
+    lstamount.Add(100000);
+    lstamount.Add(150000);
+    lstamount.Add(200000);
+    lstamount.Add(250000);
+    lstamount.Add(300000);
+    lstamount.Add(500000);
+    SelectList  selectList = null;
+    if (Model.SupplierEInvoiceModel !=null)
+    {
+        var selected = Model.SupplierEInvoiceModel.ManagerPatternEInvoices.Where(x => x.Selected).SingleOrDefault();
+        selectList = new SelectList(
+                Model.SupplierEInvoiceModel.ManagerPatternEInvoices.Select(c => new SelectListItem() { Text = $"{c.Pattern} - {c.Serial}", Value = c.Id.ToString(), Selected = c.Selected }), "Value", "Text", selected?.Id);
+       
+        if (selected!=null)
+        {
+            int type;
+            var gettypepattern = int.TryParse(selected.Pattern.Split('/')[0], out type);
+            if (gettypepattern && (ENumTypeEInvoice)type == ENumTypeEInvoice.GTGT)
+            {
+                isVAT = true;
+            }
+         }
+    }
+}
+
+<div class="payment-view">
+    <div class="row">
+        <div class="col-md-7">
+            @if (Model.OrderTable.IsRetailCustomer)
+            {
+                <span>@Model.OrderTable.Buyer</span>
+            }
+            else
+            {
+                <span>@Model.OrderTable.Customer.Code -@Model.OrderTable.Customer.Name</span>
+            }
+            <h3 class="mt-3">Chi tiết món</h3>
+            <table class="table table-bordered" id="dataTablePayment">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên hàng hóa</th>
+                        <th class="text-center">S.Lượng</th>
+                        <th class="text-right">D.Giá</th>
+                        <th class="text-right">T.Tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int i = 1;
+                    }
+                    @foreach (var item in Model.OrderTable.OrderTableItems)
+                    {
+                        <tr>
+                            <td class="text-rcenter">@(i++)</td>
+                            <td>@item.Name</td>
+                            <td class="text-center">@string.Format("{0:0.##}",item.Quantity).Replace(",",".")</td>
+                            <td class="priceFormat text-right">@item.Price.ToString("0.###").Replace(",",".")</td>
+                            <td class="priceFormat text-right">@item.Total.ToString("0.###").Replace(",",".")</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td colspan="2" class="text-right font-weight-bold">Tổng</td>
+                        <td class="text-center font-weight-bold">@string.Format("{0:0.###}",Model.OrderTable.OrderTableItems.Sum(x=>x.Quantity)).Replace(",",".")</td>
+                        <td class="text-center"></td>
+                        <td class="text-right font-weight-bold priceFormat">@Model.OrderTable.OrderTableItems.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-5">
+            <table class="table table-info-pay">
+               
+                <tr>
+                    <th>Tổng tiền (@Model.OrderTable.Quantity.ToString("0.###").Replace(",","."))</th>
+                    <td class="priceFormat totalPayment">@Model.OrderTable.Amonut.ToString("0.###").Replace(",",".")</td>
+                </tr>
+                <tr>
+                    <th>Giảm giá </th>
+                    <td  style="position: relative;">
+                        <input type="text" value="0" id="discountPayment" class="form-control text-right" />
+                       
+                    </td>
+                </tr>
+                @if (Model.VatMTT)
+                {
+                    <tr>
+                        <th>Mẫu số ký hiệu</th>
+                        <td class="">
+                            @Html.DropDownList("ManagerPatternEInvoices", selectList, new { @class = "form-control" })
+                        </td>
+                    </tr>
+                    if (isVAT)
+                    {
+                        @:<tr class="ele-vatrate">
+                    }
+                    else
+                    {
+                        @:<tr class="ele-vatrate d-none">
+                    }
+                        <th style="display: flex; white-space: nowrap;align-items: center;">
+                                @*<input type="checkbox" checked class="ischeckVAT mr-2" data-toggle="tooltip" data-placement="top" title="Xuất hóa đơn giá trị gia tăng, thì tích vào">*@
+                                <label class="mb-0">Thuế GTGT</label>
+                                <div class="selectvat ml-2">
+                                    <select id="Vatrate" name="Vatrate" class="form-control Vatrate">
+                                        <option value="0">0%</option>
+                                        <option value="5">5%</option>
+                                        <option value="8">8%</option>
+                                        <option value="10" selected>10%</option>
+                                    </select>
+                                </div>
+                            </th>
+                            <td class="">
+                                <b class="VATAmount"></b>
+                            </td>
+                        @:</tr>
+                }
+                
+
+                <tr>
+                    <th>Khách cần trả</th>
+                    <td class=""><b class="amountPayment number3">@Model.OrderTable.Amonut.ToString("0.###").Replace(",",".")</b></td>
+                </tr>
+                <tr>
+                    <th>Khách thanh toán</th>
+                    <td class=""><input type="text" value="@Model.OrderTable.Amonut.ToString("0.###").Replace(",",".")" class="form-control cuspay priceFormat text-right" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="lst-amount-paycus">
+                            @foreach (var item in lstamount)
+                            {
+                                <span data-value="@item" class="number3">@item.ToString()</span>
+                            }
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Tiền thừa</th>
+                    <td class=""><span class="amoutchange priceFormat">0</span></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="paymentMethod">
+                        @foreach (var item in Model.PaymentMethods)
+                        {
+                            <input data-id="@item.Id" checked="@(item.Code=="TM"?true:false)" type="radio" name="idPaymentMethod" class="icheckpayment" /> @item.Name
+                        }
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

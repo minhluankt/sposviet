@@ -1,0 +1,329 @@
+﻿ @using Model
+@model ProductModelView
+@{
+    if (Model.IdUnit==null)
+    {
+        Model.IdUnit = 0;
+    }
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/selling/product">< Trở lại danh sách hàng hóa</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa hàng hóa</li>
+        @*      <li class="breadcrumb-item"><a href="#">Library</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Data</li>*@
+    </ol>
+</nav>
+<div class="main-form-custom">
+    <form asp-area="Selling" id="create-formProduct" method="post" asp-controller="Product" onsubmit="return AddProduct(this)" asp-action="OnPostCreateOrEdit">
+        <partial name="Share" model="Model" />
+
+    </form>
+</div>
+
+@section Scripts
+    {
+<script src="~/lib/elFinder/js/elfinder.min.js"></script>
+@*<script src="~/lib/elFinder/dialogelfinder.js"></script>*@
+
+<script src="~/lib/knockout/knockout-min.js"></script>
+<script src="~/lib/knockout/knockout-file-bindings.js"></script>
+<script src="~/lib/knockout/upload.js"></script>
+<script src="~/lib/pdfjs/pdfobject.js"></script>
+<script src="~/assets/scripts/inputmask/jquery.inputmask.bundle.min.js"></script>
+<script src="~/lib/jquery.filer/js/jquery.filer.js"></script>
+<script src="~/ckeditor4/ckeditor.js"></script>
+@*<script src="@Url.Content("~/summernote/summernote-bs4.js")"></script>*@
+
+@*<script src="~/tinymce/js/tinymce/tinymce.min.js"></script>*@
+
+<script src="~/js/upload.js?time=1237455"></script>
+<script type="text/javascript" language=javascript>
+
+
+      loadEventadmin.InitloadStyleproduct("/Admin/Product/GetStyleProduct?secret=@(Model.UrlParameters)");
+
+
+
+    $("#elfinder-input").change(function(){
+      //  debugger
+       // let sel = $(this);
+       // let url =decodeURI(sel.data("path"));
+        $("#imgCompany").attr("src","/"+$(this).val());
+       // loadURLToInputField(url,sel.data("filename"),sel.data("mime"));
+    })
+        validateForm.EditOrUpdateProduct();
+        loaddaterangepicker();
+        priceFormat();
+        numberFormat();
+        LoadDataTableById("tableImg");
+     function DeleteImg(sel, id,idProduct) {
+         confirms("Xác nhận", "Bạn có chắc chắn muốn xóa không?", "<i class='far fa-times-circle'></i> Hủy", "<i class='fas fa-check-circle'></i> Đồng ý", function () {
+             let _delete = Product.Delete("/Api/Handling/DeleteImg", id,idProduct);
+             if (_delete) {
+                 dataTable
+                     .row($(sel).parents('tr'))
+                     .remove()
+                     .draw();
+               //  $(sel).parents("tr").remove();
+               //  $("#tableImg").DataTable().destroy();
+               //  LoadDataTableById("tableImg");
+             }
+         });
+     }
+        loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#idCategory", @Model.idCategory, "Tất cả");
+        loaddataSelect2CustomsTempalte("/Api/Handling/GetAllUnit", "#IdUnit", @Model.IdUnit, "Tất cả");
+     function DeleteDocument(sel, id) {
+         var _delete = JqueryModal.DeleteRemove('/Api/GetDataManage/DeleteDocumentProduct', id, sel);
+         //if (_delete) {
+         //    cosole.log($(sel).parents("tr"));
+         //    $(sel).parents("tr").remove();
+         //}
+     }
+     function RandomString(sel) {
+         $.ajax({
+             type: 'GET',
+             url: "/admin/Product/RandomStringCode",
+             contentType: false,
+             processData: false,
+             global: false,
+             beforeSend: function () {
+                 loadingElementStart("tab-eg2-0");
+             },
+             success: function (res) {
+                 if (res.isValid) {
+                     $(".code").val(res.data);
+                     loadingStopElement("tab-eg2-0");
+                 }
+             },
+             error: function (err) {
+                 console.log(err)
+             }
+         });
+         $.unblockUI();
+     }
+
+
+     $(".input-mask-trigger").inputmask()
+     $(".select2_cre").select2({
+         placeholder: "Chọn giá trị",
+         allowClear: true,
+         language: {
+             noResults: function () {
+                 return "Không tìm thấy dữ liệu";
+             }
+         },
+     });
+
+
+     // $(".idCity").select2({
+     //    placeholder: "Chọn giá trị",
+     //    allowClear: true,
+     //    language: {
+     //        noResults: function () {
+     //            return "Không tìm thấy dữ liệu";
+     //        }
+     //    },
+     //}).on('change', function (e) {
+     //    $('.idDistrict').empty().append('<option selected="selected" value=""></option>');
+     //   // let url_seri = "/Admin/District/GetDataDistrictByIdCity?idcity=" + this.value;
+     //    let url_seri = "/API/Handling/GetDataDistrictByIdCity?idcity=" + this.value;
+     //    loaddataSelect2(url_seri, ".idDistrict");
+
+     //});
+
+     //$('.idCity').trigger("change");
+     //$('#imgCompany').click(function () { $('#customFile').trigger('click'); });
+     $("#customFile").on("change", function () {
+         var fileName = $(this).val().split("\\").pop();
+         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+     });
+
+     //function loadCheck() {
+     //    $("#checkAllItem").change(function () {
+     //        if (this.checked) {
+     //            $(".checkItem").each(function () {
+     //                this.checked = true;
+     //            });
+     //        } else {
+     //            $(".checkItem").each(function () {
+     //                this.checked = false;
+     //            });
+     //        }
+     //        var array = [];
+     //        $("input[name='checkItem']:checked").each(function () {
+     //            array.push(parseInt(this.value));
+     //        });
+     //        $("#idAccessary").val(JSON.stringify(array));
+     //       // $("#idAccessary").val(array.join(', '));
+     //    });
+
+     //    $(".checkItem").click(function () {
+     //        if ($(this).is(":checked")) {
+     //            var isAllChecked = 0;
+
+     //            $(".checkItem").each(function () {
+     //                if (!this.checked)
+     //                    isAllChecked = 1;
+     //            });
+
+     //            if (isAllChecked == 0) {
+     //                $("#checkAllItem").prop("checked", true);
+     //            }
+     //        }
+     //        else {
+     //            $("#checkAllItem").prop("checked", false);
+     //        }
+     //        var array = [];
+     //        $("input[name='checkItem']:checked").each(function () {
+     //            array.push(parseInt(this.value));
+     //        });
+     //        $("#idAccessary").val(JSON.stringify(array));
+     //    });
+     //}
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        loadeventAddSell()
+        $('#Document').filer({
+            showThumbs: true,
+            addMore: true,
+            allowDuplicates: false,
+            captions: {
+                button: "Chọn tập tin",
+                feedback: "Chọn tập tin cần upload",
+                feedback2: "tập tin đã được chọn",
+                removeConfirmation: "Bạn có chắc chắn muốn xóa tệp không?",
+            }
+        });
+        //$('#idBrand').on("change", function (e) { log("change"); });
+        // $('#idBrand').on("#idBrand:select", function (e) { log("#idBrand:select", e); });
+        $('#ProductAlbum').trigger("filer.append", {
+            files: [{
+                name: "appended_file.jpg",
+
+                type: "image/jpg",
+                file: "https://dummyimage.com/158x113/f9f9f9/191a1a.jpg",
+            }, {
+                name: "appended_file_2.png",
+
+                type: "image/png",
+                file: "https://dummyimage.com/158x113/f9f9f9/191a1a.png",
+            }]
+        })
+        loadLadda();
+        uploadImageCustom("ProductAlbum");
+        //  uploadImageCustom("Document","Chọn tệp (PDF,Image)");
+    });
+    var toolbarGroups = [
+
+        { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi', 'paragraph'] },
+        { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
+        '/',
+        { name: 'styles', groups: ['styles'] },
+        { name: 'colors', groups: ['colors'] },
+        { name: 'tools', groups: ['tools'] },
+        { name: 'others', groups: ['others'] },
+        { name: 'about', groups: ['about'] }
+    ];
+
+
+
+
+
+
+
+
+        //   tinymce.init({
+        //      selector:'textarea#Title',
+        //      //theme: "modern",
+        //      //inline: false,
+        //      height: 280,
+        //        //  plugins: [
+        //        //"advlist","autolink link","image","lists","charmap","print","preview","hr","anchor","pagebreak",
+        //        //"searchreplace","wordcount","visualblocks","visualchars","insertdatetime","media","nonbreaking",
+        //        //"table","contextmenu","directionality","emoticons","paste","textcolor"
+        //        //],
+        //   plugins: [ 'quickbars','image','table','preview','code','emoticons','searchreplace','autolink','link','media' ,'wordcount','directionality'],
+        //        //image_title: true,
+        //         image_advtab: true,
+        //        // file_browser_callback : elFinderBrowser,
+        //         file_picker_callback:function (callback, value, meta) {
+        //            elFinderBrowser(callback, value, meta);
+        //        },
+        //           toolbar1: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | styleselect",
+        //toolbar2: "| link unlink anchor | image media | forecolor backcolor  | print preview code ",
+
+        //        //automatic_uploads: true,
+        //      //   toolbar: 'table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+        //       // file_picker_types: 'image',
+        //        //file_picker_callback: function(cb, value, meta) {
+        //        //    var input = document.createElement('input');
+        //        //    input.setAttribute('type', 'file');
+        //        //    input.setAttribute('accept', 'image/*');
+        //        //    input.onchange = function () {
+        //        //        var file = this.files[0];
+        //        //        var reader = new FileReader();
+
+        //        //        reader.onload = function () {
+        //        //            var id = 'blobid' + (new Date()).getTime();
+        //        //            var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+        //        //            var base64 = reader.result.split(',')[1];
+        //        //            var blobInfo = blobCache.create(id, file, base64);
+        //        //            blobCache.add(blobInfo);
+        //        //            cb(blobInfo.blobUri(), {title: file.name});
+        //        //        };
+        //        //        reader.readAsDataURL(file);
+        //        //    };
+        //        //input.click();
+        //        //}
+
+
+        //  });
+
+
+
+
+
+
+    //        tinymce.init({
+    //          selector:'textarea#Promotion',
+    //          inline: false,
+    //        plugins: [ 'quickbars','image','table','preview','code','emoticons','searchreplace','autolink','link','media' ,'wordcount','directionality'],
+    //            image_title: true,
+    //            automatic_uploads: true,
+    //          //   toolbar: 'table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+    //            file_picker_types: 'image',
+    //            file_picker_callback: function(cb, value, meta) {
+    //                var input = document.createElement('input');
+    //                input.setAttribute('type', 'file');
+    //                input.setAttribute('accept', 'image/*');
+    //                input.onchange = function () {
+    //                    var file = this.files[0];
+    //                    var reader = new FileReader();
+
+    //                    reader.onload = function () {
+    //                        var id = 'blobid' + (new Date()).getTime();
+    //                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+    //                        var base64 = reader.result.split(',')[1];
+    //                        var blobInfo = blobCache.create(id, file, base64);
+    //                        blobCache.add(blobInfo);
+    //                        cb(blobInfo.blobUri(), {title: file.name});
+    //                    };
+    //                    reader.readAsDataURL(file);
+    //                };
+    //    input.click();
+    //}
+
+    //      })
+
+
+
+
+
+
+</script>
+}

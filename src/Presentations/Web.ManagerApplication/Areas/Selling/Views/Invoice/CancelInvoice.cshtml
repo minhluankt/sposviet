@@ -1,0 +1,93 @@
+﻿@using Application.Enums;
+@using Domain.ViewModel;
+@model Domain.ViewModel.PublishInvoiceModelView
+@{
+    var gr = Model.DetailInvoices.GroupBy(x => x.TypePublishEinvoice).ToList();
+    var HUYHOADONOK = new List<DetailInvoice>();
+    var XOADONTHANHCONG = new List<DetailInvoice>();
+    var TRANGTHAIPHATHANHKHONGHOPLE = new List<DetailInvoice>();
+
+    foreach (var item in gr)
+    {
+        switch (item.Key)
+        {
+            case ENumTypePublishEinvoice.HUYHOADONOK:
+                HUYHOADONOK = item.ToList();
+                break;
+            case ENumTypePublishEinvoice.XOADONTHANHCONG:
+                XOADONTHANHCONG = item.ToList();
+                break;
+  
+            case ENumTypePublishEinvoice.TRANGTHAIPHATHANHKHONGHOPLE:
+                TRANGTHAIPHATHANHKHONGHOPLE = item.ToList();
+                break;
+            default:
+                break;
+        }
+    }
+}
+<h4 class="mb-3">Kết quả xử lý dữ liệu đã hoàn tất!</h4>
+<div id="accordionkqpubinv">
+
+    @if (XOADONTHANHCONG.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0"><i class="fas fa-chevron-down mr-2"></i>Xóa hóa đơn thành công  <span class="text-muted font-14">(@XOADONTHANHCONG.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in XOADONTHANHCONG)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+   
+    @if (TRANGTHAIPHATHANHKHONGHOPLE.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-danger" href="#"><h5 class="m-0"><i class="fas fa-chevron-down mr-2"></i>@(XOADONTHANHCONG.Count() > 0 ? "Xóa thất bại" : "Hủy thất bại"), trạng thái không hợp lệ<span class="text-muted font-14">(@TRANGTHAIPHATHANHKHONGHOPLE.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in TRANGTHAIPHATHANHKHONGHOPLE)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+    }
+   
+    @if (HUYHOADONOK.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0"><i class="fas fa-chevron-down mr-2"></i>Hủy đơn thành công  <span class="text-muted font-14">(@HUYHOADONOK.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in HUYHOADONOK)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+
+
+
+</div>

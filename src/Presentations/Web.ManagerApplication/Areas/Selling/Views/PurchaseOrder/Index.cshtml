@@ -1,0 +1,232 @@
+﻿@model Model.ProductSearch
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="">
+                    <label>Mã đơn nhập, nhà cung cấp</label>
+                    <input type="text" name="textSearch" id="code" placeholder="Mã đơn nhập, nhà cung cấp..." class="form-control">
+                </div>
+            </div>
+           @* <div class="col-md-5">
+                <div class="">
+                    <label>Tên/Mã sản phẩm</label>
+                    <input type="text" name="textSearch" id="code" placeholder="Tên/Mã sản phẩm..." class="form-control">
+                </div>
+            </div>
+*@
+        </div>
+
+    </div>
+    <div class="card-footer text-center" style=" display: block;">
+        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="col-sm-12 pt-2">
+        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-group mr-2" role="group" aria-label="First group">
+                <button class="ladda-button mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                    <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Load lại dữ liệu</span>
+                    <span class="ladda-spinner"></span>
+                </button>
+            </div>
+            <div class="btn-group lstbtnaction" role="group" aria-label="Second group">
+                <a href="/selling/PurchaseOrder/Create" class="btn btn-success"><i class="fas fa-file-import"></i> Nhập hàng</a>
+           </div>
+        </div>
+    </div>
+
+
+    <div id="viewAll" class="card-body">
+        <table class="table table-bordered table-hover table-striped" style=" " id="dataTable">
+            <thead>
+                <tr>
+                    <th>Mã hàng</th>
+                    <th>Ngày nhập</th>
+                    <th>Nhà cung cấp</th>
+                    <th>Tổng mặt hàng</th>
+                    <th>Tổng tiền nhập</th>
+                    <th>Giảm giá</th>
+                    <th>Cần trả NCC</th>
+                    <th>Đã trả NCC</th>
+                    <th>Nợ NCC</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts
+    {
+    <script>
+        $(document).ready(function () {
+            dataTableOut = $('#dataTable').DataTable({
+                "responsive": true,
+                "processing": true,
+                stateSave: true,
+                "pagingType": "full_numbers",
+                "serverSide": true,
+                "filter": true,
+                "rowId": "id",
+                "orderMulti": false,
+                "ordering": false,
+                //"order": [[0, "desc"]],
+                "language": {
+                    "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                    "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                    "zeroRecords": "Không tìm thấy dữ liệu nào",
+                    "emptyTable": "Không có dữ liệu",
+                    "search": "Tìm kiếm:",
+                    "processing": "Đang xử lý...",
+                    "lengthMenu": "Hiển thị _MENU_ dòng",
+                    "loadingRecords": "Vui lòng chờ...",
+                    "paginate": {
+                        "first": "Đầu tiên",
+                        "last": "Cuối cùng",
+                        "next": "Tiếp theo",
+                        "previous": "Về trước"
+                    },
+                },
+                "pageLength": 10,
+                "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+                "buttons": [
+                    {
+                        text: 'Reload',
+                        action: function (e, dt, node, config) {
+                            dataTableOut.ajax.reload();
+                        }
+                    }
+                ],
+                "columnDefs": [
+
+                    { className: "text-right", "targets": [3,4,5,6,7,8] },
+                    { className: "text-center", "targets": [-1, 0] },
+
+                    { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+
+
+                    {
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": [-1, 0],
+
+                    },
+                    { "width": "100px", "targets": -1 }
+
+                ],
+                ajax: {
+                    url: "/Selling/PurchaseOrder/LoadAll",
+                    type: "POST",
+                    datatype: "json",
+                    data: {
+                        code: function () { return $('#code').val().trim() },
+                        Type: function () { return TypePurchaseOrder.NHAP_HANG },
+                    }
+                },
+                //"drawCallback": function (settings) {
+                //},
+
+                "columns": [
+                    { 
+                        "data": "purchaseNo", "name": "PurchaseNo", "autoWidth": true,
+                        "render": function (data, type, full, meta) {
+                            return '<a href="javascript:void(0)" data-id="' + full.urlParameters + '">' + full.purchaseNo + '</a>';
+                        }
+                    },
+                    {
+                        "data": "date", "name": "date", "autoWidth": true,
+
+                    },
+
+                    { "data": "suppliersName", "name": "SuppliersName", "autoWidth": true }
+                    ,
+                    {
+                        "data": "quantity", "name": "Quantity", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },
+                    {
+                        "data": "total", "name": "Total", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    }, 
+                    {
+                        "data": "discountAmount", "name": "DiscountAmount", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    },  {
+                        "data": "amount", "name": "Amount", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    }, 
+                    {
+                        "data": "amountSuppliers", "name": "AmountSuppliers", "autoWidth": true,
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    }, {
+                        "data": "debtAmount", "name": "DebtAmount", "autoWidth": true,
+                        "render": function (data, type, full, meta) {
+                            if (full.amountSuppliers != full.debtAmount && parseFloat(full.debtAmount) != 0) {
+                                return '<b class="text-danger">' + $.fn.dataTable.render.number(',', '.', 0).display(full.debtAmount) + '</b>';
+                            }
+                            return $.fn.dataTable.render.number(',', '.', 0).display(full.debtAmount);
+                        }
+                    },
+                    {
+                  
+                        "data": "status", "name": "status",
+                        "render": function (data, type, full, meta) {
+                            if (full.status == @((int)Application.Enums.EnumStatusPurchaseOrder.DA_NHAP_HANG)) {
+                                return '<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> Đã nhập hàng</span>';
+                            }
+                            return '<span class="badge badge-danger"><i class="fas fa-check-circle" style=""></i> Đã hủy</span>';
+                        }
+                    },
+                    {
+                        "data": null, "name": "",
+                        "render": function (data, type, full, meta) {
+                            let html = `<div class="btn-group dropleft">
+                                                 <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> </button>
+                                                        <div class="dropdown-menu">
+                                                                   <a class="dropdown-item" href="javascript:void(0)" onclick="PurchaseOrder.loadeventShowdetail('`+ full.urlParameters + `', ` + TypePurchaseOrder.NHAP_HANG + `)"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
+                                                         </div>
+                                                  </div>`;
+                            return html;
+                        }
+                    }
+                    
+
+                ],
+                initComplete() {
+                    //$("#dataTable tbody tr").click(function(){
+                    //    let id = $(this).find("td:first").find("a").data("id");
+                    //    PurchaseOrder.loadeventShowdetail(id, TypePurchaseOrder.NHAP_HANG)
+                    //});
+                }
+
+            });
+            $('#reload').on('click', function () {
+                dataTableOut.ajax.reload(null, false);
+
+            });
+            $('input').keyup(function (e) {
+                if (e.keyCode == 13) {
+                    dataTableOut.ajax.reload(null, false);
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,119 @@
+﻿@using Application.Enums;
+@using Domain.ViewModel;
+@model Domain.ViewModel.PublishInvoiceModelView
+@{
+    var gr = Model.DetailInvoices.GroupBy(x => x.TypePublishEinvoice).ToList();
+    var lstdatphathanh = new List<DetailInvoice>();
+    var PHATHANHLOI = new List<DetailInvoice>();
+    var KHONGTONTAINHACUNGCAP = new List<DetailInvoice>();
+    var TRANGTHAIPHATHANHKHONGHOPLE = new List<DetailInvoice>();
+    var DONDAHUY = new List<DetailInvoice>();
+    var DAPHATHANHROI = new List<DetailInvoice>();
+    foreach (var item in gr)
+    {
+        switch (item.Key)
+        {
+            case ENumTypePublishEinvoice.PHATHANHOK:
+                lstdatphathanh = item.ToList();
+                break;
+            case ENumTypePublishEinvoice.PHATHANHLOI:
+                PHATHANHLOI = item.ToList();
+                break;
+            case ENumTypePublishEinvoice.KHONGTONTAINHACUNGCAP:
+                KHONGTONTAINHACUNGCAP = item.ToList();
+                break;
+            case ENumTypePublishEinvoice.TRANGTHAIPHATHANHKHONGHOPLE:
+                TRANGTHAIPHATHANHKHONGHOPLE = item.ToList();
+                break;
+            default:
+                break;
+        }
+    }
+}
+<h4 class="mb-3">Kết quả xử lý dữ liệu đã hoàn tất!</h4>
+<div id="accordionkqpubinv">
+
+    @if (lstdatphathanh.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0"><i class="fas fa-chevron-down mr-2"></i>Phát hành thành công hóa đơn điện tử <span class="text-muted font-14">(@lstdatphathanh.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in lstdatphathanh)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    @if (PHATHANHLOI.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0"><i class="fas fa-chevron-down mr-2"></i>Hóa đơn phát hành thất bại <span class="text-muted font-14">(@PHATHANHLOI.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in PHATHANHLOI)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+    }
+    @if (KHONGTONTAINHACUNGCAP.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#">
+                <h5 class="m-0">
+                    <i class="fas fa-chevron-down mr-2"></i>Hóa đơn không tìm thấy nhà cung cấp để phát hành
+                    <span class="text-muted font-14">(@KHONGTONTAINHACUNGCAP.Count())</span>
+                </h5>
+            </a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in KHONGTONTAINHACUNGCAP)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+    }
+    @if (TRANGTHAIPHATHANHKHONGHOPLE.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0"><i class="fas fa-chevron-down mr-2"></i>Hóa đơn có trạng thái không hợp lệ <span class="text-muted font-14">(@TRANGTHAIPHATHANHKHONGHOPLE.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in TRANGTHAIPHATHANHKHONGHOPLE)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+    }
+
+
+</div>

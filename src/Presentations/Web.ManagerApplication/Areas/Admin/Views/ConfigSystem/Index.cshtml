@@ -1,0 +1,292 @@
+﻿@model Web.ManagerApplication.Areas.Admin.Models.ConfigSystemViewModel
+<link href="~/lib/DevExtreme/css/dx.light.css" rel="stylesheet">
+<link href="~/lib/DevExtreme/css/dx.common.css" rel="stylesheet">
+<style>
+
+</style>
+<div class="card">
+    <div class="card-header">
+        <h5 class="font-weight-bold mt-0 mb-0">Cấu hình hệ thống người dùng</h5>
+    </div>
+    <div class="card-body">
+    </div>
+</div>
+<div class="configsystem mt-3">
+    <div class="">
+        @*    <div class="card-header">
+            <h5>Cấu hình hệ thống người dùng</h5>
+            </div>*@
+        <div class="">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="font-weight-bold">Cấu hình hiển thị bố cục danh mục trang chủ</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="treeview"></div>
+
+                            @* @if (Model.listcategory != null)
+                                {
+                                <ul>
+                                @foreach (var item in Model.listcategory)
+                                {
+                                <li>
+                                <input type="checkbox" checked="@item.Selected" class="icheck" value="@item.Id" /> @item.Name
+                                </li>
+                                }
+                                </ul>
+                                }
+                            *@
+                        </div>
+                        <div class="card-footer">
+                            <div class="col-sm-12">
+                                <button type="button" id="reloadSettingShowProductInHome" class="btn btn-primary"><i class="fa fas fa-bolt"></i> Reload</button>
+                                <button type="button" class="ladda-button btn btn-success btn-save-setting-category-home" data-style="expand-left">
+                                    <span class="ladda-label"><i class="fa fas fa-save"></i>  Lưu</span>
+                                    <span class="ladda-spinner"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-3" id="col-setting-genagerBannerheader">
+                        <form id="setting-genagerBannerheader">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="font-weight-bold">Cấu hình banner header layout</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Loại banner header layout</label>
+
+                                        <div class="form-check" style="display: initial;">
+                                            <input class="form-check-input icheck" type="radio" value="1" name="layoutHeader" id="flexRadioDefault1"
+                                                   @if(Model.layoutHeader==1){
+                                                   @:checked
+                                                   }>
+                                            <label class="form-check-label" for="flexRadioDefault1">
+                                                Banner header loại 1
+                                            </label>
+                                        </div>
+                                        <div class="form-check" style="display: initial;">
+                                            <input class="form-check-input icheck" type="radio" value="2" name="layoutHeader" id="flexRadioDefault2"
+                                                   @if(Model.layoutHeader==2){
+                                                   @:checked
+                                                   }>
+                                            <label class="form-check-label" for="flexRadioDefault2">
+                                                Banner header full
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="card-footer">
+                                    <div class="col-sm-12">
+
+                                        <button type="button" class="ladda-button btn btn-success btn-save-setting-headerlayout" data-style="expand-left">
+                                            <span class="ladda-label"><i class="fa fas fa-save"></i>  Lưu</span>
+                                            <span class="ladda-spinner"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card" id="col-setting-genager">
+                        <form id="setting-genager">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="font-weight-bold">Cấu hình số trang hiển thị người dùng</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Số sản phẩm hiển thị của mỗi chuyên mục trên trang chủ</label>
+                                        <input type="number" class="form-control" value="@Model.pageSizeProductInCategory" id="pageSizeProductInCategory" name="pageSizeProductInCategory" placeholder="Nhập số">
+                                    </div>
+
+                                </div>
+                                <div class="card-footer">
+                                    <div class="col-sm-12">
+
+                                        <button type="button" class="ladda-button btn btn-success btn-save-setting-inCustome-genager" data-style="expand-left">
+                                            <span class="ladda-label"><i class="fa fas fa-save"></i>  Lưu</span>
+                                            <span class="ladda-spinner"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card mt-3" id="col-setting-sell">
+                        <form id="setting-sellBannerheader">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="font-weight-bold">Cấu hình chuyên mục giảm giá trang chủ</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Url tĩnh </label>
+                                        <input type="text" class="form-control" value="@(Model.SellModelSetting!=null?Model.SellModelSetting.UrlSell:"")" name="UrlSell" id="UrlSell" placeholder="Url tĩnh" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Tên tiêu đề khuyến mãi</label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" name="TitleSell" id="TitleSell" class="form-control" value="@(Model.SellModelSetting!=null?Model.SellModelSetting.TitleSell:"")" placeholder="Tiêu đề khuyến mãi" />
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" style="background: #fff" id="basic-addon2"> <input checked="@(Model.SellModelSetting!=null?Model.SellModelSetting.ShowTitle:false)" type="checkbox" class="icheck" value="@(Model.SellModelSetting!=null?Model.SellModelSetting.ShowTitle.ToString():false)" name="ShowTitle" /></span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Màu tiêu đề khuyến mãi</label>
+                                        <input type="color" name="ColorTitle" id="ColorTitle" class="color form-control" value="@(Model.SellModelSetting!=null?Model.SellModelSetting.ColorTitle:"")" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Màu nền khung hiển thị</label>
+                                        <input type="color" name="Color" id="Color" class="color form-control" value="@(Model.SellModelSetting!=null?Model.SellModelSetting.Color:"")" placeholder="Url tĩnh" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Hình nền top</label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" name="ImgSell" value="@(Model.SellModelSetting!=null?Model.SellModelSetting.ImgSell:"")" style="background-color:#fff" readonly id="elfinder-input" class="form-control" placeholder="Tên file" aria-describedby="basic-addon2">
+                                            <div class="input-group-append" onclick="popupCenter('/Elfinder/browse?ckeditor=0&id=elfinder-input', 'myPop1',600,450);">
+                                                <span class="input-group-text" id="basic-addon2">Chọn file</span>
+                                            </div>
+                                        </div>
+                                        @if (Model.SellModelSetting != null)
+                                        {
+                                            if (!string.IsNullOrEmpty(Model.SellModelSetting.ImgSell))
+                                            {
+                                                <img src="/@Model.SellModelSetting.ImgSell" id="Imgdata" style="width:200px;" />
+                                            }
+                                            else
+                                            {
+                                                <img src="../images/no-img.png" id="Imgdata" style="width:200px;" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <img src="../images/no-img.png" id="Imgdata" style="width:200px;" />
+                                        }
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="col-sm-12">
+                                        <button type="button" class="ladda-button btn btn-success btn-save-setting-sell" data-style="expand-left">
+                                            <span class="ladda-label"><i class="fa fas fa-save"></i>  Lưu</span>
+                                            <span class="ladda-spinner"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+@section Scripts
+{
+<script>
+    validateForm.UpdateConfigSystem_settingsellBannerheader();
+       $("#elfinder-input").change(function(){
+       $("#Imgdata").attr("src","/"+$(this).val());
+       // loadURLToInputField(url,sel.data("filename"),sel.data("mime"));
+    })
+       $('input.icheck').on('ifChecked', function (event){
+            $(this).val(true).attr('value', true);
+        });
+        $('input.icheck').on('ifUnchecked', function (event) {
+            $(this).val(false).attr('value', false);
+        });
+     const selectedEmployeesList = $('#selected-employees').dxList({
+       width: 400,
+       height: 200,
+       showScrollbar: 'always',
+       itemTemplate(item) {
+         return `<div>${item.prefix} ${item.fullName} (${item.position})</div>`;
+       },
+     }).dxList('instance');
+
+    // const treeView =
+
+     function loadtree(dataItem){
+          $('#treeview').dxTreeView({
+           items: dataItem,
+          // width: 340,
+            dataStructure: 'plain',
+           keyExpr: "id",
+           parentIdExpr: "parentId",
+           height: 320,
+           showCheckBoxesMode: 'normal',
+           onSelectionChanged(e) {
+             syncSelection(e.component);
+           },
+           onContentReady(e) {
+             syncSelection(e.component);
+           },
+           itemTemplate(item) {
+               let _stylePattern = item.parentId!=null?"childr":"pattern";
+             return `<div class="`+_stylePattern+`">${item.name} (${item.CreatedOn})</div>`;
+           },
+         }).dxTreeView('instance');
+     }
+     function syncSelection(treeViewInstance) {
+       const selectedEmployees = treeViewInstance.getSelectedNodes()
+         .map((node) => node.itemData);
+
+      // selectedEmployeesList.option('items', selectedEmployees);
+     }
+
+
+
+
+
+
+       $(document).ready(function () {
+                           // $("#userTable").DataTable();
+                           loadData();
+                           $('#reloadSettingShowProductInHome').on('click', function () {
+                               loadData();
+                           });
+                       });
+                       function loadData() {
+
+                            $.ajax({
+                                 type: 'GET',
+                                 url: "/admin/ConfigSystem/Getjsontreeview",
+                                 contentType: false,
+                                 processData: false,
+                                 success: function (res) {
+                                     if (res.isValid) {
+                                         itemsDriveC = JSON.parse(res.json);
+                                         loadtree(itemsDriveC);
+                                     } else {
+                                         // alert lỗi khi false
+                                     }
+                                     //console.log(res);
+                                 },
+                                 error: function (err) {
+                                     console.log(err)
+                                 }
+                             });
+                       }
+</script>
+}

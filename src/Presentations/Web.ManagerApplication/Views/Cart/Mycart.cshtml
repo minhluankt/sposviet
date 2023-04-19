@@ -1,0 +1,221 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Model
+@using Application.Enums
+@using Web.ManagerApplication.Views.Shared.Components.ProfileSlidebar
+
+@model CustomerModelView
+
+@inject IHtmlLocalizer<SharedResource> localizer
+@{
+    bool allcheck = false;
+    if (Model.CartDetailts.Count() == Model.CartDetailts.Where(x => x.isSelected).Count())
+    {
+        allcheck = true;
+    }
+
+}
+<div class="container mycart">
+    <div class="header-top">
+        <i class="icon-arrow_back_white icon-cd btn-back-mobi"></i>   <h4>Giỏ Hàng</h4>
+    </div>
+    <h5 class="title-c">Giỏ hàng của bạn</h5>
+    <div class="row">
+        @if (Model.CartDetailts.Count() > 0)
+        {
+            <div class="col-xl-9">
+                <div class="row">
+
+                    <div class="card shadow mb-3">
+                        <div class="card-body pt3 pb-3">
+                            <div class="wrapper-title header-cart">
+                                <div><input type="checkbox" class="icheck" id="check-all" checked="@allcheck" /> <span class="ml-2">Tổng số sản phẩm (@Model.CartDetailts.Where(x=>x.isSelected).Sum(x=>x.Quantity))</span></div>
+                                <div class="pr-3 text-right d-none d-md-block remove-mobi">Đơn giá</div>
+                                <div class="pr-3 text-right d-none d-md-block remove-mobi">Số lượng</div>
+                                <div class="pr-3 text-right d-none d-md-block remove-mobi">Thành tiền</div>
+                                <div class="d-none d-md-block"><i class="fas fa-trash-alt"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @foreach (var item in Model.CartDetailts)
+                    {
+
+                        decimal price = item.Price;
+
+
+                        if (item.isPromotionRun)
+                        {
+                            if (item.PriceDiscountRun > 0)
+                            {
+                                price = item.PriceDiscountRun;
+                            }
+                            else if (item.DiscountRun > 0)
+                            {
+                                price = item.Price - ((decimal)(item.DiscountRun / 100) * item.Price);
+                            }
+                        }
+                        else if (item.isPromotion && item.ExpirationDateDiscount != null)
+                        {
+                            if (item.ExpirationDateDiscount.Value >= DateTime.Now)
+                            {   // tức là còn hạn mới áp dụng
+                                if (item.PriceDiscount > 0)
+                                {
+                                    price = item.PriceDiscount;
+                                }
+                                else if (item.Discount > 0)
+                                {
+                                    price = item.Price - ((decimal)(item.Discount / 100) * item.Price);
+                                }
+                            }
+                        }
+                        <div class="card shadow item-cart mb-3">
+                            <div class="card-body">
+                                <div class="wrapper-title">
+                                    <div class="prod-name">
+                                        <div class="checkbox-col">
+                                            @if (item.isSelected)
+                                            {
+                                                <input type="checkbox" class="icheck mr-2 item-check" value="@item.Id" data-id="@item.Id" data-IdCart="@item.IdCart" checked="checked" />
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" class="icheck mr-2 item-check" value="@item.Id" data-id="@item.Id" data-IdCart="@item.IdCart" />
+                                            }
+                                        </div>
+
+                                        <img src="~/@item.Img" />
+                                        <div class="name-pri">
+                                            <span class="name">@item.Name</span>
+
+                                            <div class="pr-3 text-right text-price remove-pc d-lg-none d-block">
+                                                @if (item.isPromotionRun)
+                                                {
+                                                    <span class="current_price">
+                                                        @if (item.PriceDiscountRun > 0)
+                                                        {
+                                                            @:@(item.PriceDiscount.ToString("N0"))₫
+                                                        }
+                                                        else if (item.DiscountRun > 0)
+                                                        {
+                                                            @:@((item.Price - (Convert.ToDecimal((item.DiscountRun/100))*item.Price)).ToString("N0"))₫
+                                                        }
+                                                    </span>
+                                                    <del class="old_price">@(item.Price.ToString("N0"))₫</del>
+
+                                                }
+                                                else if (item.isPromotion && (item.ExpirationDateDiscount.HasValue && item.ExpirationDateDiscount.Value >= DateTime.Now))
+                                                {
+                                                    <span class="current_price">
+                                                        @if (item.PriceDiscount > 0)
+                                                        {
+                                                            @:@(item.PriceDiscount.ToString("N0"))₫
+                                                        }
+                                                        else if (item.Discount > 0)
+                                                        {
+                                                            @:@((item.Price - (Convert.ToDecimal((item.Discount/100))*item.Price)).ToString("N0"))₫
+                                                        }
+                                                    </span>
+                                                    <del class="old_price">@(item.Price.ToString("N0"))₫</del>
+
+                                                }
+                                                else
+                                                {
+                                                    <span class="current_price">@(item.Price.ToString("N0"))₫</span>
+
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pr-3 text-right text-price">@price.ToString("N0")</div>
+                                    <div class="pr-3 text-center">
+                                        <div class="product-qty">
+                                            <button class="btn-minus btn-cts" type="button"> – </button>
+                                            <input id="qty" type="text" class="qty-input" value="@item.Quantity" data-price="@price.ToString("F0")" data-id=@(item.IdProduct)>
+                                            <button class="btn-plus btn-cts" type="button">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="pr-3 text-right text-amount">
+                                        @((item.Quantity * price).ToString("N0"))
+                                    </div>
+                                    <div><i class="fas fa-trash-alt remove-item-cart" data-id="@item.Id"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+            <div class="col-xl-3 info-cart-payment">
+                <div class="card shadow mb-3">
+                    <div class="card-body body-content">
+                        <div class="title">
+                            <span>Thông tin giao hàng</span>
+                            <a class="btn btn-primary-line" href="/Account/DeliveryAddress">Thay đổi</a>
+                        </div>
+                        <div class="info-user-cart">
+                            <b class="contact"><span class="name">@Model.Customer.Name</span><span class="phone">@Model.Customer.PhoneNumber</span></b>
+                            <span class="adderss">@(Model.Customer.Address),</span>
+                            @if (Model.Customer.City != null)
+                            {
+                                <span class="adderss">
+
+                                    @if (Model.Customer.Ward != null)
+                                    {
+                                        @(Model.Customer.Ward.Prefix+" "+ Model.Customer.Ward.Name)
+
+                                        @:,
+                                    }
+                                    @if (Model.Customer.District != null)
+                                    {
+                                        @(Model.Customer.District.Prefix+" "+Model.Customer.District.Name)
+
+                                        @:,
+                                    }
+                                    @if (Model.Customer.City != null)
+                                    {
+                                        @(Model.Customer.City.Prefix+" "+Model.Customer.City.Name)
+                                    }
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="check-amount-payment">
+                    <div class="card shadow">
+                        <div class="card-body content-payment">
+                            <div class="total remove-mobi">
+                                <span class="text">Tạm tính</span>
+                                <span class="value-total">@Model.CartModel.Total.ToString("N0") vnđ</span>
+                            </div>
+                            <div class="total-payment">
+                                <span class="text">Tổng tiền</span>
+                                <span class="value-amount">@Model.CartModel.Amount.ToString("N0") vnđ</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/Cart/payment"><button class="btn btn-order">Đặt hàng</button></a>
+                </div>
+
+            </div>
+        }
+        else
+        {
+            <div class="no-cart">
+                <span class="icon-cd icon-nocart icon"></span>
+                <h3>Hiện không có sản phẩm nào</h3>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts
+        {
+<script>
+
+    $().ready(function () {
+       loadeventCheckallCart();
+        loadnEvent_init.loadeventcardmobi();
+    });
+</script>
+        }

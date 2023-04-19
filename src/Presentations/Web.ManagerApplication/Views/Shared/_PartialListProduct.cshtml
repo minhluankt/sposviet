@@ -1,0 +1,230 @@
+﻿@using Application.Constants
+@using Domain.Entities
+@using Application.Enums
+@using HelperLibrary;
+@model Model.ProductSearch
+@using SystemVariable
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@using X.PagedList.Web.Common;
+@{
+    var keyword = Context.Request.Query["keyword"].ToString();
+    //var sortby = Context.Request.Query["sortby"].ToString();
+    //var search = Context.Request.Query["search"].ToString();
+    //var idPrice = Context.Request.Query["idPrice"].ToString();
+    string classSort = "d-none";
+    string classActiveSort = string.Empty;
+    if (!string.IsNullOrEmpty(Model.sortby))
+    {
+        classSort = string.Empty;
+        classActiveSort = "active";
+    }
+}
+<div class="index-block-product">
+    <div class="header-block clearfix">
+
+        @if (Model.CategoryProduct != null)
+        {
+            <h3> <a href="/@Model.CategoryProduct.Slug" title="@Model.CategoryProduct.Name">@Model.CategoryProduct.Name</a></h3>
+
+
+            @* <span class="d-lg-none button_show_sortby d-none d-lg-block">
+                <span class="icon-cd icon-filter"></span>
+                </span>*@
+
+
+            @if (Model.CategoryProduct.CategoryChilds != null && Model.CategoryProduct.CategoryChilds.Count() > 0)
+            {
+                <span class="d-lg-none button_show_tab">
+                    <span class="icon-cd icon-bar_left_black"></span>
+                </span>
+                <aside class="viewmore">
+                    @foreach (var item in Model.CategoryProduct.CategoryChilds)
+                    {
+                        <a href="/@item.Slug" title="@item.Name">@item.Name</a>
+                    }
+                </aside>
+            }
+        }
+        else
+        {
+            <div class="title-data-search">
+                @* <span class="d-lg-none button_show_sortby">
+                    <span class="icon-cd icon-filter"></span>
+                    </span>
+                *@
+                (Kết quả tìm kiếm @Model.keyword)
+                <small>Hiện có <b>@(Model.ProductPagedList.TotalItemCount)</b> kết quả phù hợp</small>
+            </div>
+        }
+    </div>
+    <div class="sorst-data">
+        <div class="list-action">
+            <span class="d-lg-none button_show_sortby">
+                <i class="fas fa-sort-amount-down mr-2"></i> Sắp xếp
+            </span>
+            <span class="d-lg-none button_show_search">
+                <i class="fas fa-filter  mr-2"></i> Tìm kiếm
+            </span>
+        </div>
+    </div>
+    <div class="block-product">
+        <div class="row-order d-lg-block d-none">
+            <div class="content">
+                <fieldset>
+                    <legend>
+                        Sắp xếp theo:
+                    </legend>
+                    <ul class="list-check">
+                        <li>
+                            <input type="radio" name="order" id="order" order="name-asc" class="iradio_square-green" />
+                            Tên A-Z
+                        </li>
+                        <li>
+                            <input type="radio" name="order" id="order" order="name-desc" class="iradio_square-green" />
+                            Tên Z-A
+                        </li>
+                        <li>
+                            <input type="radio" name="order" id="order" order="id-desc" class="iradio_square-green" />
+                            Sản phẩm mới
+                        </li>
+                        <li>
+                            <input type="radio" name="order" id="order" order="price-asc" class="iradio_square-green" />
+                            Giá thấp đến cao
+                        </li>
+                        <li>
+                            <input type="radio" name="order" id="order" order="price-desc" class="iradio_square-green" />
+                            Giá cao xuống thấp
+                        </li>
+                    </ul>
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-row" id="ListProduct">
+            @foreach (var product in Model.ProductPagedList)
+            {
+                decimal price = product.Price;
+
+                if (product.isRunPromotion)
+                {
+                    if (product.PriceDiscountRun > 0)
+                    {
+                        price = product.PriceDiscountRun;
+                    }
+                    else if (product.DiscountRun > 0)
+                    {
+                        price = product.Price - ((decimal)(product.DiscountRun / 100) * product.Price);
+                    }
+                }
+                else if (product.isPromotion && product.ExpirationDateDiscount != null)
+                {
+                    if (product.ExpirationDateDiscount.Value >= DateTime.Now)
+                    {   // tức là còn hạn mới áp dụng
+                        if (product.PriceDiscount > 0)
+                        {
+                            price = product.PriceDiscount;
+                        }
+                        else if (product.Discount > 0)
+                        {
+                            price = product.Price - ((decimal)(product.Discount / 100) * product.Price);
+                        }
+                    }
+                }
+
+
+                <div class="col-product-2 col-item">
+                    <div class="body">
+                        <div class="product_thumb">
+                            <a href="/@(product.Slug)">
+                                @* <img src="~/@(SystemVariableHelper.FolderUpload)@(FolderUploadConstants.Product)/@product.Img" />*@
+                                <img src="~/@product.Img" />
+                            </a>
+                            @if (product.isPromotion)
+                            {
+                                <div class="label_product">
+                                    <span class="label_sale"> @(product.isRunPromotion?product.DiscountRun:product.Discount)% </span>
+                                </div>
+                            }
+                            <div class="item-addcart">
+                                <a href="javascript:void(0)" class="add-to-cart" data-id="@(product.Id)"
+                               data-name="@product.Name" data-price="@price.ToString("N0")" data-img="/@product.Img">
+                                    <i class="fas fa-cart-arrow-down"></i>
+                                    <span>Thêm vào giỏ</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="product_content">
+                            <a class="product_name" href="/@(product.Slug)" title="@(product.Name)" tabindex="0"> @(product.Name)</a>
+                            <div style="display: flex;" class="star">
+                                <div style="position: relative;">
+                                    <div style="display: flex; align-items: center;">
+                                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
+                                    </div><div style="width: 96%; white-space: nowrap; position: absolute; left: 0px; top: -2px; overflow: hidden;"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg></div>
+                                </div>
+                            </div>
+                            <div class="price-container">
+
+                                @if (product.isPromotion)
+                                {
+                                    <span class="current_price">@(price.ToString("N0"))₫</span>
+                                    <span class="old_price">@(product.Price.ToString("N0"))₫</span>
+                                }
+                                else
+                                {
+                                    <span class="current_price">@(product.Price.ToString("N0"))₫</span>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            }
+
+
+        </div>
+    </div>
+    @if (Model.ProductPagedList.TotalItemCount > 0)
+    {
+        <div class="pagination-product">
+
+            @Html.PagedListPager(Model.ProductPagedList, page => Url.Action(
+        "Index",
+        new {
+        keyword=Model.keyword,
+        slug=Model.Slug,
+        page=page,
+        search=Model.search,
+        sortby=Model.sortby,
+        idPrice=Model.idPrice
+        }),
+        PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+        {
+        MaximumPageNumbersToDisplay = 10,
+        DisplayPageCountAndCurrentLocation = false,
+        UlElementClasses = new[] { "pagination" },
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        LinkToFirstPageFormat = "«",
+        LinkToLastPageFormat = "»",
+        LiElementClasses = new[] { "page-item" },
+        HtmlEncoder = System.Text.Encodings.Web.HtmlEncoder.Default,
+        EllipsesFormat = "&#8230;",
+        PageClasses = new[] { "page-link" },
+        ContainerDivClasses = new[] { "pagination-container" }
+        },
+        new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "nameListContainer" }))
+        </div>
+    }
+    else
+    {
+        <div class="notdata">
+            @if (!string.IsNullOrEmpty(Model.Img))
+            {
+                <img src="/@(SystemVariable.SystemVariableHelper.FolderUpload)/@(Application.Constants.FolderUploadConstants.ComPany)/@Model.Img">
+            }
+
+            <span>Rất tiếc không tìm thấy sản phẩm phù hợp với yêu cầu<br /> Vui lòng thay đổi bộ lọc để có kết quả tốt hơn</span>
+        </div>
+    }
+</div>

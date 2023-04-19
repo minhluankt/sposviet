@@ -1,0 +1,166 @@
+﻿@{
+    ViewData["Title"] = localizer["Users"];
+    ViewData["Caption"] = localizer["Manage Users here"];
+
+}
+<div class="card">
+    <div class="card-header">
+        <h5 class="font-weight-bold mt-0 mb-0">Danh sách các bài viết</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-12 pt-2">
+                <a onclick="commonEventpost.addOrEditPostOnePgae('/admin/Post/CreateOrEdit')">
+                    <button class="mb-2 mr-2 btn-icon btn btn-success"><i class="fas fa-plus-circle"> </i> Thêm mới</button>
+                </a>
+
+                <button class="ladda-button mb-2 mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                    <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Reload</span>
+
+                    <span class="ladda-spinner"></span>
+                </button>
+
+
+            </div>
+            <div id="viewAll" class="card-body">
+                <table class="table table-bordered table-striped" id="dataTable" style=" ">
+                    <thead>
+                        <tr>
+                            <th class="d-none"></th>
+                            <th>Chuyên mục</th>
+                            <th>Bài viết</th>
+                            <th>Hình ảnh</th>
+                            <th>Hiển thị</th>
+                            <th>Ngày tạo</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+<script src="~/lib/elFinder/js/elfinder.full.min.js"></script>
+<script>
+     $(document).ready(function () {
+        dataTableOut = $('#dataTable').DataTable({
+            "responsive": true,
+            "processing": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "filter": true, "rowId": "id",
+            "orderMulti": false,
+            "order": [[0, "desc"]],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                "zeroRecords": "Không tìm thấy dữ liệu nào",
+                "emptyTable": "Không có dữ liệu",
+                "search": "Tìm kiếm:",
+                "processing": "Đang xử lý...",
+                "lengthMenu": "Hiển thị _MENU_ dòng",
+                "loadingRecords": "Vui lòng chờ...",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Tiếp theo",
+                    "previous": "Về trước"
+                },
+            },
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+            "buttons": [
+                {
+                    text: 'Reload',
+                    action: function (e, dt, node, config) {
+                        dataTableOut.ajax.reload();
+                    }
+                }
+            ],
+            "columnDefs": [
+
+              /*  { className: "text-right", "targets":0 },*/
+                { className: "text-center", "targets": [-1,0] },
+
+                { responsivePriority: 4, targets: [-1,  0] },////define hiển thị mặc định column 1
+
+                 {
+                    "targets": [ 0 ],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [-1],
+
+                },
+                { "width": "100px", "targets": -1 }
+
+            ],
+            ajax: {
+                url: "/admin/post/LoadAll",
+                type: "POST",
+                datatype: "json",
+                data: {
+                }
+            },
+            "columns": [
+                { "data": "id", "name": "id", "autoWidth": true },
+                { "data": "category", "name": "Category", "autoWidth": true },
+                { "data": "name", "name": "Name", "autoWidth": true },
+                {
+                    "data": "img", "name": "img",
+                    "render": function (data, type, full, meta) {
+                        // console.log(full.id);
+                        if (full.img != "") {
+                            let html = '<img src="../'+full.img+'" style="width:50px"/>';
+                            return html;
+                        }
+                        return "";
+                    }
+
+                },
+                {
+                    // "data": "Status", "name": "Status", "autoWidth": true
+                    "data": "active", "name": "active",
+                    "render": function (data, type, full, meta) {
+                        if(full.active){
+                            return '<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> Có</span>';
+                        }
+                        return '<span class="badge badge-danger"><i class="fas fa-check-circle" style=""></i> Không</span>';
+                    }
+                },
+
+                { "data": "createdate", "name": "createdate", "autoWidth": true },
+
+
+                {
+                    "render": function (data, type, full, meta) {
+                        let html = `<div class="btn-group dropleft">
+                                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    </button>
+                                        <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="javascript:void(0)" onclick="jQueryModalGet('/admin/post/details?secret=`+ full.urlParameters +`','Thông tin công ty')"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
+                                        <a class="dropdown-item" onclick="commonEventpost.addOrEditPostOnePgae('/admin/post/CreateOrEdit?secret=`+ full.urlParameters +`')"
+                                        href="javascript:void(0)"><i class="fas fa-edit mr-2"></i> Sửa</a>
+
+                                         <a class="dropdown-item" onclick="commonfunc.confirmDelete('/admin/post/Delete?secret=`+ full.urlParameters +`')"
+                                        href="javascript:void(0)"><i class="fas fa-trash-alt mr-2"></i> Sửa</a>
+                                    </div>
+                                </div>`;
+                        return html;
+                    }
+                },
+            ]
+
+        });
+        $('#reload').on('click', function () {
+            dataTableOut.ajax.reload();
+        });
+    });
+</script>
+        }

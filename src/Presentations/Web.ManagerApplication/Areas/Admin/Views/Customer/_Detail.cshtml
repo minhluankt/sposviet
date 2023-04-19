@@ -1,0 +1,129 @@
+﻿@using Model
+
+@model CustomerModel
+<style>
+
+    .student-profile .card {
+        border-radius: 10px;
+    }
+
+        .student-profile .card .card-header .profile_img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin: 10px auto;
+            border: 10px solid #ccc;
+            border-radius: 50%;
+        }
+
+        .student-profile .card h3 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .student-profile .card p {
+            font-size: 16px;
+            color: #000;
+        }
+
+    .student-profile .table th,
+    .student-profile .table td {
+        font-size: 14px;
+        padding: 5px 10px;
+        color: #000;
+    }.card-header.bg-transparent.text-center {
+    flex-direction: column;
+    height: auto;
+}
+@@media (min-width: 992px){
+    .modal-lg, .modal-xl {
+    max-width: 1000px;
+}
+}
+
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Student Profile -->
+            <div class="student-profile py-4">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-transparent text-center">
+                                    <img class="profile_img" src="~/images/avata/user.png" alt="">
+                                    <h3>@Model.Name</h3>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-0"><strong class="pr-1">Phone:</strong>@Model.PhoneNumber</p>
+                                    <p class="mb-0"><strong class="pr-1">Username:</strong>@Model.UserName</p>
+                                    <p class="mb-0"><strong class="pr-1">Trạng thái:</strong>
+                                        @{
+                                            string html = "";
+                                        }
+                                        @switch (Model.Status)
+                                        {
+                                            case 0:
+                                                 html = "<span class='badge badge-warning'><i class='fas fa-ban'></i> Chưa xác nhận</span>";
+                                                break;
+                                            case 1:
+                                                 html = "<span class='badge badge-success'><i class='fas fa-check-circle'></i> Đang hoạt động</span>";
+                                                break;
+                                            case 2:
+                                                html =  "<span class='badge badge-danger'><i class='fas fa-lock' style=''></i> Đang khóa</span> ";
+                                                break;
+                                        }
+                                        @Html.Raw(html)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-transparent border-0">
+                                    <h3 class="mb-0"><i class="far fa-clone pr-1"></i>Thông tin chi tiết</h3>
+                                </div>
+                                <div class="card-body pt-0">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th width="30%">Họ tên</th>
+                                            <td width="2%">:</td>
+                                            <td>@Model.Name</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="30%">Ngày sinh</th>
+                                            <td width="2%">:</td>
+                                            <td>@if (Model.BirthDate != null) { <span>@Model.BirthDate.Value.ToString("dd/MM/yyyy")</span>}</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="30%">Email</th>
+                                            <td width="2%">:</td>
+                                            <td>@Model.Email</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="30%">Số điện thoại</th>
+                                            <td width="2%">:</td>
+                                            <td>@Model.PhoneNumber</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="30%">Địa chỉ</th>
+                                            <td width="2%">:</td>
+                                            <td>@Model.Address</td>
+                                        </tr>
+                                         <tr>
+                                            <th width="30%">Đăng nhập lần cuối</th>
+                                            <td width="2%">:</td>
+                                            <td>@if (Model.LoginLast != null) { <span>@Model.LoginLast.Value.ToString("dd/MM/yyyy HH:mm:ss")</span>}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

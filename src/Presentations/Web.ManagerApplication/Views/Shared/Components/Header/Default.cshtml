@@ -1,0 +1,330 @@
+﻿@using System.Web
+@using Web.ManagerApplication.Views.Shared.Components.Culture;
+@using System.Security.Claims;
+@using Application.Enums;
+@using Domain.Entities;
+@model HomeViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<SharedResource> localizer
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ClaimsIdentity userLogin = null;
+    string returnurl = $"{Context.Request.Path.Value}{Context.Request.QueryString}";
+    var keyword = HttpUtility.UrlDecode(Context.Request.Query["keyword"].ToString());
+    var lstCate = Model.CategoryProducts.Where(m => m.IdLevel == 0);
+    string roles = string.Empty;
+    string Image = string.Empty;
+    bool login = false;
+    if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        login = true;
+        roles = ((ClaimsIdentity)User.Identity).Claims
+       .Where(c => c.Type == ClaimTypes.Role)
+       .Select(c => c.Value).FirstOrDefault();
+        Image = ((ClaimsIdentity)User.Identity).Claims
+        .Where(c => c.Type == Application.Constants.ConfigCustomerLogin.Image)
+        .Select(c => c.Value).FirstOrDefault();
+
+    }
+}
+<div class="tophead clearfix">
+    <div class="container">
+        <span class="hidden-max768">Hệ thống mua sắm Minh Luận</span>
+        <span class="hidden-max768">
+            <i class="far fa-envelope"></i>Hỗ trợ:
+            <a href="mailto:ego.deploy@gmail.com">minhluankt1995@gmail.com</a>
+        </span>
+        <span>
+            <i class="fas fa-phone"></i>Tư vấn:
+            <a class="fone" href="tel:0949906004">0949906004</a>
+        </span>
+        <span class="float-right">
+            @if (login)
+            {
+
+                @if (!string.IsNullOrEmpty(roles))
+                {
+                    <a href="/admin"><i class="fas fa-edit"></i> Truy cập admin</a>
+                }
+            }
+        </span>
+    </div>
+</div>
+<header id="myheader" class="header_top">
+    <div class="container">
+        <div class="row">
+            <div class="main-head">
+
+                <div class="menu-btn">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="logo"><a href="/">Minh luận</a></div>
+                <div class="form-seach">
+                    <form action="/Search" method="get">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyword" value="@keyword" id="txtsearchindex" placeholder="Nhập nội dung tìm kiếm">
+                            <div class="input-group-prepend" id="btnsearch">
+                                <div class="input-group-text"><span class="icon-cd icon-search_white"></span></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="pushy pushy-left" id="navbarsExample09" style="">
+                    <div class="top-header-mobi">
+                        <div class="logo">Minh luận</div>
+                        <span class="cloes-show-menu icon-arrow_back_white icon-cd"></span>
+                    </div>
+                    <div class="menu-profile-user">
+                        @if (login)
+                        {
+
+                            <div class="menu-block">
+                                <div class="user-information">
+                                    @if (!string.IsNullOrEmpty(Image))
+                                    {
+                                        <img src="~/Upload/Customer/@Image" class="avatar avatar-placeholder" />
+
+                                    }
+                                    else
+                                    {
+                                        <span class="avatar avatar-placeholder">
+                                            <svg width="50" height="50" fill="unset" class="" stroke="unset" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+                                                <path d="M 30.933594 32.527344 C 30.785156 30.914063 30.84375 29.789063 30.84375 28.316406 C 31.574219 27.933594 32.882813 25.492188 33.101563 23.429688 C 33.675781 23.382813 34.582031 22.824219 34.847656 20.613281 C 34.988281 19.425781 34.421875 18.757813 34.074219 18.546875 C 35.007813 15.738281 36.949219 7.046875 30.488281 6.148438 C 29.820313 4.980469 28.117188 4.390625 25.90625 4.390625 C 17.050781 4.554688 15.984375 11.078125 17.925781 18.546875 C 17.578125 18.757813 17.011719 19.425781 17.152344 20.613281 C 17.421875 22.824219 18.324219 23.382813 18.898438 23.429688 C 19.117188 25.492188 20.476563 27.933594 21.210938 28.316406 C 21.210938 29.789063 21.265625 30.914063 21.117188 32.527344 C 19.367188 37.238281 7.546875 35.914063 7 45 L 45 45 C 44.453125 35.914063 32.683594 37.238281 30.933594 32.527344 Z"></path>
+                                                <path fill="none" stroke-miterlimit="10" stroke-width="3" d="M50 25L0 25M50 10L0 10M0 40L25 40"></path>
+                                            </svg>
+                                        </span>
+                                    }
+
+                                    <div class="right-information">
+                                        <div class="user-name">@User.Identity.Name</div>
+                                    </div>
+                                </div>
+                                <div class="careerCenterMenu">
+                                    <div class="btn-career-center">
+                                        <div class="left">
+                                            <svg width="25px" height="24px" viewBox="0 0 25 24" version="1.1" style="padding: 3px;">
+                                                <title>A4140FD9-3742-491A-863C-77A3DF62CED7</title>
+                                                <g id="ACCOUNT-SETTINGS" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <g id="MYACCOUNT" transform="translate(-38.000000, -554.000000)">
+                                                        <g id="pages/careercenter/sidebar" transform="translate(16.000000, 133.000000)">
+                                                            <g id="pages/careercenter/sidebar-menu-item" transform="translate(16.000000, 58.000000)">
+                                                                <g id="Group" transform="translate(0.000000, 200.000000)">
+                                                                    <g id="pages/careercenter/sidebar/menu/dashboard-normal-copy" transform="translate(0.000000, 150.000000)">
+                                                                        <g id="Group" transform="translate(0.000000, 7.000000)">
+                                                                            <g id="icons/icon-color/nav-profileview-copy" transform="translate(6.000000, 6.666667)">
+                                                                                <g id="Group-2" fill="#555555">
+                                                                                    <path d="M9.71663365,0 C12.7954215,0 15.2923912,2.4969697 15.2923912,5.57575758 C15.2923912,8.65454545 12.7954215,11.1515152 9.71663365,11.1515152 C6.63784577,11.1515152 4.14087608,8.65454545 4.14087608,5.57575758 C4.14087608,2.4969697 6.63784577,0 9.71663365,0 Z M9.71663365,1.45454545 C7.43784577,1.45454545 5.59542153,3.2969697 5.59542153,5.57575758 C5.59542153,7.85454545 7.43784577,9.6969697 9.71663365,9.6969697 C11.9954215,9.6969697 13.8378458,7.85454545 13.8378458,5.57575758 C13.8378458,3.2969697 11.9954215,1.45454545 9.71663365,1.45454545 Z" id="Combined-Shape"></path>
+                                                                                    <path d="M9.71663365,13.0909091 C5.74087608,13.0909091 2.05621693,15.2483901 0.0925805621,18.6908145 C-0.101358832,19.0544509 0.0197587439,19.49072 0.359152683,19.6846594 C0.480364804,19.7573867 0.601576926,19.7817236 0.722789047,19.7817236 C0.989455714,19.7817236 1.23178517,19.6362691 1.35299729,19.4180873 C3.07420941,16.4120264 6.27420941,14.5454545 9.71663365,14.5454545 C10.88027,14.5454545 11.9956109,14.7636364 13.0622775,15.1515152 C13.1350048,15.1757576 13.2319745,15.1998107 13.3047018,15.1998107 C13.5956109,15.1998107 13.8861413,15.0058713 14.0073534,14.7149622 C14.1285655,14.3270834 13.9591527,13.9153408 13.5712739,13.7698863 C12.3349103,13.3335227 11.049967,13.0909091 9.71663365,13.0909091 Z" id="Path"></path>
+                                                                                </g>
+                                                                                <image id="icons8-password-100" opacity="0.699999988" x="15.110573" y="12" width="9.33333333" height="11.2" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABgCAYAAACKa/UAAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAUKADAAQAAAABAAAAYAAAAACQwfTJAAAE/UlEQVR4Ae2dy2vUUBTGW6U+sAi684VYxQpW8QGKbqyCCurOgntRUHQr+jdIi+7duRBfIOgouBDxWbUPEBR8bHwsXFgLVkUFX9+XmunNmZlO5p7MJGnPgc/Jvcm599zfnCQ3mSY2N2XD2hFGJ7QGWg4thuZCrRDtKzQMvYVeQk+h29AraNLaaoy8B3oP/fXUO/h1Q2xrUlgzRrkbegD5Qqvkdx9t7oLYx4S09RjVY6gSgKTqe9HHuolEcAYGcxr6BVWCNIJ116Hj0B6Ix8Q5UMt/cZl1XMdtbkBfoErtsa9T0HQo17YM0Q9C5Qb6B/UFaC/kM1B+MV0QwbOtcn0MoH4plEvbhKg/QXJgHOx5qANKylahoYuQ7IvlIWgjlCvbgWg59ZADeoG6Tqhetg0Nc5oj+2Us2+vVadLtbkCD5eCdRX1r0p2VaW8m6s5AEuI31G0us32mqnjMk7std9ljKUR5An3KY+NH1LWlEEusLnlQlycMDuBALO/6bHQQzUqIfajzOWnVJ0KnVU5V5G6TRuY5IQWLnPbIuLrlRmmXOUmW87xzaQfl9M/jrwuRsa511qe6yEsneYXBs+2sVKOKds6TF288uBB56ZcJ47WtGxiXOZ3Imm1BQPJ4uDMLQcobA5wkZ9UuITD3y76bdqAdIiB+w6zLqq1EYL8hFyKvYlKzHvTsBlNILZL4HfNGhBvzyfiuyW8pb4Z2Jd9F4i3uQ4suwDeJ9xCzwXYRCG9JZXKCKsbDSz15qckrKC+b4uU16rRV+N5D+aeoy2LxO4KSUxjvWYMGoPwdIvUzWg3f1h2xrRyLWF25qAG4QjT7TJSzXHwuguPhyMs0AJeIHl+LcpaL8ufQNt9gNQBni06HRDnLRRmrHEtDYucJw50OTGtIr8l0wtmCG/sP32Z5I8DXGIBrmrbcdhq1nEj8ml24UQPNdD8GUPn1GEADqCSgdLcMNIBKAkp3y0ADqCSgdLcMNIBKAkp3y8AEAfJmwFHoESRvebsX3uGy7Dqsz8tnrfGTSS90BCq5cTIflYNQXgafdpwDYDUPCow0DV7tydMPbi1T8c9haD9kVhsB7rUf6MJjnrtLXEWZK82iBBageA1yWT3kJvJxAW5oVp7AQlS7AEd4F5kVruXtzrIbeyOWI7xsHqhEbgANoJKA0t0y0AAqCSjdLQMNoJKA0t0y0AAqCSjdLQMNoJKA0t0y0AAqCSjdLQMNoJKA0t0y0AAqCSjdLQMNoJKA0t03Axeh38sQHzCkrkC1PO2Td38Md8zcX5kiP5iMbRJZ4uDlu2HoNwxxXTXLu38Jr5KKKgSYedInLPP9VdUs7/7hWMPPEhjVAHCXDZ3l5+dqzlifd//ImH2PgZU4sXGN5c7fB+CtcQjdHGdduCrv/uE4ip+RlCzWVl7g2ZYnDOk3hDr+6UM1y7u/HHcJiGoAuJ5nUp4weMyjLkBx4GGzwPLsHwFofxsTfqXxPwmwaD7HwKKzLTQ1GUBlFhhAA6gkoHS3DDSASgJKd8tAA6gkoHS3DDSASgJKd8tAA6gkoHS3DDSASgJKd8tAA6gkoHS3DEwAIB93dc0ed3VpRJflzxYBO/nANR8qNohRcCwRXgFyfxMJHrjmWyjcSluOz+MQ2AWv8OBbKAxcbQyegBn/48DA+AqPfsggxmPQB1bF154EBPEPafINHvz/QeR7FAzsKBOy4W5bzLx/cIr0XT4zV84AAAAASUVORK5CYII="></image>
+                                                                            </g>
+                                                                        </g>
+                                                                    </g>
+                                                                </g>
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            Quản Lý Cá Nhân
+                                        </div>
+                                        <svg fill="currentColor" class="" stroke="unset" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+                                            <path d="m121.3,34.6c-1.6-1.6-4.2-1.6-5.8,0l-51,51.1-51.1-51.1c-1.6-1.6-4.2-1.6-5.8,0-1.6,1.6-1.6,4.2 0,5.8l53.9,53.9c0.8,0.8 1.8,1.2 2.9,1.2 1,0 2.1-0.4 2.9-1.2l53.9-53.9c1.7-1.6 1.7-4.2 0.1-5.8z"></path>
+                                        </svg>
+                                    </div>
+                                    <ul class="hide list-menu-profile">
+                                        <li><a href="/quan-ly-don-hang" class="careerCenterItem"><span class="icon-cd icon icon-bill"></span> Đơn hàng của tôi</a></li>
+                                        <li><a href="/thong-bao-cua-toi" class="careerCenterItem"><span class="icon-cd icon icon-notif_active"></span> Thông báo của tôi <b id="count-notify">(0)</b></a></li>
+                                        <li><a href="/tai-khoan-cua-toi" class="careerCenterItem"><span class="icon-cd icon icon-user"></span> Tài khoản của tôi </a></li>
+                                        <li><a href="/doi-mat-khau" class="careerCenterItem"><span class="icon-cd icon icon-lock"></span> Đổi mật khẩu</a></li>
+                                        <li><a href="/Account/Logout" class="careerCenterItem"><span class="icon-cd icon icon-logout"></span> Đăng xuất</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        }
+                        <div class="body_menu">
+                            <ul class="navbar-nav mr-auto" id="menu_portal">
+                                <li class="nav-item pushy-link">
+                                    <a class="nav-link" href="/">Trang chủ</a>
+                                </li>
+                                <!--danh mục tin tức-->
+                                <li class="nav-item pushy-link">
+                                    <a class="nav-link" href="/">Tin tức</a>
+                                </li>
+                                <!--end-->
+                                <!--chuyên mục trang 1 page-->
+                                <li class="nav-item pushy-link">
+                                    <a class="nav-link" href="/">Thông tin công ty</a>
+                                </li>
+                                <li class="nav-item pushy-link">
+                                    <a class="nav-link" href="/">Liên hệ</a>
+                                </li>
+                                <!--end-->
+                                <li class="nav-item pushy-link">
+                                    <a class="nav-link" href="/">Sản phẩm đã xem</a>
+                                </li>
+                            </ul>
+
+                        </div>
+                        <div class="_footmenu">
+                            <div class="sub-head">HỖ TRỢ</div>
+                            <ul class="nav-menu">
+                                <li><a href="tel:0949906004">Hotline: 0949906004</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="site-overlay"></div>
+
+                <div class="hotline-block-header">
+                    <i class="icon-cd icon-phone_in_talk_black"></i>
+                    <a href="tel:19006750" title="Hỗ trợ mua hàng 0949906004">
+                        <span class="evo-hotline">0949906004</span>
+                        <span class="evo-title">Hỗ trợ mua hàng</span>
+                    </a>
+                </div>
+
+
+                <div class="login-cus">
+
+
+                    @if (login)
+                    {
+
+                        @if (!string.IsNullOrEmpty(Image))
+                        {
+                            <img src="~/Upload/Customer/@Image" />
+
+                        }
+                        else
+                        {
+                            <img src="~/icon/icon_luantm/user_cart.svg" class="icon-default" />
+                        }
+                        <div class="tkname">
+                            <span>Tài khoản</span>
+                            <span class="user-active">@User.Identity.Name</span>
+                            <ul class="list-tem-tkname">
+                                @if (string.IsNullOrEmpty(roles))
+                                {
+                                    <li><a href="/quan-ly-don-hang"><span class="icon-cd icon icon-bill"></span> Đơn hàng của tôi</a></li>
+                                    <li><a href="/thong-bao-cua-toi"><span class="icon-cd icon icon-notif_active"></span> Thông báo của tôi <b id="count-notify">(0)</b></a></li>
+                                    <li><a href="/tai-khoan-cua-toi"><span class="icon-cd icon icon-user"></span> Tài khoản của tôi </a></li>
+                                    <li><a href="/doi-mat-khau"><span class="icon-cd icon icon-lock"></span> Đổi mật khẩu</a></li>
+                                    <li><a href="/Account/Logout"><span class="icon-cd icon icon-logout"></span> Đăng xuất</a></li>
+                                }
+                                else
+                                {
+                                    <li><a href=""><span class="icon-cd icon icon-admin_setting"></span> Truy cập admin</a></li>
+                                    <li><a href="/Identity/Account/Logout?returnUrl=@Url.Page("/account/login", new { area = "identity" })"><span class="icon-cd icon icon-logout"></span> Đăng xuất</a></li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <img src="~/icon/icon_luantm/user_cart.svg" class="icon-default" />
+                        <div class="tkname">
+                            <span>Đăng ký/Đăng nhập</span>
+                            <span>Tài khoản</span>
+                            <ul class="list-tem-tkname">
+                                <li><a href="javascript:void(0)" class="btn_login">Đăng nhập</a></li>
+                                <li> <a href="javascript:void(0)" class="btn_reg btn-registration">Đăng ký</a></li>
+                            </ul>
+                        </div>
+                    }
+
+                </div>
+
+                <a href="/Cart/Mycart" class="cart">
+                    <img src="~/icon/icon_luantm/shopping-bag.svg" />
+                    <span class="count_item count_item_pr">0</span>
+                    <span class="text-cart d-none d-sm-block d-md-block d-lg-block">Giỏ hàng</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="col-menu-header d-none d-lg-block">
+    <div class="container">
+        <div class="row">
+            <div class="col-category" id="headerSlidebarLT">
+                <i class="fas fa-align-left mr-2"></i>
+                <span class="category">Danh mục sản phẩm</span>
+                <div class="navigation-wrapper">
+                    <ul class="navigation list-group list-group-flush scroll">
+                        @foreach (var item in lstCate)
+                        {
+                            string textchild = "";
+                            @if (item.CategoryChilds.Count() > 0)
+                            {
+                                textchild = "chill";
+                            }
+
+                            <li class="menu-item list-item @textchild">
+                                <a href="/@item.Slug">
+                                    <span class="text-menu">@item.Name</span>
+                                    @if (item.CategoryChilds.Count() > 0)
+                                    {
+                                        <span class="arrow"> <i class="icon-right icon-cd"></i></span>
+                                    }
+                                </a>
+                                @if (item.CategoryChilds.Count() > 0)
+                                {
+                                    <div class="submenu scroll">
+                                        <ul class="ul_submenu">
+                                            @foreach (var itemchild in item.CategoryChilds)
+                                            {
+                                                var listchild2 = Model.CategoryProducts.Where(m => m.IdPattern == itemchild.Id);
+                                                <li>
+                                                    <a class="@(listchild2.Count() > 0?"font-bold":"")" href="/@itemchild.Slug"> @itemchild.Name</a>
+
+                                                    @if (listchild2.Count() > 0)
+                                                    {
+                                                        <ul class="submenu__list ul_submenu">
+                                                            @foreach (var itemchild2 in listchild2)
+                                                            {
+                                                                <li>
+                                                                    <a href="/@itemchild2.Slug"> @itemchild2.Name</a>
+
+                                                                </li>
+                                                            }
+                                                        </ul>
+
+                                                    }
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="col-menu">
+                <ul class="menu-header-post">
+                    @foreach (var items in Model.CategoryPosts.Where(x => x.IdLevel == 0))
+                    {
+                        <li>
+                            <a href="@(!string.IsNullOrEmpty(items.Url)?items.Url:items.Slug)">@items.Name</a>
+                            @if (items.CategoryChilds.Count() > 0)
+                            {
+                                <ul>
+                                    @foreach (var item in items.CategoryChilds)
+                                    {
+                                        <li><a href="/@item.Slug">@item.Name</a></li>
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,7 @@
+.field-validation-error {
+  color: red;
+}
+
+.page-breadcrumb .breadcrumb .active a {
+  color: #2cabe3;
+}

@@ -1,0 +1,176 @@
+﻿@using Web.ManagerApplication.Views.Shared.Components.Culture;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHtmlLocalizer<SharedResource> localizer
+@model Model.LoginCustomerViewModel
+@{
+    var ReturnUrl = Context.Request.Query["ReturnUrl"].ToString();
+
+}
+
+@if (Model.LoginPopup)
+{
+    // hiển thị khi mở popup
+
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modelformcustome" role="document">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-title text-center">
+                        <h4>Đăng nhập hệ thống</h4>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <form method="post" id="loginformLoginPopup">
+                            @Html.HiddenFor(x=>x.LoginPopup)
+                            <div class="form-group">
+                                <div class="gr-input-icon">
+                                    <i class="cd-username"></i>
+                                    <input type="text" asp-for="UserName" class="form-control" placeholder="Nhập email hoặc tên đăng nhập...">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="gr-input-icon">
+                                    <i class="cd-password"></i>
+                                    <input type="password" asp-for="Password" class="form-control" placeholder="Nhập mật khẩu...">
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-info btn-block btn-round btn-log">Đăng nhập</button>
+                        </form>
+
+                        <div class="text-center text-muted delimiter">hoặc đăng nhập bằng</div>
+
+                        <form method="post" asp-action="ExternalLogin" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl">
+                            <div class="d-flex justify-content-center social-buttons">
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                    if (provider.Name == "Facebook")
+                                    {
+                                        <button type="submit" id="customBtn" name="provider" value="@provider.Name" class="customfaceSignIn"> <span class="buttonText btn-face">@provider.Name</span> </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" id="customBtn" name="provider" value="@provider.Name" class="customGPlusSignIn"><span class="icon"></span> <span class="buttonText">@provider.Name</span> </button>
+                                    }
+                                }
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <div class="signup-section">Bạn chưa có tài khoản? <a href="#a" class="text-info"> Đăng ký</a>.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+}
+else
+{
+    // hiển thị khi show trang login
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-lg-4 m-auto">
+                <div class="row">
+                    <div class="loginform-view modelformcustome">
+                        <h3>Đăng nhập hệ thống</h3>
+                        <div class="form-body">
+                            <form method="post" id="loginform">
+                                @Html.HiddenFor(x=>x.LoginPopup)
+                                <div class="form-group">
+                                    <div class="gr-input-icon">
+                                        <i class="cd-username"></i>
+                                        <input type="text" asp-for="UserName" class="form-control" placeholder="Nhập email hoặc tên đăng nhập...">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="gr-input-icon">
+                                        <i class="cd-password"></i>
+                                        <input type="password" asp-for="Password" class="form-control" placeholder="Nhập mật khẩu...">
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-info btn-block btn-round btn-log">Đăng nhập</button>
+                            </form>
+
+                            <div class="text-center text-muted delimiter">hoặc đăng nhập bằng</div>
+
+                            <form method="post" asp-action="ExternalLogin" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl">
+                                <div class="d-flex justify-content-center social-buttons">
+                                    @foreach (var provider in Model.ExternalLogins)
+                                    {
+                                        if (provider.Name == "Facebook")
+                                        {
+                                            <button type="submit" id="customBtn" name="provider" value="@provider.Name" class="customfaceSignIn"> <span class="buttonText btn-face">@provider.Name</span> </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" id="customBtn" name="provider" value="@provider.Name" class="customGPlusSignIn"><span class="icon"></span> <span class="buttonText">@provider.Name</span> </button>
+                                        }
+                                    }
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+
+
+
+
+@*
+    <div class="container">
+    <div class="row" id="loginCustomer">
+    <div class="login">
+    <div class="login-title">
+    <h3>
+    @localizer["Welcometocenmach"]!
+    </h3>
+    <div class="login-other">
+    <span>@localizer["Newmember"]? <a href="javascript:void(0)" onclick="jQueryModalGet('/Account/Register','Thêm mới',false,'modal-80')">@localizer["Registration"]</a> @localizer["here"]</span>
+    </div>
+    </div>
+    <div>
+    <form asp-controller="Account" asp-action="Login" method="post">
+    <input type="hidden" asp-for="ReturnUrl" value="@ReturnUrl" />
+    <div class="mod-login row">
+    <div class="mod-login-col1 col-md-12 m-auto">
+    <div class="form-group">
+    <label for="exampleInputEmail1">@localizer["UserName"]</label> <span class="required">(*)</span>
+    <input type="text" asp-for="UserName" class="form-control" id="UserName" aria-describedby="emailHelp" placeholder="Enter UserName">
+
+    </div>
+    <div class="form-group">
+    <label for="exampleInputPassword1">@localizer["PassWord"]</label> <span class="required">(*)</span>
+    <input type="password" asp-for="Password" class="form-control" id="Password" placeholder="Password">
+    </div>
+    <div class="mod-login-forgot mb-2"><a href="">@localizer["Forgotpassword"]?</a></div>
+
+    <div class="mod-login-btn"><button type="submit" class="btn btn-block btn-primary next-btn-large">ĐĂNG NHẬP</button></div>
+
+    </div>
+    </div>
+    </form>
+    </div>
+    </div>
+    </div>*@
+
+
+@section Scripts
+{
+<script type="text/javascript" language=javascript>
+    validatefomrlogin("loginform")
+</script>
+}

@@ -1,0 +1,212 @@
+﻿@model Domain.ViewModel.OrderModelIndex
+@using Application.Enums
+
+@using Application.Hepers
+@{
+    Layout = null;
+    ViewData["Title"] = "Danh sách đơn hàng";
+    var list = Common.GetListStatus();
+    int maxid = 0;
+    if (Model.StatusOrders != null && Model.StatusOrders.Count() > 0)
+    {
+        maxid = Model.StatusOrders.Max(x => x.Id);
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Theo dõi đơn hàng</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="~/css/bootstrap.4.0/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/icon/materia-iconfont/material-icons.css" rel="stylesheet" />
+    <link href="~/lib/jquery.ui/jquery-ui.css" rel="stylesheet" />
+    <link href="~/lib/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="~/css/style_banhang/style.css?time=12355" rel="stylesheet" />
+
+
+    <link href="~/lib/smartWizard/4.0/smart_wizard.min.css" rel="stylesheet" />
+    <link href="~/lib/smartWizard/4.0/smart_wizard_theme_dots.min.css" rel="stylesheet" />
+    <style>
+        .tracking-publish .body-track div#smartwizard {
+            flex-basis: 100%;
+            margin-right: 12px;
+            display: block;
+            float: left;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container tracking-publish">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="back">
+                        @*<a href="/theo-doi-don-hang?secret=@Model.secret">Đơn hàng của bạn</a>*@
+                        <a href="/quan-ly-don-hang"><i class="fas fa-arrow-left"></i> Danh sách đơn hàng của bạn</a>
+                        <a href="/theo-doi-don-hang?secret=@Model.secret" class="ml-3"><i class="fas fa-hand-point-right"></i> Theo dõi đơn hàng #@Model.Order.OrderCode</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="card w-100">
+                        <div class="card-header">
+                            <h3>Thông tin shop</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="info-text">
+                                <li><span class="fist">Tên shop</span><span class="last">@Model.Company.Name</span></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card w-100 mt-3">
+                        <div class="card-header">
+                            <h3>Thông tin đơn hàng</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="info-text">
+
+                                <li><span class="fist">Mã đơn hàng</span><span class="last">@Model.Order.OrderCode</span></li>
+                                <li><span class="fist">Ngày đặt đơn</span><span class="last">@Model.Order.CreatedOn.ToString("dd/MM/yyyy")</span></li>
+                                <li>
+                                    <span class="fist">Trạng thái đơn</span>
+                                    <span class="last">
+                                        @if ((EnumStatusOrder)Model.Order.Status == EnumStatusOrder.Cancel)
+                                        {
+                                            <b class="text-danger">@Application.Hepers.GeneralMess.ConvertStatusOrder((EnumStatusOrder)Model.Order.Status)</b>
+                                        }
+                                        else
+                                        {
+                                            <b class="text-success">@Application.Hepers.GeneralMess.ConvertStatusOrder((EnumStatusOrder)Model.Order.Status)</b>
+                                        }
+                                    </span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card w-100 mt-3">
+                        <div class="card-header">
+                            <h3>Thông tin người nhận</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="info-text">
+
+                                <li><span class="fist">Họ và tên</span><span class="last">@Model.Customer.Name</span></li>
+                                <li><span class="fist">Số điện thoại</span><span class="last">@Model.Customer.PhoneNumber</span></li>
+                                <li><span class="fist">Email</span><span class="last">@Model.Customer.Email</span></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 body-track">
+                <div class="card w-100">
+                    <div class="card-header">
+                        <h3>Trạng thái đơn hàng</h3>
+
+                    </div>
+                    <div class="card-body">
+                        <div id="smartwizard">
+
+                            <div id="TrackingStaus">
+                                <ul>
+                                    @foreach (var item in Model.StatusOrders.OrderByDescending(m => m.Id))
+                                    {
+                                        //if (item.Value <= Model.Order.Status)
+                                        // {
+                                        string class_ = "";
+                                        string text_ = Application.Hepers.GeneralMess.ConvertStatusOrder((EnumStatusOrder)item.Status);
+                                        if (item.Id == maxid)
+                                        {
+                                            if ((EnumStatusOrder)item.Status == EnumStatusOrder.Delivered)
+                                            {
+                                                class_ = "active done";
+                                            }
+                                            else
+                                            {
+                                                class_ = "active";
+                                            }
+                                        }
+                                        else if (item.Id < maxid)
+                                        {
+                                            class_ = "donecus";
+                                        }
+
+                                        if (item.Status == (int)EnumStatusOrder.Cancel && Model.Order.Status == (int)EnumStatusOrder.Cancel)
+                                        {
+                                            <li class="cancel @class_">
+                                                <a href="#step-1">
+                                                    @text_
+                                                    <br />
+                                                    <small>@item.Note</small> <br />
+                                                    <small class="time">(@(item.UpdateDate==null? item.CreateDate.ToString("dd/MM/yyyy HH:mm:ss"): item.UpdateDate.Value.ToString("dd/MM/yyyy HH:mm:ss")))</small>
+                                                </a>
+                                            </li>
+                                        }
+                                        else if (item.Status != (int)EnumStatusOrder.Cancel)
+                                        {
+                                            <li class="@class_">
+                                                <a href="#step-1">
+                                                    @text_
+                                                    <br />
+                                                    <small>@item.Note</small> <br />
+                                                    <small class="time">(@(item.UpdateDate==null? item.CreateDate.ToString("dd/MM/yyyy HH:mm:ss"): item.UpdateDate.Value.ToString("dd/MM/yyyy HH:mm:ss")))</small>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/smartWizard/4.0/jquery.smartWizard.min.js"></script>
+
+    <script>
+
+        $('#v-pills-tab a').removeClass("active");
+        $('#v-pills-tab a').each(function (index, tr) {
+            let url = $(tr).attr('href');
+            if (url.includes("OrderMy")) {
+                $(tr).addClass("active");
+            }
+        });
+        $(document).ready(function () {
+
+            $('#TrackingStaus').smartWizard({
+               // selected: -1,
+                theme: 'dots',
+                autoAdjustHeight: true,
+                transitionEffect: 'fade',
+                showStepURLhash: false,
+                showNextButton: false, // show/hide a Next button
+                showPreviousButton: false, // show/hide a Previous button
+            });
+            var height = $("ul.nav.nav-tabs.step-anchor li:last-child").height();
+
+        });
+    </script>
+
+</body>
+
+</html>

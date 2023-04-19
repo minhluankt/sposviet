@@ -1,0 +1,66 @@
+﻿@model Web.ManagerApplication.Areas.Selling.Models.OrderTableViewModel
+
+<b id="id-order" data-id="@(Model.OrderTable?.IdGuid)"></b>
+<b id="searchcustomer" data-id="@(Model.OrderTable?.IdCustomer)" data-code="@(Model.OrderTable?.CusCode)"></b>
+<table class="table">
+    <thead>
+        <tr>
+            <th class="ordercode">Mã đơn: @(Model.OrderTable?.OrderTableCode)</th>
+            <th style="width: 123px;" class="text-center">@(Model.OrderTable?.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"))</th>
+        </tr>
+    </thead>
+    <tbody class="itemorderbody">
+        @{
+            int i = 1;
+        }
+        @if (Model.OrderTable!=null)
+        {
+            @foreach (var item in Model.OrderTable.OrderTableItems)
+            {
+                <tr data-id="@item.IdGuid" data-idpro="@item.IdProduct" data-slNotify="@item.QuantityNotifyKitchen.ToString().Replace(",",".")" data-sl="@item.Quantity.ToString().Replace(",",".")">
+                    <td>
+                        <div class="leftfood">
+                            <i class="fas fa-trash-alt"></i>
+                            <div class="content">
+                                <span>@(i++). @item.Name</span>
+                                <i>@item.Price.ToString("N0")</i>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="actionaddfood">
+                            <i class="fas fa-minus"></i>
+                            <input type="text" class="quantitynew number3" value="@item.Quantity.ToString().Replace(",",".")" />
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    </td>
+                </tr>
+            }
+            
+        }
+        else
+        {
+            <tr>
+                <td colspan="2">
+                    <div class="no-order">
+                        <img src="~/images/ristorante_old.png" />
+                        <b>Chưa có món nào được chọn</b>
+                        <span>Vui lòng chọn món trong thực đơn</span>
+                    </div>
+                </td>
+            </tr>
+        }
+        
+    </tbody>
+</table> 
+<div class="bottomFix">
+            <div class="leftcol">
+        <span class="text-am">Tổng tiền <b class="fullQuantity number3">(@(Model.OrderTable != null ? Model.OrderTable.Quantity.ToString().Replace(",", ".") : 0))</b></span>
+        <span class="value-am priceFormat amountFull number3">@(Model.OrderTable != null ? Model.OrderTable.OrderTableItems.Sum(x => x.Total).ToString().Replace(",", ".") : "0")</span>
+            </div>
+            <div class="rightcol">
+        <button class="btn btn-danger btn-notif" disabled>
+                    <i class="fas fa-bell mr-2"></i> Thông báo bếp
+                </button>
+            </div>
+</div>

@@ -1,0 +1,187 @@
+﻿@model Domain.Entities.PurchaseOrder
+@{
+    Layout = null;
+}
+<style>
+    .select2-container--open .select2-dropdown {
+     
+        z-index: 1060;
+    }
+</style>
+<div class="detail-invoice-pos">
+    <div class="row">
+        <div class="col-md-5 col-lg-6">
+            <table class="table-info-cus">
+                <tr>
+                    <td>Mã trả hàng</td>
+                    <td class="text-primary">@Model.PurchaseNo</td>
+                </tr>
+                <tr>
+                    <td>Thời gian trả hàng</td>
+                    <td>
+                        <div class="input-group">
+                            <input class="form-control fc-datetimepicker" autocomplete="off" id="CreateDate" value="@Model.CreateDate.ToString("dd/MM/yyyy HH:mm")" type="text" placeholder="Ngày trả hàng" />
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <span class="fa fa-calendar"> </span>
+                                </span>
+                            </div>
+                        </div>
+                     </td>
+                </tr>
+                @if (!string.IsNullOrEmpty(Model.PurchaseOrderCode))
+                {
+                    <tr>
+                        <td>Mã nhập hàng</td>
+                        <td>@Model.PurchaseOrderCode</td>
+                    </tr>
+                    if (Model.Suppliers != null)
+                    {
+                        <tr>
+                            <td>Nhà cung cấp </td>
+                            <td>@Model.Suppliers.Name</td>
+                        </tr>
+                        <tr>
+                            <td>Tiền nợ NCC</td>
+                            <td><b class="text-danger">@Model.Suppliers.Amount.ToString("N0")</b></td>
+                        </tr>
+                    }
+                }
+                else {
+                    <tr>
+                        <td>Nhà cung cấp</td>
+                        <td>
+                            <div class="input-group">
+                                <select class="form-control select2 Suppliersid" style="width:100%" placeholder="Search">
+                                    <option></option>
+                                </select>
+                                <div class="input-group-append">
+                                    @*<button class="btn btn-success" type="submit">Chọn</button>*@
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    @if (Model.Suppliers != null)
+                    {
+                        <tr>
+                            <td>Tiền nợ NCC</td>
+                            <td><b class="text-danger">@Model.Suppliers.Amount.ToString("N0")</b></td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td>Hình thức thanh toán </td>
+                    <td>
+                        <div class="input-group">
+                            <select class="form-control select2 PaymentMethod" style="width:100%" placeholder="Search">
+                                <option></option>
+                            </select>
+                            <div class="input-group-append">
+                                @*<button class="btn btn-success" type="submit">Chọn</button>*@
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                
+            </table>
+        </div>
+        <div class="col-md-5 col-lg-4">
+            <table class="table-info-cus">
+                <tr>
+                    <td>Thời gian tạo phiếu</td>
+                    <td>@Model.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                </tr>
+                <tr>
+                    <td>Trạng thái</td>
+                    <td>
+
+                        @if (Model.Status == Application.Enums.EnumStatusPurchaseOrder.DA_TRA_HANG)
+                        {
+                            <span class="badge badge-success">Đã trả hàng</span>
+                        }
+                        else if (Model.Status == Application.Enums.EnumStatusPurchaseOrder.PHIEU_TAM)
+                        {
+                            <span class="badge badge-info">Phiếu tạm</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger"></span>
+                        }
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>Người nhập</td>
+                    <td>@Model.Carsher</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-lg-2">
+
+            <textarea name="NotePurchaseReturns" id="NotePurchaseReturns" class="form-control" rows="5" placeholder="Ghi chú">@Model.Note</textarea>
+        </div>
+        <div class="col-md-12 mt-5">
+            <table class="table table-striped table-bordered" id="dataTablePopup">
+                <thead>
+                    <tr>
+                        <th>Mã hàng hóa</th>
+                        <th>Tên hàng hóa</th>
+                        <th>Số lượng</th>
+                        <th class="text-right">Đơn giá trả lại</th>
+                        <th class="text-right">Giảm giá</th>
+                        <th class="text-right">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ItemPurchaseOrders)
+                    {
+                        <tr>
+                            <td>@item.Code</td>
+                            <td>@item.Name</td>
+                            <td class="text-center number3">@item.Quantity</td>
+                            <td class="text-right number3">@item.Price.ToString("N3")</td>
+                            <td class="text-right number3">@item.DiscountAmount.ToString("N3")</td>
+                            <td class="text-right font-weight-bold number3">@item.Total.ToString("N3")</td>
+                        </tr>
+                    }
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="text-right">Tổng số lượng</td>
+                        <td class="text-right font-weight-bold number3">@Model.Quantity.ToString("N3")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">Tổng mặt hàng</td>
+                        <td class="text-right font-weight-bold number3">@Model.ItemPurchaseOrders.Count().ToString("N3")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">Tổng tiền</td>
+                        <td class="text-right font-weight-bold red number3">@Model.Total.ToString("N3")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">Giảm giá</td>
+                        <td class="text-right font-weight-bold red number3">@Model.DisCountAmount.ToString("N3")</td>
+                    </tr>
+                  
+                    <tr>
+                        <td colspan="5" class="text-right">NCC cần trả</td>
+                        <td class="text-right font-weight-bold number3">@Model.Amount.ToString("N3")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">NCC đã trả</td>
+                        <td class="text-right font-weight-bold number3">@Model.AmountSuppliers.ToString("N3")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">Tính vào công nợ</td>
+                        <td class="text-right font-weight-bold text-danger number3">@Model.DebtAmount.ToString("N3")</td>
+                    </tr>
+
+                </tfoot>
+            </table>
+        </div>
+
+    </div>
+</div>
+@Html.Hidden("PurchaseOrderId",Model.Id)
+@Html.HiddenFor(x=>x.Status)

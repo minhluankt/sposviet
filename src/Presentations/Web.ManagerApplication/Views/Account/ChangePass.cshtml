@@ -1,0 +1,128 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Application.Providers
+@using SystemVariable
+@using Application.Enums
+@model CustomerModelView
+@using Model
+@using Web.ManagerApplication.Views.Shared.Components.ProfileSlidebar
+@inject IHtmlLocalizer<SharedResource> localizer
+
+<div class="container mt-3">
+    <div class="row">
+        @(await Component.InvokeAsync<ProfileSlidebarViewComponent>())
+        <div class="col-xl-9">
+            <h3>
+                <span style="text-transform:inherit">Đổi mật khẩu</span>
+            </h3>
+            <div class="card mt-0">
+                <div class="card-body">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        @*<div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">...</div>
+                    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">...</div>*@
+                        <div class="tab-pane fade show active" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                            @if (ViewData["UpdatePass"] == "OK")
+                            {
+                                <div class="alert alert-success" role="alert">
+                                    Cập nhật mật khẩu thành công
+                                </div>
+                            }
+                            @if (ViewData["UpdatePass"] == "ERR")
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    Mật khẩu hiện tại không hợp lệ
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Email))
+                            {
+                                <form id="formChangePass" asp-controller="Account" autocomplete="off" asp-action="ChangePass" method="post">
+                                    @Html.HiddenFor(m => m.Id)
+                                    @if (!string.IsNullOrEmpty(Model.Password))
+                                    {
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">
+                                              Mật khẩu hiện tại
+                                                <span class="required">(*)</span>
+                                            </label>
+                                            <input autocomplete="new-password" type="password" class="form-control" asp-for="PasswordOld" placeholder="Mật khẩu hiện tại">
+                                            <span asp-validation-for="PasswordOld" class="text-danger"></span>
+                                        </div>
+                                    }
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Mật khẩu mới <span class="required">(*)</span></label>
+                                        <input autocomplete="off" type="password" asp-for="Password" class="form-control" placeholder="Mật khẩu mới">
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Nhập lại mật khẩu mới</label>
+                                        <input autocomplete="off" type="password" asp-for="ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới">
+                                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                    </div>
+
+                                    <button class="ladda-button mb-2 mr-2 btn btn-block btn-primary" data-style="expand-left">
+                                        <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Cập nhật</span>
+                                        <span class="ladda-spinner"></span>
+                                    </button>
+                                </form>
+                                }
+                                else
+                                {
+                                       if (TempData["info"] != null)
+                                        {
+                                           <span class="text-info"> @Html.Raw(TempData["info"])</span> 
+                                        }
+                                        else if(TempData["mailexit"]!=null)
+                                        {
+                                            <span class="text-danger"> @Html.Raw(TempData["mailexit"])</span>
+                                        } 
+                                        else if(TempData["Emailmatch"]!=null)
+                                        {
+                                    <span class="text-default"> @TempData["Emailmatch"]</span>
+                                }
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(Model.EmailConfirm) && !Model.isEmailConfirm)
+                                    {
+                                        <span class="text-danger"> Hệ thống đã gửi yêu cầu xác nhận email vào địa chỉ email <b>@Model.EmailConfirm</b>, bạn chưa  xác nhận, vui lòng truy cập email để xác nhận hoặc thay đổi email mới theo form bên dưới</span><br/><br/>
+                                    }
+
+                                              <span class="alert-title">
+                                                Hiện tại tài khoản của bạn đang đăng nhập bằng <b>@Model.LoginProvider</b>, chưa có thông tin email, để sử dụng tính năng đăng nhập bằng tài khoản
+                                                và mật khẩu, vui lòng cung cấp email của bạn để sử dụng.
+                                            </span>
+                                        
+                                        }
+                                 
+                                        <form id="formChangePass" asp-controller="Account" autocomplete="off" asp-action="ComplementaryEmail" asp-route-secret="@Model.secretId" method="post">
+                                           @*@Html.HiddenFor(m => m.Id)*@
+                                             <div class="form-group">
+                                                <label for="exampleInputPassword1">Email của bạn<span class="required">(*)</span></label>
+                                                <input type="email" asp-for="Email" class="form-control" placeholder="Nhập Email của bạn (lưu ý email phải tồn tại để xác nhận sau khi gửi)">
+                                                <span asp-validation-for="Email" class="text-danger"></span>
+                                            </div>
+                                            <button class="ladda-button mb-2 mr-2 btn btn-block btn-primary" data-style="expand-left">
+                                                <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Cập nhật</span>
+                                                <span class="ladda-spinner"></span>
+                                            </button>
+                                      </form>
+                                }
+                                </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <script>
+        $("#formChangePass")[0].reset();
+        document.getElementById("formChangePass").reset();
+     
+        $().ready(function () {
+            validatechangepass()
+
+        });
+    </script>
+}

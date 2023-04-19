@@ -1,0 +1,136 @@
+﻿@model Domain.Entities.PurchaseOrder
+<div id="parentautocomplete"></div>
+<div class="row">
+    <div class="col-lg-9 col-md-12">
+        <div class="">
+            <div class="card left-content">
+                <div class="header-search col-md-6 p-0">
+                    <div class="input-group mb-2">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" id="txtPurchaseOrderSearch" placeholder="Nhập sản phẩm cần tìm">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text"><i class="fas fa-plus"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="body-list-product">
+                    <table class="table-data table table-bordered" id="tablePurchaseOrder">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã hàng</th>
+                                <th>Tên hàng</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Giảm giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model!=null)
+                            {
+                                int i = 1;
+                                foreach (var item in Model.ItemPurchaseOrders)
+                                {
+                                    <tr>
+                                        <td>@(i++)</td>
+                                        <td>@item.Code</td>
+                                        <td>@item.Name</td>
+                                        <td class="number3">@item.Quantity</td>
+                                        <td class="number3">@item.Price</td>
+                                        <td class="number3">@item.DiscountAmount</td>
+                                        <td class="number3">@item.Total</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr class="nodata">
+                                    <td colspan="7">Chưa có dữ liệu</td>
+                                </tr>
+                            }
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 mt-md-3 mt-lg-0 col-md-12 pl-lg-0">
+        <form id="create-formProduct" asp-controller="PurchaseOrder" asp-action="OnPostCreateOrEdit">
+            <div class="right-content card">
+            <div class="header-search col-md-12 p-0 mb-3">
+                <div class="input-group">
+                    <select class="form-control Suppliersid" placeholder="Search">
+                        <option></option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-success" type="submit">Chọn</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <ul class="form-input">
+                    <li>
+                        <span>Ngày nhập hàng</span>
+                            <div class="input-group">
+                                <input class="form-control fc-datetimepicker" autocomplete="off" id="CreateDate" type="text" placeholder="Ngày nhận hàng" />
+                                <span class="input-group-addon ">
+                                    <span class="fa fa-calendar">
+                                    </span>
+                                </span>
+                            </div>
+                           
+                    </li>
+                    <li>
+                        <span>Mã phiếu</span>
+                        <input class="form-control" type="text" placeholder="Sinh tự động" />
+                    </li>
+                    <li>
+                        <span>Số lượng hàng</span>
+                        <b class="quantityAll">@Model?.Quantity</b>
+                    </li>
+                    <li>
+                        <span>Tổng tiền</span>
+                            <b class="totalAll">0</b>
+                    </li>
+                    <li>
+                        <span>Giảm giá</span>
+                            <input class="form-control discount number3" data-discount="0" type="text" value="0" />
+                    </li> 
+                    <li>
+                        <span><strong>Tổng cần trả</strong></span>
+                            <b class="amountAll">0</b>
+                    </li>
+                    <li>
+                        <span>Số tiền trả nhà cung cấp</span>
+                            <input class="form-control paymentSupplier number3" data-payment="0" type="text" />
+                    </li>
+                    <li>
+                        <span>Hình thức thanh toán</span>
+                           <div class="">
+                                <select class="form-control PaymentMethod" placeholder="Search" style="width:100%">
+                                    <option></option>
+                                </select>
+                           </div>
+                    </li>
+                    <li>
+                        <span>Tính vào công nợ</span>
+                            <b class="red paydebt" >0</b>
+                    </li>
+                      
+                    <li>
+                        <span>Ghi chú</span>
+                            <textarea class="form-control notePurchaseOrder" type="text" placeholder="Ghi chú"></textarea>
+                    </li>
+                </ul>
+            </div>
+                <div class="form-group">
+                    <button class="btn btn-saves btn-success btn-mainl" type="button">
+                        <i class="fas fa-check-double"></i>
+                        Hoàn thành</button>
+                </div>
+        </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,88 @@
+﻿@using Domain.Entities
+@model IEnumerable<Mailhistory>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="font-weight-bold mt-0 mb-0">Danh sách lịch sử email</h5>
+    </div>
+    <div class="card-body">
+        <div class="">
+
+            <table class="table table-striped table-bordered" id="TableData">
+                <thead>
+                    <tr>
+                        <th>
+                            STT
+                        </th>
+                        <th>
+                            Title
+                        </th>
+                        @*   <th>
+                            Mô tả
+                            </th>*@
+                        <th>
+                            Người nhận
+                        </th>
+                        <th>
+                            Trạng thái
+                        </th>
+                        <th>
+                            Ngày gửi
+                        </th>
+
+                        <th style="width:100px">
+                            Công cụ
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int i = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@(i++)</td>
+                            <td>@item.Title</td>
+                            @*  <td>
+                                @if (item.Body != null)
+                                {
+                                @item.Body
+                                }
+                                </td>*@
+                            <td>@item.To</td>
+                            <td>
+                                @if (item.Status)
+                                {
+                                    <span class="badge badge-success">Đã gửi</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">Gửi lỗi</span>
+                                }
+                            </td>
+
+                            <td>@item.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss tt")</td>
+
+                            <td>
+                                <div class="btn-group dropleft">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    </button>
+                                    <div class="dropdown-menu" x-placement="left-start" style="position: absolute; transform: translate3d(-196px, 0px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                        <a class="dropdown-item" href="javascript:void(0)" onclick="jQueryModalGet('/admin/email/Detailt?id=@item.Id','Xem chi tiết')">
+                                            <i class="fas fa-info-circle mr-2" sty></i>   Xem chi tiết
+                                        </a>
+                                        <a class="dropdown-item" href="#" onclick="reSendEmail(@item.Id)">
+                                            <i class="fa fa-info-circle mr-2"></i>    Gửi lại
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

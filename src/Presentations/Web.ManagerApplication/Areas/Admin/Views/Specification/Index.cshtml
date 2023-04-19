@@ -1,0 +1,99 @@
+﻿@model Web.ManagerApplication.Areas.Admin.Models.SpecificationsViewModel
+@{
+    ViewData["Title"] = localizer["Users"];
+    ViewData["Caption"] = localizer["Manage Users here"];
+}
+
+<!--<div class="card mb-2">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Chọn loại chuyên mục</label>-->
+@*<select asp-for="idTypeSpecifications" class="form-control" asp-items='new SelectList(Model.Itemategory, "Id", "Name",Model.IdTypeCategory)'>*@
+<!--<select asp-for="idTypeSpecifications" class="form-control" asp-items="@Model.listtype">
+
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>-->
+<div class="card">
+    <div class="card-header">
+        <h5 class="font-weight-bold mt-0 mb-0  mr-2">Danh sách thông số theo loại: <b class="required" id="loaits"></b></h5>
+        <select asp-for="idTypeSpecifications" class="form-control select2 " asp-items='new SelectList(Model.listtype, "Id","Name", Model.idTypeSpecifications)' style="width:200px">
+        </select>
+        @*  <select asp-for="idBrand" class="form-control select2" asp-items='new SelectList(Model.Brands, "Id","Name", Model.idBrand)' style="width:200px">
+            <option></option>
+            </select>*@
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-12 pt-2">
+                <a id="btnCreate">
+                    <button class="mb-2 mr-2 btn-icon btn btn-success"><i class="fas fa-plus-circle"> </i> Thêm mới</button>
+                </a>
+                <button class="ladda-button mb-2 mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                    <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Reload</span>
+
+                    <span class="ladda-spinner"></span>
+                </button>
+            </div>
+            <div id="viewAll" class="card-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+<script>
+    function loadiddata() {
+        iddata = $("#idTypeSpecifications").val();
+    }
+    var iddata = $("#idTypeSpecifications").val();
+    $(document).ready(function () {
+
+
+        $('#idTypeSpecifications').on('change', function () {
+            loadiddata();
+            var html = "jQueryModalGet('/admin/Specification/CreateOrEdit?IdType=" + iddata + "','Thêm mới',false)";
+            $("#btnCreate").attr("onclick", html);
+            iddata = this.value;
+            loadData();
+        });
+     
+        $("#idTypeSpecifications").select2({
+            placeholder: "Chọn loại thông số",
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "Không tìm thấy dữ liệu";
+                }
+            },
+        });
+        $("#idBrand").select2({
+            placeholder: "Chọn hãng",
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "Không tìm thấy dữ liệu";
+                }
+            },
+        });
+        var html = "jQueryModalGet('/admin/Specification/CreateOrEdit?IdType=" + iddata + "','Thêm mới',false)";
+        $("#btnCreate").attr("onclick", html);
+        // $("#userTable").DataTable();
+        loadData();
+        $('#reload').on('click', function () {
+            loadData();
+        });
+    });
+
+    function loadData() {
+        loadDataAjax("/admin/Specification/LoadAll?IdType=" + iddata);
+           pushState("?IdType=" + iddata);
+    }
+</script>
+}

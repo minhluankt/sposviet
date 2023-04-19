@@ -1,0 +1,48 @@
+﻿@using Web.ManagerCompany.Views.Shared.Components.Footer;
+@using Web.ManagerCompany.Views.Shared.Components.Header;
+@using Web.ManagerCompany.Views.Shared.Components.Sidebar;
+@{
+    string url = Context.Request.Scheme + "://" + Context.Request.Host + Context.Request.Path;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>@ViewBag.Title</title>
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="@Html.Raw(ViewBag.description)" />
+    <meta name="keywords" content="@(ViewBag.Keyword)" />
+    <meta property="og:title" content="@ViewBag.Title" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@url" />
+    <meta property="og:image" content="@ViewBag.Website/@(ViewBag.image)" />
+    <meta property="og:description" content="@Html.Raw(ViewBag.description)" />
+    <meta property="fb:app_id" content="1541355726195025" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    @* <link rel="manifest" href="/favicon/site.webmanifest">*@
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapp lication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <partial name="_Styles" />
+ 
+</head>
+<body>
+    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
+         data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+        @(await Component.InvokeAsync<HeaderViewComponent>())
+        @(await Component.InvokeAsync<SidebarViewComponent>())
+        <div class="page-wrapper">
+              @RenderBody()
+            @(await Component.InvokeAsync<FooterViewComponent>())
+        </div>
+    </div>
+    <partial name="_Scripts" />
+    @await Component.InvokeAsync("Notyf")
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

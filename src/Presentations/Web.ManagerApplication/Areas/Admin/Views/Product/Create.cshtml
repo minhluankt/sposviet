@@ -1,0 +1,278 @@
+﻿@model Model.ProductModelView
+@{
+    Model.ExpirationDateDiscount = null;
+}
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+
+            <div>
+                Thêm sản phẩm
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="main-form-custom">
+    <form asp-area="Admin" id="create-formProduct" asp-controller="Product" onsubmit="return AddProduct(this)" asp-action="OnPostCreateOrEdit">
+        <partial name="Share" model="@Model" />
+    </form>
+</div>
+
+@section Scripts
+    {
+@*<script src="~/lib/elFinder/js/elfinder.min.js"></script>*@
+<script src="~/lib/knockout/knockout-min.js"></script>
+<script src="~/lib/knockout/knockout-file-bindings.js"></script>
+<script src="~/lib/knockout/upload.js"></script>
+<script src="~/lib/pdfjs/pdfobject.js"></script>
+<script src="~/assets/scripts/inputmask/jquery.inputmask.bundle.min.js"></script>
+<script src="~/lib/jquery.filer/js/jquery.filer.js"></script>
+<script src="~/ckeditor4/ckeditor.js"></script>
+
+<script src="~/js/upload.js?time=1237455"></script>
+<script type="text/javascript" language=javascript>
+
+           $("#elfinder-input").change(function(){
+              //  debugger
+               // let sel = $(this);
+               // let url =decodeURI(sel.data("path"));
+                $("#imgCompany").attr("src","/"+$(this).val());
+               // loadURLToInputField(url,sel.data("filename"),sel.data("mime"));
+            })
+
+
+        loaddaterangepicker();
+        priceFormat();
+     LoadDataTableById("tableImg");
+     function DeleteImg(sel, id,idProduct) {
+         confirms("Xác nhận", "Bạn có chắc chắn muốn xóa không?", "<i class='far fa-times-circle'></i> Hủy", "<i class='fas fa-check-circle'></i> Đồng ý", function () {
+             let _delete = Product.Delete("/Api/Handling/DeleteImg", id,idProduct);
+             if (_delete) {
+                 dataTable
+                     .row($(sel).parents('tr'))
+                     .remove()
+                     .draw();
+               //  $(sel).parents("tr").remove();
+               //  $("#tableImg").DataTable().destroy();
+               //  LoadDataTableById("tableImg");
+             }
+         });
+     }
+      loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct", "#idCategory", @Model.idCategory, "Chọn nhóm sản phẩm");
+
+     function DeleteDocument(sel, id) {
+         var _delete = JqueryModal.DeleteRemove('/Api/GetDataManage/DeleteDocumentProduct', id, sel);
+         //if (_delete) {
+         //    cosole.log($(sel).parents("tr"));
+         //    $(sel).parents("tr").remove();
+         //}
+     }
+     function RandomString(sel) {
+         $.ajax({
+             type: 'GET',
+             url: "/admin/Product/RandomStringCode",
+             contentType: false,
+             processData: false,
+             global: false,
+             beforeSend: function () {
+                 loadingElementStart("tab-eg2-0");
+             },
+             success: function (res) {
+                 if (res.isValid) {
+                     $(".code").val(res.data);
+                     loadingStopElement("tab-eg2-0");
+                 }
+             },
+             error: function (err) {
+                 console.log(err)
+             }
+         });
+         $.unblockUI();
+     }
+    // var table = $('#dataTablePhuTung').DataTable();
+     $.ajax({
+         type: 'GET',
+         url: "/admin/Product/LoadFullDataTable?idProduct=" +@Model.Id,
+         contentType: false,
+         processData: false,
+         global: false,
+         beforeSend: function () {
+             loadingElementStart("dataAccessary");
+         },
+         success: function (res) {
+             if (res.isValid) {
+                 $("#dataAccessary").html(res.html);
+                 $('#dataTableAccessary').DataTable({
+                     "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+                     "pageLength": 10,
+                     "pagingType": "full_numbers",
+                     "language": {
+                         "oPaginate": {
+                             "sFirst": "Đầu",
+                             "sPrevious": "Trước",
+                             "sNext": "Tiếp",
+                             "sLast": "Cuối"
+                         },
+
+                         "sSearch": "Tìm kiếm:",
+                         "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+                         "lengthMenu": "Hiển thị _MENU_ dòng trên một trang",
+                         "zeroRecords": "Không tìm thấy kết quả nào",
+                         "sInfo": "Hiển thị dòng _START_  đến dòng _END_  trên tổng số _TOTAL_ dòng (Trang _PAGE_/_PAGES_)",
+                         //"info": "Hiển thị trang _PAGE_ trên tổng _PAGES_ trang",
+
+                         "infoEmpty": "Không có dữ liệu",
+                         "infoFiltered": "(Lọc được từ _MAX_ tổng số mục )"
+                     }
+                     //deferRender: true,
+                    // scrollY: 200,
+                    // scrollCollapse: true,
+                   //  scroller: true
+                 });
+               //  loadCheck();
+             }
+             loadingStop();
+         },
+         error: function (err) {
+             console.log(err)
+         }
+     });
+
+
+     $(".input-mask-trigger").inputmask()
+     $(".select2_cre").select2({
+         placeholder: "Chọn giá trị",
+         allowClear: true,
+         language: {
+             noResults: function () {
+                 return "Không tìm thấy dữ liệu";
+             }
+         },
+     });
+
+     validateForm.EditOrUpdateProduct();
+     // $(".idCity").select2({
+     //    placeholder: "Chọn giá trị",
+     //    allowClear: true,
+     //    language: {
+     //        noResults: function () {
+     //            return "Không tìm thấy dữ liệu";
+     //        }
+     //    },
+     //}).on('change', function (e) {
+     //    $('.idDistrict').empty().append('<option selected="selected" value=""></option>');
+     //   // let url_seri = "/Admin/District/GetDataDistrictByIdCity?idcity=" + this.value;
+     //    let url_seri = "/API/Handling/GetDataDistrictByIdCity?idcity=" + this.value;
+     //    loaddataSelect2(url_seri, ".idDistrict");
+
+     //});
+
+     //$('.idCity').trigger("change");
+     //$('#imgCompany').click(function () { $('#customFile').trigger('click'); });
+     $("#customFile").on("change", function () {
+         var fileName = $(this).val().split("\\").pop();
+         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+     });
+
+     //function loadCheck() {
+     //    $("#checkAllItem").change(function () {
+     //        if (this.checked) {
+     //            $(".checkItem").each(function () {
+     //                this.checked = true;
+     //            });
+     //        } else {
+     //            $(".checkItem").each(function () {
+     //                this.checked = false;
+     //            });
+     //        }
+     //        var array = [];
+     //        $("input[name='checkItem']:checked").each(function () {
+     //            array.push(parseInt(this.value));
+     //        });
+     //        $("#idAccessary").val(JSON.stringify(array));
+     //       // $("#idAccessary").val(array.join(', '));
+     //    });
+
+     //    $(".checkItem").click(function () {
+     //        if ($(this).is(":checked")) {
+     //            var isAllChecked = 0;
+
+     //            $(".checkItem").each(function () {
+     //                if (!this.checked)
+     //                    isAllChecked = 1;
+     //            });
+
+     //            if (isAllChecked == 0) {
+     //                $("#checkAllItem").prop("checked", true);
+     //            }
+     //        }
+     //        else {
+     //            $("#checkAllItem").prop("checked", false);
+     //        }
+     //        var array = [];
+     //        $("input[name='checkItem']:checked").each(function () {
+     //            array.push(parseInt(this.value));
+     //        });
+     //        $("#idAccessary").val(JSON.stringify(array));
+     //    });
+     //}
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        loadeventAddSell()
+        $('#Document').filer({
+            showThumbs: true,
+            addMore: true,
+            allowDuplicates: false,
+            captions: {
+                button: "Chọn tập tin",
+                feedback: "Chọn tập tin cần upload",
+                feedback2: "tập tin đã được chọn",
+                removeConfirmation: "Bạn có chắc chắn muốn xóa tệp không?",
+            }
+        });
+        //$('#idBrand').on("change", function (e) { log("change"); });
+        // $('#idBrand').on("#idBrand:select", function (e) { log("#idBrand:select", e); });
+        $('#ProductAlbum').trigger("filer.append", {
+            files: [{
+                name: "appended_file.jpg",
+
+                type: "image/jpg",
+                file: "https://dummyimage.com/158x113/f9f9f9/191a1a.jpg",
+            }, {
+                name: "appended_file_2.png",
+
+                type: "image/png",
+                file: "https://dummyimage.com/158x113/f9f9f9/191a1a.png",
+            }]
+        })
+        loadLadda();
+        uploadImageCustom("ProductAlbum");
+        //  uploadImageCustom("Document","Chọn tệp (PDF,Image)");
+    });
+    var toolbarGroups = [
+
+        { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi', 'paragraph'] },
+        { name: 'basicstyles', groups: ['basicstyles', 'cleanup'] },
+        '/',
+        { name: 'styles', groups: ['styles'] },
+        { name: 'colors', groups: ['colors'] },
+        { name: 'tools', groups: ['tools'] },
+        { name: 'others', groups: ['others'] },
+        { name: 'about', groups: ['about'] }
+    ];
+
+
+
+
+
+
+
+
+</script>
+}

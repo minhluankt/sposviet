@@ -1,0 +1,110 @@
+﻿@using Domain.Entities
+@model ParametersEmail
+<style>
+    .cke_dialog {
+        z-index: 10055 !important;
+    }
+</style><main>
+
+    @*<form method="post" asp-controller="ParametersEmail" asp-area="Admin" asp-route-id="@Model.Id" asp-action="OnPostCreateOrEdit" onsubmit="return jQueryModalPost(this);">*@
+    <form method="post" asp-controller="ParametersEmail" asp-area="Admin" asp-route-id="@Model.Id" asp-action="OnPostCreateOrEdit">
+        <div class="row justify-content-center">
+            <div class="col col-md-9">
+                <div class="card mt-3 mb-5">
+                    <div class="card-header">
+                        @if (Model.Id > 0)
+                        {
+                            <h5>Chỉnh sửa tham số email: @Model.Key</h5>
+                        }
+                        else
+                        {
+                            <h5>Thêm mới tham số email</h5>
+                        }
+                    </div>
+                    <div class="card-body">
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Id)
+                        <div class="form-group">
+                            <label asp-for="Key" class="control-label">Tham số <span class="required">(*)</span></label>
+                            <input asp-for="Key" placeholder="Nhập tên hãng" class="form-control" />
+                            <span asp-validation-for="Key" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Title" class="control-label">Tiêu đề email <span class="required">(*)</span></label>
+                            <input asp-for="Title" placeholder="Tiêu đề email" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Content" class="control-label">Mô tả tham số</label>
+                            <input asp-for="Content" placeholder="Mô tả tham số" class="form-control" />
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Value" class="control-label">Nội dung email</label>
+                            <textarea asp-for="Value" class="ckeditor" placeholder="Nội dung email" tabindex='-1' rows="3"></textarea>
+
+
+                        </div>
+
+                        <div class="form-group justify-content-center" style="margin-bottom: 0px !important">
+                            <a class="btn btn-info close-button" href="/admin/ParametersEmail">
+                                Trở về danh sách
+
+                            </a>
+                            <button class="ladda-button mr-2 btn btn-primary" data-style="expand-left">
+                                <span class="ladda-label"><i class="fas fa-check"></i>  Lưu</span>
+                                <span class="ladda-spinner"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+</main>
+
+@section Scripts
+{
+
+<script>
+
+
+    ////CKEDITOR.replace('Value');
+    //tinymce.init({
+    //    selector:'textarea#Value', inline: false,
+    //  plugins: [ 'quickbars','image','table','preview','code','emoticons','searchreplace','autolink','link','media' ,'wordcount','directionality'],
+    //      image_title: true,
+    //      automatic_uploads: true,
+    //    //   toolbar: 'table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+    //      file_picker_types: 'file image media',
+    //      file_picker_callback: function(cb, value, meta) {
+    //          var input = document.createElement('input');
+    //          input.setAttribute('type', 'file');
+    //          input.setAttribute('accept', 'image/*');
+    //          input.onchange = function () {
+    //              var file = this.files[0];
+    //              var reader = new FileReader();
+
+    //              reader.onload = function () {
+    //                  var id = 'blobid' + (new Date()).getTime();
+    //                  var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+    //                  var base64 = reader.result.split(',')[1];
+    //                  var blobInfo = blobCache.create(id, file, base64);
+    //                  blobCache.add(blobInfo);
+    //                  cb(blobInfo.blobUri(), {title: file.name});
+    //              };
+    //              reader.readAsDataURL(file);
+    //          };
+    //          input.click();
+    //      },
+    //       toolbar: "outdent indent | numlist bullist | emoticons | undo redo | insert | styleselect  | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image ",
+
+
+    //})
+
+
+
+</script>
+}

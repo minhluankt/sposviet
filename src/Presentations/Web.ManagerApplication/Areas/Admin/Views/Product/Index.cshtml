@@ -1,0 +1,294 @@
+﻿@model Model.ProductSearch
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="">
+                    <label for="" asp-for="idCategory">Danh mục sản phẩm</label>
+                    <select class="form-control idCategory" name="idCategory">
+                        <opiton></opiton>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="">
+                    <label for="" asp-for="idPrice">Mức giá</label>
+                    <select class="form-control select2" style="width: 100%;" name="idPrice"
+                            aria-hidden="true" id="Price" asp-items='new SelectList(Model.PriceICs,"Id","Name",Model.idPrice)'>
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="">
+                    <label>Người tạo</label>
+                    <select class="form-control select2" style="width: 100%;" name="userId" aria-hidden="true" id="listUserselect2">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="">
+                    <label>Mã sản phẩm</label>
+                    <input type="text" name="textSearch" id="code" placeholder="Mã sản phẩm" class="form-control">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="">
+                    <label>Tên sản phẩm</label>
+                    <input type="text" name="textSearch" id="textSearch" placeholder="Tên sản phẩm......" class="form-control">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="card-footer text-center" style=" display: block;">
+        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="col-sm-12 pt-2">
+        @*<a asp-area="Admin" asp-controller="Product" class="" asp-action="CreateOrEdit">*@
+        @*<a onclick="jQueryModalGetRightToLeft('/admin/Product/CreateOrEdit','Thêm mới sản phẩm')" class="btn bg-success text-white">*@
+        <a href="/admin/Product/Create" class="btn bg-success text-white">
+            <i class="fas fa-plus-circle"> </i> Thêm mới
+        </a>
+        <button class="ladda-button mr-2 btn btn-primary" id="reload" data-style="expand-left">
+            <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Reload</span>
+
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+    <div id="viewAll" class="card-body">
+        <table class="table table-bordered table-striped" style=" " id="dataTable">
+            <thead>
+                <tr>
+                    
+                    <th>Tên</th>
+                    <th>Mã</th>
+                    <th>Hình ảnh</th>
+                    <th>Danh mục</th>
+                    <th>Giá</th>
+                    <th>Người đăng</th>
+                    <th>Ngày đăng</th>
+                    <th>Lượt xem</th>
+                    <th>Hiển thị</th>
+                    <th>Công cụ</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts
+{
+<script>
+
+    $(document).ready(function () {
+         loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct", ".idCategory", @Model.idCategory, "Tất cả");
+        loaddataSelect2("/admin/users/getSelect2","#listUserselect2","@userId");
+    });
+    $(document).ready(function () {
+        dataTableOut = $('#dataTable').DataTable({
+            "responsive": true,
+            "processing": true,
+             stateSave: true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "filter": true,
+            "rowId": "id",
+            "orderMulti": false,
+            "ordering": false,
+           // "order": [[0, "desc"]],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                "zeroRecords": "Không tìm thấy dữ liệu nào",
+                "emptyTable": "Không có dữ liệu",
+                "search": "Tìm kiếm:",
+                "processing": "Đang xử lý...",
+                "lengthMenu": "Hiển thị _MENU_ dòng",
+                "loadingRecords": "Vui lòng chờ...",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Tiếp theo",
+                    "previous": "Về trước"
+                },
+            },
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+            "buttons": [
+                {
+                    text: 'Reload',
+                    action: function (e, dt, node, config) {
+                        dataTableOut.ajax.reload();
+                    }
+                }
+            ],
+            "columnDefs": [
+
+                { className: "text-right", "targets":[3,4,5] },
+                { className: "text-center", "targets": [-1,2,1,6] },
+
+                { responsivePriority: 4, targets: [-1,  0] },////define hiển thị mặc định column 1
+
+
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [-1,0],
+
+                },
+                { "width": "100px", "targets": -1 }
+
+            ],
+            ajax: {
+                url: "/admin/product/LoadAll",
+                type: "POST",
+                datatype: "json",
+                data: {
+                    Name : function () { return $('#textSearch').val().trim() },
+                    code: function () { return $('#code').val().trim() },
+                    idCategory: function () { return $('.idCategory').val()},
+                    idPrice: function () { return $('#Price').val().trim() },
+                   // Name: function () { return $('#CompanyName').val().trim() },
+                }
+            },
+            "columns": [
+                { "data": "name", "name": "Name", "autoWidth": true,
+                 "render": function (data, type, full, meta) {
+
+                        if (full.name != "") {
+                            let km ="";
+                            if(full.isPromotion || full.isRunPromotion){
+                                km ="red-sell";
+                            }
+                            let html = '<a href="/'+full.slug+'" target="_blank" class="'+km+'">'+full.name+'</a>';
+                            return html;
+                        }
+                        return "";
+                    }
+                },
+                { "data": "code", "name": "code", "autoWidth": true },
+
+
+
+
+                {
+                    "data": "img", "name": "img",
+                    "render": function (data, type, full, meta) {
+                        // console.log(full.id);
+                        if (full.img != "") {
+                            let html = '<img src="../'+full.img+'" style="width:50px"/>';
+                            return html;
+                        }
+                        return "";
+                    }
+
+                },
+                  { "data": "nameCategory", "name": "NameCategory", "autoWidth": true },
+                {
+                    "data": "price", "name": "Price", "autoWidth": true,
+                    render: $.fn.dataTable.render.number('.', ',', 0)
+                },
+
+                {
+                       "data": "createdBy", "name": "createdBy",
+                 "render": function (data, type, full, meta) {
+
+                          return full.createdBy;
+                    }
+                },
+                {   "data": "createdOn", "name": "createdOn",
+                    "render": function (data, type, full, meta) {
+                       // console.log(full.id);
+                        if (full.createdOn != null) {
+                            data = moment(full.createdOn).format('DD/MM/YYYY HH:MM:SS');
+                            return data;
+                        }
+                        return "";
+                    }
+
+                },
+                { "data": "viewNumber", "name": "viewNumber", "autoWidth": true }
+                ,
+                {
+                    // "data": "Status", "name": "Status", "autoWidth": true
+                    "data": "active", "name": "active",
+                    "render": function (data, type, full, meta) {
+                        if(full.active){
+                            return '<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> Có</span>';
+                        }
+                        return '<span class="badge badge-danger"><i class="fas fa-check-circle" style=""></i> Không</span>';
+                    }
+                },
+                {
+                    "data": "active", "name": "active",
+                    "render": function (data, type, full, meta) {
+
+                        let html = `<div class="btn-group dropleft">
+                                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    </button>
+                                        <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="javascript:void(0)" onclick="jQueryModalGetRightToLeft('/admin/Product/details?secret=` + full.urlParameters + `','Thông tin sản phẩm',false)"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
+
+                                          <a class="dropdown-item" href="/admin/product/edit?secret=`+ full.urlParameters +`"><i class="fas fa-edit mr-2"></i> Sửa</a>
+
+                                         <form id="form_delete_`+ full.id + `" action="/admin/Product/delete?secret=` + full.urlParameters + `"  asp-controller="Product" asp-area="Admin" method="post" asp-action="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+                                            <a  class="dropdown-item"  href="javascript:$('#form_delete_`+ full.id +`').submit();">
+                                              <i class="fas fa-trash-alt mr-2"></i> Xóa
+                                            </a>
+                                        </form>
+
+
+                                    </div>
+                                </div>`;
+                        return html;
+                    }
+                },
+            ]
+
+        });
+        $('#reload').on('click', function () {
+            dataTableOut.ajax.reload(null,false);
+
+        });
+        $('input').keyup(function(e){
+            if(e.keyCode == 13)
+            {
+                dataTableOut.ajax.reload(null,false);
+            }
+        });
+    });
+
+    //$(document).ready(function () {
+
+    //    loadData();
+    //    $('#reload').on('click', function () {
+    //        loadData();
+    //    });
+    //});
+
+
+</script>
+}

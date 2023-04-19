@@ -1,0 +1,91 @@
+﻿@using Domain.ViewModel
+@model CategoryViewModel
+@{
+    bool selected = true;
+    if (!Model.createItem)
+    {
+        selected = false;
+    }
+}
+<div class="row justify-content-center">
+    <div class="col col-md-6">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.id)
+        @Html.HiddenFor(m => m.IdLevel)
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (Model.IdPattern == null || Model.IdPattern > 0 || Model.createItem)
+        {
+            if (Model.createItem || Model.IdPattern > 0)
+            {
+                if (Model.createItem)
+                {
+                    <input type="hidden" asp-for="IdPattern" />
+                }
+                <div class="form-group" id="divPattern">
+                    <label>Danh mục cha</label>
+                    <select asp-for="IdPattern" class="select2 form-control" disabled="@selected" asp-items="Model.SelectListItemCate">
+                        <option></option>
+                    </select>
+                </div>
+            }
+
+        }
+
+        <div class="form-group">
+            <label asp-for="fullName" class="control-label"></label>
+            <input asp-for="fullName" placeholder="Nhập tên" class="form-control" />
+            <span asp-validation-for="fullName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Url" class="control-label">URL tĩnh nếu có</label>
+            <input asp-for="Url" placeholder="Nhập url tĩnh" class="form-control" />
+        </div>
+
+
+        <div class="form-group">
+            <label asp-for="Sort" class="control-label">Thứ tự hiển thị</label>
+            <input asp-for="Sort" placeholder="Thứ tự hiển thị" class="form-control" />
+            <span asp-validation-for="Sort" class="text-danger"></span>
+        </div>
+
+        @if (!Model.createItem)
+        {
+            if (Model.id == 0 || Model.IdPattern == 0)
+            {
+                <div class="form-group">
+                    <label>Chọn loại chuyên mục</label>
+                    <select asp-for="IdTypeCategory" class="form-control" asp-items='new SelectList(Model.Itemategory, "Id", "Name",Model.IdTypeCategory)'>
+                        <option></option>
+                    </select>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="IdTypeCategory" />
+            }
+
+        }
+        else
+        {
+            <input type="hidden" asp-for="IdTypeCategory" />
+        }
+
+        <div class="form-group justify-content-center" style="margin-bottom: 0px !important">
+            <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Save</button>
+            <button type="submit" class="btn btn-default close-button" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $("#IdTypeCategory").select2({
+                placeholder: "Chọn loại chuyên mục",
+                allowClear: true,
+                language: {
+                    noResults: function () {
+                        return "Không tìm thấy dữ liệu";
+                    }
+                },
+            });
+        });</script>

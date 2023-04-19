@@ -1,0 +1,71 @@
+﻿@model Domain.Entities.Suppliers
+@{
+    Layout = null;
+}
+<div class="detail-invoice-pos">
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table-info-cus">
+                <tr>
+                    <td>Mã nhà cung cấp</td>
+                    <td>@Model.CodeSupplier</td>
+                </tr>
+                <tr>
+                    <td>Tên nhà cung cấp </td>
+                    <td>@Model.Name</td>
+                </tr>
+                <tr>
+                    <td>Địa chỉ</td>
+                    <td>@Model.Address</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <table class="table-info-cus">
+                <tr>
+                    <td>Điện thoại</td>
+                     <td>@Model.Phonenumber</td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td>@Model.Email</td>
+                </tr>
+               <tr>
+                    <td>Tổng nợ</td>
+                    <td><b class="text-danger">@Model.Amount.ToString("N0")</b><b>(vnđ)</b></td>
+                </tr>
+            </table>
+        </div>
+
+       @* <div class="col-md-12 mt-5">
+            <table class="table table-striped table-bordered" id="dataTablePopup">
+                <thead>
+                    <tr>
+                        <th>Mã hàng hóa</th>
+                        <th>Tên hàng hóa</th>
+                        <th>Số lượng</th>
+                        <th class="text-right">Đơn giá</th>
+                        <th class="text-right">Giảm giá</th>
+                        <th class="text-right">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ItemPurchaseOrders)
+                    {
+                        <tr>
+                            <td>@item.Code</td>
+                            <td>@item.Name</td>
+                            <td class="text-center number3">@item.Quantity</td>
+                            <td class="text-right number3">@item.Price.ToString("N3")</td>
+                            <td class="text-right number3">@item.DiscountAmount.ToString("N3")</td>
+                            <td class="text-right font-weight-bold number3">@item.Total.ToString("N3")</td>
+                        </tr>
+                    }
+
+                </tbody>
+            
+            </table>
+        </div>
+        *@
+    </div>
+</div>

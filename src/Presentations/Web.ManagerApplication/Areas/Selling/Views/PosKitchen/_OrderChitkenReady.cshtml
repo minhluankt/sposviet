@@ -1,0 +1,160 @@
+﻿@model Domain.ViewModel.KitChenModel
+
+<div class="tab-pane active" id="tab-order-0" role="tabpanel">
+    <div class="elm-btn">
+        <button type="button" id="next-allreadyorder" class="btn btn-primary btn-next-allorder"><i class="fas fa-check-double"></i> Xong tất cả</button>
+    </div>
+    <ul class="tab-Priorities">
+        @foreach (var item in Model.OrderByPrioritiesModels)
+        {
+            <li data-id="@item.idKitchen" class="item-data item-ready">
+                <div class="left-name">
+                    <b class="name">@item.proName</b>
+                    <small>Mã đơn:  <b>@item.orderCode</b>  - @item.createDate - @item.orderStaff</small>
+                </div>
+                <span class="quantity">@item.quantity.ToString("0.###")</span>
+                <div class="info-table">
+                    <b class="name">@item.tableName</b>
+                    <div>
+                        <time class="timeago" datetime="">@item.dateReady?.ToString("dd/MM/yyyy HH:mm:ss")</time>
+                        <span> - </span>
+                        <time class="timeago" datetime="">@item.updateDate?.ToString("dd/MM/yyyy HH:mm:ss")</time>
+                    </div>
+
+                </div>
+                <div class="lst-action">
+                    @if (item.quantity <= 0)
+                    {
+                        <button class="btn btn-delete"><i class="fas fa-trash-alt"></i></button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-next"><i class="fas fa-caret-right"></i></button>
+                        <button class="btn btn-nextAll"><i class="fas fa-forward"></i></button>
+                    }
+
+                </div>
+                @if (item.detailtKitchenModels.Count() > 0)
+                {
+                    <div class="lstitemcancel">
+                        <ul>
+                            @foreach (var cancel in item.detailtKitchenModels.Where(x => !x.IsRemove))
+                            {
+                                if (cancel.TypeKitchenOrder == Application.Enums.EnumTypeKitchenOrder.CHUYEN)
+                                {
+                                    <li><b class="text-warning">@cancel.Note</b> <small>bỏi</small> <span>@cancel.Cashername</span>  <time class="timeago" datetime="">@cancel.DateCancel</time></li>
+                                }
+                                else
+                                {
+                                    <li><span>Hủy</span> <b class="red">@cancel.Quantity.ToString("0.###") @item.proName</b> <small>bỏi</small> <span>@cancel.Cashername</span>  <time class="timeago" datetime="">@cancel.DateCancel</time></li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+            </li>
+        }
+        @if (Model.OrderByPrioritiesModels.Count() == 0)
+        {
+            <div class="no-order">
+                <img src="~/images/ristorante.png" />
+                <b>Hiện không có món nào đã chế biến xong</b>
+                <span>Vui lòng đợi món</span>
+            </div>
+        }
+    </ul>
+</div>
+<div class="tab-pane viewfood" id="tab-order-1" role="tabpanel">
+    <ul class="tab-viewfood">
+
+        @foreach (var item in Model.OrderByFoodModels)
+        {
+            <li data-id="@item.idProduct" class="item-ready item-data item-product">
+                <div class="left-name">
+                    <b class="name">@item.proName</b>
+                </div>
+                <span class="quantity">@item.quantity.ToString("0.###")</span>
+
+                <div class="lst-action">
+                    <button class="btn btn-next"><i class="fas fa-caret-right"></i></button>
+                    <button class="btn btn-nextAll"><i class="fas fa-forward"></i></button>
+                </div>
+            </li>
+        }
+        @if (Model.OrderByFoodModels.Count() == 0)
+        {
+            <div class="no-order">
+                <img src="~/images/ristorante.png" />
+                <b>Hiện không có món nào đã chế biến xong</b>
+                <span>Vui lòng đợi món</span>
+            </div>
+        }
+    </ul>
+</div>
+<div class="tab-pane" id="tab-order-2" role="tabpanel">
+    <ul class="tab-viewtable">
+
+        @foreach (var items in Model.OrderByRoomModels)
+        {
+            <li data-order="@items.idOrder" class="item-ready item-order">
+                <div class="left-name">
+                    <b class="name table-name"><i class="fas fa-minus"></i>  @items.tableName (@items.orderCode)</b>
+                </div>
+                <span class="quantity">@items.quantity.ToString("0.###")</span>
+
+                <div class="lst-action">
+                    <button class="btn btn-nextAll"><i class="fas fa-forward"></i></button>
+                </div>
+                <ul>
+                    @foreach (var item in items.OrderByRoomDetailtModels.OrderByDescending(x => x.dateReady))
+                    {
+                        <li class="item-data item-ready" data-id="@item.idKitchen">
+                            <div class="left-name">
+                                <b class="name">@item.proName</b>
+                                <small>Mã đơn:  <b>@items.orderCode</b>  - @item.createDate - @item.orderStaff</small>
+                            </div>
+                            <span class="quantity">@item.quantity.ToString("0.###")</span>
+                            <div class="info-table">
+                                <b class="name">@item.tableName</b>
+                                <div>
+                                    <time class="timeago" datetime="">@item.dateReady?.ToString("dd/MM/yyyy HH:mm:ss")</time>
+                                    <span> - </span>
+                                    <time class="timeago" datetime="">@item.updateDate?.ToString("dd/MM/yyyy HH:mm:ss")</time>
+                                </div>
+                            </div>
+                            <div class="lst-action">
+                                <button class="btn btn-next"><i class="fas fa-caret-right"></i></button>
+                                <button class="btn btn-nextAll"><i class="fas fa-forward"></i></button>
+                            </div>
+                            @if (item.detailtKitchenModels.Count() > 0)
+                            {
+                                <div class="lstitemcancel">
+                                    <ul>
+                                        @foreach (var cancel in item.detailtKitchenModels.Where(x => !x.IsRemove))
+                                        {
+                                            if (cancel.TypeKitchenOrder == Application.Enums.EnumTypeKitchenOrder.CHUYEN)
+                                            {
+                                                <li><b class="text-warning">@cancel.Note</b> <small>bỏi</small> <span>@cancel.Cashername</span>  <time class="timeago" datetime="">@cancel.DateCancel</time></li>
+                                            }
+                                            else
+                                            {
+                                                <li><span>Hủy</span> <b class="red">@cancel.Quantity.ToString("0.###") @item.proName</b> <small>bỏi</small> <span>@cancel.Cashername</span>  <time class="timeago" datetime="">@cancel.DateCancel</time></li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </li>
+                    }
+                </ul>
+            </li>
+        }@if (Model.OrderByRoomModels.Count() == 0)
+        {
+            <div class="no-order">
+                <img src="~/images/ristorante.png" />
+                <b>Hiện không có món nào đã chế biến xong</b>
+                <span>Vui lòng đợi món</span>
+            </div>
+        }
+    </ul>
+</div>

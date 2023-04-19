@@ -1,0 +1,116 @@
+﻿@using Model
+@model CustomerModelView
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="container mt-3 DeliveryAddress">
+    <h5>Thông tin giao hàng</h5>
+      <form asp-action="DeliveryAddress" asp-controller="Account" method="post">
+
+          <input type="hidden" asp-for="payment" />
+    <div class="row">
+        <div class="col-xl-6 mr-auto">
+            <div class="row">
+              
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Họ và tên</label>
+                            <input asp-for="Name" class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>Tỉnh/thành phố</label>
+                            <select class="form-control" style="width: 100%;" asp-for="IdCity"
+                                    aria-hidden="true" asp-items='new SelectList(Model.Citys,"Id","Name",Model.IdCity)'>
+                                <option></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quận/huyện</label>
+                            <select class="form-control select2-2" style="width: 100%;" asp-for="IdDistrict"
+                                    aria-hidden="true">
+                                <option></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Phường xã</label>
+                            <select class="form-control select2-2" style="width: 100%;" asp-for="IdWard"
+                                    aria-hidden="true">
+                                <option></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ</label>
+                            <textarea asp-for="Address" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button type="submit" class="btn btn-success">Cập nhật</button>
+                    </div>
+                </div>
+             
+            </div>
+        </div>  
+       
+    </div> </form>
+</div>
+@section Scripts
+    {
+<script>
+    $('#PhoneNumber').inputmask("(999) 999-9999");
+    //function loadWard(iddata){
+    //     let url_seri = "/API/Handling/GetDataWartByIdDistrict?idDistrict=" + iddata;
+    //         loaddataSelect2(url_seri,"#IdWard",@Model.IdWard,"Chọn phường/xã");
+    //}
+
+
+    $().ready(function () {
+        let idCity = $("#IdCity").val();
+
+        let url = "/API/Handling/GetDataDistrictByIdCity?idcity="+idCity;
+        loaddataSelect2(url,"#IdDistrict",@Model.IdDistrict,"Chọn quận/chuyện");
+
+
+        loadWard(@Model.IdDistrict,@Model.IdWard);
+
+         $("#IdCity").select2({
+             placeholder: "Chọn tỉnh thành",
+             allowClear: true,
+             language: {
+                 noResults: function () {
+                     return "Không tìm thấy dữ liệu";
+                 }
+             },
+         }).on('change', function (e) {
+             $('#IdDistrict').empty().append('<option selected="selected" value=""></option>');
+             $('#IdWard').empty().append('<option selected="selected" value=""></option>');
+             let url_seri = "/API/Handling/GetDataDistrictByIdCity?idcity=" + this.value;
+
+             loaddataSelect2(url_seri,"#IdDistrict",@Model.IdDistrict,"Chọn quận/chuyện",false);
+
+            // let iddis = $('#IdDistrict').val()!=""?$('#IdDistrict').val():0;
+             $('#IdDistrict').trigger("change");
+            //  loadWard(@Model.IdDistrict);
+         });
+
+        // $('#IdDistrict').on('select2:select', function (e) {
+         
+        //   loadWard(e.params.data.id);
+        //});
+
+
+          $("#IdDistrict").change(function () {
+               $('#IdWard').empty().append('<option selected="selected" value=""></option>');
+             loadWard($(this).val(),@Model.IdWard);
+          });
+
+    });
+</script>
+}

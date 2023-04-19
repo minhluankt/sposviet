@@ -1,0 +1,53 @@
+﻿@model Domain.Entities.Customer
+
+<div class="row info-customer-pos">
+    <div class="col-md-6">
+        <ul>
+            <li>
+                <label>Mã khách hàng</label>
+                <span>@Model.Code</span>
+            </li>
+            <li>
+                <label>Loại khách hàng</label>
+                <span>@Model.TypeCustomer</span>
+            </li>
+            <li>
+                <label>Tên khách hàng</label>
+                <span>@Model.Name</span>
+            </li>
+            <li>
+                <label>Mã số thuế</label>
+                <span>@Model.Taxcode</span>
+            </li>
+            <li>
+                <label>CCCD/CMND</label>
+                <span>@Model.CCCD</span>
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <ul>
+            <li>
+                <label>Ngày sinh</label>
+                <span>@(Model.BirthDate.HasValue?Model.BirthDate.Value.ToString("dd/MM/yyyy"):"")</span>
+            </li>
+            <li>
+                <label>Email</label>
+                <span>@Model.Email</span>
+            </li>
+            <li>
+                <label>Điện thoại</label>
+                <span>@Model.PhoneNumber</span>
+            </li>
+            <li>
+                <label>Địa chỉ</label>
+                <span>@Model.Address</span>
+            </li>
+            <li>
+                <label>Giới tính</label>
+                <span>@Model.Sex</span>
+            </li>
+
+        </ul>
+    </div>
+</div>

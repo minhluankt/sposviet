@@ -1,0 +1,113 @@
+﻿@using Model
+
+@model UserViewModel
+@{
+    string classtext = "";
+    string typetext = "";
+    if (!string.IsNullOrEmpty(Model.Id))
+    {
+        classtext = "d-none";
+        typetext = "hidden";
+    }
+
+}
+@Html.AntiForgeryToken()
+@Html.HiddenFor(m => m.Id)
+
+
+<div class="form-group row">
+    <label class="col-md-3 col-form-label" asp-for="FullName"></label>
+    <div class="col-md-9">
+        <input type="text" autofocus="true" asp-for="FullName" name="FullName" class="form-control" placeholder="@Html.DisplayNameFor(m=>m.FullName)">
+        @* <span asp-validation-for="FullName" class="text-danger"></span>*@
+    </div>
+</div>
+<div class="form-group row">
+    <label class="col-md-3 col-form-label" asp-for="Email"></label>
+    <div class="col-md-9">
+        <input type="email" asp-for="Email" name="Email" class="form-control" placeholder="@Html.DisplayNameFor(m=>m.Email)">
+
+    </div>
+</div>
+<div class="form-group row">
+    <label class="col-md-3 col-form-label" asp-for="UserName"></label>
+    <div class="col-md-9">
+        <input type="text" readonly autocomplete="off" asp-for="UserName" class="form-control" placeholder="@string.Format("{0} có thể bỏ qua, mặc định tên đăng nhập là tên email",Html.DisplayNameFor(m=>m.UserName))">
+
+    </div>
+</div>
+
+
+<div class="form-group row">
+    <label class="col-md-3 col-form-label" asp-for="PhoneNumber"></label>
+    <div class="col-md-9">
+        <input type="text" asp-for="PhoneNumber" class="form-control" placeholder="@Html.DisplayNameFor(m=>m.PhoneNumber)">
+
+    </div>
+</div>
+@if (classtext != "")
+{
+    <div class="form-group row">
+        <label class="col-md-3">Thay đổi mật khẩu: </label>
+        <div class="col-md-9">
+            <input type="checkbox" class="icheck" id="ipxChangepass" />
+        </div>
+    </div>
+
+    <div id="changepass" class="@classtext">
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">Nhập mật khẩu</label>
+            <div class="col-md-9">
+                <input type="hidden" autocomplete="off" asp-for="Password" name="Password" class="form-control" placeholder="@Html.DisplayNameFor(m=>m.Password)">
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">
+                Nhập lại mật khẩu
+            </label>
+            <div class="col-md-9">
+                <input type="hidden" autocomplete="off" autocomplete="off" asp-for="ConfirmPassword" name="ConfirmPassword" class="form-control" placeholder="@Html.DisplayNameFor(m=>m.ConfirmPassword)">
+
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div id="changepass">
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">Nhập mật khẩu</label>
+            <div class="col-md-9">
+                <input type="password" autocomplete="off" asp-for="Password" name="Password" class="form-control" placeholder="@Html.DisplayNameFor(m=>m.Password)">
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">  Nhập lại mật khẩu</label>
+            <div class="col-md-9">
+                <input type="password" autocomplete="off" asp-for="ConfirmPassword" name="ConfirmPassword" class="form-control" placeholder="@Html.DisplayNameFor(m=>m.ConfirmPassword)">
+
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+
+
+<div class="form-group justify-content-between" style="margin-bottom: 0px !important">
+    <div class="offset-md-3 col-md-9">
+        <div class="text-center">
+            <button class="ladda-button mr-2 btn btn-primary" type="button" id="btnsaveUser" data-style="expand-left">
+                <span class="ladda-label"><i class="fas fa-check"></i>  Lưu</span>
+                <span class="ladda-spinner"></span>
+            </button>
+
+            <button type="button" class="btn btn-secondary close-button" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+</div>
+

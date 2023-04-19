@@ -1,0 +1,147 @@
+﻿@model Domain.ViewModel.CompanyAdminInfoViewModel
+
+<div class="page-breadcrumb border-bottom">
+    <div class="row">
+        <div class=" m-auto
+                col-lg-3 col-md-4 col-xs-12
+                justify-content-start
+                d-flex
+                align-items-center
+              ">
+            <h5 class="font-weight-medium text-uppercase mb-0">
+                Quản trị công ty
+            </h5>
+        </div>
+        <div class="
+                col-lg-9 col-md-8 col-xs-12
+                d-flex
+                justify-content-start justify-content-md-end
+                align-self-center
+              ">
+            <nav aria-label="breadcrumb" class="mt-2">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="/company">  Quản trị công ty</a>
+                    </li>
+                </ol>
+            </nav>
+
+        </div>
+    </div>
+</div>
+<div class="page-content container-fluid">
+    <div class="row">
+        <div class="col-sm-6 m-auto">
+
+            <div class="card">
+                <div class="border-bottom title-part-padding">
+                    <h4 class="card-title mb-0 float-start">Thêm mới/Chỉnh sửa công ty</h4>
+                   
+                </div>
+                <div class="card-body">
+                    <form id="create-form" method="post" asp-controller="Company" asp-action="OnPostCreateOrEdit">
+                        @Html.HiddenFor(x=>x.Id)
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" asp-for="Name" class="form-control" id="tb-fname" >
+                                    <label for="tb-fname">Tên công ty/Hộ kinh doanh</label>
+                                    <span asp-validation-for="Name"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating mb-3">
+                                    <input type="text" asp-for="Address" class="form-control" id="tb-fname" placeholder="">
+                                    <label for="tb-fname">Địa chỉ</label>
+                                    <span asp-validation-for="Address"></span>
+                                </div>
+
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input  asp-for="CusTaxCode" class="form-control" id="tb-email" placeholder="">
+                                    <label for="tb-email">Mã số thuế</label>
+                                    <span asp-validation-for="CusTaxCode"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input  asp-for="Email" type="email" class="form-control" id="tb-email" placeholder="">
+                                    <label for="tb-email">Email</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="PhoneNumber" class="form-control" id="tb-pwd" >
+                                    <label for="tb-pwd">Số điện thoại</label>
+                                    <span asp-validation-for="PhoneNumber"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="AccountName" class="form-control" id="tb-pwd">
+                                    <label for="tb-pwd">Tài khoản đăn nhập</label>
+                                    <span asp-validation-for="AccountName"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    @Html.DropDownList("IdDichVu", (IEnumerable<SelectListItem>)ViewBag.SelectList,  new { @style = "width:100%" ,@class="SelectListIdType form-control"} )
+                                    <label for="tb-pwd">Chọn dịch vụ</label>
+                                    <span asp-validation-for="IdDichVu"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <select asp-for="NumberDateExpiration" class="form-select form-control col-12" id="inlineFormCustomSelect">
+                                      <option value="0" selected="">Chọn gói</option>
+                                      @for (int i = 1; i <= 10; i++)
+                                        {
+                                            <option value="@i">@i Năm</option>
+                                        }
+                                    </select>
+                                    <label for="tb-pwd">Đăng ký gói</label>
+                                    <span asp-validation-for="NumberDateExpiration"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="StartDate" type="date" class="form-control" id="tb-pwd">
+                                    <label for="tb-pwd">Ngày bắt đầu</label>
+                                    <span asp-validation-for="StartDate"></span>
+                                </div>
+                            </div>
+                             <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Active"id="tb-pwd">
+                                    <label for="tb-pwd">Kích hoạt</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="d-md-flex align-items-center mt-3">
+                                    
+                                    <div class="mt-3 mt-md-0">
+                                      
+                                        <button type="submit" class="
+                                btn btn-info
+                                font-weight-medium
+                                rounded-pill
+                                px-4
+                              ">
+                                            <div class="d-flex align-items-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send feather-sm fill-white me-2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                                Lưu công ty
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

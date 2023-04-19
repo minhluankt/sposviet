@@ -1,0 +1,440 @@
+﻿/*!* Ladda
+* http://lab.hakim.se/ladda
+* MIT licensed
+*
+* Copyright (C) 2018 Hakim El Hattab, http://hakim.se
+*/@keyframes ladda-spinner-line-fade {
+    0%,100%
+
+{
+    opacity: 0.22
+}
+
+1% {
+    opacity: 1
+}
+
+}
+
+.ladda-button {
+    position: relative
+}
+
+    .ladda-button .ladda-spinner {
+        position: absolute;
+        z-index: 2;
+        display: inline-block;
+        width: 32px;
+        top: 50%;
+        margin-top: 0;
+        opacity: 0;
+        pointer-events: none
+    }
+
+    .ladda-button .ladda-label {
+        position: relative;
+        z-index: 3
+    }
+
+[class*="btn-outline-"] .ladda-spinner div div div {
+    background: #000 !important
+}
+
+[class*="btn-outline-"].ladda-button .ladda-label {
+    transition: none !important
+}
+
+.ladda-button .ladda-progress {
+    position: absolute;
+    width: 0;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(0,0,0,0.2);
+    display: none;
+    transition: 0.1s linear all !important
+}
+
+.ladda-button[data-loading] .ladda-progress {
+    display: block
+}
+
+.ladda-button, .ladda-button .ladda-spinner, .ladda-button .ladda-label {
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) all !important
+}
+
+    .ladda-button[data-style=zoom-in], .ladda-button[data-style=zoom-in] .ladda-spinner, .ladda-button[data-style=zoom-in] .ladda-label, .ladda-button[data-style=zoom-out], .ladda-button[data-style=zoom-out] .ladda-spinner, .ladda-button[data-style=zoom-out] .ladda-label {
+        transition: 0.3s ease all !important
+    }
+
+    .ladda-button[data-style=expand-right] .ladda-spinner {
+        right: -6px
+    }
+
+    .ladda-button[data-style=expand-right][data-size="s"] .ladda-spinner, .ladda-button[data-style=expand-right][data-size="xs"] .ladda-spinner {
+        right: -12px
+    }
+
+    .ladda-button[data-style=expand-right][data-loading] {
+        padding-right: 56px
+    }
+
+        .ladda-button[data-style=expand-right][data-loading] .ladda-spinner {
+            opacity: 1
+        }
+
+        .ladda-button[data-style=expand-right][data-loading][data-size="s"], .ladda-button[data-style=expand-right][data-loading][data-size="xs"] {
+            padding-right: 40px
+        }
+
+    .ladda-button[data-style=expand-left] .ladda-spinner {
+        left: 26px
+    }
+
+    .ladda-button[data-style=expand-left][data-size="s"] .ladda-spinner, .ladda-button[data-style=expand-left][data-size="xs"] .ladda-spinner {
+        left: 4px
+    }
+
+    .ladda-button[data-style=expand-left][data-loading] {
+        padding-left: 56px
+    }
+
+        .ladda-button[data-style=expand-left][data-loading] .ladda-spinner {
+            opacity: 1
+        }
+
+        .ladda-button[data-style=expand-left][data-loading][data-size="s"], .ladda-button[data-style=expand-left][data-loading][data-size="xs"] {
+            padding-left: 40px
+        }
+
+    .ladda-button[data-style=expand-up] {
+        overflow: hidden
+    }
+
+        .ladda-button[data-style=expand-up] .ladda-spinner {
+            top: -32px;
+            left: 50%;
+            margin-left: 0
+        }
+
+        .ladda-button[data-style=expand-up][data-loading] {
+            padding-top: 54px
+        }
+
+            .ladda-button[data-style=expand-up][data-loading] .ladda-spinner {
+                opacity: 1;
+                top: 26px;
+                margin-top: 0
+            }
+
+            .ladda-button[data-style=expand-up][data-loading][data-size="s"], .ladda-button[data-style=expand-up][data-loading][data-size="xs"] {
+                padding-top: 32px
+            }
+
+                .ladda-button[data-style=expand-up][data-loading][data-size="s"] .ladda-spinner, .ladda-button[data-style=expand-up][data-loading][data-size="xs"] .ladda-spinner {
+                    top: 4px
+                }
+
+    .ladda-button[data-style=expand-down] {
+        overflow: hidden
+    }
+
+        .ladda-button[data-style=expand-down] .ladda-spinner {
+            top: 52px;
+            left: 50%;
+            margin-left: 0
+        }
+
+        .ladda-button[data-style=expand-down][data-size="s"] .ladda-spinner, .ladda-button[data-style=expand-down][data-size="xs"] .ladda-spinner {
+            top: 40px
+        }
+
+        .ladda-button[data-style=expand-down][data-loading] {
+            padding-bottom: 54px
+        }
+
+            .ladda-button[data-style=expand-down][data-loading] .ladda-spinner {
+                opacity: 1
+            }
+
+            .ladda-button[data-style=expand-down][data-loading][data-size="s"], .ladda-button[data-style=expand-down][data-loading][data-size="xs"] {
+                padding-bottom: 32px
+            }
+
+    .ladda-button[data-style=slide-left] {
+        overflow: hidden
+    }
+
+        .ladda-button[data-style=slide-left] .ladda-label {
+            position: relative
+        }
+
+        .ladda-button[data-style=slide-left] .ladda-spinner {
+            left: 100%;
+            margin-left: 0
+        }
+
+        .ladda-button[data-style=slide-left][data-loading] .ladda-label {
+            opacity: 0;
+            left: -100%
+        }
+
+        .ladda-button[data-style=slide-left][data-loading] .ladda-spinner {
+            opacity: 1;
+            left: 50%
+        }
+
+    .ladda-button[data-style=slide-right] {
+        overflow: hidden
+    }
+
+        .ladda-button[data-style=slide-right] .ladda-label {
+            position: relative
+        }
+
+        .ladda-button[data-style=slide-right] .ladda-spinner {
+            right: 100%;
+            margin-left: 0;
+            left: 16px
+        }
+
+[dir="rtl"] .ladda-button[data-style=slide-right] .ladda-spinner {
+    right: auto
+}
+
+.ladda-button[data-style=slide-right][data-loading] .ladda-label {
+    opacity: 0;
+    left: 100%
+}
+
+.ladda-button[data-style=slide-right][data-loading] .ladda-spinner {
+    opacity: 1;
+    left: 50%
+}
+
+.ladda-button[data-style=slide-up] {
+    overflow: hidden
+}
+
+    .ladda-button[data-style=slide-up] .ladda-label {
+        position: relative
+    }
+
+    .ladda-button[data-style=slide-up] .ladda-spinner {
+        left: 50%;
+        margin-left: 0;
+        margin-top: 1em
+    }
+
+    .ladda-button[data-style=slide-up][data-loading] .ladda-label {
+        opacity: 0;
+        top: -1em
+    }
+
+    .ladda-button[data-style=slide-up][data-loading] .ladda-spinner {
+        opacity: 1;
+        margin-top: 0
+    }
+
+.ladda-button[data-style=slide-down] {
+    overflow: hidden
+}
+
+    .ladda-button[data-style=slide-down] .ladda-label {
+        position: relative
+    }
+
+    .ladda-button[data-style=slide-down] .ladda-spinner {
+        left: 50%;
+        margin-left: 0;
+        margin-top: -2em
+    }
+
+    .ladda-button[data-style=slide-down][data-loading] .ladda-label {
+        opacity: 0;
+        top: 1em
+    }
+
+    .ladda-button[data-style=slide-down][data-loading] .ladda-spinner {
+        opacity: 1;
+        margin-top: 0
+    }
+
+.ladda-button[data-style=zoom-out] {
+    overflow: hidden
+}
+
+    .ladda-button[data-style=zoom-out] .ladda-spinner {
+        left: 50%;
+        margin-left: 32px;
+        transform: scale(2.5)
+    }
+
+    .ladda-button[data-style=zoom-out] .ladda-label {
+        position: relative;
+        display: inline-block
+    }
+
+    .ladda-button[data-style=zoom-out][data-loading] .ladda-label {
+        opacity: 0;
+        transform: scale(0.5)
+    }
+
+    .ladda-button[data-style=zoom-out][data-loading] .ladda-spinner {
+        opacity: 1;
+        margin-left: 0;
+        transform: none
+    }
+
+.ladda-button[data-style=zoom-in] {
+    overflow: hidden
+}
+
+    .ladda-button[data-style=zoom-in] .ladda-spinner {
+        left: 50%;
+        margin-left: -16px;
+        transform: scale(0.2)
+    }
+
+    .ladda-button[data-style=zoom-in] .ladda-label {
+        position: relative;
+        display: inline-block
+    }
+
+    .ladda-button[data-style=zoom-in][data-loading] .ladda-label {
+        opacity: 0;
+        transform: scale(2.2)
+    }
+
+    .ladda-button[data-style=zoom-in][data-loading] .ladda-spinner {
+        opacity: 1;
+        margin-left: 0;
+        transform: none
+    }
+
+.ladda-button[data-style=contract] {
+    overflow: hidden;
+    width: 100px
+}
+
+    .ladda-button[data-style=contract] .ladda-spinner {
+        left: 50%;
+        margin-left: 0
+    }
+
+    .ladda-button[data-style=contract][data-loading] {
+        border-radius: 50%;
+        width: 52px
+    }
+
+        .ladda-button[data-style=contract][data-loading] .ladda-label {
+            opacity: 0
+        }
+
+        .ladda-button[data-style=contract][data-loading] .ladda-spinner {
+            opacity: 1
+        }
+
+.ladda-button[data-style=contract-overlay] {
+    overflow: hidden;
+    width: 100px;
+    box-shadow: 0px 0px 0px 2000px rgba(0,0,0,0)
+}
+
+    .ladda-button[data-style=contract-overlay] .ladda-spinner {
+        left: 50%;
+        margin-left: 0
+    }
+
+    .ladda-button[data-style=contract-overlay][data-loading] {
+        border-radius: 50%;
+        width: 52px;
+        box-shadow: 0px 0px 0px 2000px rgba(0,0,0,0.8)
+    }
+
+        .ladda-button[data-style=contract-overlay][data-loading] .ladda-label {
+            opacity: 0
+        }
+
+        .ladda-button[data-style=contract-overlay][data-loading] .ladda-spinner {
+            opacity: 1
+        }
+
+[dir="rtl"] .ladda-spinner > div {
+    left: 25% !important
+}
+
+.app-drawer-overlay {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 999;
+    background: rgba(0,0,0,0.4);
+    display: block;
+    content: '';
+    left: 0;
+    top: 0
+}
+
+.app-drawer-wrapper {
+    width: 450px;
+    height: 100%;
+    position: fixed;
+    right: -450px;
+    top: 0;
+    transition: all .2s;
+    z-index: 9999
+}
+
+    .app-drawer-wrapper.drawer-open {
+        right: 0;
+        box-shadow: 0 0.76875rem 2.4875rem rgba(52,58,64,0.3),0 1.3375rem 1.70625rem rgba(52,58,64,0.3),0 0.55rem 0.53125rem rgba(0,0,0,0.05),0 0.225rem 0.4375rem rgba(52,58,64,0.3)
+    }
+
+        .app-drawer-wrapper.drawer-open::before {
+            opacity: 1
+        }
+
+.drawer-content-wrapper {
+    background: #fff;
+    position: relative;
+    height: 100%
+}
+
+    .drawer-content-wrapper .drawer-heading {
+        font-size: .968rem;
+        color: #495057;
+        margin: 0;
+        background: #f8f9fa;
+        padding: .75rem 1.5rem;
+        border-bottom: #dee2e6 solid 1px;
+        border-top: #dee2e6 solid 1px
+    }
+
+        .drawer-content-wrapper .drawer-heading:first-child {
+            border-top: 0
+        }
+
+    .drawer-content-wrapper .drawer-section {
+        padding: 1.5rem
+    }
+
+    .drawer-content-wrapper > .app-sidebar__heading:first-child {
+        margin-top: 0
+    }
+
+.drawer-nav-btn {
+    border-radius: 30px;
+    background: #fff;
+    position: absolute;
+    right: .75rem;
+    top: .75rem;
+    padding: .5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+    z-index: 20
+}
+
+    .drawer-nav-btn .hamburger {
+        margin-top: 4px
+    }
+

@@ -1,0 +1,167 @@
+﻿@using Application.Enums
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav" id="tabthuchi">
+    <li class="nav-item">
+        <a role="tab" class="nav-link active" data-id="@((int)EnumTypeRevenueExpenditure.THU)" id="tab-0" data-toggle="tab" href="#tab-content-0" aria-selected="true">
+            <span>Phiếu thu</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a role="tab" class="nav-link" id="tab-1" data-toggle="tab" data-id="@((int)EnumTypeRevenueExpenditure.CHI)" href="#tab-content-1" aria-selected="false">
+            <span>Phiếu chi</span>
+        </a>
+    </li>
+</ul>
+<div class="grid-card dashboardRevenueexpenditure">
+    <ul>
+        <li class="item-grid">
+            <div class="bg">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <i class="fas fa-university"></i>
+            <div class="content">
+                <h3>Quỹ đầu kỳ</h3>
+                <span>0</span>
+            </div>
+        </li>
+        <li class="item-grid">
+            <div class="bg">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <i class="fas fa-shopping-basket"></i>
+            <div class="content">
+                <h3>Tổng thu</h3>
+                <span>0</span>
+            </div>
+        </li>
+        <li class="item-grid">
+            <div class="bg">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <i class="fas fa-money-check"></i>
+            <div class="content">
+                <h3>Tổng chi</h3>
+                <span>0</span>
+            </div>
+        </li>
+        <li class="item-grid">
+            <div class="bg">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <i class="fas fa-donate"></i>
+            <div class="content">
+                <h3>Tồn quỹ</h3>
+                <span>0</span>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="">
+                    <label>Thời gian</label>
+                    <input type="text" id="rangesDate" name="rangesDate" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="">
+                    <label>Mã phiếu thu</label>
+                    <input type="text" name="Code" id="Code" placeholder="Mã phiếu thu......" class="form-control">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="card-footer text-center" style=" display: block;">
+        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+</div>
+
+<div class="tab-datacontent">
+</div>
+@section Scripts
+    {
+    <script>
+        $('#rangesDate').daterangepicker({
+            ranges: {
+                'Hôm nay': [moment(), moment()],
+                'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                '7 Ngày trước': [moment().subtract(6, 'days'), moment()],
+                '30 ngày trước': [moment().subtract(29, 'days'), moment()],
+                'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            // startDate: moment(date).add(1, 'days'),
+            // endDate: moment(date).add(2, 'days'),
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Chọn",
+                "cancelLabel": "Hủy bỏ",
+                "fromLabel": "From",
+                "toLabel": "To",
+                "customRangeLabel": "Custom",
+                "weekLabel": "W",
+                "daysOfWeek": [
+                    "CN",
+                    "T2",
+                    "T3",
+                    "T4",
+                    "T5",
+                    "T6",
+                    "T7"
+                ],
+                "monthNames": [
+                    "Tháng 1",
+                    "Tháng 2",
+                    "Tháng 3",
+                    "Tháng 4",
+                    "Tháng 5",
+                    "Tháng 6",
+                    "Tháng 7",
+                    "Tháng 8",
+                    "Tháng 9",
+                    "Tháng 10",
+                    "Tháng 11",
+                    "Tháng 12"
+                ],
+                "firstDay": 1
+            },
+            "linkedCalendars": false,
+            "alwaysShowCalendars": true,
+
+        }, function (start, end, label) {
+            console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+        });
+       thuchipos.loadEventRevenueExpenditure();
+      
+        $(document).ready(function () {
+            let type = $("#tabthuchi li a.active").data("id");
+            thuchipos.loadDataRevenueExpenditure(type);
+            thuchipos.loadEventQuyDauKy();
+            // loaddataSelect2("/admin/users/getSelect2","#listUserselect2","@userId");
+        });
+
+
+    </script>
+}

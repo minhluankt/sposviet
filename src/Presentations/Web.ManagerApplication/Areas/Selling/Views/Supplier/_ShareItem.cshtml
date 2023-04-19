@@ -1,0 +1,42 @@
+﻿@using Domain.Entities
+@model Suppliers
+<div class="row">
+    <div class="col-md-12">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         <div class="form-group">
+                <label class="control-label">Tên nhà cung cấp <span class="required">(*)</span></label>
+                <input asp-for="Name" class="form-control" placeholder="Tên nhà cung cấp" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+         </div>
+        <div class="form-group">
+            <label class="control-label">Địa chỉ<span class="required">(*)</span></label>
+            <input asp-for="Address" class="form-control" placeholder="Địa chỉ" required />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+         <div class="form-group">
+                <label class="control-label">Số điện thoại</label>
+                <input asp-for="Phonenumber" class="form-control" placeholder="Số điện thoại" />
+            <span asp-validation-for="Phonenumber" class="text-danger"></span>
+         </div>
+
+        <div class="form-group">
+            <label class="control-label">Email</label>
+            <input asp-for="Email" class="form-control" placeholder="Email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Công nợ</label>
+            <input asp-for="Amount" value() class="form-control number3" placeholder="Công nợ" />
+            <span asp-validation-for="Amount" class="text-danger"></span>
+        </div>
+
+
+        <div class="form-group">
+            <label asp-for="Name" class="control-label">Ghi chú</label>
+            <textarea asp-for="Note" class="form-control" placeholder="Ghi chú"></textarea>
+        </div>
+    </div>
+</div>

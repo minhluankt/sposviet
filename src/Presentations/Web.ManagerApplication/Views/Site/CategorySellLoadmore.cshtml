@@ -1,0 +1,186 @@
+﻿@using Application.Constants
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Application.Enums
+@using HelperLibrary;
+@using SystemVariable
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@using X.PagedList.Web.Common;
+@model Web.ManagerApplication.Models.CategoryProductSellIndexModel
+<section class="container mt-3" id="categoryDetailt">
+    <div class="row">
+        <div class="col-lg-3 pl-0 pr-0 d-none d-lg-block">
+            <div class="col-item-list" id="sort-price">
+                <div class="col-block block-list-price ">
+                    <h5 class="title">Mức giá</h5>
+                    <div class="content-item">
+                        <ul class="loading-animated-list">
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9  card-shadow">
+            <div class="listProductcate">
+                <div class="index-block-product">
+                    <div class="header-block clearfix">
+                        <h3> <a href="#" title="@Model.CategoryProduct.Name">@Model.CategoryProduct.Name</a></h3>
+                        @*  <span class="d-lg-none button_show_sortby">
+                            <span class="icon-cd icon-filter"></span>
+                            </span>*@
+
+                    </div>
+                    @if (Model.Products.Count() > 0)
+                    {
+                        <div class="sorst-data">
+                            <div class="list-action">
+                                <span class="d-lg-none button_show_sortby">
+                                    <i class="fas fa-sort-amount-down mr-2"></i> Sắp xếp
+                                </span>
+                                <span class="d-lg-none button_show_search" data-type="1">
+                                    <i class="fas fa-filter  mr-2"></i> Tìm kiếm
+                                </span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="block-product">
+                        <div class="row-order d-lg-block d-none">
+                            <div class="content">
+                                <fieldset>
+                                    <legend>
+                                        Sắp xếp theo:
+                                    </legend>
+                                    <ul class="list-check">
+                                        <li>
+                                            <input type="radio" name="order" id="order" checked="@(Model.sortby=="name-asc"?true:false)" order="name-asc" class="iradio_square-green" />
+                                            Tên A-Z
+                                        </li>
+                                        <li>
+                                            <input type="radio" name="order" id="order" checked="@(Model.sortby=="name-desc"?true:false)" order="name-desc" class="iradio_square-green" />
+                                            Tên Z-A
+                                        </li>
+                                        <li>
+                                            <input type="radio" name="order" id="order" checked="@(Model.sortby=="id-desc"?true:false)" order="id-desc" class="iradio_square-green" />
+                                            Sản phẩm mới
+                                        </li>
+                                        <li>
+                                            <input type="radio" name="order" id="order" checked="@(Model.sortby=="price-asc"?true:false)" order="price-asc" class="iradio_square-green" />
+                                            Giá thấp đến cao
+                                        </li>
+                                        <li>
+                                            <input type="radio" name="order" id="order" checked="@(Model.sortby=="price-desc"?true:false)" order="price-desc" class="iradio_square-green" />
+                                            Giá cao xuống thấp
+                                        </li>
+                                    </ul>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="col-row" id="ListProduct">
+                            @foreach (var product in Model.Products)
+                            {
+                                decimal price = product.Price;
+
+                                if (product.isRunPromotion)
+                                {
+                                    if (product.PriceDiscountRun > 0)
+                                    {
+                                        price = product.PriceDiscountRun;
+                                    }
+                                    else if (product.DiscountRun > 0)
+                                    {
+                                        price = product.Price - ((decimal)(product.DiscountRun / 100) * product.Price);
+                                    }
+                                }
+                                else if (product.isPromotion && product.ExpirationDateDiscount != null)
+                                {
+                                    if (product.ExpirationDateDiscount.Value >= DateTime.Now)
+                                    {   // tức là còn hạn mới áp dụng
+                                        if (product.PriceDiscount > 0)
+                                        {
+                                            price = product.PriceDiscount;
+                                        }
+                                        else if (product.Discount > 0)
+                                        {
+                                            price = product.Price - ((decimal)(product.Discount / 100) * product.Price);
+                                        }
+                                    }
+                                }
+                                <div class="col-product-2 col-item">
+                                    <div class="body">
+
+                                        <div class="product_thumb">
+                                            <a href="/@(product.Slug)">
+                                                <img src="~/@product.Img" />
+                                            </a>
+                                            @if (product.isPromotion)
+                                            {
+                                                <div class="label_product">
+                                                    <span class="label_sale"> @(product.isRunPromotion?product.DiscountRun:product.Discount)% </span>
+                                                </div>
+                                            }
+                                            <div class="item-addcart">
+                                                <a href="javascript:void(0)" class="add-to-cart" data-id="@(product.Id)"
+                                               data-name="@product.Name" data-price="@price.ToString("N0")" data-img="/@product.Img">
+                                                    <i class="fas fa-cart-arrow-down"></i>
+                                                    <span>Thêm vào giỏ</span>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="product_content">
+                                            <a class="product_name" href="/@(product.Slug)" title="@(product.Name)" tabindex="0"> @(product.Name)</a>
+                                            <div style="display: flex;" class="star"><div style="position: relative;"><div style="display: flex; align-items: center;"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#c7c7c7" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(199, 199, 199);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg></div><div style="width: 96%; white-space: nowrap; position: absolute; left: 0px; top: -2px; overflow: hidden;"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" size="14" color="#fdd836" height="14" width="14" xmlns="http://www.w3.org/2000/svg" style="color: rgb(253, 216, 54);"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg></div></div></div>
+                                            <div class="price-container">
+
+                                                @if (product.isPromotion)
+                                                {
+                                                    <span class="current_price">@(price.ToString("N0"))₫</span>
+                                                    <span class="old_price">@(product.Price.ToString("N0"))₫</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="current_price">@(product.Price.ToString("N0"))₫</span>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }
+                        </div>
+                        <div id="progressmarker"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@section Scripts
+{
+<script>
+     var pageIndex = 2;
+     var _incallback = false;
+     idcategory = @(Model.CategoryProduct.Id);
+    idPrice = @(Model.idPrice);
+    sortby = "@(Model.sortby)";
+     var pages = @Model.Products.PageCount;
+     fetContentHtmlprice(@(Model.idPrice!=null?Model.idPrice:"0"));
+    loadnEvent_init.fetdataProductSellByOneCategory(@Model.CategoryProduct.Id,"@(Model.sortby)");
+
+
+</script>
+
+}

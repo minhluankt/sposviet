@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Thông báo xác nhận</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Bạn có chắc chắn muốn đăng xuất khỏi phiên làm việc không!</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fa fa-window-close mr-2" style=""></i> Hủy bỏ</button>
+                <form class="form-inline" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/")" method="post">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle mr-2"></i>Đồng ý</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

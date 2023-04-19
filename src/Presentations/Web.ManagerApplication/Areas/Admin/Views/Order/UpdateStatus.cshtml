@@ -1,0 +1,227 @@
+﻿@*http://techlaboratory.net/jquery-smartwizard*@
+@using SystemVariable
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Application.Enums
+@using Application.Hepers
+@using Domain.ViewModel
+@inject IHtmlLocalizer<SharedResource> localizer
+@model OrderStatusModel
+@{
+    var list = Common.GetListStatus();
+    var allstatus = Model.StatusOrders.Where(m => m.IdOrder == Model.Order.Id).OrderByDescending(m => m.Id).ToList();
+    var arrstatus = allstatus.Select(x => x.Status).ToArray();
+    List<int> listhidden = new List<int>();
+    if (Model.Order.Status>1)
+    {
+        for (int i = 0; i < Model.Order.Status; i++)
+        {
+            if (!arrstatus.Contains(i))
+            {
+                listhidden.Add(i);
+            }
+        }
+    }
+    var arrjson = Common.ConverObjectToJsonString(listhidden);
+}
+<input type="hidden" value="@arrjson" id="lstStatusHidden" />
+@*<link href="~/lib/smartWizard/Horizontal/smart_wizard_theme_dots.min.css" rel="stylesheet" />
+    <link href="~/lib/smartWizard/Horizontal/smart_wizard.min.css" rel="stylesheet" />*@
+
+<link href="~/lib/smartWizard/dist/css/smart_wizard_all.css" rel="stylesheet" />
+<div id="smartwizard" class="sw-main">
+    <ul class="litsstep nav nav-tabs step-anchor">
+
+        @foreach (var item in list)
+        {
+            string class_ = "";
+            string text_ = GeneralMess.ConvertStatusOrder((EnumStatusOrder)item.Value);
+            if (item.Value == Model.Order.Status)
+            {
+                class_ = "active currentOrder";
+            }
+            else if (item.Value < Model.Order.Status)
+            {
+                class_ = "done";
+            }
+            
+
+            if (Model.Order.Status == item.Value && Model.Order.Status == (int)EnumStatusOrder.Cancel)
+            {
+                <li class="status-@item.Value nav-item">
+                    <a class="nav-link currentOrder" href="#step-@item.Value" data-status="@item.Value" data-id="@Model.Order.Id"  data-code="@Model.Order.OrderCode">
+                        @text_
+                        <br />
+                        <small>@(DateTime.Now.ToString("dd/MM/yyyy"))</small>
+                    </a>
+                </li>
+            }
+            //else if (item.Value != (int)EnumStatusOrder.Cancel)
+            else
+            {
+                string classtext = "";
+                if (Model.Order.Status>= item.Value)
+                {
+                    classtext = "datastatus";
+                }
+                <li class="status-@item.Value nav-item">
+                    <a class="nav-link  @classtext @class_" href="#step-@item.Value" data-status="@item.Value" data-id="@Model.Order.Id" data-code="@Model.Order.OrderCode">
+                        @text_
+                        <br />
+                        <small>@(DateTime.Now.ToString("dd/MM/yyyy"))</small>
+                    </a>
+                </li>
+            }
+
+        }
+    </ul>
+    <div class="bodyContentStatus tab-content sw-container">
+     @*<div class="header-step">Trạng thái:  <b>@GeneralMess.ConvertStatusOrder((EnumStatusOrder)Model.Order.Status)</b></div>*@
+        @foreach (var item in list)
+        {
+            string styleattr = "";
+            string text_ = GeneralMess.ConvertStatusOrder((EnumStatusOrder)item.Value);
+            if (item.Value < Model.Order.Status)
+            {
+                styleattr = "disabled readonly";
+            }
+
+            
+            var getdatabystatus = Model.StatusOrders.Where(m => m.Status == item.Value).OrderByDescending(m => m.Id).ToList();
+            string classtextboxcheck = "";
+            string content = "";
+            int countstatus = getdatabystatus.Count();
+            int idmaxstatus = 0;
+            if (countstatus > 0)
+            {
+                idmaxstatus = getdatabystatus.FirstOrDefault().Id;
+                content = getdatabystatus.FirstOrDefault().Note;
+            }
+            if (item.Value == Model.Order.Status)
+            {
+                classtextboxcheck = "textcurrent";
+            }
+            <div id="step-@(item.Value)" data-id="@item.Value" class="tab-pane contentNote step-content" role="tabpanel">
+                <div class="row">
+                    @if(item.Value>=Model.Order.Status && Model.Order.Status!=(int)EnumStatusOrder.Cancel){
+                        <div class="col-md-6">
+                            <label>Nhập nội dung:</label>
+                            <div class="bodytextarea">
+                                <textarea class="form-control mb-3 @classtextboxcheck" id="note" data-status="@item.Value" data-id="@idmaxstatus" name="note" @styleattr rows="5" placeholder="Nhập nội dung">@(countstatus>0? content: text_)</textarea>
+                            </div>
+                        
+    @*
+                            @if (item.Value == Model.Order.Status)
+                            {
+                                <div class="checkAddnew">
+                                    <input type="checkbox" name="checknew" id="checknew" /> Cập nhật lại nội dung ở lần cuối cùng
+                                </div>
+                            }
+                            else if (item.Value > Model.Order.Status)
+                            {
+                                <div class="checkAddnew d-none">
+                                    <input type="checkbox" name="checknew" id="checknew" />  Cập nhật lại nội dung ở lần cuối cùng
+                                </div>
+                            }*@
+                        </div>
+                    }
+
+                    <div class="col-md-6">
+                        <div class="listhistoriStaus">
+                            <label>Lịch sử trạng thái:</label>
+                            <ul class="listdata" id="inner-content-div">
+                                @if (countstatus > 0)
+                                {
+                                    @foreach (var stats in getdatabystatus)
+                                    {
+                                        <li  data-id=@stats.Id>
+                                            <img src="~/images/logo.png"/>
+                                            <div class="content">
+                                 
+                                                 <span class="create-user"> @stats.FullNameUpdate</span>    <span>- @stats.Note</span><br />
+                                                <small>(@(stats.UpdateDate==null?stats.CreateDate.ToString("dd/MM/yyyy HH:mm:ss"):stats.UpdateDate.Value.ToString("dd/MM/yyyy HH:mm:ss")))</small>
+                                                </div>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="nodata"><p>Chưa cập nhật</p></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @if (Model.Order.Status!=(int)EnumStatusOrder.Cancel)
+    {
+        <button type="button" id="btnsaveStatus" name="btnsaveStatus" class="btn btn-primary float-right"> Lưu thông tin</button>
+    }
+    
+</div>
+<script src="~/lib/smartWizard/jquery.smartWizard.js?tiem=51762"></script>
+<script src="~/lib/slimscroll/jquery.slimscroll.min.js?tiem=51762"></script>
+@*<script src="~/lib/smartWizard/Horizontal/jquery.smartWizard.min.js?time=23"></script>*@
+
+<script>
+        $('#inner-content-div').slimScroll();
+      $('#smartwizard').smartWizard("reset");
+    $(document).ready(function () {
+
+        var json = JSON.parse($("#lstStatusHidden").val());
+
+      
+
+        $('#smartwizard').smartWizard({
+             selected: @(Model.Order.Status),
+            theme: 'dots',
+            autoAdjustHeight: false,
+            transitionEffect: 'fade',
+            justified: true,
+            enableURLhash: false,
+            cycleSteps: true,
+          //  showStepURLhash: false,
+            backButtonSupport: false,
+            lang: { // Language variables for button
+                next: 'Tiếp theo >',
+                previous: '< Về trước'
+            },
+            transition: {
+                animation: 'none', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+                speed: '400', // Transion animation speed
+                easing: '' // Transition animation easing. Not supported without a jQuery easing plugin
+            },
+            disabledSteps: json
+        });
+
+       // $("#smartwizard").on("showStep", function(e, anchorObject, stepIndex, stepDirection) {
+       //    // debugger
+       //    var stepIndex = $('#smartwizard').smartWizard("getStepIndex");
+       ////  return confirm("Do you want to leave the step " + currentStepIndex + "?");
+       //     let html = "";
+       //     switch(stepIndex) {
+       //       case 1:
+       //         html="Chờ xác nhận";
+       //         break;
+       //       case 2:
+       //          html="Đang xử lý";
+       //           break;
+       //         case 3:
+       //           html="Đang vận chuyển";
+       //            break;
+       //         case 4:
+       //           html="Đã giao hàng";
+       //         break;
+       //          case 5:
+       //           html="Đã hủy";
+       //         break;
+       //       default:
+       //         // code block
+       //     }
+
+       //    $(".bodyContentStatus").find(".header-step").children("b").html(html);
+       //    //return confirm("Do you want to leave the step " + currentStepIndex + "?");
+       // });
+    });
+</script>

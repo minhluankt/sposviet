@@ -1,0 +1,445 @@
+﻿@model Domain.ViewModel.PosModel
+@using System.Security.Claims;
+@{
+    Layout = null;
+    string roles = string.Empty;
+    string Image = string.Empty;
+    bool login = false;
+    if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        login = true;
+        roles = ((ClaimsIdentity)User.Identity).Claims
+       .Where(c => c.Type == ClaimTypes.Role)
+       .Select(c => c.Value).FirstOrDefault();
+        Image = ((ClaimsIdentity)User.Identity).Claims
+        .Where(c => c.Type == Application.Constants.ConfigCustomerLogin.Image)
+        .Select(c => c.Value).FirstOrDefault();
+
+    }
+    var listProduct = Model.Products.GroupBy(x => x.IdCategory).OrderByDescending(x=>x.Key).ToList();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Bán hàng tại quầy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <meta name="description" content="Wide selection of cards with multiple styles, borders, actions and hover effects.">
+    <meta name="msapplication-tap-highlight" content="no">
+    <partial name="Admin/_Styles" />
+    <style>
+        .select2-dropdown {
+            z-index: 1060;
+        }
+
+        .modal-header .close {
+            margin: 0;
+            padding: 0px;
+        }
+
+        .modal-header {
+            align-items: center;
+        }
+
+        h4 {
+            margin-bottom: 0px;
+        }
+
+        :focus-visible {
+            outline: -webkit-focus-ring-color auto 0px;
+        }
+    </style>
+</head>
+<body id="sellting-pos" class="skill-pos">
+    <div id="parentautocomplete"></div>
+    <div class="container-fluid pl-0 pr-0 mt-3">
+        <div class="info-login">
+            @if (login)
+            {
+
+                <div class="user-name">
+                    @User.Identity.Name  <i class="fas fa-bars"></i>
+                    <ul class="">
+                        <li><a href="/Selling/PosKitchen"><i class="fas fa-concierge-bell"></i> Nhà bếp</a></li>
+                        <li><a href="/Selling/Dashboard"><i class="fas fa-address-card"></i> Quản trị</a></li>
+                        <li><a href="/Identity/Account/Logout?returnUrl=@Url.Page("/account/login", new { area = "identity" })"><i class="fas fa-sign-out-alt"></i>  Đăng xuất</a></li>
+                        <li><a href="/manifest.webmanifest"><i class="fas fa-tools"></i> Reset cài đặt app</a></li>
+                    </ul>
+                </div>
+            }
+
+        </div>
+        <div class="row mr-0">
+            <div class="col-md-7 col-lg-7">
+                <div class="mb-3 card">
+                    <div class="card-body">
+                        <ul class="tabs-animated-shadow tabs-animated nav ele-tab-leftRoomMenu">
+                            <li class="nav-item">
+                                <a role="tab" class="nav-link active" id="tab-c-0" data-toggle="tab" href="#tab-animated-0">
+                                    <span>Phòng/Bàn</span>
+                                </a>
+                            </li>
+                            <li class="nav-item tab-menuOrder">
+                                <a role="tab" class="nav-link" id="tab-c-1" data-toggle="tab" href="#tab-animated-1">
+                                    <span>Thực đơn</span>
+                                </a>
+                            </li>
+                            <li class="search-product-pos">
+                                <div class="body-content">
+                                    <div class="input-group">
+                                        <div class="input-group-append btnsearch">
+                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        </div>
+                                        <input type="text" name="search-product" class="form-control search-product" placeholder="Tìm món (F2)">
+
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="tab-content p-0">
+                            <div class="tab-pane active tab-roomtablepos" id="tab-animated-0" role="tabpanel">
+                                <div class="list-other-table">
+                                    <div class="form-check pl-0">
+                                        <input class="form-check-input icheck" type="radio" value="0" checked name="optiontablename" id="flexCheckDefaultoptiontablename">
+                                        <label class="form-check-label" for="flexCheckDefaultoptiontablename">
+                                            Tất cả bàn
+                                        </label>
+                                        (<b class="value"></b>)
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input icheck" type="radio" value="1" name="optiontablename" id="flexCheckDefaultoptiontablename2">
+                                        <label class="form-check-label" for="flexCheckDefaultoptiontablename2">
+                                            Bàn đang có khách
+                                        </label>
+                                        (<b class="value red"></b>)
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input icheck" type="radio" value="2" name="optiontablename" id="flexCheckDefault3">
+                                        <label class="form-check-label" for="flexCheckDefault3">
+                                            Bàn trống
+                                        </label>
+                                        (<b class="value"></b>)
+                                    </div>
+
+                                </div>
+
+                                <ul id="lst-roomandtable" class="ul-nonestyle">
+                                    <li class="bringback" data-id="-1">
+                                        <i class="fas"></i>
+                                        <b>Mang về</b>
+                                    </li>
+                                    @foreach (var item in Model.RoomAndTables)
+                                    {
+                                        <li data-id="@item.IdGuid">
+                                            <span class="img"></span>
+                                            <b>@item.Name</b>
+                                        </li>
+                                    }
+                                </ul>
+                                <div class="showmenuClickroom">
+                                    <input type="checkbox" class="icheck" /> <span>Kích vào bàn sẽ mở menu thực đơn</span>
+                                </div>
+                            </div>
+                            <div class="tab-pane tab-productselectorder" id="tab-animated-1" role="tabpanel">
+                                <div class="bodyDataproduct">
+                                    <div class="leftcolumthucdon">
+                                      @* <ul class="ltscategoryProduct">
+                                           <li class="active">
+                                                <a href="javascript:void(0)">
+                                                    <b>15</b> <span>Tất cả</span>
+                                                </a>
+                                           </li>
+                                           
+                                       </ul>*@
+                                    </div>
+                                    <div class="rightcolumthucdon">
+                                        <ul id="lst-product" class="ul-nonestyle">
+                                            <li>
+                                                <div class="head_pro">
+                                                    <img src="/Upload/Product/1/c9ae9e77-e2d8-4414-87c5-d34f7dbde0a1_chanh-leo.jpg">
+                                                </div>
+                                                <div class="footer_pro">
+                                                    <span>
+                                                        Chanh dây
+                                                    </span>
+                                                    <b class="required"> 10.000</b>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                @*<ul id="lst-product" class="ul-nonestyle">
+                                @foreach (var item in items)
+                                {
+                                <li data-id="@item.Id">
+                                <div class="head_pro">
+                                @if (!string.IsNullOrEmpty(item.Img))
+                                {
+                                <img src="/@item.Img">
+                                }
+                                else
+                                {
+                                <img src="~/images/ristorante.png">
+                                }
+                                </div>
+                                <div class="footer_pro">
+                                <span>
+                                @item.Name
+                                </span>
+                                <b class="required"> @item.RetailPrice.ToString("N0")</b>
+                                </div>
+                                </li>
+                                }
+                                </ul>*@
+                                
+                            </div>
+                      
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 col-lg-5 pl-0 pr-0">
+                <div class="mb-3 card">
+                    <div class="card-body">
+                        <div id="container-tableOder">
+                            <ul class="tabs-animated-shadow tabs-animated nav" id="ul-tab-order">
+                                <li class="nav-item">
+                                    <a role="tab" class="nav-link active" data-toggle="tab" href="#tab-order-0">
+                                        <span>Tab 1</span>
+                                        <span class="btn-removeTab"><i class="fas fa-times"></i></span>
+                                    </a>
+                                </li>
+                                <li class="add-tab">
+                                    <i class="fas fa-plus"></i>
+                                </li>
+                            </ul>
+                            <div class="cashier-payment-info-top">
+                                <button data-id="" class="btn btn-showttable"><i class="fas fa-table mr-2"></i><span class="showTableOrder"></span></button>
+                                <div class="input-group box-data-customer">
+                                    <div class="input-group-append btnsearch">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control search-customer" placeholder="Tìm khách hàng (F4)">
+                                    <div class="input-group-append btnadd">
+                                        <span class="input-group-text btn-addCus"><i class="fas fa-plus"></i></span>
+                                        <span class="input-group-text btn-cleardata"><i class="fas fa-times"></i></span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-sort"><i class="fas fa-ellipsis-v"></i></button>
+                                <button class="btnfullScreen btn"><i class="fas fa-expand"></i></button>
+                            </div>
+                            <div class="tab-content tab-content-order">
+                                <div class="tab-pane active" id="tab-order-0" role="tabpanel">
+                                    @* <div class="no-order">
+                                    <img src="~/images/ristorante.png" />
+                                    <b>Chưa có món nào được chọn</b>
+                                    <span>Vui lòng chọn món trong thực đơn</span>
+                                    </div>*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cashier-payment-info-bottom">
+                            <div class="action-note-amount">
+                                <button class="btn btn-default btn-moreaction-pos"><i class="fas fa-ellipsis-v"></i></button>
+                                <div class="action-left-footer">
+                                    <button type="button" class="btn btn-noteOder btn-transparent"><i class="fas fa-pen"></i></button>
+                                    <button type="button" class="btn btn-splitOder btn-transparent"><i class="fas fa-cut"></i> Tách ghép đơn</button>
+                                    <button type="button" class="btn btn-history btn-transparent"><i class="fas fa-history"></i></button>
+                                    <div class="input-group actionpaymentMTTpos d-none">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="basic-addon2">VAT MTT</span>
+                                        </div>
+                                        <input type="checkbox" class="form-control paymentvatmtt"  aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                    </div>
+                                </div>
+                                <strong>Tổng tiền (<span class="red quantitySum"></span>) <b class="fullamount priceFormat"></b></strong>
+                            </div>
+                            <div class="action-payment">
+                                <button class="btn btn-warning btn-printbill"><i class="fas fa-print"></i> In tạm tính</button>
+                                <button class="btn btn-success btn-payment"><i class="fas fa-dollar-sign"></i> Thanh toán (F8)</button>
+                                <button class="btn btn-primary btn-notif" disabled><i class="fas fa-bell"></i> Thông báo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loadingpos">
+        <span>
+            <img src="~/images/preview.gif" /><br />
+            Đang tải dữ liệu
+        </span>
+    </div>
+    <div class="modal right fade" id="form-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Right Sidebar</h4>
+                </div>
+
+                <div class="modal-body">
+                    <p>
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                    </p>
+                </div>
+
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
+    <div class="footer-pos">
+        Liên hệ hỗ trợ: <a href="tel:0949906004">0949.906.004 Mr. Luận</a>
+    </div>
+    <script id="tabTemplate" type="text/x-jquery-tmpl">
+        <div class='tab-pane' role='tabpanel' id='tab${device}'>${device}</div>
+    </script>
+    <script type="text/javascript" src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+ 
+    <partial name="Admin/_Scripts" />
+    <script src="~/js/custom/sposvietkyso.min.js?time=123"></script>
+    <script>
+        document.onreadystatechange = function () {
+            var state = document.readyState
+            if (state == 'complete') {
+                setTimeout(function () {
+                    document.getElementById('loadingpos');
+                    document.getElementById('loadingpos').style.visibility = "hidden";
+                }, 100);
+            }
+        }
+        $(".btnfullScreen").click(function(){
+            $(this).find("i").toggleClass("fa-compress");
+            $(this).find("i").toggleClass("fa-expand");
+            toggleFullScreen();
+        });
+
+        loadEventadmin.evnetFullscreen();
+        loadeventPos.eventLoadCheckradiotable();
+        loadeventPos.loadEventCheckbox();
+        loadeventPos.loadEventActiveTabMenuLeft();
+        loadeventPos.loadDataAttributeProductAndTable();
+        loadeventPos.loadActiveTableInOrder();
+        loadeventPos.loadEventkeyCode();
+        loadeventPos.loadAddTabOrder();
+        loadeventPos.loadClickTableroom();
+        loadeventPos.loadAutocomplete(true, false);
+       // loadeventPos.loadClickItemProduct();
+        loadeventPos.loadEventClose();
+        loadeventPos.eventAddNoteOrder();
+        loadeventPos.eventShowHistory();
+        loadeventPos.eventSplitOrder();
+        loadeventPos.eventprint();//in tạm tính
+        loadeventPos.eventPayment();
+        loadeventPos.eventChangeCheckbocVAT();//check có cấu hình mtt
+        loadeventPos.eventShowTabProductByCategory();//load thực đơn
+        loadeventPos.loadeventShowactionmobi();//dành cho mobi
+        ////
+        document.addEventListener('DOMContentLoaded', function () {
+            var interval = null;
+            //  var messageInputguiyeucau = document.getElementById('guiyeucau');
+            //  var messageInput = document.getElementById('message');
+
+            // Get the user name and store it to prepend to messages.
+            // var name = document.getElementById('user').value;
+            // Set initial focus to message input box.
+            //messageInput.focus();
+
+            // Start the connection.
+            var connection = new signalR.HubConnectionBuilder()
+                .withAutomaticReconnect({
+                    nextRetryDelayInMilliseconds: retryContext => {
+                        if (retryContext.elapsedMilliseconds < 60000) {
+                            console.log("đang connect lại tự động");
+                            // If we've been reconnecting for less than 60 seconds so far,
+                            // wait between 0 and 10 seconds before the next reconnect attempt.
+                            return Math.random() * 3000;
+                        } else {
+                            // If we've been reconnecting for more than 60 seconds so far, stop reconnecting.
+                            return null;
+                        }
+                    }
+                })
+                .withUrl('/Signal')
+                .build();
+
+
+            function start() {
+                try {
+                    connection.start()
+                        .then(function () {
+                            console.assert(connection.state === signalR.HubConnectionState.Connected);
+                            console.log("SignalR Connected.");
+                            clearInterval(interval);
+                        })
+                        .catch(error => {
+                            // loadeventPos.NotifyChitken();
+                            console.error(error.message);
+                        });
+
+                } catch (err) {
+                    console.assert(connection.state === signalR.HubConnectionState.Disconnected);
+                    console.log(err);
+                    setTimeout(() => start(), 5000);
+                }
+            };
+            // Create a function that the hub can call to broadcast messages.
+            connection.on('addMessagePOS', function (isValid) {
+                if (isValid) {
+
+                }
+
+            });
+            connection.on('addMessageCHITKENBYPOS', function (isValid) {
+                if (isValid) {
+                    toastr.success("Món cam!")
+                }
+            });
+
+            connection.onclose(async () => {
+                console.log("onclose đang connect");
+                interval = setInterval(function () {
+                    start();
+                }, 2000);
+
+            });
+            // Transport fallback functionality is now built into start.
+            connection.start()
+                .then(function () {
+
+                    // console.log('connection started');
+                    $(".btn-notif").click(function () {
+                        loadeventPos.NotifyChitken();
+                        //connection.invoke('sendNotifyPos', EnumTypeSignalRHub.POS, EnumTypeSignalRHub.POS);
+                        event.preventDefault();
+                    });
+                    //document.getElementById('sendmessage').addEventListener('click', function (event) {
+                    //    // Call the Send method on the hub.
+                    //    loadeventPos.NotifyChitken();
+                    //    // name = document.getElementById('user').value;
+                    //    connection.invoke('sendChitken', EnumTypeSignalRHub.POS);
+                    //    //connection.invoke('sendPos', name, messageInput.value);
+
+                    //    // Clear text box and reset focus for next comment.
+                    //    // messageInput.value = '';
+                    //    //messageInput.focus();
+                    //    event.preventDefault();
+                    //});
+                })
+                .catch(error => {
+                    // loadeventPos.NotifyChitken();
+                    // console.error(error.message);
+                });
+        });
+
+
+    </script>
+    @await Component.InvokeAsync("Notyf")
+</body>
+</html>

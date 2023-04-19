@@ -1,0 +1,109 @@
+﻿@model IEnumerable<Domain.ViewModel.CompanyAdminInfoViewModel>
+<div class="page-breadcrumb border-bottom">
+    <div class="row">
+        <div class="
+                col-lg-3 col-md-4 col-xs-12
+                justify-content-start
+                d-flex
+                align-items-center
+              ">
+            <h5 class="font-weight-medium text-uppercase mb-0">
+                Quản trị công ty
+            </h5>
+        </div>
+        <div class="
+                col-lg-9 col-md-8 col-xs-12
+                d-flex
+                justify-content-start justify-content-md-end
+                align-self-center
+              ">
+            <nav aria-label="breadcrumb" class="mt-2">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Quản trị công ty
+                    </li>
+                </ol>
+            </nav>
+
+        </div>
+    </div>
+</div>
+<div class="page-content container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+
+            <div class="card">
+                <div class="border-bottom title-part-padding">
+                    <h4 class="card-title mb-0 float-start">Danh sách công ty</h4>
+                    <div class="text-right">
+                        <a href="/company/create" class="float-end">
+                            <button type="button" class="
+                          justify-content-center
+                          
+                          btn btn-rounded btn-info
+                          d-flex
+                          align-items-center
+                        ">
+                            <i class="fas fa-edit me-2"></i>
+                        Tạo mới
+                      </button>
+                      </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="">
+                        <table class="table text-nowrap table-striped table-bordered" id="DataTable">
+                            <thead>
+                                <tr>
+                                    <th class="border-top-0">#</th>
+                                    <th class="border-top-0">Công ty</th>
+                                    <th class="border-top-0">Mã số thuế</th>
+                                    <th class="border-top-0">Tài khoản</th>
+                                    <th class="border-top-0">Số điện thoại</th>
+                                    <th class="border-top-0">Số hóa đơn phát hành</th>
+                                    <th class="border-top-0">Ngày khởi tạo</th>
+                                    <th class="border-top-0">Ngày hoạt động</th>
+                                    <th class="border-top-0">Gói</th>
+                                    <th class="border-top-0">Hết hạn</th>
+                                    <th class="border-top-0">Công cụ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>#</td>
+                                        <td>@item.Name</td>
+                                        <td>@item.CusTaxCode</td>
+                                        <td><a href="">@item.AccountName</a></td>
+                                        <td>@item.PhoneNumber</td>
+                                        <td>@item.PhoneNumber</td>
+                                        <td>@item.CreatedOn</td>
+                                        <td>@item.StartDate?.ToString("dd/MM/yyy")</td>
+                                        <td>@item.NumberDateExpiration Năm</td>
+                                        <td>@(item.DateExpiration.HasValue?item.DateExpiration.Value.ToString("dd/MM/yyy"):"")</td>
+                                        <td>
+                                            <div class="btn-group" role="group" aria-label="First group">
+                                                <a href="/company/edit?secret=@item.secret">
+                                                    <button type="button" class="btn btn-info">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </a>
+                                                <button type="button" class="btn btn-danger" data-id="@item.secret" onclick="return company.remove(this)">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 feather-sm fill-white"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                </button>
+                                            </div>
+
+                                        </td>
+                                        
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

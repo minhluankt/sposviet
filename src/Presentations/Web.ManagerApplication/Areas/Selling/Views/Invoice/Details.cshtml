@@ -1,0 +1,190 @@
+﻿@model Domain.Entities.Invoice
+@{
+    Layout = null;
+}
+<div class="detail-invoice-pos">
+    <div class="row">
+        <div class="col-md-4">
+            <table class="table-info-cus">
+                <tr>
+                    <td>Số hóa đơn</td>
+                    <td>@Model.InvoiceCode</td>
+                </tr>
+                <tr>
+                    <td>Thời gian đến </td>
+                    <td>@Model.ArrivalDate?.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                </tr>
+                <tr>
+                    <td>Thời gian đi </td>
+                    <td>@Model.PurchaseDate?.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" class="text-left" style="    line-height: 24px;">
+                        Khách hàng: <br />
+                        <span class="text-primary">@(!string.IsNullOrEmpty(Model.CusName) ? Model.CusName : Model.Buyer)</span>
+                    </td>
+                </tr>
+
+                @if (Model.OrderTable!=null)
+                {
+                     <tr>
+                        <td>Mã odder </td>
+                        <td> <span class="badge-primary badge-cus">@Model.OrderTable?.OrderTableCode</span></td>
+                    </tr>
+                }
+               
+            </table>
+        </div>
+        <div class="col-md-4">
+            <table class="table-info-cus">
+                <tr>
+                    <td>Trạng thái</td>
+                    <td>
+
+                        @if (Model.Status == Application.Enums.EnumStatusInvoice.DA_THANH_TOAN)
+                        {
+                            <span class="badge badge-success">Đã thanh toán</span>
+                        }else if (Model.Status == Application.Enums.EnumStatusInvoice.HUY_BO)
+                        {
+                            <span class="badge badge-danger">Đã hủy</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge badge-danger">Chưa thanh toán</span>
+                        }
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>Loại hóa đơn </td>
+                    <td>
+                        @if (Model.IsBringBack)
+                        {
+                            @:Mang về
+                        }
+                        else
+                        {
+                            @: Tại bàn
+                        }
+                    </td>
+                    
+                </tr>
+                @if (!string.IsNullOrEmpty(Model.TableNameArea))
+                {
+                    <tr>
+                        <td>Khu vực </td>
+                        <td>@Model.TableNameArea</td>
+                    </tr>
+                }
+                <tr>
+                    <td>Người nhận đơn</td>
+                    <td>@Model.CasherName</td>
+                </tr> 
+                @if (ViewBag.ListInvoice!=null)
+                {
+                    <tr>
+                        <td colspan="2" class="text-left" style="line-height: 24px;">
+                            Hóa đơn liên quan: <br />
+                        @foreach (var item in ViewBag.ListInvoice)
+                        {
+                                <span class="badge-primary badge-cus">@item</span>
+                         } 
+                        </td>
+                    </tr>
+                }
+                @if (!string.IsNullOrEmpty(Model.InvoiceCodePatern) && Model.IsMerge)
+                {
+                    <tr>
+                       
+                        <td>Hóa đơn gộp mới: </td>
+                        <td><span class="badge-primary badge-cus">@Model.InvoiceCodePatern</span></td>
+                    </tr>
+                }
+               
+            </table>
+        </div>
+        <div class="col-md-4">
+            <div class="historyInvoice">
+                <h3>Lịch sử đơn</h3>
+                <ul>
+                    @foreach (var item in Model.HistoryInvoices)
+                    {
+                        <li><b>@item.CreateDate.ToString("dd/MM/yyyy HH:mm") - @item.Carsher </b><span>- @item.Name</span></li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-12 mt-5">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Mã sản phẩm</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th class="text-right">Đơn giá</th>
+                        <th class="text-right">Đơn giá bán</th>
+                        <th class="text-right">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.InvoiceItems)
+                    {
+                        <tr>
+                            <td>@item.Code</td>
+                            <td>@item.Name</td>
+                            <td class="text-center">@item.Quantity</td>
+                            <td class="text-right">@item.Price.ToString("N0")</td>
+                            <td class="text-right">@item.EntryPrice.ToString("N0")</td>
+                            <td class="text-right font-weight-bold">@item.Total.ToString("N0")</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td colspan="2" class="text-right">Tổng</td>
+                        <td class="text-center">@Model.InvoiceItems.Sum(x=>x.Quantity)</td>
+                        <td class="text-right" colspan="2">Tổng tiền hàng</td>
+                        <td class="text-right font-weight-bold text-success">@Model.Total.ToString("N0")</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="text-right">Giảm giá</td>
+                        <td class="text-right font-weight-bold">@Model.DiscountAmount.ToString("N0")</td>
+                    </tr>
+                    @if (Model.VATRate != (int)Application.Enums.VATRateInv.KHONGVAT)
+                    {
+                        <tr>
+                            <td colspan="5" class="text-right">Thuế GTGT: @(Model.VATRate)%</td>
+                            <td class="text-right font-weight-bold">@Model.VATAmount.ToString("N0")</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td colspan="5" class="text-right">Khách cần thanh toán</td>
+                        <td class="text-right font-weight-bold red">@Model.Amonut.ToString("N0")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">Khách đưa</td>
+                        <td class="text-right font-weight-bold">@Model.AmountCusPayment?.ToString("N0")</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">Tiền thừa trả khách</td>
+                        <td class="text-right font-weight-bold">@Model.AmountChangeCus?.ToString("N0")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+    </div>
+</div>
+@Html.Hidden("invoiceid",Model.Secret)
+@*@Html.Hidden("Status",(int)Model.Status)*@
+@Html.HiddenFor(x=>x.Status)
+@*<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group mr-2" role="group" aria-label="Second group">
+        <button type="button" class="btn btn-primary">In hóa đơn</button>
+    </div>
+    <div class="btn-group" role="group" aria-label="Third group">
+        <button type="button" class="btn btn-danger">Hủy đơn</button>
+    </div>
+</div>*@

@@ -1,0 +1,111 @@
+﻿@using Application.Constants
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Application.Enums
+@using HelperLibrary;
+@using SystemVariable
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@using X.PagedList.Web.Common;
+@model Model.ProductSearch
+
+
+
+
+
+
+<section class="container mt-3" id="categoryDetailt">
+    <div class="row">
+        <div class="col-lg-3 pl-0 pr-0 d-none d-lg-block">
+            <div class="col-item-list" id="sort-price">
+                <div class="col-block block-list-price">
+                    <h5 class="title">Mức giá</h5>
+                    <div class="content-item">
+                        <ul class="loading-animated-list">
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                            <li class="text fade-loading-animated" style="width: 100%;"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-9  card-shadow">
+            <div class="listProductcate" id="dataProduct">
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@section Scripts
+{
+<script>
+    var inputkeyw = $("#keyword").val();
+
+    var fetProductCategory = $("#fetProductCategory").val();
+    var listcontry = [];
+    var weight = "";
+    var test = $("#txtsearchindex").val();
+    // var slider = document.getElementById('sliderssss');
+    idcategory = @(Model.idCategory);
+    idPrice = @(Model.idPrice);
+    sortby = "@(Model.sortby)";
+    keyword = `@(Html.Raw(Model.keyword))`;
+    //noUiSlider.create(slider, {
+    //    start: [20, 80],
+    //    connect: true,
+    //    range: {
+    //        'min': 0,
+    //        'max': 100
+    //    }
+    //});
+
+
+    $(document).ready(function () {
+        fetContentHtmlprice(@(Model.idPrice!=null?Model.idPrice:"0"));
+        Product.fetch_data(1,idcategory,keyword);
+          $(document).on('click', '.pagination  a', function (event) {
+                event.preventDefault();
+                var page = $(this).attr('href').split('page=')[1];
+                var page2 = page.split('&')[0];
+                Product.fetch_data(page2,@(Model.TypeSerach),@((int)Model.CategorySerach));
+            });
+    });
+
+
+    // $('input[name="order"]').on('ifClicked', function (event) {
+    //     debugger
+    //   SortAndSeartInCategoryProduct();
+    //});
+    // $('input[name="price"]').on('ifClicked', function (event) {
+    //   SortAndSeartInCategoryProduct();
+    //});
+
+
+
+
+
+         //$('#load-capacity').change(function(){
+         //    weight="";
+         //    weight = $(this).val();
+         //   // Set selected
+         //      callLoadData();
+         // });
+         // $('#load-Brand').change(function(){
+         //    listloadBrand=[];
+         //    listloadBrand = $(this).val();
+         //   // Set selected
+         //      callLoadData();
+         // });
+
+
+      //  }
+</script>
+
+}

@@ -1,0 +1,237 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Model
+@using Application.Enums
+@using Web.ManagerApplication.Views.Shared.Components.ProfileSlidebar
+
+@model CustomerModelView
+
+@inject IHtmlLocalizer<SharedResource> localizer
+<link href="~/lib/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<link href="~/lib/datatables/css/responsive.dataTables.min.css" rel="stylesheet" />
+<div class="container mt-3 profileSlidebar-customer">
+    <div class="row">
+        @*   <partial name="_ManageNav" model="Model" />*@
+        @(await Component.InvokeAsync<ProfileSlidebarViewComponent>())
+        <div class="col-xl-9">
+            <div class="row">
+                <div class="shadow card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3  mb-3">
+                                <input type="text" placeholder="Mã đơn hàng" name="OrderCode" id="OrderCode" class="form-control" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend datepicker-trigger">
+                                        <div class="input-group-text">
+                                            <i class="fa fa-calendar-alt"></i>
+                                        </div>
+                                    </div>
+                                    <input type="text" autocomplete="off" placeholder="Từ ngày" name="FromDate" id="FromDate" class="form-control fc-datepicker">
+                                </div>
+                            </div>
+                             <div class="col-md-3 mb-3">
+                               <div class="input-group">
+                                    <div class="input-group-prepend datepicker-trigger">
+                                        <div class="input-group-text">
+                                            <i class="fa fa-calendar-alt"></i>
+                                        </div>
+                                    </div>
+                                    <input type="text" autocomplete="off" name="ToDate" placeholder="Đến ngày" id="ToDate" class="form-control fc-datepicker">
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button class="btn btn-primary m-auto" id="btnSearchtable"><i class="fas fa-search"></i> Tìm kiếm</button>
+                    </div>
+                </div>
+                <div class="card shadow">
+                    <div id="viewAll" class="card-body">
+                        <table class="table table-bordered table-hover" id="dataTable" style=" ">
+                            <thead>
+                                <tr>
+                                    <th class="d-none">Mã đơn hàng</th>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Công cụ</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+<script src="~/lib/datatables/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/datatables/js/dataTables.responsive.min.js"></script>
+
+
+@section Scripts
+    {
+<script>
+    loaddaterangepicker();
+    dataTableOut = $('#dataTable').DataTable({
+            "responsive": true,
+            "processing": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+             stateSave: true,
+            "filter": false, "rowId": "id",
+            "orderMulti": true,
+            "order": [[0, "desc"]],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                "zeroRecords": "Không tìm thấy dữ liệu nào",
+                "emptyTable": "Không có dữ liệu",
+                "search": "Tìm kiếm:",
+                "processing": "Đang xử lý...",
+                "lengthMenu": "Hiển thị _MENU_ dòng",
+                "loadingRecords": "Vui lòng chờ...",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Tiếp theo",
+                    "previous": "Về trước"
+                },
+            },
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+            "buttons": [
+                {
+                    text: 'Reload',
+                    action: function (e, dt, node, config) {
+                        dataTableOut.ajax.reload(null,false);
+                    }
+                }
+            ],
+           
+            "columnDefs": [
+
+                { className: "text-right", "targets":3 },
+                { className: "text-center", "targets": [-1,0,1,2,4,5] },
+                {
+                    targets: 3,
+                    render: $.fn.dataTable.render.number(',', '.', 0, '')
+                },
+                { responsivePriority: 4, targets: [-1,  0] },////define hiển thị mặc định column 1
+
+                 {
+                    "targets": [ 0 ],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [-1,1],
+
+                },
+                { "width": "100px", "targets": -1 }
+
+            ],
+            ajax: {
+                url: "/Account/LoadAllOrder",
+                type: "POST",
+                datatype: "json",
+                data: {
+                    OrderCode: function () { return $('#OrderCode').val().trim() },
+                    FromDate: function () { return $('#FromDate').val().trim() },
+                    ToDate: function () { return $('#ToDate').val().trim() },
+                }
+            },
+            "columns": [
+                { "data": "id", "name": "Id", "autoWidth": true },
+                { "data": "orderCode", "name": "Code", "autoWidth": true },
+                { "data": "quantity", "name": "Quantity", "autoWidth": true },
+                { "data": "amount", "name": "Amount", "autoWidth": true },
+                // {
+                //    "render": function (data, type, full, meta) {
+                //       // console.log(full.id);
+                //        if (full.loginLast != null) {
+                //            data = moment(full.loginLast).format('DD/MM/YYYY HH:mm:ss');
+                //            return data;
+                //        }
+                //        return "";
+                //    }
+
+                //},
+                {
+                      "data": "statusName", "name": "StatusName", "autoWidth": true 
+                     //"render": function (data, type, full, meta) {
+                     
+                     //       switch (full.status) {
+                     //           case 1:
+                     //               return '<span class="badge badge-warning"><i class="fas fa-ban"></i> Chờ xác nhận</span>';
+                     //               break;
+                     //           case 2:
+                     //               return '<span class="badge badge-success"><i class="fas fa-check-circle" style=""></i> Đang hoạt động</span>  ';
+                     //               break;
+                     //           case2:
+                     //               return '<span class="badge badge-danger"><i class="fas fa-lock" style=""></i> Đang khóa</span>  ';
+                     //               break;
+                     //           default:
+                     //               return '';
+                     //       }
+
+                     //   }
+                },
+              
+                { "data": "createdOn", "name": "createdOn", "autoWidth": true },
+              
+                {
+                    "name": "action", "data": null,
+                    "render": function (data, type, full, meta) {
+
+                         let theodoidh=` <a class="dropdown-item" href="/theo-doi-don-hang?secret=` + full.secretCode + `"><i class="fas fa-info-circle mr-2"></i> Theo dõi đơn hàng</a>`;
+
+
+                        let btncancel ="";
+                        if(full.status==0){
+                            btncancel=`<form id="form_delete" action="/OrderCustomer/Cancel?secret=` + full.secretId + `"  asp-controller="OrderCustomer"  method="post" asp-action="Cancel" class="d-inline">
+                                            <a  class="dropdown-item"  href="javascript:void(0)" onclick="return commonfunc.cancelOrder(this)">
+                                              <i class="fas fa-trash-alt mr-2"></i> Hủy bỏ đơn
+                                            </a>
+                                        </form>`;
+                        }
+                        
+
+                        let html = `<div class="btn-group dropleft">
+                                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    </button>
+                                        <div class="dropdown-menu ant-popover ant-popover-placement-left">
+                                        <a class="dropdown-item" href="javascript:void(0)" onclick="jQueryModalGet('/OrderCustomer/details?secret=` + full.secretId + `','Thông tin đơn hàng',false)"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
+                                        
+                                      
+                                        `+btncancel+`
+                                        `+theodoidh+`
+                                         
+
+                                    </div>
+                                </div>`;
+                        return html;
+                    }
+                },
+            ]
+
+        });
+        //$('#reload').on('click', function () {
+        //    dataTableOut.ajax.reload();
+        //});
+
+        $('input#OrderCode').on('keydown', function(e) {
+            if (e.which == 13) {
+                dataTableOut.draw();
+            }
+        });
+
+</script>
+}
