@@ -21,6 +21,7 @@ var setTimeoutremoveactiverow;
 var ListCusByOrderPos = [];
 var ListNoteOrder = [];//
 var listport = [8056];
+var NOVATRate = -3;
 var TypeEventWebSocket = {
     SendTestConnect: -1,//ký hóa đơn
     SignEInvoice: 0,//ký hóa đơn
@@ -10530,6 +10531,14 @@ var eventBanle = {
             } else {
                 Customer = {};
             }
+            //----------------lưu tiền mặt CK hay có xuất hóa đơn hay không
+            if (localStorage.getItem("VATMTT") == "true") {
+                ProductsArray.VATMTT = true;
+            } else {
+                ProductsArray.VATMTT = false;
+            }
+            let idpayment = $('input[name=idPaymentMethod]:checked', '.paymentMethod').data("id") || 0;
+            ProductsArray.IdPaymentMethod = idpayment;
             //--------------------đóng gói----
             ProductsArray.Customer = Customer;//add khách ahfng
             ProductsArray.Items = Products;//sản phẩm
@@ -11449,19 +11458,22 @@ var eventBanle = {
             alert("Liên hệ đội ngủ hỗ  trợ lỗi trình duyệt của bạn không hỗ  trợ Storage");
         }
         if (!isLoadevent) {
-
+            $('.vatmtt-ele input.isCheckVAT').unbind();
             $('.vatmtt-ele input.isCheckVAT').on('ifChecked', function (event) {
-
+                debugger
                 localStorage.setItem("VATMTT", true);
                 eventBanle.eventAddHtmlVAT();
                 eventBanle.loadEventChangeVATRateVATAmount();
                 eventBanle.eventLoadTFullAmount();
+                eventBanle.saveUpdateDataVATMTT();//lưu loca
             });
 
             $('.vatmtt-ele input.isCheckVAT').on('ifUnchecked', function (event) {
+                debugger
                 localStorage.setItem("VATMTT", false);
                 $(".showselectboxvat").remove();
                 eventBanle.eventLoadTFullAmount();
+                eventBanle.saveUpdateDataVATMTT();//lưu loca
             });
 
             if (typeof localStorage.getItem("VATMTT") != "undefined") {
@@ -11477,8 +11489,40 @@ var eventBanle = {
 
         isLoadevent = true;
     },// action xuất hDDT
-   
 
+    saveUpdateDataVATMTT: function () {
+        let VATMTT = false;
+        if (localStorage.getItem("VATMTT") == "true") {
+            VATMTT = true;
+        }
+        let getidhoadon = $("ul.action-inv li.active").data("id");
+        let getloca = localStorage.getItem("ProductsArrays");
+        if (typeof getloca != "undefined" && getloca != null) {
+            let datas = JSON.parse(getloca);
+            if (datas.length > 0) {
+                let foundIndex = datas.findIndex(x => x.Id == getidhoadon);
+                if (foundIndex != -1) {
+                    let getdata = datas[foundIndex];
+                    getdata.VATMTT = VATMTT;
+                    if (VATMTT) {
+                        getdata.VATRate = parseInt($("#Vatrate").val());
+                        getdata.VATAmount = parseFloat($(".VATAmount").val().replaceAll(",",""));
+                    } else {
+                        getdata.VATRate = NOVATRate;//
+                        getdata.VATAmount = 0;
+                    }
+                    datas[foundIndex] = getdata;
+                    localStorage.setItem("ProductsArrays", JSON.stringify(datas));
+                } else {
+                    toastrcus.error("Đơn hàng không tồn tại vui lòng tải lại trang!");
+                }
+            } else {
+                toastrcus.error("Chưa có đơn được tạo!");
+            }
+        } else {
+            toastrcus.error("Lỗi hệ thống, vui lòng tải lại trang");
+        }
+    },
     loadOtherTabInvoice: function () {
         let getJsondata = localStorage.getItem("ProductsArrays");
         let loadOrder = JSON.parse(getJsondata);
@@ -11781,9 +11825,15 @@ var eventBanle = {
         eventBanle.loadEventClickIconAddAndMinusoffline();
        
         eventBanle.eventChangeCheckboxHDDTVAT();
-        $(".VATAmount").data("VATAmount", json.VATAmount);//đưa xuống vì phải load html vatamoutn ra mới có cái để đưa vào
+        eventBanle.loadShowOrHideCheckVATMTT(json.VATMTT);//sau cái sự kiện
+        //---------load sự kiện
+        if (json.VATMTT) {
+            $(".VATAmount").data("VATAmount", json.VATAmount);//đưa xuống vì phải load html vatamoutn ra mới có cái để đưa vào
+        }
         await eventBanle.eventLoadTFullAmount().then(() => {
-            $(".VATAmount").removeData("VATAmount");
+            if (json.VATMTT) {
+                $(".VATAmount").removeData("VATAmount");
+            }
         });
         //------------- load thuế suất
         $('#Vatrate option').each(function (i, e) {
@@ -11791,7 +11841,7 @@ var eventBanle = {
         });
         $("#Vatrate option[value='" + json.VATRate + "']").prop("selected", "selected");
       // load cả số tiền khách thanh toán, chỉ lưu khi khách kích vào hoặc thay đổi tiền thanh toán, k load khi thay dổi
-       // cái khác, cả phần có hiển thị xuất hóa đơn hay không, tiền mặt hay chuyển khoản theo từng tab
+       // cái khác, cả phần có hiển thị xuất hóa đơn hay không, tiền mặt hay chuyển khoản theo từng tab luận
 
         _classPosEvent = {
             input_searchProduct: $(".search-product"),
@@ -11799,7 +11849,15 @@ var eventBanle = {
         }
         loadeventPos.loadEventkeyCode();
         eventBanle.loadCustomerByOrderOfline(json.Customer);//load khách hàng
-        eventBanle.loadSugetionPayment()
+        eventBanle.loadSugetionPayment();
+        
+    },
+    loadShowOrHideCheckVATMTT: function (isShow = true) {
+        if (!isShow) {
+            $("input[name=isCheckVAT]").iCheck('uncheck');
+        } else {
+            $("input[name=isCheckVAT]").iCheck('check');
+        }
     },
     loadCustomerByOrderOfline: function (Customer) {
         // thêm điều kiện nút xóa khách

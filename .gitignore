@@ -73,7 +73,7 @@ dkms.conf
 *.user
 *.userosscache
 *.sln.docstates
-
+*.json
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
