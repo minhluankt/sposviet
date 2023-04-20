@@ -258,7 +258,7 @@ namespace Web.ManagerApplication.Areas.Identity.Pages.Account
                                         }
                                         else if (item == PermissionUser.nhanvienphucvu && (user.IdDichVu == EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == EnumTypeProduct.BAN_LE || user.IdDichVu == EnumTypeProduct.THOITRANG))
                                         {
-                                            returnUrl = "/";
+                                            returnUrl = "/OrderStaff";
                                             break;
                                         }
                                     }

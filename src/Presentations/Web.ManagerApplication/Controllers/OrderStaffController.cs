@@ -20,6 +20,7 @@ namespace Web.ManagerApplication.Controllers
         {
             _userManager = userManager;
         }
+        [Authorize(Policy = PermissionUser.nhanvienphucvu)]
         public async Task<IActionResult> IndexAsync()
         {
         

@@ -44,7 +44,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             return View();
         }
 
-        [Authorize(Policy = "pos.order")]
+        //[Authorize(Policy = "pos.order")]
 
 
         public async Task<IActionResult> LoadDataOrderStaff(string idtable,Guid? idOrder=null)
@@ -89,7 +89,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             _notify.Error(update.Message);
             return new JsonResult(new { isValid = false });
         }
-        [Authorize(Policy = "pos.order")]
+        //[Authorize(Policy = "pos.order")]
 
 
         public async Task<IActionResult> LoadDataOrder(string idtable)
