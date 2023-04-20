@@ -96,7 +96,7 @@ namespace Application.Features.SaleRetails.Commands
                         }
 
                         string thongtinthue = string.Empty;
-                        if (product.Data.Invoice.VATRate!= (int)VATRateInv.KHONGVAT)
+                        if (product.Data.Invoice.VATRate!= (int)VATRateInv.KHONGVAT && product.Data.Invoice.VATRate!= (int)NOVAT.NOVAT)
                         {
                             thongtinthue =  $"<tr style='font-size: 11px; text-align: left'>" +
                                             $"<td colspan=\"3\">Tiền thuế: {templateInvoiceParameter.thuesuat}%</td>\r\n\t\t\t<td style=\"text-align: right;\">{templateInvoiceParameter.tienthue}</td>" +

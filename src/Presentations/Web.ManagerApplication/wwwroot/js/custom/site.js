@@ -10133,7 +10133,7 @@ var eventBanle = {
                 let datas = JSON.parse(getloca);
                 if (datas.length > 0) {
                     let cuspayAmount = parseFloat($(".cussendamount").val().replaceAll(",", "")) || 0;//khách chọn thanh t
-                    let amoutchange = parseFloat($(".amoutchange").val().replaceAll(",", "")) || 0;//tiền thừa
+                    let amoutchange = parseFloat($(".amoutchange").html().replaceAll(",", "")) || 0;//tiền thừa
                     let foundIndex = datas.findIndex(x => x.Id == getidhoadon);
                     if (foundIndex != -1) {
                         let getdata = datas[foundIndex];
@@ -10637,7 +10637,7 @@ var eventBanle = {
         Products = [];
         var totals = 0;
         var totalsaudiscount = 0;
-        var Vatrate = 0;;
+        var Vatrate = NOVATRate;
         var vatamount = 0;
         var amounts = 0;
         var amountchange = 0;//tiền trả khách
@@ -10713,18 +10713,20 @@ var eventBanle = {
                 Vatrate = parseFloat($("#Vatrate").val());
                 vatamount = totalsaudiscount * parseFloat(Vatrate / 100).toFixed(2);
                 $(".VATAmount").val(vatamount.format0VND(3, 3));
-            }
+            } 
             amounts = vatamount + totalsaudiscount;
             $(".cuspayment").html(amounts.format0VND(3, 3));
-            let cussendamount = parseFloat($("ul.action-inv li.active").data("cussendamount")) || 0;
-            if (cussendamount > 0) {
-                let kkhacthanhtoan = parseFloat($(".cussendamount").val().replaceAll(",", "")) || 0;
-                amountchange = amounts - kkhacthanhtoan;
-                $(".amoutchange").val(amountchange.format0VND(0, 3, ""));
-            } else {
-                $(".cussendamount").val(amounts.format0VND(0, 3, ""));
-                $(".amoutchange").val(0);
-            }
+            //let cussendamount = parseFloat($("ul.action-inv li.active").data("cussendamount")) || 0;
+            //if (cussendamount > 0) {
+            //    let kkhacthanhtoan = parseFloat($(".cussendamount").val().replaceAll(",", "")) || 0;
+            //    amountchange = amounts - kkhacthanhtoan;
+            //    $(".amoutchange").val(amountchange.format0VND(0, 3, ""));
+            //} else {
+            //    $(".cussendamount").val(amounts.format0VND(0, 3, ""));
+            //    $(".amoutchange").val(0);
+            //}
+            $(".cussendamount").val(amounts.format0VND(0, 3, ""));
+            $(".amoutchange").val(0);
             //--------------add khách hàng----------//
             let cusocde = $(".search-customer").val();
             let IdCustomer = "";

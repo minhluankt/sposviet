@@ -5074,7 +5074,10 @@ img {
         }
     }
 }
-
+.flex-colum-td{
+    display:flex;
+    flex-direction:column
+}
 .select2-container .select2-selection--single {
     height: 34px;
 }

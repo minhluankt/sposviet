@@ -1261,7 +1261,7 @@ namespace Infrastructure.Infrastructure.Repositories
                             x.Name = item.Name;
                             x.Unit = item.Unit;
                             x.RetailPrice = item.RetailPrice;
-                            x.Price = item.Price;
+                            //x.Price = item.Price;
                         }
                     });
                 }
