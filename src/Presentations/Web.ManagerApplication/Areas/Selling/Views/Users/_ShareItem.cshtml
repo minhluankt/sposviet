@@ -32,7 +32,7 @@
 <div class="form-group row">
     <label class="col-md-3 col-form-label" asp-for="UserName"></label>
     <div class="col-md-9">
-        <input type="text" readonly autocomplete="off" asp-for="UserName" class="form-control" placeholder="@string.Format("{0} có thể bỏ qua, mặc định tên đăng nhập là tên email",Html.DisplayNameFor(m=>m.UserName))">
+        <input type="text" autocomplete="off" asp-for="UserName" class="form-control" placeholder="@string.Format("{0} có thể bỏ qua, mặc định tên đăng nhập là tên email",Html.DisplayNameFor(m=>m.UserName))">
 
     </div>
 </div>
@@ -98,7 +98,7 @@ else
 
 
 
-<div class="form-group justify-content-between" style="margin-bottom: 0px !important">
+@*<div class="form-group justify-content-between" style="margin-bottom: 0px !important">
     <div class="offset-md-3 col-md-9">
         <div class="text-center">
             <button class="ladda-button mr-2 btn btn-primary" type="button" id="btnsaveUser" data-style="expand-left">
@@ -111,3 +111,4 @@ else
     </div>
 </div>
 
+*@

@@ -245,6 +245,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     {
                         userName = userModel.UserName;
                     }
+                    else
+                    {
+                        userName = address.Address;
+                    }
                     var currentUser = User.Identity.GetUserClaimLogin();
                     //string userName = userModel.UserName;
                     var user = new ApplicationUser
@@ -269,7 +273,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         var users = _mapper.Map<IEnumerable<UserViewModel>>(allUsersExceptCurrentUser);
                         var htmlData = await _viewRenderer.RenderViewToStringAsync("_ViewAll", users);
                         _notify.Success($"{_localizer.GetString("AddOk").Value} user {user.UserName}");
-                        return new JsonResult(new { isValid = true, html = htmlData });
+                        return new JsonResult(new { isValid = true, html = htmlData , closeSwal =true});
                     }
                     _logger.LogInformation($"Thêm mới User {user.UserName} thất bại!." + JsonConvert.SerializeObject(user));
                     foreach (var error in result.Errors)

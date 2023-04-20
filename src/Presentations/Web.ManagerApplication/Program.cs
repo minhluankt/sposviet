@@ -118,11 +118,11 @@ builder.Services.AddSignalR(hubOptions =>
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // Thiết lập về Password
-    //options.Password.RequireDigit = false; // Không bắt phải có số
-    //options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
+    options.Password.RequireDigit = false; // Không bắt phải có số
+    options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
     //options.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
-    //options.Password.RequireUppercase = false; // Không bắt buộc chữ in
-    //options.Password.RequiredLength = 3; // Số ký tự tối thiểu của password
+    options.Password.RequireUppercase = false; // Không bắt buộc chữ in
+    options.Password.RequiredLength = 3; // Số ký tự tối thiểu của password
     //options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
 
     // Cấu hình Lockout - khóa user

@@ -554,7 +554,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     var _send = await _mediator.Send(new GetAllSupplierEInvoiceQuery() { Comid = currentUser.ComId, IsManagerPatternEInvoices = true });
                     PaymentModelView paymentModelView = new PaymentModelView();
                     paymentModelView.PaymentMethods = _payment.GetAll(currentUser.ComId, true).ToList() ;
-                    paymentModelView.SupplierEInvoiceModel = _send.Data.FirstOrDefault();
+                    paymentModelView.SupplierEInvoiceModel = _send.Data?.FirstOrDefault();
                     paymentModelView.OrderTable = update.Data.SingleOrDefault();
                     paymentModelView.VatMTT = vat;
                     if (paymentModelView.OrderTable == null)

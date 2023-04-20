@@ -2,7 +2,7 @@
 @using Domain.ViewModel;
 @model List<SupplierEInvoiceModel>
 @{
-    var getVNPT = Model.SingleOrDefault(x => x.TypeSupplierEInvoice == ENumSupplierEInvoice.VNPT);
+    var getVNPT = Model?.SingleOrDefault(x => x.TypeSupplierEInvoice == ENumSupplierEInvoice.VNPT);
 }
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">

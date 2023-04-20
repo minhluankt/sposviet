@@ -806,7 +806,7 @@ function validateFormUser() {
         rules: {
             "FullName": {
                 required: true,
-                minlength: 5
+                minlength: 4
             },
             "Email": {
                 required: true,
@@ -814,7 +814,7 @@ function validateFormUser() {
             },
             "Password": {
                 required: true,
-                minlength: 5
+                minlength: 4
             },
             "ConfirmPassword": {
                 equalTo: "#Password",
@@ -4151,17 +4151,76 @@ var eventCreate = {
                         cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                         didRender: () => {
                             validateForm.EditAndAddPaymentMethod();
-
                             $(".btn-continue").click(function () {
                                 Swal.close();
                             });
+                           
                             $(".btn-save").click(function () {
                                 if ($("form#create-form").valid()) {
                                     jQueryModalPost($("form#create-form")[0]);
                                 }
 
                             });
+                        }
+                    });
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
 
+    },
+    addOrEditUser: function (url) {
+        $.ajax({
+            type: 'GET',
+            //global: false,
+            url: url,
+            // data: fomrdata,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                if (res.isValid) {
+                    Swal.fire({
+                        // icon: 'success',
+                        position: 'top-end',
+                        showClass: {
+                            popup: `
+                              popup-formcreate
+                                popup-formleft-500
+                               animate__animated
+                              animate__fadeInRight
+                              animate__faster
+                            `
+                        },
+                        hideClass: {
+                            popup: "popup-formcreate popup-formleft-500 animate__animated animate__fadeOutRight animate__faster"
+
+                        },
+                        showCloseButton: true,
+                        title: "Cập nhật nhân viên",
+                        html: res.html,
+                        //showClass: {
+                        //    popup: 'popup-formcreate'
+                        //},
+
+                        footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                        allowOutsideClick: true,
+                        showConfirmButton: false,
+                        showCancelButton: false,
+                        cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                        didRender: () => {
+                           
+                            validateFormUser();
+                            $(".btn-continue").click(function () {
+                                Swal.close();
+                            });
+                            $(".btn-save").click(function () {
+                                if ($("form#FormValidate").valid()) {
+                                    jQueryModalPost($("form#FormValidate")[0]);
+                                }
+
+                            });
                         }
                     });
                 }
@@ -10033,7 +10092,7 @@ var eventBanle = {
     },
     payment: function () {//thanh toán
         $(".btn-payment").click(function () {
-            bắt đầu thanh toán luận nhé
+           // bắt đầu thanh toán luận nhé
             let idorder = $(".action-inv li.active").data("id");
             if (idorder == "0") {
                 toastrcus.error("Chưa có đơn hàng nào để thanh toán!");
@@ -13197,8 +13256,6 @@ var loadeventPos = {
                     $(this).parent(".input-group").removeClass("focus-input");
                 });
             }
-
-
 
             let getshowMenuInSelectTable = localStorage.getItem("showMenuInSelectTable");
 

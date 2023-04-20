@@ -28,10 +28,9 @@ namespace Model
         public bool IsActive { get; set; } = true;
         [Required(ErrorMessage = "Vui lòng nhật mật khẩu")]
         [Display(Name = "Mật khẩu")]
-        [RegularExpression("^((?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])|(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[^a-zA-Z0-9])|(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])|(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])).{6,}$", ErrorMessage = "Mật khẩu ít nhất 6 ký tự, có chứa chữ hoa, chữ thường và ký tự đặt biệt")]
         [StringLength(20, ErrorMessage = "Mật khẩu ít nhất {2} ký tự và tối đa {0} ký tự", MinimumLength = 6)]
 
-        [DataType(DataType.Password)]
+       // [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [Display(Name = "Nhập lại mật khẩu")]
