@@ -29,6 +29,7 @@ using Application.Features.PromotionRuns.Commands;
 using Application.Features.ReportPoss.Query;
 using Application.Features.RevenueExpenditures.Commands;
 using Application.Features.RoomAndTables.Commands;
+using Application.Features.SaleRetails.Commands;
 using Application.Features.Specification.Commands;
 using Application.Features.Specificationss.Commands;
 using Application.Features.SupplierEInvoices.Commands;
@@ -100,6 +101,8 @@ namespace Web.ManagerApplication.Areas.Mappings
             CreateMap<UpdateConfigSystemCommand, SellModelSetting>().ReverseMap();
 
             CreateMap<UpdateConfigSystemCommand, ConfigSaleParametersModel>().ReverseMap();
+
+            CreateMap<CheckOutOrderInvoiceCommand, OrderInvoicePaymentSaleRetailModel>().ReverseMap();
 
             CreateMap<CreatePromotionRunCommand, PromotionRunViewModel>().ReverseMap();
             CreateMap<CreatePromotionRunCommand, PromotionRun>().ReverseMap();

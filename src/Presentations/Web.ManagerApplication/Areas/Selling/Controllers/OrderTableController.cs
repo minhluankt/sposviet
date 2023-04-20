@@ -6,6 +6,7 @@ using Application.Features.OrderTablePos.Commands;
 using Application.Features.OrderTablePos.Querys;
 using Application.Features.OrderTables.Commands;
 using Application.Features.RoomAndTables.Query;
+using Application.Features.SaleRetails.Commands;
 using Application.Features.SupplierEInvoices.Query;
 using Application.Hepers;
 using Application.Interfaces.Repositories;
@@ -13,10 +14,13 @@ using Application.Providers;
 using Domain.Entities;
 using Domain.ViewModel;
 using Infrastructure.Infrastructure.Identity.Models;
+using Infrastructure.Infrastructure.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Database;
+using System.Data.Entity.Core.Metadata.Edm;
 using System.Globalization;
 using System.Web;
 using Web.ManagerApplication.Abstractions;
@@ -678,6 +682,55 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return Json(new { isValid = true, html = response.Data });
             }
             _notify.Error(response.Message);
+            return Json(new { isValid = false });
+        }
+        [HttpPost]
+        public async Task<IActionResult> PaymentSaleRatailtAsync(string jsonData)
+        {
+            OrderInvoicePaymentSaleRetailModel model = Common.ConverJsonToModel<OrderInvoicePaymentSaleRetailModel>(jsonData);
+            //------- validate xuất hóa đơn
+            if (model.VATMTT)
+            {
+                if (model.IdPattern == null || model.IdPattern == 0)
+                {
+                    _notify.Error("Vui lòng chọn mẫu số ký hiệu để xuất hóa đơn");
+                    return Json(new { isValid = false });
+                }
+                if (model.VATRate == null || model.VATRate == 0)
+                {
+                    _notify.Error("Vui lòng chọn thuế suất hóa đơn");
+                    return Json(new { isValid = false });
+                }
+            }
+            if (model.IdPaymentMethod == 0)
+            {
+                _notify.Error("Vui lòng chọn hình thức thanh toán");
+                return Json(new { isValid = false });
+
+            }
+            if (model == null)
+            {
+                _notify.Error("Đơn cần thanh toán không hợp lệ");
+                return Json(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            EnumTypeProduct enumType = EnumTypeProduct.BAN_LE;
+            model.EnumTypeProduct = enumType;
+            model.ComId = currentUser.ComId;
+            model.IdCasher = currentUser.Id;
+            model.Cashername = currentUser.FullName;
+            var _map = _mapper.Map<CheckOutOrderInvoiceCommand>(model);
+            var update = await _mediator.Send(_map);
+            if (update.Succeeded)
+            {
+                _notify.Success(GeneralMess.ConvertStatusToString(update.Message));
+                if (string.IsNullOrEmpty(update.Data))
+                {
+                    _notify.Warning(GeneralMess.ConvertStatusToString(HeperConstantss.ERR048));
+                }
+                return Json(new { isValid = true, data = HttpUtility.HtmlDecode(update.Data) });
+            }
+            _notify.Error(GeneralMess.ConvertStatusToString(update.Message));
             return Json(new { isValid = false });
         }
         [HttpPost]

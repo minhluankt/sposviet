@@ -129,9 +129,10 @@
     <Compile Include="Features\OrderTablePos\Commands\CheckOutOrderCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\CreateOrderTableCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\DeleteOrderTableCommand.cs" />
-    <Compile Include="Features\Kitchens\Commands\CreateNotifyChitkenCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\SplitOrderCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\UpdateOrderTableCommand.cs" />
+    <Compile Include="Features\SaleRetails\Commands\CheckOutOrderInvoiceCommand.cs" />
+    <Compile Include="Features\Kitchens\Commands\CreateNotifyChitkenCommand.cs" />
     <Compile Include="Features\OrderTablePos\Querys\GetByIdOrderTableQuery.cs" />
     <Compile Include="Features\OrderTablePos\Querys\GetHistoryQuery.cs" />
     <Compile Include="Features\OrderTablePos\Querys\GetOrderOneQuery.cs" />

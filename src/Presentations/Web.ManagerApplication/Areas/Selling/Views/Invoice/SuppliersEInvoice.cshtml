@@ -27,10 +27,10 @@
                         // .ToList();
                 <div class="row">
                     <div class="col-md-4">
-                        <img src="~/images/VNPT_Logo.png" style="width:100px">
+                        <img src="~/images/VNPT_Logo.png" class="logoSup" style="width:100px">
                     </div>
                     <div class="col-md-6">
-                        <label class="mb-1">Mẫu số ký hiệu hóa đơn</label>
+                        <label class="mb-1 titelpatern">Mẫu số ký hiệu hóa đơn</label>
                         @Html.DropDownList("ManagerPatternEInvoices", selectList,"", new { @class = "mb-3",style="width:100%" })
                         @if (item.SaleRetail==0)
                         {

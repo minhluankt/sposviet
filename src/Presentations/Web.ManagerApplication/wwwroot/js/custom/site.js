@@ -2096,7 +2096,7 @@ $(document).ready(function () {
 
 
 function AddProduct(sel) {
-   
+
     var form = sel;
     if (!$("#create-formProduct").valid()) {
         Ladda.stopAll();
@@ -2186,7 +2186,7 @@ function AddProduct(sel) {
                     $("#JsonTableByStylePro").val(json);
                     $("#JsonListStylePro").val(jsonlstStyleArr);
                 }
-                  
+
 
                 $.ajax({
                     type: 'POST',
@@ -2197,7 +2197,7 @@ function AddProduct(sel) {
                     success: function (res) {
                         if (res.isValid) {
                             dataTableOut.ajax.reload(null, false);
-                       
+
                         } else {
                             Ladda.stopAll();
                         }
@@ -4154,7 +4154,7 @@ var eventCreate = {
                             $(".btn-continue").click(function () {
                                 Swal.close();
                             });
-                           
+
                             $(".btn-save").click(function () {
                                 if ($("form#create-form").valid()) {
                                     jQueryModalPost($("form#create-form")[0]);
@@ -4210,7 +4210,7 @@ var eventCreate = {
                         showCancelButton: false,
                         cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                         didRender: () => {
-                           
+
                             validateFormUser();
                             $(".btn-continue").click(function () {
                                 Swal.close();
@@ -6094,7 +6094,7 @@ var eventInvocie = {
                             });
 
                             htmlfooter = "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-power-off mr-2'></i>Hủy bỏ giao dịch</button><button class='btn btn-save btn-success mr-2'><i class='fas fa-save mr-2'></i>Phát hành không xóa đơn gộp</button><button class='btn btn-saveAndDelete btn-success'><i class='fas fa-share mr-2'></i>Phát hành và xóa đơn gộp</button>";
-                            if (checkSavereport==1) {
+                            if (checkSavereport == 1) {
                                 htmlfooter = "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-power-off mr-2'></i>Hủy bỏ giao dịch</button><button class='btn btn-save btn-success mr-2'><i class='fas fa-save mr-2'></i>Phát hành và xóa đơn gộp</button>";
                             }
                             $.ajax({
@@ -6110,7 +6110,7 @@ var eventInvocie = {
                                     if (res.isValid) {
                                         dataTableOut.ajax.reload(null, false);
                                         Swal.close();
-                                        title = "Phát hành hóa đơn điện tử gộp từ nhiều hóa đơn bán hàng (" + lstid.length+" hóa đơn)";
+                                        title = "Phát hành hóa đơn điện tử gộp từ nhiều hóa đơn bán hàng (" + lstid.length + " hóa đơn)";
                                         Swal.fire({
                                             // icon: 'success',
                                             position: 'center',
@@ -6265,7 +6265,7 @@ var eventInvocie = {
                                 });
                             }
                         });
-                    } 
+                    }
                 },
                 error: function (err) {
                     console.log(err)
@@ -6283,7 +6283,7 @@ var eventInvocie = {
                 top: "0",
                 "z-index": "0"
             });
-        }); 
+        });
         $("#Buyer").blur(function () {
             $("#parentautocomplete").css({
                 height: "0",
@@ -6310,7 +6310,7 @@ var eventInvocie = {
         eventInvocie.Autocompletedata($("#CusCode"), AutocompleteTypeCustomer.CUSCODE);
         eventInvocie.Autocompletedata($("#Taxcode"), AutocompleteTypeCustomer.TAXCODE);
     },
-    Autocompletedata: function (id,type) {
+    Autocompletedata: function (id, type) {
         $(id).autocomplete(
             {
                 appendTo: "#parentautocomplete",
@@ -6398,9 +6398,9 @@ var eventInvocie = {
                                     name += "Mã KH: " + item.code + " <br/>";
                                 }
                                 if (item.phoneNumber != "" && item.phoneNumber != null) {
-                                    name += " SĐT: " + item.phoneNumber ;
+                                    name += " SĐT: " + item.phoneNumber;
                                 }
-                               
+
                                 let html =
                                     "<a href='javascript:void(0)'><div class='search-auto'>" +
                                     "<div class='img'><img src='../" + item.img + "'></div>" +
@@ -6490,13 +6490,13 @@ var eventInvocie = {
                 if ($("#IsRetailCustomer").prop("checked")) {
                     toastrcus.error("Không thể thêm khách hàng khi bạn đã chọn là khách lẻ");
                     return false;
-                    
+
                 }
             }
         });
     },
     eventSaveInvoice: function () {
-        
+
         var Products = []; //list table style có đơn giá
         var InvoiceOlds = []; //các giá trị invoic cũ
         $(".number3").each(function (index, element) {
@@ -6505,7 +6505,7 @@ var eventInvocie = {
         });
         $(".codeinvoiceold").each(function (index, element) {
             let typeProductCategory = $(element).data("invoice");
-            if (typeProductCategory=="") {
+            if (typeProductCategory == "") {
                 alert("Các hóa đơn liên quan đã không còn tồn tại!");
                 Swal.close();
                 return false;
@@ -6526,7 +6526,7 @@ var eventInvocie = {
             let name = $(this).find(".name").text();
             let unit = $(this).find(".unit").text();
             let price = $(this).find(".price").text().replaceAll(",", "") || 0;
-            let quantity = $(this).find(".quantity").text().replaceAll(",", "")||0;
+            let quantity = $(this).find(".quantity").text().replaceAll(",", "") || 0;
             let total = $(this).find(".total").text().replaceAll(",", "") || 0;
             var Product = {}; //khởi tạo object
             Product.TypeProductCategory = typeProductCategory;
@@ -6535,7 +6535,7 @@ var eventInvocie = {
             Product.Price = parseFloat(price);
             Product.Total = parseFloat(total);
             Product.Quantity = parseFloat(quantity);
-            if (code=="") {
+            if (code == "") {
                 alert("Sản phẩm: " + name + " không hợp lệ!");
                 Swal.close();
                 return false;
@@ -6554,14 +6554,14 @@ var eventInvocie = {
         $("#Vatrate").change(function () {
             let total = parseFloat($(".Total").val().replaceAll(",", "")) || 0;
             let discountAmount = parseFloat($(".DiscountAmount").val().replaceAll(",", "")) || 0;
-            if (discountAmount>0) {
+            if (discountAmount > 0) {
                 total = total - discountAmount;
             }
             let Vatrate = parseInt($(this).val()) || 0;
             let vatamount = Math.round(total * (Vatrate / 100));
             let amount = total + vatamount;
 
-            $(".VATAmount").val(vatamount.format0VND(0,3));
+            $(".VATAmount").val(vatamount.format0VND(0, 3));
             $(".Amount").val(amount.format0VND(0, 3));
         });
         $(".Total").keyup(function () {
@@ -9646,14 +9646,14 @@ var eventBanle = {
     loadeventchangeclickprice: function () {
         $("#item-mon li .price").unbind();
         $("#item-mon li .price").click(function () {
-            let price = parseFloat($(this).data("price"))||0;
+            let price = parseFloat($(this).data("price")) || 0;
             let giamoi = parseFloat($(this).data("pricenew")) || 0;
             let giamgia = parseFloat($(this).data("discountamount")) || 0;
             let discount = parseFloat($(this).data("discount")) || 0;
             //let a = $(this).data("typediscount");
             let typediscount = parseInt($(this).data("typediscount"));
-         
-            if (typediscount==1) {
+
+            if (typediscount == 1) {
                 giamgia = discount;
             }
             let html = `<div id="popupselectDiscount" class="popup-change-price">
@@ -9663,7 +9663,7 @@ var eventBanle = {
                                                             <span>Đơn giá bán: </span>
                                                             <div class="content">
                                                                 <div class="text">
-                                                                    <input class="data-value form-control number3 giaban" placeholder="Nhập số tiền" value=`+ price +` />
+                                                                    <input class="data-value form-control number3 giaban" placeholder="Nhập số tiền" value=`+ price + ` />
                                                                 </div>
                                                             </div>
                                                          </div>
@@ -9671,7 +9671,7 @@ var eventBanle = {
                                                             <span>Giảm giá: </span>
                                                             <div class="content">
                                                                 <div class="text">
-                                                                    <input class="data-value form-control number3 giamgia" value="`+ giamgia + `" data-value="` + giamgia + `" data-type="` + typediscount +`"/>
+                                                                    <input class="data-value form-control number3 giamgia" value="`+ giamgia + `" data-value="` + giamgia + `" data-type="` + typediscount + `"/>
                                                                     <button type="button" data-value="0" class="btn btn-action  btn-amountselect">VND</button>
                                                                     <button type="button" data-value="1" class="btn btn-action btn-percent">%</button>
                                                                 </div>
@@ -9681,14 +9681,14 @@ var eventBanle = {
                                                             <span>Giá bán mới: </span>
                                                             <div class="content">
                                                                 <div class="text">
-                                                                    <input class="data-value form-control number3 giamoi" placeholder="Nhập số tiền" value=`+ giamoi +` />
+                                                                    <input class="data-value form-control number3 giamoi" placeholder="Nhập số tiền" value=`+ giamoi + ` />
                                                                 </div>
                                                             </div>
                                                          </div>
                                                     </div>
                                                 </div>`;
             $(this).after(html);
-            if (typediscount == 0 || typediscount==-1) {
+            if (typediscount == 0 || typediscount == -1) {
                 $(".btn-amountselect").addClass("btn-primary");
             } else {
                 $(".btn-percent").addClass("btn-primary");
@@ -9696,7 +9696,7 @@ var eventBanle = {
             evetnFormatTextnumber3();
             evetnFormatnumber3(false);
             eventBanle.loadeventChangePricenewAndDiscountItem();
-         
+
 
             $(".popup-change-price").find("input.giamoi").select();//phải làm 2 lần vì lần 1 nó hủy do focus vafo mất format
             $(".popup-change-price").find("input.giamoi").select();
@@ -9721,8 +9721,8 @@ var eventBanle = {
             if (!$(this).hasClass("btn-primary")) {
                 $(this).parent().find(".btn-primary").toggleClass("btn-primary");
                 $(this).toggleClass("btn-primary");
-                let getid = parseInt($(this).data("value"))||0;
-                let giamgiavalue = parseFloat($(".giamgia").data("value"))||0;
+                let getid = parseInt($(this).data("value")) || 0;
+                let giamgiavalue = parseFloat($(".giamgia").data("value")) || 0;
                 let giamgiatype = parseInt($(".giamgia").data("type"));
 
                 let discountamount = 0;
@@ -9733,23 +9733,23 @@ var eventBanle = {
                         let discountamount = 0;
                         let getgiaban = parseFloat($(".giaban").val().replaceAll(",", "")) || 0;
                         if (giamgiatype == getid) {
-                             discountamount = giamgiavalue;
+                            discountamount = giamgiavalue;
                         } else {
-                             discountamount = getgiaban * (getvaluegiaban / 100);
+                            discountamount = getgiaban * (getvaluegiaban / 100);
                         }
                         $(".giamgia").val(discountamount.format0VND(3, 3))
                         //$(".giamgia").data("value", discountamount);
                         loadcongthuc(3);
                     }
                 } else if (getid == 1) {//1 là %
-                    
+
                     let getvaluegiaban = parseFloat($(".giamgia").val().replaceAll(",", "")) || 0;
                     if (getvaluegiaban > 0) {
                         let getgiaban = parseFloat($(".giaban").val().replaceAll(",", "")) || 0;
                         if (giamgiatype == getid) {
-                             discountamount = giamgiavalue;
+                            discountamount = giamgiavalue;
                         } else {
-                             discountamount = parseFloat((parseFloat(getvaluegiaban / getgiaban) * 100).toFixed(2));
+                            discountamount = parseFloat((parseFloat(getvaluegiaban / getgiaban) * 100).toFixed(2));
                         }
                         if (discountamount > 100) {
                             $(".giamgia").val(100);
@@ -9765,7 +9765,7 @@ var eventBanle = {
                     toastrcus.error("Giá trị không hợp lệ");
                     return;
                 }
-                
+
             }
         });
         $(".giamgia").change(function () {//giảm giá
@@ -9777,7 +9777,7 @@ var eventBanle = {
         });
         $(".giaban").change(function () {//giá bán
             let gianban = parseFloat($(".giaban").val());
-            $(".giamoi").val(parseFloat($(".giaban").val().replaceAll(",", "")).format0VND(3,3));
+            $(".giamoi").val(parseFloat($(".giaban").val().replaceAll(",", "")).format0VND(3, 3));
             $(".giamgia").val("");
             $(".giamgia").data("value", 0);
             //-------------
@@ -9788,7 +9788,7 @@ var eventBanle = {
             let giaban = parseFloat($(".giaban").val().replaceAll(",", "")) || 0;
             let giamoi = parseFloat($(this).val().replaceAll(",", "")) || 0;
             let giasautru = giamoi - giaban;//tức là lấy giảm giá
-            if (giasautru>0) {
+            if (giasautru > 0) {
                 $(".giamgia").val(0);
                 $(".giamgia").data("value", 0);
                 $(".giamoi").parents(".ele-price").find(".price").data('discount', 0);//gán giá trị % giảm giá cho đơn giá tại dòng sản phẩm
@@ -9796,26 +9796,25 @@ var eventBanle = {
                 $(".giamoi").parents(".ele-price").find(".price").data('typediscount', -1);//gán loại giảm giá cho đơn giá tại dòng sản phẩm 
             } else {
                 giasautru = giasautru * -1;
-              
+
                 let typegiamgia = parseInt($("#ousSizeOutPopup .content button.btn-primary").data("value"));
                 if (typegiamgia == 0) {//vnd
                     $(".giamgia").val(giasautru.format0VND(3, 3));
                     $(".giamgia").data("value", giasautru);
                     $(".giamoi").parents(".ele-price").find(".price").data('discount', 0);//gán giá trị giảm giá cho đơn giá tại dòng sản phẩm
                 }
-                else
-                {
+                else {
                     let discount = parseFloat(((giasautru / giaban) * 100).toFixed(2));
                     //vì khách nhập giá mới nên giảm phải lấy gốc trừ giá mới
                     $(".giamgia").val(discount.format0VND(3, 3));
                     $(".giamgia").data("value", discount);
                     $(".giamoi").parents(".ele-price").find(".price").data('discount', discount);//gán giá trị giảm giá cho đơn giá tại dòng sản phẩm
-                    
+
                 }
                 $(".giamoi").parents(".ele-price").find(".price").data('discountamount', giasautru);//gán giá trị giảm giá cho đơn giá tại dòng sản phẩm
                 $(".giamoi").parents(".ele-price").find(".price").data('typediscount', typegiamgia);//gán loại giảm giá cho đơn giá tại dòng sản phẩm 
             }
-     
+
             $(".giamoi").parents(".ele-price").find(".price").val(giamoi.format0VND(3, 3));//thay đổi đơn giá gốc
             loadcongthuc(2)
         });
@@ -9826,7 +9825,7 @@ var eventBanle = {
             }
         });
 
-        function loadcongthuc(type=-1) {
+        function loadcongthuc(type = -1) {
             //0  giá bán: 1: giảm giá: 2 giá mới, 3: sự kiện chọn vnd or %
             let giaban = parseFloat($(".giaban").val().replaceAll(",", "")) || 0;
             let giamgia = parseFloat($(".giamgia").val().replaceAll(",", "")) || 0;
@@ -9849,7 +9848,7 @@ var eventBanle = {
                 }
                 discountAmount = giaban * (parseFloat(giamgia / 100));
                 total = giaban - discountAmount;
-                
+
             } else {
                 toastrcus.error("Giá trị không hợp lệ");
                 return;
@@ -9862,10 +9861,10 @@ var eventBanle = {
                 $(".giamoi").parents(".ele-price").find(".price").val(total.format0VND(3, 3));//thay đổi đơn giá gốc
                 $(".giamoi").parents(".ele-price").find(".price").data('pricenew', total);//thay đổi đơn giá gốc
             }
-            
+
             $(".giamoi").parents(".ele-price").find(".discountAmountItemPro").remove();//Xóa khi có thay đổi
-            if (giamgia > 0 || discountAmount> 0) {//khi có giảm giá mới thay đổi
-               
+            if (giamgia > 0 || discountAmount > 0) {//khi có giảm giá mới thay đổi
+
                 htmldiscount = "";
                 if (typegiamgia == 0) {
                     htmldiscount = "<span class='discountAmountItemPro'>" + (giamgia * -1).format0VND(0, 3) + "</span>"
@@ -9881,26 +9880,26 @@ var eventBanle = {
                 $(".giamoi").parents(".ele-price").find(".price").data('discount', 0);//gán giá trị giảm giá cho đơn giá tại dòng sản phẩm
                 $(".giamoi").parents(".ele-price").find(".price").data('discountamount', 0);//gán giá trị giảm giá cho đơn giá tại dòng sản phẩm
             }
-            
+
 
             //----------------
-            
+
             $(".giamoi").parents(".ele-price").find(".price").data('typediscount', typegiamgia);//gán loại giảm giá cho đơn giá tại dòng sản phẩm 
-           
+
             //------------
             updateTotalProduct();
         }
-        
+
         function updateTotalProduct() {
             let quantity = parseFloat($(".giamoi").parents("li").find(".quantity").val().replaceAll(",", "")) || 0;
             let pricenew = parseFloat($(".giamoi").val().replaceAll(",", "")) || 0;
-            
-            
+
+
 
             $(".giamoi").parents("li").find(".total").children("b").html((quantity * pricenew).format0VND(3, 3));
             $(".giamoi").parents("li").find(".total").children("b").data('total', (quantity * pricenew));
 
-            
+
             eventBanle.loadChangeItemOrderLoca();
         }
     },
@@ -9939,7 +9938,7 @@ var eventBanle = {
         var typeSelectDiscount = TypeSelectDiscount.Cash;
         let Cashkeup = 0;
         let Percentkeup = 0;
-        let getdiscount = parseInt($(".discountamount").data("discount"))||0;
+        let getdiscount = parseInt($(".discountamount").data("discount")) || 0;
         if (typeof $(".discountamount").data("type") == "undefined") {
             if (getdiscount > 0) {
                 $(".discountamount").data("type", TypeSelectDiscount.Percent);
@@ -9950,8 +9949,8 @@ var eventBanle = {
             }
         }
         if (typeof $(".discountamount").data("type") != "undefined") {
-            typeSelectDiscount = parseInt($(".discountamount").data("type"))||0;
-            value = parseInt($(".discountamount").data("value"))||0;
+            typeSelectDiscount = parseInt($(".discountamount").data("type")) || 0;
+            value = parseInt($(".discountamount").data("value")) || 0;
             $("input:radio[value=" + typeSelectDiscount + "][name='optradiocheckboxdis']").prop('checked', true);
             $("#discounttypevalue").val(value);
             if (typeSelectDiscount == TypeSelectDiscount.Cash) {
@@ -9980,7 +9979,7 @@ var eventBanle = {
             }, 150);
         });
         $("#discounttypevalue").keyup(function () {
-            if (typeSelectDiscount==0) {
+            if (typeSelectDiscount == 0) {
                 typeSelectDiscount = parseInt($(".discountamount").data("discount"));
             }
             loadCongthuc();
@@ -9988,7 +9987,7 @@ var eventBanle = {
         });
         function loadCongthuc() {
             if (typeSelectDiscount == TypeSelectDiscount.Cash) {
-                let discountamount = parseFloat($("#discounttypevalue").val().replaceAll(",", ""))||0;
+                let discountamount = parseFloat($("#discounttypevalue").val().replaceAll(",", "")) || 0;
                 Cashkeup = discountamount;//lưu để update lại số cũ
                 $(".discountamount").val(discountamount.format0VND(3, 3));
                 //-----gán giá trị tiền 
@@ -10001,7 +10000,7 @@ var eventBanle = {
                 let _discountamount = Math.round(parseFloat(totalPayment * (discountamount / 100)));
                 Percentkeup = discountamount;//lưu để update lại số cũ
                 $(".discountamount").val(_discountamount.format0VND(3, 3));
-                   //-----gán giá trị tiền và %
+                //-----gán giá trị tiền và %
                 $(".discountamount").data("value", discountamount);
                 $(".discountamount").data("discount", discountamount);
             }
@@ -10022,12 +10021,12 @@ var eventBanle = {
         }, 200);
     },
     eventLoadCongThucTien: function () {
-        
+
         let totalPayment = $(".fullamount").text().replaceAll(",", "") || 0;
         let discountPayment = $(".discountamount").val().replaceAll(",", "") || 0;
         let totalsaudiscount = (parseFloat(totalPayment) - parseFloat(discountPayment)) || 0;
         let vatamount = 0;
-        if ($("#Vatrate").length>0) {
+        if ($("#Vatrate").length > 0) {
             vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
             $(".VATAmount").val(vatamount.format0VND(0, 3, ""));
         } else {
@@ -10048,7 +10047,7 @@ var eventBanle = {
     saveUpdateAmountLoca: function (typeSelectDiscount) {
 
         let discounttypevalue = 0;
-        if (typeSelectDiscount!=-1) {
+        if (typeSelectDiscount != -1) {
             discounttypevalue = parseFloat($("#discounttypevalue").val().replaceAll(",", "")) || 0
         }
         let discountPayment = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
@@ -10090,21 +10089,172 @@ var eventBanle = {
             toastrcus.error("Lỗi hệ thống, vui lòng tải lại trang");
         }
     },
-    payment: function () {//thanh toán
-        $(".btn-payment").click(function () {
-           // bắt đầu thanh toán luận nhé
-            let idorder = $(".action-inv li.active").data("id");
-            if (idorder == "0") {
+    eventPaymentInvoice: async  function (model) {
+        var Datainvoice = {};
+        $.ajax({
+            type: 'POST',
+            global: false,
+            async: false,
+            url: '/Selling/OrderTable/PaymentSaleRatailt',
+            data: {
+                jsonData: JSON.stringify(model)
+            },
+            success: function (res) {
+                if (res.isValid) {
+                    Datainvoice.Html = res.data;
+                    Datainvoice.IsSuccess = true;
+
+                    //eventBanle.clearDataorder();
+                    //htmlPrint = res.data;
+                    //if (htmlPrint != "") {
+                    //    printDiv(htmlPrint);
+                    //}
+
+                } else {
+                    Datainvoice.IsSuccess = false;
+                }
+                
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+        return Datainvoice;
+    },
+    paymentInoffline: function () {
+        $(".btn-payment").click( function () {
+            let getidhoadon = $(".action-inv li.active").data("id");
+            if (getidhoadon == "0") {
                 toastrcus.error("Chưa có đơn hàng nào để thanh toán!");
                 return false;
             }
             let getloca = localStorage.getItem("ProductsArrays");
             if (typeof getloca != "undefined" && getloca != null) {
+                let datas = JSON.parse(getloca);
+                if (datas.length > 0) {
+                    let cuspayAmount = parseFloat($(".cussendamount").val().replaceAll(",", "")) || 0;//khách chọn thanh t
+                    let amoutchange = parseFloat($(".amoutchange").val().replaceAll(",", "")) || 0;//tiền thừa
+                    let foundIndex = datas.findIndex(x => x.Id == getidhoadon);
+                    if (foundIndex != -1) {
+                        let getdata = datas[foundIndex];
+                        getdata.CusSendAmount = cuspayAmount;//tiền khashc đưa
+                        getdata.AmountChangeCus = amoutchange;//tiền thừa
+                        loadingStart();
+                        if (getdata.VATMTT) {
+                            $.ajax({
+                                type: 'GET',
+                                global: false,
+                                async: false,
+                                url: "/Selling/Invoice/SuppliersEInvoice?SaleRetail=1",
+                                // data: fomrdata,
+                                contentType: false,
+                                processData: false,
+                                success: function (res) {
+                                    if (res.isValid) {
+                                        footer = "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Tiếp tục</button>";
+                                        if (!res.nodata) {
+                                            footer = "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Đã hiểu</button>";
+                                        }
+                                        Swal.fire({
+                                            // icon: 'success',
+                                            title: res.title,
+                                            html: res.html,
+                                            showClass: {
+                                                popup: 'popup-formcreate'
+                                            },
+
+                                            footer: footer,
+                                            allowOutsideClick: true,
+                                            showConfirmButton: false,
+                                            showCancelButton: false,
+                                            cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                                            didRender: () => {
+                                                loadingStop();
+                                                $(".btn-continue").click(function () {
+                                                    Swal.close();
+                                                });
+                                                $('#ManagerPatternEInvoices').select2({
+                                                    placeholder: {
+                                                        id: '', // the value of the option
+                                                        text: "Chọn mẫu số và ký hiệu hóa đơn"
+                                                    },
+                                                    allowClear: true,
+                                                    language: {
+                                                        noResults: function () {
+                                                            return "Không tìm thấy dữ liệu";
+                                                        }
+                                                    },
+                                                })
+                                                $(".btn-save").click(async function () {
+                                                    loadingStart();
+                                                    let idpatern = $(".selectSupplerInoice").find("#ManagerPatternEInvoices").val();
+                                                    if (idpatern == "") {
+                                                        toastrcus.error("Vui lòng chọn mẫu số ký hiệu hóa đơn");
+                                                        return;
+                                                    }
+                                                    getdata.IdPattern = parseInt(idpatern);
+                                                    Swal.close();
+                                                   await eventBanle.eventPaymentInvoice(getdata).then(function (data) {
+                                                        loadingStop();
+                                                        if (data.IsSuccess) {
+                                                            eventBanle.clearDataorder();
+                                                            Swal.close();
+                                                            if (data.Html != "") {
+                                                                printDiv(data.Html);
+                                                            }
+                                                            datas.splice(foundIndex, 1);//xóa đi đơn đó
+                                                            localStorage.setItem("ProductsArrays", JSON.stringify(datas));
+                                                        }
+                                                    });
+                                                });
+
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function (err) {
+                                    console.log(err)
+                                }
+                            });
+                        }
+                        else {
+                            eventBanle.eventPaymentInvoice(getdata).then(function (data) {
+                                loadingStop();
+                                if (data.IsSuccess) {
+                                    eventBanle.clearDataorder();
+                                    Swal.close();
+                                    if (data.Html != "") {
+                                        printDiv(data.Html);
+                                    }
+                                    datas.splice(foundIndex, 1);//xóa đi đơn đó
+                                    localStorage.setItem("ProductsArrays", JSON.stringify(datas));
+                                }
+                            });
+                        }
+                        //---------xóa sau khi phát hành
+                    } else {
+                        toastrcus.error("Đơn hàng không tồn tại vui lòng tải lại trang!");
+                    }
+                }
+                else {
+                    toastrcus.error("Đơn hàng không tồn tại vui lòng tải lại trang!");
+                }
 
             } else {
                 toastrcus.error("Chưa có đơn hàng nào để thanh toán!");
                 return false;
             }
+        })
+    },
+    payment: function () {//thanh toán
+        $(".btn-payment").click(function () {
+            // bắt đầu thanh toán luận nhé
+            let idorder = $(".action-inv li.active").data("id");
+            if (idorder == "0") {
+                toastrcus.error("Chưa có đơn hàng nào để thanh toán!");
+                return false;
+            }
+
             let discountPayment = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
             let cuspayment = parseFloat($(".cuspayment").text().replaceAll(",", "")) || 0;
             let cuspayAmount = parseFloat($(".cussendamount").val().replaceAll(",", "")) || 0;
@@ -10339,8 +10489,6 @@ var eventBanle = {
                 let id = $(this).data("id");
                 await eventBanle.loadDataInvoiceOffline(id);// phải load dữ liệu trước
                 localStorage.setItem("activeInvoicetab", $(this).index());
-
-
             }
         });
     },
@@ -10479,6 +10627,7 @@ var eventBanle = {
         $(".discountamount").val(0);
         $(".VATAmount").val(0);
         $(".cuspayment").html(0);
+        $(".amoutchange").html(0);
         $(".cussendamount").val(0);
     },
 
@@ -10508,7 +10657,7 @@ var eventBanle = {
             if (typeof getloca != "undefined" && getloca != null) {
                 let datas = JSON.parse(getloca);
                 if (datas.length > 0) {
-                   // let getidhoadon = $("ul.action-inv li.active").data("id");
+                    // let getidhoadon = $("ul.action-inv li.active").data("id");
                     let getidhoadon = idorder;// test lại tức là xóa đơn thì xóa loca đi nhé, 
                     var foundIndex = datas.findIndex(x => x.Id == getidhoadon);
                     datas.splice(foundIndex, 1);
@@ -10610,7 +10759,9 @@ var eventBanle = {
             ProductsArray.VATAmount = vatamount;
             ProductsArray.Amount = amounts;
             ProductsArray.CusSendAmount = 0;//tiền khách thanh toán
-            ProductsArray.Id = getidhoadon; 
+            ProductsArray.Amoutchange = 0;//tiền thừa
+            ProductsArray.IdPattern = null;//tiền thừa
+            ProductsArray.Id = getidhoadon;
             ProductsArrays.push(ProductsArray);//add vào list lớn
             let getloca = localStorage.getItem("ProductsArrays");
             if (typeof getloca != "undefined" && getloca != null) {
@@ -10624,11 +10775,11 @@ var eventBanle = {
                         datas.push(ProductsArray);
                         localStorage.setItem("ProductsArrays", JSON.stringify(datas));
                     }
-                    
+
                 } else {
                     localStorage.setItem("ProductsArrays", JSON.stringify(ProductsArrays));
                 }
-                
+
             } else {
                 localStorage.setItem("ProductsArrays", JSON.stringify(ProductsArrays));
             }
@@ -10704,10 +10855,10 @@ var eventBanle = {
 
     },
     loadEventCheckCodeItem: async function (code) {
-        
+
         let isValid = false;
         $("ul#item-mon").find("li").map(function () {
-            let _code = $(this).data("code")||"";
+            let _code = $(this).data("code") || "";
             if (_code.trim() == code) {
                 isValid = true;
                 $(this).find(".item_action").find("i:last-child").trigger("click");
@@ -10724,24 +10875,25 @@ var eventBanle = {
                             <div  class="btn-remove" data-idquan="1"><i data-idquan="1" class="fas fa-trash-alt"></i></div>
                             <div class="name" data-name="`+ name + `"><b>` + name + `</b></div>
                             <div class="item_action"><i class="fas fa-minus"></i><input data-quantity="1" class="quantity number3" value="1"><i class="fas fa-plus"></i></div>
-                            <div class="ele-price"><input type="text" class="form-control number3 price"  data-price="`+ price + `" data-pricenew="`+ price + `"  data-retailPrice="` + retailPrice + `" data-typediscount="-1" data-discountamount="0" data-discount="0" readonly value="` + (price) + `" /></div>
-                            <div class="total"><b class="number3" data-total="`+ (price * 1) + `">`+ (price * 1) + `</b></div>
-                        </li>`;                         
+                            <div class="ele-price"><input type="text" class="form-control number3 price"  data-price="`+ price + `" data-pricenew="` + price + `"  data-retailPrice="` + retailPrice + `" data-typediscount="-1" data-discountamount="0" data-discount="0" readonly value="` + (price) + `" /></div>
+                            <div class="total"><b class="number3" data-total="`+ (price * 1) + `">` + (price * 1) + `</b></div>
+                        </li>`;
             html += htmlli;
             html += `</ul>`;
             if ($("ul#item-mon").length > 0) {
                 $("ul#item-mon li:last-child").after(htmlli);
             } else {
 
+                $(".action-inv").find("li.active").removeAttr("data-id");
                 $(".action-inv").find("li.active").data("id", GUID());// add id vào
                 $("#container-tableOder").html(html);
-            }    
+            }
         }
         eventBanle.loadeventchangeclickprice();//kích vào giá
         eventBanle.loadChangeItemOrderLoca();
         evetnFormatTextnumber3();
         eventBanle.loadEventClickIconAddAndMinusoffline();
-        if ($(".search-customer").val()!="") {
+        if ($(".search-customer").val() != "") {
             eventBanle.updateCustomerOrderOffline(0);//update khách hàng
         }
     },
@@ -10767,7 +10919,7 @@ var eventBanle = {
         });
         $("#item-mon  li .item_action").find("i").unbind();
         $("#item-mon  li .item_action").find("i:first-child").click(function () {
-          
+
             let quantity = parseFloat($(this).parent().find(".quantity").val().replaceAll(",", ""));
             _quan = quantity - 1;
             if (_quan <= 0) {
@@ -10775,7 +10927,7 @@ var eventBanle = {
                 $(this).val($(this).data("quantity"));
                 return;
             }
-       
+
             let price = parseFloat($(this).parents("li").find(".price").val().replaceAll(",", ""));
             $(this).parents("li").find(".quantity").val(_quan.format0VND(3, 3));
             $(this).parents("li").find(".quantity").data("quantity", _quan);
@@ -10783,11 +10935,11 @@ var eventBanle = {
             $(this).parents("li").find(".total").find("b").html((_quan * price).format0VND(3, 3));
             $(this).parents("li").find(".total").find("b").data("total", (_quan * price));
 
-                eventBanle.loadChangeItemOrderLoca();
+            eventBanle.loadChangeItemOrderLoca();
 
         });// dùng để giảm món
         $("#item-mon  li .item_action").find("i:last-child").click(function () {
-            
+
             let quantity = parseFloat($(this).parent().find(".quantity").val().replaceAll(",", ""));
             _quan = quantity + 1;
             if (_quan <= 0) {
@@ -11050,7 +11202,7 @@ var eventBanle = {
             eventBanle.eventLoadTFullAmount();
             eventBanle.saveUpdateAmountLoca(-1);
             eventBanle.loadSugetionPayment();
-           
+
         });
     },
     loadTienthuakhach: function () {
@@ -11212,7 +11364,7 @@ var eventBanle = {
                         $(this).select();
                         // _varIdGuidSelectproductAutocomplete = ui.item.idProduct;
                         idProductAutocom = ui.item.idProduct;
-                        
+
                         //  eventBanle.eventselectProductCompelte(idProductAutocom);//dùng cho bán hàng gọi online
                         await eventBanle.eventselectProductCompelteOffline(ui.item.idProduct,
                             parseFloat(ui.item.price),
@@ -11247,11 +11399,11 @@ var eventBanle = {
                     let retailPrice = $(this).data("retailPrice");
                     let code = $(this).data("code");
                     let name = $(this).data("name");
-                        await eventBanle.eventselectProductCompelteOffline(idProductAutocom,
-                            parseFloat(price),
-                            parseFloat(retailPrice),
-                            code,
-                            name);
+                    await eventBanle.eventselectProductCompelteOffline(idProductAutocom,
+                        parseFloat(price),
+                        parseFloat(retailPrice),
+                        code,
+                        name);
                     $(this).select();
                 } else if (_dt.length == 0) {
                     idProductAutocom = 0;
@@ -11321,7 +11473,7 @@ var eventBanle = {
                         // xử lý nếu đơn đã có mà chọn khách thay đổi thì update db
                         let checkOrder = $(".action-inv li.active").data("id");
                         if ($('#item-mon').length > 0 && typeof checkOrder != "undefined") {
-                           // await eventBanle.updateCustomerOrder(ui.item.idCus, checkOrder);
+                            // await eventBanle.updateCustomerOrder(ui.item.idCus, checkOrder);
                             await eventBanle.updateCustomerOrderOffline(0);
                         }
                     },
@@ -11350,7 +11502,7 @@ var eventBanle = {
 
         let Vatrate = parseFloat($("#Vatrate").val()) || 0;
         let VATAmount = parseFloat($(".VATAmount").data("VATAmount")) || 0;
-        if (VATAmount ==0) {
+        if (VATAmount == 0) {
             VATAmount = Math.round((Total) * (Vatrate / 100));
         }
         let Amount = Total + VATAmount;
@@ -11390,7 +11542,7 @@ var eventBanle = {
         }
 
     },// update lại khách hàng khi chọn hoặc xóa 
-    updateCustomerOrderOffline: function (type=0) {//update khách hàng khi chọn 0 là thêm, 1 là xóa
+    updateCustomerOrderOffline: function (type = 0) {//update khách hàng khi chọn 0 là thêm, 1 là xóa
         let idCus = parseInt($(".search-customer").data("idCus")) || 0;
         let idOrder = $(".action-inv li.active").data("id");
         if (idCus > 0 && type == 0) {
@@ -11449,7 +11601,7 @@ var eventBanle = {
                 toastrcus.error("Lỗi hệ thống, vui lòng tải lại trang");
                 $(".box-data-customer").find(".btn-cleardata").trigger("click");
             }
-        } 
+        }
     },// update lại khách hàng khi chọn hoặc xóa 
     loadEventremoveCustomer: function () {
         $(".box-data-customer").find(".btn-cleardata").unbind();
@@ -11463,7 +11615,7 @@ var eventBanle = {
             // xử lý nếu đơn đã có mà xóa khách thay đổi thì update db
             let checkOrder = $(".action-inv li.active").data("id");
             if ($('#item-mon').length > 0 && typeof checkOrder != "undefined") {
-               // await eventBanle.removeCustomer(checkOrder);
+                // await eventBanle.removeCustomer(checkOrder);
                 await eventBanle.updateCustomerOrderOffline(1);
             }
             $(this).parents(".box-data-customer").find("input").removeAttr("data-id");
@@ -11556,7 +11708,7 @@ var eventBanle = {
         });
 
         $('.input.icheckpayment').on('ifUnchecked', function (event) {
-         
+
         });
     },// action xuất hDDT
     saveUpdateDataPaymentMethod: function () {
@@ -11598,7 +11750,7 @@ var eventBanle = {
                     getdata.VATMTT = VATMTT;
                     if (VATMTT) {
                         getdata.VATRate = parseInt($("#Vatrate").val());
-                        getdata.VATAmount = parseFloat($(".VATAmount").val().replaceAll(",",""));
+                        getdata.VATAmount = parseFloat($(".VATAmount").val().replaceAll(",", ""));
                     } else {
                         getdata.VATRate = NOVATRate;//
                         getdata.VATAmount = 0;
@@ -11620,12 +11772,12 @@ var eventBanle = {
         let loadOrder = JSON.parse(getJsondata);
         let html = "";
         if (typeof loadOrder != "undefined" && loadOrder != null && loadOrder.length > 0) {
-          
+
             loadOrder.map(function (ele, ind) {
 
                 html += `<li data-id="` + ele.Id + `" class="item-order">
                             <i class="fa fa-exchange"></i>
-                            <span>Hóa đơn `+ (ind+1) + `</span>
+                            <span>Hóa đơn `+ (ind + 1) + `</span>
                             <i class="fas fa-times"></i>
                         </li>`;
             });
@@ -11637,7 +11789,7 @@ var eventBanle = {
                     </li>`;
         }
         $(".action-inv").find("li.add-tab").before(html);
-        
+
         eventBanle.loadEventRemoveTaborderOffline();
 
     },//mới đầu load các đơn ra
@@ -11670,7 +11822,7 @@ var eventBanle = {
             let datas = JSON.parse(getloca);
             if (datas.length > 0) {
                 var foundIndex = datas.findIndex(x => x.Id == getidhoadon);
-                if (foundIndex!=-1) {
+                if (foundIndex != -1) {
                     datas.splice(foundIndex, 1);
                     localStorage.setItem("ProductsArrays", JSON.stringify(datas));
                 }
@@ -11683,13 +11835,18 @@ var eventBanle = {
         } else {
             localStorage.setItem("ProductsArrays", "[]");
         }
-    }, 
+    },
     loadEventRemoveTaborderOffline: function (sel) {
         $(".action-inv").find("li").not(".add-tab").find("i:last-child").unbind();
         $(".action-inv").find("li").not(".add-tab").find("i:last-child").click(async function () {
             let idOrder = $(this).parent('li.item-order').data("id");
             if (idOrder != "0") {
                 eventBanle.removeOderOffline($(this), idOrder);
+            } else {
+                if ($(".action-inv li:not(.add-tab)").not($(this).parent(".item-order")).length > 0) {
+                    $(this).parent(".item-order").remove();
+                    $(".action-inv li:first-child").trigger("click");
+                }
             }
         });
     },
@@ -11745,12 +11902,12 @@ var eventBanle = {
                     if (ele.length == 0) {
                         ele = $(".action-inv li.item-order:nth-child(1)");// k thì phải active cái đầu
                     }
-                   // eventBanle.loadDatatable(ele);
+                    // eventBanle.loadDatatable(ele);
                     eventBanle.loadDatatableOffline(ele);
                 } else {
                     // let ele = $("#lst-roomandtable li:nth-child(1)").trigger("click");// k thì phải active cái đầu
                     let ele = $(".action-inv li.item-order:nth-child(1)");// k thì phải active cái đầu
-                   // eventBanle.loadDatatable(ele);
+                    // eventBanle.loadDatatable(ele);
                     eventBanle.loadDatatableOffline(ele);
                 }
                 // Retrieve
@@ -11824,7 +11981,7 @@ var eventBanle = {
             $(this).parent(".input-group").removeClass("focus-input");
         });
     },
-     loadDatatableOffline: async function (sel) {
+    loadDatatableOffline: async function (sel) {
         sel.addClass("active");
         id = $(sel).data("id");
         if (id != 0) {
@@ -11862,7 +12019,7 @@ var eventBanle = {
         }
         let getJsondata = localStorage.getItem("ProductsArrays");
         let loadOrder = JSON.parse(getJsondata);
-       
+
 
         if (typeof loadOrder != "undefined" && loadOrder != null && loadOrder.length > 0) {
             let getindex = loadOrder.findIndex(x => x.Id == idinvoice);
@@ -11871,7 +12028,7 @@ var eventBanle = {
             eventBanle.loadAmoutAndQuantity(0, 0)
             return false;
         }
-       
+
     },
     loadHtmloffline: async function (json) {
         let product = json.Items;
@@ -11880,26 +12037,26 @@ var eventBanle = {
             let htmldiscount = "";
             let pricenew = ele.PriceNew;
             if (ele.Typediscount != -1 && ele.DiscountAmount > 0) {
-                if (ele.Typediscount==1) {
-                    htmldiscount = "<span class='discountAmountItemPro'>" + (ele.Discount * -1) +"%</span>"
+                if (ele.Typediscount == 1) {
+                    htmldiscount = "<span class='discountAmountItemPro'>" + (ele.Discount * -1) + "%</span>"
                 } else {
                     htmldiscount = "<span class='discountAmountItemPro'>" + (ele.DiscountAmount * -1).format0VND(0, 3) + "</span>"
                 }
             }
             html += `<li data-code="` + ele.Code + `" data-idpro ="` + ele.Id + `" data-sl=` + ele.Quantity + `>
                             <div  class="btn-remove" data-idquan="1"><i data-idquan="1" class="fas fa-trash-alt"></i></div>
-                            <div class="name" data-name="`+ ele.Name + `"><b>` + (index+1)+`.` + ele.Name + `</b></div>
-                            <div class="item_action"><i class="fas fa-minus"></i><input data-quantity="`+ ele.Quantity + `" class="quantity number3" value="` + ele.Quantity +`"><i class="fas fa-plus"></i></div>
-                            <div class="ele-price"><input type="text" class="form-control number3 price"  data-price="`+ ele.Price + `"  data-pricenew="`+ ele.PriceNew + `"  data-retailPrice="` + ele.RetailPrice + `" data-typediscount="` + ele.Typediscount + `" data-discountamount="` + ele.DiscountAmount + `" data-discount="` + ele.Discount + `" readonly value="` + (pricenew) + `" />` + htmldiscount +`</div>
-                            <div class="total"><b class="number3" data-total="`+ (ele.Amount) + `">` + ele.Amount.format0VND(0,3) + `</b></div>
+                            <div class="name" data-name="`+ ele.Name + `"><b>` + (index + 1) + `.` + ele.Name + `</b></div>
+                            <div class="item_action"><i class="fas fa-minus"></i><input data-quantity="`+ ele.Quantity + `" class="quantity number3" value="` + ele.Quantity + `"><i class="fas fa-plus"></i></div>
+                            <div class="ele-price"><input type="text" class="form-control number3 price"  data-price="`+ ele.Price + `"  data-pricenew="` + ele.PriceNew + `"  data-retailPrice="` + ele.RetailPrice + `" data-typediscount="` + ele.Typediscount + `" data-discountamount="` + ele.DiscountAmount + `" data-discount="` + ele.Discount + `" readonly value="` + (pricenew) + `" />` + htmldiscount + `</div>
+                            <div class="total"><b class="number3" data-total="`+ (ele.Amount) + `">` + ele.Amount.format0VND(0, 3) + `</b></div>
                         </li>`;
-        
+
         });
         html += `</ul>`;
         $("#container-tableOder").html(html);
-        $(".fullamount").text(json.Total.format0VND(3,3));
-        $(".discountamount").val(json.DiscountAmount.format0VND(3,3));
-        
+        $(".fullamount").text(json.Total.format0VND(3, 3));
+        $(".discountamount").val(json.DiscountAmount.format0VND(3, 3));
+
         $(".discountamount").data("discount", json.Discount);
         if (json.Discount > 0) {
             $(".discountamount").data("value", json.Discount)
@@ -11908,22 +12065,22 @@ var eventBanle = {
             $(".discountamount").data("value", json.DiscountAmount)
             $(".discountamount").data("type", TypeSelectDiscount.Cash);
         }
-        
+
 
         //$("ul.action-inv li.active").data("discountamount", json.DiscountAmount)
-      //------
+        //------
         eventBanle.loadeventchangeclickprice();//kích vào giá
         evetnFormatTextnumber3();
         eventBanle.loadEventClickIconAddAndMinusoffline();
-       
+
         eventBanle.eventChangeCheckboxHDDTVAT();
         eventBanle.loadShowOrHideCheckVATMTT(json.VATMTT);//sau cái sự kiện
-       
+
         $('#Vatrate option').each(function (i, e) {
             e.selected = false
         });
         $("#Vatrate option[value='" + json.VATRate + "']").prop("selected", "selected");
-  
+
         //---------thuế suất
         if (json.VATMTT) {
             $(".VATAmount").data("VATAmount", json.VATAmount);//đưa xuống vì phải load html vatamoutn ra mới có cái để đưa vào
@@ -11937,7 +12094,7 @@ var eventBanle = {
         var getippayment = parseInt($('input[name=idPaymentMethod]:checked', '.paymentMethod').data("id"));
         if (getippayment != json.IdPaymentMethod) {
             $('input[name=idPaymentMethod]:checked', '.paymentMethod').iCheck("uncheck");
-            $('input[data-id=' + json.IdPaymentMethod +']', '.paymentMethod').iCheck("check")
+            $('input[data-id=' + json.IdPaymentMethod + ']', '.paymentMethod').iCheck("check")
         }
         //---------
         _classPosEvent = {
@@ -11947,7 +12104,7 @@ var eventBanle = {
         loadeventPos.loadEventkeyCode();
         eventBanle.loadCustomerByOrderOfline(json.Customer);//load khách hàng
         eventBanle.loadSugetionPayment();
-        
+
     },
     loadShowOrHideCheckVATMTT: function (isShow = true) {
         if (!isShow) {
@@ -12057,7 +12214,7 @@ var eventBanle = {
             JSeach.parents(".box-data-customer").data("id", 0);
         }
     },
-    
+
     loadEventAddCustomer: function () {
         $(".btn-addCus").click(function () {
             eventCreate.addOrEditCustomer('/Selling/Customer/Create?IsPos=true');
@@ -12098,15 +12255,15 @@ var loadeventPos = {
 
                     res.jsonPro.forEach(function (item, index) {
                         console.log(item.img);
-                        htmlimg = '<img src="../'+ item.img+'">';
-                        
+                        htmlimg = '<img src="../' + item.img + '">';
+
                         if (item.img == "" || item.img == null) {
                             //htmlimg = '<i class="fas fa-utensils"></i>'; 
                             htmlimg = '<img class="ristorante" src="../images/ristorante_old.png">';
                         }
                         htmlcate += ` <li data-id="` + item.id + `" data-idcategory="` + item.idCategory + `">
                                             <div class="head_pro">
-                                                    `+htmlimg+`
+                                                    `+ htmlimg + `
                                                 </div>
                                              <div class="footer_pro">
                                                  <span>`+ item.name + `</span>
@@ -13853,7 +14010,7 @@ var loadeventPos = {
                                                         </div>
                                                     </div>
                                                 </div>`;
-                                    $("#discountPayment").after(html); 
+                                    $("#discountPayment").after(html);
                                     evetnFormatnumber3();
                                     loadeventPos.showPopupSelectDiscount();
                                 });
@@ -16291,7 +16448,7 @@ function templateSelect2(data) {
     return html;
 }
 function loaddataSelect2Tempalte(URL, id, idselectd, placeholder = "", iddata = "", iscreateCategory = false) {
-    
+
     IsPos = false;
     if (URL.includes("IsPos")) {
         IsPos = true;
@@ -16592,6 +16749,9 @@ function printDiv(html) {
         popHt: 600, tagPrint: "#printDocx",
         popClose: false
     });
+    window.onafterprint = function () {
+        console.log("Printing completed...");
+    }
     //}
 
     //Be.contentWindow && (Be.contentWindow.focus(),
@@ -16636,7 +16796,7 @@ function evetnFormatTextnumber3() {
 } function eventUnFormatTextnumber3() {
     $('.number3').each(function () {
         if ($(this).is('input:text')) {
-            let idtex = $(this).val().replaceAll(",", "")||0;
+            let idtex = $(this).val().replaceAll(",", "") || 0;
             $(this).val(parseFloat(idtex))
         }
     });
@@ -16662,7 +16822,7 @@ function evetnFormatnumber3(updatevalue = true) {
         })
         .focusout(function () {
             fnFocusOut(this);
-    });
+        });
 }
 function loadFormatnumber(sel = "") {
     if (sel != "") {

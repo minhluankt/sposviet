@@ -4,7 +4,7 @@
 
 namespace Infrastructure.Infrastructure.Migrations
 {
-    public partial class OrderTableModel : Migration
+    public partial class OrderTableModelass : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

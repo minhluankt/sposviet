@@ -19,6 +19,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<bool>> SplitOrderAsync(int comid, Guid idOrderOld, List<Guid> lstIdoder, EnumTypeSpitOrder Type, string CasherName, string IdCashername);
         Task<Result<bool>> SplitOrderSeparateAsync(int comid, Guid idOrderOld, List<DetailtSpitModel> lstitem, bool IsCreate, bool IsBringBack, Guid? IdOrderNew, Guid? IdTable, string CasherName, string IdCasher);
         Task<Result<PublishInvoiceResponse>> CheckOutOrderAsync(int comid, int Idpayment, Guid idOrder, decimal discountPayment,  decimal discount, decimal? AmountCusPayment,decimal Amount,decimal VATAmount, string Cashername, string IdCasher, bool vat, int? Vatrate, int? ManagerPatternEInvoices, EnumTypeProduct enumType = EnumTypeProduct.AMTHUC);
+        Task<Result<PublishInvoiceResponse>> CheckOutOrderInvoiceAsync(OrderInvoicePaymentSaleRetailModel model, EnumTypeProduct enumType = EnumTypeProduct.BAN_LE);
         Task UpdateCustomerOrder(int comid, Guid idOrder, Customer customer, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC);
         Task<Result<OrderTable>> UpdateItemOrderAsync(int? IdCustomer, string CusCode, int comid, Guid idOrder, Guid idItem, Guid? idTable, bool IsBringBack, decimal Quantity, string Cashername, string IdCasher, string note = "", bool IsRemoverow = false, bool IsCancelItem = false);
         Task<Result<OrderTable>> UpdateAllQuantityOrderTable(int comid, Guid idOrder, Guid idOrderItem, decimal quantity);

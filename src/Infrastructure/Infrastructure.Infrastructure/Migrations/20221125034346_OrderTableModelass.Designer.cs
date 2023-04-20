@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221125034346_OrderTableModel")]
-    partial class OrderTableModel
+    [Migration("20221125034346_OrderTableModelass")]
+    partial class OrderTableModelass
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

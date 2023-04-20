@@ -11,6 +11,7 @@ using Infrastructure.Infrastructure.Migrations;
 using Infrastructure.Infrastructure.Migrations.Identity;
 using Joker.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using NStandard;
 using Spire.Doc;
@@ -1201,6 +1202,241 @@ namespace Infrastructure.Infrastructure.Repositories
             await _unitOfWork.SaveChangesAsync();
             get.RoomAndTable = roomAndTable;
             return await Result<OrderTable>.SuccessAsync(get);
+        }
+        private  void GenagerInvoiceitem(ICollection<InvoiceItem> data, OrderInvoicePaymentSaleRetailModel model)
+        {
+            foreach (var x in model.Items)
+            {
+                var iteminvoice = new InvoiceItem()
+                {
+                    IdProduct = x.Id,
+                    Code = x.Code,
+                    Name = x.Code,
+                    Quantity = x.Quantity,
+                    Price = x.PriceNew,
+                    Unit = x.Unit,
+                    EntryPrice = x.RetailPrice,
+                    Total = x.Amount,
+                    Discount = x.Discount,
+                    DiscountAmount = x.DiscountAmount,
+                };
+                if (iteminvoice.VATRate.HasValue && iteminvoice.VATRate > (int)NOVAT.NOVAT)
+                {
+                    iteminvoice.VATRate = model.VATRate;
+                    iteminvoice.VATAmount = iteminvoice.Total * (Convert.ToDecimal(model.VATRate) / 100);
+                    iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
+                }
+                data.Add(iteminvoice);
+            }
+        }
+        public async Task<Result<PublishInvoiceResponse>> CheckOutOrderInvoiceAsync(OrderInvoicePaymentSaleRetailModel model, EnumTypeProduct enumType = EnumTypeProduct.BAN_LE)
+        {
+            _unitOfWork.CreateTransaction();
+            try
+            {
+                //------- validate xuất hóa đơn
+                if (model.VATMTT)
+                {
+                    if (model.IdPattern==null || model.IdPattern==0)
+                    {
+                        return await Result<PublishInvoiceResponse>.FailAsync($"Vui lòng chọn mẫu số ký hiệu để xuất hóa đơn");
+                    }
+                }
+                //---------check sản phẩm
+                var getlstproduct = await _productrepository.GetProductbyListId(model.Items.Select(x=>x.Id).ToArray(), model.ComId);//
+                var getlistnote = model.Items.Select(x => x.Id).ToArray().Except(getlstproduct.Select(x => x.Id).ToArray());// list mới với các id k có trong list query
+                if (getlistnote.Count()>0)
+                {
+                    var getsp = model.Items.Where(x => getlistnote.ToArray().Contains(x.Id)).Select(x => x.Name);
+                    return await Result<PublishInvoiceResponse>.FailAsync($"Không tìm thấy các sản phẩm {string.Join(",", getsp)}");
+                }
+                //----------duyệt sản phẩm update list
+                foreach (var item in getlstproduct)
+                {
+                    model.Items.ForEach(x =>
+                    {
+                        if (x.Id == item.Id)
+                        {
+                            x.Code = item.Code;
+                            x.Name = item.Name;
+                            x.Unit = item.Unit;
+                            x.RetailPrice = item.RetailPrice;
+                            x.Price = item.Price;
+                        }
+                    });
+                }
+
+                var inv = new Invoice();
+                inv.ArrivalDate = DateTime.Now;
+                var getInv = await _managerInvNorepository.UpdateInvNo(model.ComId, ENumTypeManagerInv.Invoice, false);
+                inv.InvoiceCode = $"HD-{getInv.ToString("00000000")}";
+                inv.ComId = model.ComId;
+                inv.TypeProduct = model.EnumTypeProduct;
+                inv.PurchaseDate = inv.ArrivalDate;
+                inv.IdPaymentMethod = model.IdPaymentMethod;
+                inv.IdOrderTable = null;
+                inv.CasherName = model.Cashername;
+                inv.IdCasher = model.IdCasher;
+                this.GenagerInvoiceitem(inv.InvoiceItems,model);
+
+                inv.Status = EnumStatusInvoice.DA_THANH_TOAN;
+                inv.DiscountAmount = model.DiscountAmount;
+                inv.Discount = (float)model.Discount;
+                inv.Total = model.Total;// tong tien chưa giam, gán amount bởi vì là giá trị gốc của hóa đơn ban đầu
+                inv.VATRate = model.VATRate;//
+                inv.VATAmount = model.VATAmount;//
+                inv.Amonut = model.Amount;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
+                inv.AmountCusPayment = model.CusSendAmount;// tieefn khasch đưa
+                inv.AmountChangeCus = model.Amoutchange;// tiền thừa khách
+                Customer customer = null;
+                if (model.Customer != null)
+                {
+                    if (model.Customer.Id>0&& !string.IsNullOrEmpty(model.Customer.Code))
+                    {
+                        customer = await _customerRepository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == model.Customer.Id && x.Comid == model.ComId);
+                        if (customer == null)
+                        {
+                            return await Result<PublishInvoiceResponse>.FailAsync($"Không tìm thấy khách hàng vui lòng chọn lại khách hàng");
+                        }
+                        inv.Buyer = customer.Buyer?.Trim();
+                        inv.CusName = customer.Name?.Trim();
+                        inv.Taxcode = customer.Taxcode?.Trim();
+                        inv.CusCode = customer.Code?.Trim();
+                        inv.PhoneNumber = customer.PhoneNumber?.Trim();
+                        inv.CCCD = customer.CCCD?.Trim();
+                        inv.Address = customer.Address?.Trim();
+                        inv.Email = customer.Email?.Trim();
+                        inv.CusBankNo = customer.CusBankNo?.Trim();
+                        inv.CusBankName = customer.CusBankName?.Trim();
+                        inv.IdCustomer = customer.Id;
+                    }
+                    else
+                    {
+                        inv.IsRetailCustomer = true;
+                        inv.Buyer = "Khách lẻ";
+                    }
+                }
+                else
+                {
+                    inv.IsRetailCustomer = true;
+                    inv.Buyer = "Khách lẻ";
+                }
+                inv.TableNameArea = $"Mang về";
+                inv.IsBringBack = true;
+                //add bảng
+                await _InvoiceRepository.AddAsync(inv);
+                await _unitOfWork.SaveChangesAsync();
+                inv.Customer = customer;
+
+                //giwof tạo phiếu thu nhé
+                RevenueExpenditure revenueExpenditure = new RevenueExpenditure()
+                {
+                    ComId = inv.ComId,
+                    Amount = inv.Amonut,
+                    IdInvoice = inv.Id,
+                    ObjectRevenueExpenditure = EnumTypeObjectRevenueExpenditure.KHACHHANG,
+                    IdCustomer = inv.IdCustomer,
+                    Type = EnumTypeRevenueExpenditure.THU,
+                    Typecategory = EnumTypeCategoryThuChi.TIENHANG,
+                    Title = $"Thu {LibraryCommon.GetDisplayNameEnum(EnumTypeCategoryThuChi.TIENHANG).ToLower()}",
+                    Date = inv.CreatedOn,
+                    Code = $"PT{inv.InvoiceCode}",
+                    CustomerName = inv.Buyer,
+                    Status = EnumStatusRevenueExpenditure.HOANTHANH,
+                    IdPayment = inv.IdPaymentMethod,
+                };
+                await _revenueExpenditureRepository.AddAsync(revenueExpenditure);
+                //
+                // his tory đơn
+                var his = new HistoryInvoice();
+                his.Carsher = model.Cashername;
+                his.InvoiceCode = inv.InvoiceCode;
+                his.IdInvoice = inv.Id;
+                his.Name = $"Thanh toán đơn";
+                await _historyInvoiceRepository.AddAsync(his);
+
+                //-----------------------------------//
+                // update lại sản phẩm tồn kho
+                var list = new List<KeyValuePair<string, decimal>>();
+                foreach (var item in inv.InvoiceItems)
+                {
+                    if (item.TypeProductCategory != EnumTypeProductCategory.SERVICE && item.TypeProductCategory != EnumTypeProductCategory.COMBO)//lấy ra mấy csai k phải là combo và dịch vụ
+                    {
+                        list.Add(new KeyValuePair<string, decimal>(item.Code, item.Quantity * -1));
+                    }
+                    if (item.TypeProductCategory == EnumTypeProductCategory.COMBO)//nếu là combo nó sẽ có các thành phần cần lôi ra
+                    {
+                        //nếu là combo thì phải tìm ra các thành phần để update vào tồn kho
+                        var getlistprobycombo = _comboproductrepository.Entities.AsNoTracking().Where(x => x.IdProduct == item.IdProduct).ToList();
+                        if (getlistprobycombo.Count() > 0)//các sản phẩm trong combo
+                        {
+                            var getlstid = getlistprobycombo.Select(x => x.IdPro).ToArray();
+                            var listproductcombo = await _productrepository.GetProductbyListId(getlstid, inv.ComId);//lấy các sản phẩm
+                            foreach (var combo in getlistprobycombo)
+                            {
+                                var getprobycombo = listproductcombo.SingleOrDefault(x => x.Id == combo.IdPro);//lấy sản phẩm từu lít trên
+                                // k quarn lý tồn kho,k phải dịch vụ k phải combo mới update
+                                if (!getprobycombo.IsInventory && item.TypeProductCategory != EnumTypeProductCategory.SERVICE && item.TypeProductCategory != EnumTypeProductCategory.COMBO)
+                                {
+                                    var quantity = (combo.Quantity * -1) * item.Quantity;// lấy số lượng của sản phẩm trong combo nhân với số lượng khách đặt combo
+                                    list.Add(new KeyValuePair<string, decimal>(getprobycombo.Code, quantity));
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                await _productrepository.UpdateQuantity(list, model.ComId);
+                //end
+                //--------------------------------//
+                await _unitOfWork.SaveChangesAsync();
+                _unitOfWork.Commit();
+                if (inv.IdPaymentMethod>0)
+                {
+                    var getpayment = await _paymentMethodRepository.GetAll(inv.ComId).Where(x => x.Id == inv.IdPaymentMethod).AsNoTracking().SingleOrDefaultAsync();
+                    inv.PaymentMethod = getpayment;
+                }
+              
+                string token = string.Empty;
+                PublishInvoiceResponse publishInvoiceResponse = new PublishInvoiceResponse();
+
+                if (model.VATMTT)
+                {
+                    try
+                    {
+                        PublishInvoiceModel modelein = new PublishInvoiceModel();
+                        modelein.ComId = inv.ComId;
+                        modelein.IdManagerPatternEInvoice = model.IdPattern.Value;
+                        modelein.isVAT = model.VATMTT;
+                        modelein.VATRate = model.VATRate.Value;
+                        modelein.VATAmount = model.VATAmount;
+                        modelein.Amount = model.Amount;
+                        modelein.TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT;
+                        modelein.CasherName = model.Cashername;
+                        modelein.IdCarsher = model.IdCasher;
+                        //modelein.lstid = ids.ToArray();
+                        var publishinv = await _InvoiceRepository.PublishInvoice(inv, modelein, inv.ComId, model.IdCasher, model.Cashername);
+                        if (publishinv.Succeeded)
+                        {
+                            publishInvoiceResponse = publishinv.Data;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _log.LogError("Lỗi phát hành hóa đơn");
+                        _log.LogError(e.ToString());
+                    }
+                }
+                publishInvoiceResponse.Invoice = inv;
+                return await Result<PublishInvoiceResponse>.SuccessAsync(publishInvoiceResponse);
+            }
+            catch (Exception e)
+            {
+                _log.LogError("Lỗi phát hành hóa đơn bán hàng");
+                _log.LogError(e.ToString());
+                return await Result<PublishInvoiceResponse>.FailAsync(e.Message);
+            }
         }
     }
 }
