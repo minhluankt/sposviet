@@ -101,7 +101,7 @@
                             <a style='margin-right:16px' asp-area="Identity" asp-page="/Profile" asp-route-userId="@user.Id" class="dropdown-item">
                                 <i class="fas fa-user mr-2"></i> @localizer["Profile"]
                             </a>
-                            <a style='margin-right:16px' onclick="jQueryModalGet('/Selling/users/Edit?id=@user.Id','Chỉnh sửa')" class="dropdown-item">
+                            <a style='margin-right:16px' onclick="eventCreate.addOrEditUser('/Selling/users/Edit?id=@user.Id')" class="dropdown-item">
                                 <i class="fas fa-edit mr-2"></i> @localizer["Edit"]
                             </a>
                             @if (user.UserName.ToLower().Trim() != "superadmin" && User.IsInRole("SuperAdmin") && user.UserName.ToLower().Trim() != User.Identity.Name)
