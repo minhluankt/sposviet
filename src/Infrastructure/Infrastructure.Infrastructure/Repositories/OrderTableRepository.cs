@@ -1275,7 +1275,9 @@ namespace Infrastructure.Infrastructure.Repositories
                 inv.PurchaseDate = inv.ArrivalDate;
                 inv.IdPaymentMethod = model.IdPaymentMethod;
                 inv.IdOrderTable = null;
+                inv.StaffName = model.Cashername;
                 inv.CasherName = model.Cashername;
+                inv.IdStaff = model.IdCasher;
                 inv.IdCasher = model.IdCasher;
                 this.GenagerInvoiceitem(inv.InvoiceItems,model);
 

@@ -7505,6 +7505,7 @@ var posStaff = {
                         posStaff.loadAmoutAndQuantity(res.data.amount, res.data.quantity);
                         posStaff.loadeventadditemorder();
                         posStaff.eventCheckBtnNotifyOrder();
+                        posStaff.eventCheckActivetable();
                         // loadeventPos.loadEventClickIconAddAndMinus();
                         // loadeventPos.loadAddOrRemoveCurentClassTable(true);// xem có sản phẩm thì add class curen table
                         // console.log(dataObject.IdOrderItem);
@@ -7542,6 +7543,20 @@ var posStaff = {
                 console.log(err)
             }
         });
+    },
+    eventCheckActivetable: function () {
+        let idatable = $(".topbuton button:first").data("idtable");
+        if (typeof idatable != "undefined") {
+            if ($(".bodybill table .itemorderbody").find("tr").not(".tr-nodata").length>0) {
+                $("#lst-roomandtable li").map(function (ind, ele) {
+                    // let idData = $(ele).;
+                    if ($(ele).data("id") == idatable) {
+                        $(ele).addClass("active");
+                        //$(ele).find(".ribbon-two").remove();
+                    }
+                });
+            }
+        }
     },
     NotifyChitken: function () {
         let idOrder = $("#id-order").data("id");
@@ -8039,7 +8054,7 @@ var posStaff = {
                                             </tr>
                                         </thead>
                                         <tbody class="itemorderbody">
-                                            <tr>
+                                            <tr class="tr-nodata">
                                                 <td colspan="2">
                                                     <div class="no-order">
                                                         <img src="../images/ristorante_old.png" />
