@@ -27,6 +27,7 @@ var TypeEventWebSocket = {
     SignEInvoice: 0,//ký hóa đơn
     PrintEInvoice: 1,
     PrintInvoice: 2,
+    PrintBep: 3//thông báo bếp
 }
 var EnumTypeValue = {
     BOOL: "BOOL",
@@ -7575,8 +7576,9 @@ var posStaff = {
             },
             success: function (res) {
                 if (res.isValid) {
-
+                    console.log("Thông báo ok");
                     posStaff.eventUpdateQuantityItemMonOrder();
+                    connection.invoke('Printbaobep', res.html,"IN");
                 } else {
 
                     $(".btn-notif").removeAttr("disabled");
@@ -14164,6 +14166,7 @@ var loadeventPos = {
             success: function (res) {
                 if (res.isValid) {
                     loadeventPos.eventUpdateQuantityItemMonOrder();
+                    loadeventPos.eventinbaobep(res.html);
                 } else {
                     $(".btn-notif").removeAttr("disabled");
                 }
@@ -14172,6 +14175,21 @@ var loadeventPos = {
                 console.log(err)
             }
         });
+    },
+    eventinbaobep: function (html) {
+        dataObject = {};
+                    dataObject.type = TypeEventWebSocket.PrintBep;
+        dataObject.html = html;
+                   // loadingStart();
+                    sposvietplugin.sendConnectSocket(listport[0]).then(function (data) {
+                        console.log(data);
+                        sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
+                            //loadingStop();
+                            if (data == "-1") {
+                                toastrcus.error("Có lỗi xảy ra");
+                            }
+                        });
+                    });
     },
     eventShowHistory: function () {
         $(".btn-history").click(async function () {
@@ -16926,6 +16944,11 @@ function checkautido() {
             startbtn.click();
         }
     })
+}
+function testConnetWebSocket() {
+    sposvietplugin.sendConnectSocket(listport[0]).then(function (data) {
+        console.log(data);
+    });
 }
 function parseDecimal(equation, precision = 9) {
     //return Math.floor(equation * (10 ** precision)) / (10 ** precision);

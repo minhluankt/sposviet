@@ -31,6 +31,9 @@ namespace SposVietPluginKySo
         {
             //StartInWindow();//khởi động cùng window
 
+         
+            //PrintServer.PrintPageEventHandler();
+
            // PrintServer.Print("ok");
            // PrintServer.PrintHmtl();
             //SignalServer.Start();///khởi tạo web signal

@@ -301,10 +301,10 @@
     </script>
     <script type="text/javascript" src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 
- 
     <partial name="Admin/_Scripts" />
     <script src="~/js/custom/sposvietkyso.min.js?time=123"></script>
     <script>
+        testConnetWebSocket();
         document.onreadystatechange = function () {
             var state = document.readyState
             if (state == 'complete') {
@@ -395,6 +395,15 @@
 
                 }
 
+            }); 
+            connection.on('Printbaobep', function (data) {
+               // toastr.success(data)
+                if (data == "TEST"){
+
+                }else{
+                    loadeventPos.eventinbaobep(data);
+                }
+                
             });
             connection.on('addMessageCHITKENBYPOS', function (isValid) {
                 if (isValid) {
@@ -412,7 +421,7 @@
             // Transport fallback functionality is now built into start.
             connection.start()
                 .then(function () {
-
+                    connection.invoke('Printbaobep', "ok","TEST");
                     // console.log('connection started');
                     $(".btn-notif").click(function () {
                         loadeventPos.NotifyChitken();

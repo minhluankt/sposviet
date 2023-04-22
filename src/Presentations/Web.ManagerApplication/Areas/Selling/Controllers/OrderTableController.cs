@@ -540,7 +540,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             if (send.Succeeded)
             {
                 _notify.Success("Thông báo bếp thành công!");
-                return Json(new { isValid = true });
+                return Json(new { isValid = true , html = send.Data });
             }
             _notify.Error(GeneralMess.ConvertStatusToString(send.Message));
             return Json(new { isValid = false });

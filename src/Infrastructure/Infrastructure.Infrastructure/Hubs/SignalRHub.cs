@@ -93,6 +93,22 @@ namespace Infrastructure.Infrastructure.HubS
 
             // await Clients.All.SendAsync("broadcastMessage", name, message);
         }
+        public async Task Printbaobep(string data,string text= "IN")
+        {
+            var currentUser = Context.User.Identity.GetUserClaimLogin();
+            string _Group = $"{currentUser.ComId}_Printbaobep";
+            checkExitRoomChitchen(Context.ConnectionId, _Group);
+            //await Clients.OthersInGroup(_Group).SendAsync("Printbaobep", data);
+            if (text=="TEST")
+            {
+                await Clients.Groups(_Group).SendAsync("Printbaobep", text);
+            }
+            else
+            {
+                await Clients.Groups(_Group).SendAsync("Printbaobep", data);
+            }
+            // await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
+        }
         public async Task sendNotifyPos(EnumTypeSignalRHub STATUS, EnumTypeSignalRHub type, string note = "")
         {
             using (var scope = _serviceProvider.CreateScope())

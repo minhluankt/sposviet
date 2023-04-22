@@ -119,15 +119,18 @@ var sposvietplugin = {
                     if (parseInt(json.type) == TypeEventWebSocket.SignEInvoice) {
                         if (json.Data == "") {
                             toastrcus.error("Không ký số được dữ liệu hash");
-                            reject("-1");
+                            resolve("-1");
                         } 
                         resolve(json.Data);
                     }
                     else if (parseInt(json.type) == TypeEventWebSocket.PrintInvoice) {
-                        resolve("OK");
+                        resolve("In hóa đơn bán hàng (bill)");
+                    }
+                    else if (parseInt(json.type) == TypeEventWebSocket.PrintBep) {
+                        resolve("In bêp OK");
                     }
                     else if (parseInt(json.type) == TypeEventWebSocket.SendTestConnect) {
-                        resolve("OK");
+                        resolve("test");
                     }
                     
                 } else {

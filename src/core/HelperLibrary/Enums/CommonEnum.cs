@@ -245,7 +245,8 @@ public enum EnumTypePrintBarCode
     }
     public enum EnumTypeTemplate // loại sản phẩm
     {
-        INVOICEPOS = 1
+        INVOICEPOS = 1,
+        PRINT_BEP = 2//in bếp
     }
     public enum EnumTypeInvoice // loại sản phẩm
     {

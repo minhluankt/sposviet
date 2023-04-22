@@ -41,6 +41,8 @@ namespace Domain.ViewModel
         public string tienthuatrakhach { get; set; }
         public string thongtinthue { get; set; }
         public string thongtintracuuhoadon { get; set; }
+        public string tongsoluong { get; set; }
+        public string tenbanphong { get; set; }
 
         ////
         public string lienhehotline { get; set; }

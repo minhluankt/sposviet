@@ -1,6 +1,7 @@
 ﻿using Application.Enums;
 using AspNetCoreHero.Results;
 using Domain.Entities;
+using Domain.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Application.Interfaces.Repositories
     public interface INotifyChitkenRepository
     {
         Task UpdateNotifyAllByRoomTable(int Comid, OrderTable order, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC);// đổi bàn
-        Task<Result<string>> NotifyOrder(int Comid, Guid Idorder,string Cashername, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC);
+        Task<Result<List<NotifyOrderNewModel>>> NotifyOrder(int Comid, Guid Idorder,string Cashername, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC);
         Task NotifyOrderByItem(List<OrderTableItem> entity, OrderTable order, string CasherName, string IdCasher);// thông báo mới theo item chỉ định 
         Task UpdateNotifyKitchenSpitOrderGraftAsync(int ComId, List<Guid> lstOrderOld, OrderTable ordernew, List<OrderTableItem> itemlistbyordernew, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC);
         Task<Result<int>> UpdateNotifyAllStatusOrder(int Comid, Guid[] IdKitchen, EnumTypeNotifyKitchenOrder typeupdate = EnumTypeNotifyKitchenOrder.Orocessed, EnumStatusKitchenOrder Status = EnumStatusKitchenOrder.MOI, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC);

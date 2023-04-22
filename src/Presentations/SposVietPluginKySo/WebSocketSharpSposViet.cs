@@ -167,6 +167,22 @@ namespace SposVietPluginKySo
                                 Send(JsonConvert.SerializeObject(res));
                             }
 
+                            break; 
+                        case TypeEventWebSocket.PrintBep:
+                            if (string.IsNullOrEmpty(model.html))
+                            {
+                                res.isSuccess = false;
+                                res.Message = "Không tồn tại data";
+                                Send(JsonConvert.SerializeObject(res));
+                            }
+                            else
+                            {
+                                PrintServer.PrintPageBaoBep(model.html);
+                                res.isSuccess = true;
+                                res.Message = "In thành công";
+                                Send(JsonConvert.SerializeObject(res));
+                            }
+
                             break;
                         case TypeEventWebSocket.PrintInvoice:
                             if (string.IsNullOrEmpty(model.html))

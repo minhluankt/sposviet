@@ -3,6 +3,7 @@ using Application.Enums;
 using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
 using Domain.Entities;
+using Domain.ViewModel;
 using HelperLibrary;
 using Infrastructure.Infrastructure.Migrations;
 using Infrastructure.Infrastructure.Migrations.Identity;
@@ -38,15 +39,16 @@ namespace Infrastructure.Infrastructure.Repositories
             _ordertableRepository = ordertableRepository;
         }
 
-        public async Task<Result<string>> NotifyOrder(int Comid, Guid Idorder,string Cashername, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC)
+        public async Task<Result<List<NotifyOrderNewModel>>> NotifyOrder(int Comid, Guid Idorder,string Cashername, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC)
         {
+            List<NotifyOrderNewModel> notify = new List<NotifyOrderNewModel>();
             await _unitOfWork.CreateTransactionAsync();
             try
             {
                 var getorder = await _ordertableRepository.Entities.Include(x => x.RoomAndTable).Include(x => x.OrderTableItems).AsNoTracking().Where(x => x.ComId == Comid && x.IdGuid == Idorder && x.Status == EnumStatusOrderTable.DANG_DAT).SingleOrDefaultAsync();
                 if (getorder == null)
                 {
-                    return Result<string>.Fail(HeperConstantss.ERR012);
+                    return Result<List<NotifyOrderNewModel>>.Fail(HeperConstantss.ERR012);
                 }
                 else
                 {
@@ -58,6 +60,18 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         if (item.Quantity > item.QuantityNotifyKitchen)
                         {
+                            //-----------adđ vào để in báo bếp
+                            notify.Add(new NotifyOrderNewModel()
+                            {
+                                Code= item.Code,
+                                Name = item.Name,
+                                RoomTableName = getorder.IsBringBack ? "Mang về": getorder.RoomAndTable?.Name,
+                                Quantity= item.Quantity - item.QuantityNotifyKitchen,
+                                Price= item.Price,//giá bán
+                                //Note= item.Note,//giá bán
+                            });
+                            //-----------
+
                             var his = new HistoryOrder()
                             {
                                 IdOrderTable = getorder.Id,
@@ -89,7 +103,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     await AddNotify(getorder.OrderTableItems.ToList(), getorder);
                     await _unitOfWork.SaveChangesAsync();
                     await _unitOfWork.CommitAsync();
-                    return Result<string>.Success();
+                    return Result<List<NotifyOrderNewModel>>.Success(notify);
                 }
 
                 else
@@ -123,15 +137,15 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         await _unitOfWork.SaveChangesAsync();
                         await _unitOfWork.CommitAsync();
-                        return Result<string>.Success();
+                        return Result<List<NotifyOrderNewModel>>.Success(notify);
                     }
-                    return Result<string>.Fail(HeperConstantss.ERR046);
+                    return Result<List<NotifyOrderNewModel>>.Fail(HeperConstantss.ERR046);
                 }
             }
             catch (Exception e)
             {
                 _unitOfWork.Rollback();
-                return Result<string>.Fail(e.Message);
+                return Result<List<NotifyOrderNewModel>>.Fail(e.Message);
             }
         }
         private async Task AddNotify(List<OrderTableItem> OrderTableItems, OrderTable getorder)

@@ -530,9 +530,37 @@ namespace HelperLibrary
                 string thongtinthue = string.Empty;
                 string kyhieuhoadon = string.Empty;
                 string sohoadon = string.Empty;
+                string tongsoluong = string.Empty;
+                string tenbanphong = string.Empty;
 
                 string lienhehotline = string.Empty;
-                if (enumType == EnumTypeTemplate.INVOICEPOS)
+                if (enumType == EnumTypeTemplate.PRINT_BEP)
+                {
+                    foreach (PropertyInfo propertyInfo in model.GetType().GetProperties())
+                    {
+                        string value = model.GetType().GetProperty(propertyInfo.Name).GetValue(model)?.ToString();
+                        if (value == null)
+                        {
+                            value = string.Empty;
+                        }
+                        switch (propertyInfo.Name)
+                        {
+                            case "comname":
+                                comname = value;
+                                break; 
+                            case "ngaythangnamxuat":
+                                ngaythangnamxuat = value;
+                                break;
+                            case "tongsoluong":
+                                tongsoluong = value;
+                                break; 
+                            case "tenbanphong":
+                                tenbanphong = value;
+                                break;
+                        }
+                    }
+                }
+                else if (enumType == EnumTypeTemplate.INVOICEPOS)
                 {
                     foreach (PropertyInfo propertyInfo in model.GetType().GetProperties())
                     {
@@ -633,7 +661,9 @@ namespace HelperLibrary
                     { "{thongtintracuuhoadon}",thongtintracuuhoadon },
                     { "{thongtinthue}",thongtinthue },
                     { "{sohoadon}",sohoadon },
-                    { "{kyhieuhoadon}",kyhieuhoadon }
+                    { "{kyhieuhoadon}",kyhieuhoadon },
+                    { "{tongsoluong}",tongsoluong },
+                    { "{tenbanphong}",tenbanphong }
                 };
                 // builder.HtmlBody = BuildTemplate(template, arrtoken);
                 return BuildTemplate(template, arrtoken);
