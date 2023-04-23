@@ -332,6 +332,10 @@ namespace Application.Hepers
     {
         public static ClaimsModel GetUserClaimLogin(this IIdentity identity)
         {
+            if (identity==null)
+            {
+                return null;
+            }
             ClaimsIdentity claimsIdentity = identity as ClaimsIdentity;
             Claim FULLNAME = claimsIdentity?.FindFirst(ClaimUser.FULLNAME);
             Claim COMID = claimsIdentity?.FindFirst(ClaimUser.COMID);

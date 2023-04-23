@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Configuration;
+using System.Diagnostics;
 using System.Security.Policy;
 using System.Windows.Forms;
 using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Hubs;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Owin.Cors;
 using Microsoft.Owin.Hosting;
 using Microsoft.VisualBasic.ApplicationServices;
@@ -13,36 +17,101 @@ namespace SposVietPluginKySo
 {
     public class SignalServer
     {//https://stackoverflow.com/questions/64551450/how-to-make-a-signalr-chat-in-winforms
-        public static void Start()
+     //https://stackoverflow.com/questions/11140164/signalr-console-app-example
+     //public static void Start()
+     //{
+     //    var url = "https://localhost:8323/";
+     //    //using (WebApp.Start<Startup>(new StartOptions(url: url)
+     //    //{
+     //    //    Port = 8323,
+     //    //    ServerFactory = "Microsoft.Owin.Host.HttpListener"
+     //    //})) {
+     //    //    var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+     //    //    context.Clients.All.addMessage("Server", "Hello from server");
+     //    //}
+
+        //    using (WebApp.Start<Startup>(url))
+        //    {
+        //        // Send message to all connected clients
+        //        var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+        //        context.Clients.All.addMessage("Server", "Hello from server");
+        //        //  Console.WriteLine($"Server running at {url}");
+        //        // Console.ReadLine();
+        //    }
+        //}
+        static Microsoft.AspNet.SignalR.Client.HubConnection signalR { get; set; }
+        public static Microsoft.AspNet.SignalR.Client.IHubProxy signalRhub { get; set; }
+
+        public async void StartSignalRAsync()
         {
-            var url = "https://localhost:8323/";
-            //using (WebApp.Start<Startup>(new StartOptions(url: url)
-            //{
-            //    Port = 8323,
-            //    ServerFactory = "Microsoft.Owin.Host.HttpListener"
-            //})) {
-            //    var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
-            //    context.Clients.All.addMessage("Server", "Hello from server");
-            //}
-            using (WebApp.Start<Startup>(url))
+            try
             {
-                // Send message to all connected clients
-                var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
-                context.Clients.All.addMessage("Server", "Hello from server");
-                //  Console.WriteLine($"Server running at {url}");
-                // Console.ReadLine();
+                //https://stackoverflow.com/questions/11140164/signalr-console-app-example
+                var url = "https://localhost:7269/Signal";
+                // signalR = new Microsoft.AspNet.SignalR.Client.HubConnection(url);
+                //// signalR.Received += signalR_Received;
+                // //signalRhub = signalR.CreateHubProxy("echo");
+                // signalR.Start().Wait();
+                // signalRhub.Invoke("Say", "hub invoked");
+
+                var connection = new HubConnectionBuilder()
+                     .WithUrl(url)
+                     .WithAutomaticReconnect()
+                     .Build();
+                connection.On<string>("Printbaobep", (html) => OnReceiveMessage(html));
+
+                var t = connection.StartAsync();
+
+                t.Wait();
+
+                // send a message to the hub
+                await connection.InvokeAsync("Printbaobep", "ConsoleApp", "TEST");
             }
+            catch (Exception e)
+            {
+            }
+          
+        }
+        private void OnReceiveMessage(string html)
+        {
+            PrintServer.PrintPageBaoBep("OKPKPPPPPPPPPPP");
+        }
+    }
+    //public class Startup
+    //{
+    //    public void Configuration(IAppBuilder app)
+    //    {
+    //        app.UseCors(CorsOptions.AllowAll);
+    //        var url = "https://localhost:8323";
+    //        app.MapSignalR(url+"/SposVietPrint", new HubConfiguration() { EnableJSONP = true });
+    //    }
+    //}
+    public static class UserHandler
+    {
+        public static HashSet<string> ConnectedIds = new HashSet<string>();
+    }
+    [HubName("echo")]
+    public class EchoHub : Hub
+    {
+        public void Say(string message)
+        {
+            Trace.WriteLine("hub: " + message);
+            Clients.All.AddMessage(message);
         }
 
-    }
-    public class Startup
-    {
-        public void Configuration(IAppBuilder app)
+        public override Task OnConnected()
         {
-            app.UseCors(CorsOptions.AllowAll);
-            app.MapSignalR("/SposVietPlugin", new HubConfiguration());
+            UserHandler.ConnectedIds.Add(Context.ConnectionId);
+            return base.OnConnected();
+        }
+
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            return base.OnDisconnected(stopCalled);
         }
     }
+
+
     public class ChatHub : Hub
     {
         //private static ConcurrentDictionary<string, User> ChatClients =

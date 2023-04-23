@@ -29,7 +29,7 @@ namespace SposVietPluginKySo
         [STAThread]
         static  void Main()
         {
-            //StartInWindow();//khởi động cùng window
+            StartInWindow();//khởi động cùng window
 
          
             //PrintServer.PrintPageEventHandler();
@@ -39,6 +39,9 @@ namespace SposVietPluginKySo
             //SignalServer.Start();///khởi tạo web signal
             WebSocketSharpSposViet.StartWebSocket();//khởi tạo web socket
 
+
+            var signalRConnection = new SignalServer();
+            signalRConnection.StartSignalRAsync();
 
             //Console.WriteLine("WS server started on ws://localhost:7890/SposVietPlugin");
             //Console.WriteLine("WS server started on ws://localhost:7890/EchoAll");
@@ -120,7 +123,7 @@ namespace SposVietPluginKySo
                
                 //chen gia tri key
                // regkey.SetValue("Index", keyvalue);
-                registryKey.SetValue("SposVietKySo", "");
+                //registryKey.SetValue("SposVietKySo", "");
                 registryKey.SetValue("SposVietKySo", Application.StartupPath + "SposVietPluginKySo.exe");
                 //registryKey.SetValue("SPOSVIET-PLUGIN", Application.ExecutablePath);
             }

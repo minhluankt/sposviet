@@ -120,8 +120,11 @@
     </div>
     @*    <script type="text/javascript" src="~/lib/signalr/signalr.min.js"></script>*@
 
-    <partial name="Admin/_Scripts" />
+ 
     <script type="text/javascript" src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+    <partial name="Admin/_Scripts" />
+    <script src="~/js/custom/sposvietkyso.min.js?time=678"></script>
     <script>
        
         document.onreadystatechange = function () {
@@ -173,6 +176,7 @@
                 try {
                     connection.start()
                         .then(function () {
+                            connection.invoke('Printbaobep', "ok", "TEST");
                             console.assert(connection.state === signalR.HubConnectionState.Connected);
                             console.log("SignalR Connected.");
                             clearInterval(interval);
@@ -195,6 +199,15 @@
                 loadcentChitkent.loadDataFoodNew(true);
                 if (isValid) {
                     playaudioNotifyChitchen();
+                }
+
+            }); 
+            connection.on('Printbaobep', function (data) {
+                // toastr.success(data)
+                if (data == "TEST") {
+
+                } else {
+                    loadeventPos.eventinbaobep(data);
                 }
 
             });

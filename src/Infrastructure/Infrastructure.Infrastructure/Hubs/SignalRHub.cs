@@ -1,6 +1,7 @@
 ﻿using Application.Enums;
 using Application.Hepers;
 using Infrastructure.Infrastructure.Identity.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Infrastructure.HubS
 {
-
+    [AllowAnonymous]
     public class SignalRHub : Hub
     {
         private readonly IServiceProvider _serviceProvider;
@@ -107,6 +108,11 @@ namespace Infrastructure.Infrastructure.HubS
             {
                 await Clients.Groups(_Group).SendAsync("Printbaobep", data);
             }
+            // await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
+        }
+        public async Task PrintbaobepSposViet(string MST,int Type,string data)
+        {
+            xử lý cho việc đưa comid kèm theo,tạo api cho app gọi lấy theo mst có comid lần đầu và lưu tại máy, rồi tạo nhóm kiểu: $"{currentUser.ComId}_Printbaobep",comid truyền lên và sau đó add vàonhoms
             // await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
         }
         public async Task sendNotifyPos(EnumTypeSignalRHub STATUS, EnumTypeSignalRHub type, string note = "")
