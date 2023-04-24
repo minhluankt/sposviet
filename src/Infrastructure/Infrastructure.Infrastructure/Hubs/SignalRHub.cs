@@ -108,12 +108,19 @@ namespace Infrastructure.Infrastructure.HubS
             {
                 await Clients.Groups(_Group).SendAsync("Printbaobep", data);
             }
-            // await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
         }
-        public async Task PrintbaobepSposViet(string MST,int Type,string data)
+        public async Task PrintbaobepSposViet(int ComId, string data)//dành cho báo  bếp tại máy khashc hàng 
         {
-            //xử lý cho việc đưa comid kèm theo,tạo api cho app gọi lấy theo mst có comid lần đầu và lưu tại máy, rồi tạo nhóm kiểu: $"{currentUser.ComId}_Printbaobep",comid truyền lên và sau đó add vàonhoms
-            // await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
+            var json = new
+            {
+                Type = data=="TEST"? EnumTypePrint.TEST: EnumTypePrint.PrintBaoBep,
+                ComId = ComId,
+                data = data,
+            };
+            string datajson = Common.ConverModelToJson(json);
+            string _Group = $"{ComId}_Printbaobep";
+            checkExitRoomChitchen(Context.ConnectionId, _Group);
+            await Clients.Groups(_Group).SendAsync("PrintbaobepSposViet", datajson);//PrintbaobepSposViet là hàm ở client nhận method
         }
         public async Task sendNotifyPos(EnumTypeSignalRHub STATUS, EnumTypeSignalRHub type, string note = "")
         {

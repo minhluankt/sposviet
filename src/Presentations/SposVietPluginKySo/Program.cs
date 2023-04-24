@@ -41,6 +41,7 @@ namespace SposVietPluginKySo
 
 
             var signalRConnection = new SignalServer();
+           //signalRConnection.Start();
             signalRConnection.StartSignalRAsync();
 
             //Console.WriteLine("WS server started on ws://localhost:7890/SposVietPlugin");

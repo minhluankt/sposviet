@@ -8,6 +8,11 @@ namespace SposVietPluginKySo
 {
     public class Enum
     {
+        public enum EnumTypePrint // loại in
+        {
+            TEST = 0,//TEST
+            PrintBaoBep = 1,//báo hủy và chế biến
+        }
         public enum TypeEventWebSocket
         {
             SendTestConnect = -1,//ký hóa đơn

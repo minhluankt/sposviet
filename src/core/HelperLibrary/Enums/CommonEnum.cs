@@ -376,6 +376,11 @@ public enum EnumTypePrintBarCode
         UPDATECHITKEN = 2,
         DELETECHITKEN = 3,
         KITCHENTOPOS = 4,
+    } 
+    public enum EnumTypePrint // loại in
+    {
+        TEST = 0,//TEST
+        PrintBaoBep = 1,//báo hủy và chế biến
     }
     public enum EnumTypeNotifyKitchenOrder // cập nhật thông báo beepslaf đã xong chờ cung ứng
     {
