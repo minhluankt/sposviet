@@ -89,6 +89,7 @@ namespace Application.Features.OrderTablePos.Commands
                             invoiceNo = product.Data.Invoice.InvoiceCode,
                             buyer = product.Data.Invoice.Buyer,
                             casherName = product.Data.Invoice.CasherName,
+                            staffName = product.Data.Invoice.StaffName,
                             cusPhone = product.Data.Invoice.Customer?.PhoneNumber,
                             cusAddress = product.Data.Invoice.Customer?.Address,
                             comname = !string.IsNullOrEmpty(company.Title)? company.Title.Trim(): company.Name,

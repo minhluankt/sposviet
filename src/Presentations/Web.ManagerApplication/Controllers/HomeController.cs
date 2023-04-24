@@ -24,14 +24,14 @@ namespace Web.ManagerApplication.Controllers
             _userManager = userManager;
         }
         [Authorize(Policy = PermissionUser.nhanvienphucvu)]
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            if (await _userManager.IsInRoleAsync(currentUser, Roles.SuperAdmin.ToString()) || currentUser.IsStoreOwner)
+            {
+                return Redirect("/Selling/Dashboard");
+            }
             return Redirect("/OrderStaff");
-            //if (await _userManager.IsInRoleAsync(currentUser, Roles.SuperAdmin.ToString()) || await _userManager.IsInRoleAsync(currentUser, Roles.quanly.ToString()))
-            //{
-            //    return Redirect("/Selling/Dashboard");
-            //}
             //if (await _userManager.IsInRoleAsync(currentUser, Roles.SuperAdmin.ToString()) || await _userManager.IsInRoleAsync(currentUser, Roles.quanly.ToString()))
             //{
             //    return Redirect("/OrderStaff");

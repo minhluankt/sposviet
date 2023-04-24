@@ -8,6 +8,7 @@ namespace Domain.ViewModel
 {
     public class NotifyOrderNewModel
     {
+        public string StaffName { get; set; }
         public string RoomTableName { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }

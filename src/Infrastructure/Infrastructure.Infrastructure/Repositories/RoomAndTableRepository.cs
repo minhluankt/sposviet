@@ -7,6 +7,7 @@ using Infrastructure.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,16 +38,22 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public List<RoomAndTableModel> GetAllInOrderStatus(EnumStatusOrderTable enumStatusOrder, int ComId, EnumTypeProduct enumTypeProduct)
         {
-            var s = from tb in _repositoryRoomAndTable.Entities
+            var getdata = (from tb in _repositoryRoomAndTable.Entities
                     join od in _OrderTablerepository.Entities on tb.IdGuid equals od.IdRoomAndTableGuid
                     where tb.ComId == ComId && od.Status == enumStatusOrder && od.TypeProduct == enumTypeProduct
                     select new RoomAndTableModel()
                     {
                         Idtable = tb.IdGuid,
+                        CreateDate = tb.CreatedOn,
                         IsOrder = true,
-                    };
-
-            return s.ToList();
+                    }).ToList();
+            foreach (var item in getdata)
+            {
+                DateTime today = DateTime.Now;
+                TimeSpan value = today.Subtract(item.CreateDate);
+                item.TimeNumber = value.Seconds;
+            }
+            return getdata;
             // return await _repositoryRoomAndTable.GetAllQueryable().Where(x => x.ComId == ComId && x.Active).Include(x => x.OrderTables.Where(x => x.Status == enumStatusOrder)).ToListAsync();
         }
     }

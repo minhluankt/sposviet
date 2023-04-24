@@ -516,6 +516,7 @@ namespace HelperLibrary
                 string cusPhone = string.Empty;
                 string cusAddress = string.Empty;
                 string casherName = string.Empty;
+                string staffName = string.Empty;
                 string ngaythangnamxuat = string.Empty;
 
                 string tableProduct = string.Empty;
@@ -547,6 +548,9 @@ namespace HelperLibrary
                         {
                             case "comname":
                                 comname = value;
+                                break; 
+                            case "staffName":
+                                staffName = value;
                                 break; 
                             case "ngaythangnamxuat":
                                 ngaythangnamxuat = value;
@@ -597,6 +601,9 @@ namespace HelperLibrary
                                 break;
                             case "casherName":
                                 casherName = value;
+                                break;
+                            case "staffName":
+                                staffName = value;
                                 break;
                             case "ngaythangnamxuat":
                                 ngaythangnamxuat = value;
@@ -663,7 +670,8 @@ namespace HelperLibrary
                     { "{sohoadon}",sohoadon },
                     { "{kyhieuhoadon}",kyhieuhoadon },
                     { "{tongsoluong}",tongsoluong },
-                    { "{tenbanphong}",tenbanphong }
+                    { "{tenbanphong}",tenbanphong },
+                    { "{staffName}",staffName }
                 };
                 // builder.HtmlBody = BuildTemplate(template, arrtoken);
                 return BuildTemplate(template, arrtoken);

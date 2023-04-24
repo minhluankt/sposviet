@@ -35,11 +35,14 @@ namespace Domain.ViewModel
         public decimal Amount { get; set; } //  thu ngân
         public decimal Quantity { get; set; } //  thu ngân
         public string QuantityFloat { get; set; } //  thu ngân
+        public string HtmlPrint { get; set; } //  html báo bếp
         public DateTime? DateCreateService { get; set; } //  thu ngân
         public EnumTypeUpdatePos TypeUpdate { get; set; } //  thu ngân
         public EnumTypeProduct TypeProduct { get; set; } // loại dịch vụ
         public EnumTypeInvoice TypeInvoice { get; set; } // loại hóa đơn, đươn đặt
         public List<OrderTableItemModel> OrderTableItems { get; set; }
+       // public List<NotifyOrderNewModel> NotifyOrderNewModels { get; set; }//dùng để báo hủy bếp
+
 
     }
     public class OrderTableItemModel

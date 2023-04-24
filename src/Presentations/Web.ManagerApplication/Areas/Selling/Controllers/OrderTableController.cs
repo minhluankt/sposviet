@@ -236,6 +236,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 var UpdateQuantity = await _mediator.Send(ipdateOrderTableCommand);
                 if (UpdateQuantity.Succeeded)
                 {
+                    if (!string.IsNullOrEmpty(UpdateQuantity.Data.HtmlPrint))
+                    {
+                        return Json(new { isValid = true, data = UpdateQuantity.Data , isbaobep = true, dataHtml = UpdateQuantity.Data.HtmlPrint });
+                    }
                     return Json(new { isValid = true, data = UpdateQuantity.Data });
                 }
                 _notify.Error(UpdateQuantity.Message);
@@ -559,7 +563,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     PaymentModelView paymentModelView = new PaymentModelView();
                     paymentModelView.PaymentMethods = _payment.GetAll(currentUser.ComId, true).ToList() ;
                     paymentModelView.SupplierEInvoiceModel = _send.Data?.FirstOrDefault();
-                    paymentModelView.OrderTable = update.Data.SingleOrDefault();
+                    paymentModelView.OrderTable = update.Data?.SingleOrDefault();
                     paymentModelView.VatMTT = vat;
                     if (paymentModelView.OrderTable == null)
                     {

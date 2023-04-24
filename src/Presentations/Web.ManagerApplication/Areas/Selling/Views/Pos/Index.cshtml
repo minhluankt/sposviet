@@ -325,7 +325,7 @@
         loadeventPos.loadEventCheckbox();
         loadeventPos.loadEventActiveTabMenuLeft();
         loadeventPos.loadDataAttributeProductAndTable();
-        loadeventPos.loadActiveTableInOrder();
+        loadeventPos.loadActiveTableInOrder();//manin
         loadeventPos.loadEventkeyCode();
         loadeventPos.loadAddTabOrder();
         loadeventPos.loadClickTableroom();
@@ -396,15 +396,16 @@
                 }
 
             }); 
-            connection.on('Printbaobep', function (data) {
-               // toastr.success(data)
-                if (data == "TEST"){
+            //connection.on('Printbaobep', function (data) { phần để tự độn in báo bếp
+            //   // toastr.success(data)
+            //    if (data == "TEST"){
 
-                }else{
-                    loadeventPos.eventinbaobep(data);
-                }
+            //    }else{
+            //        console.log("In bếp");
+            //        loadeventPos.eventinbaobep(data);
+            //    }
                 
-            });
+            //});
             connection.on('addMessageCHITKENBYPOS', function (isValid) {
                 if (isValid) {
                     toastr.success("Món cam!")

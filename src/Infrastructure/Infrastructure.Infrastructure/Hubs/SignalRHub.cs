@@ -112,7 +112,7 @@ namespace Infrastructure.Infrastructure.HubS
         }
         public async Task PrintbaobepSposViet(string MST,int Type,string data)
         {
-            xử lý cho việc đưa comid kèm theo,tạo api cho app gọi lấy theo mst có comid lần đầu và lưu tại máy, rồi tạo nhóm kiểu: $"{currentUser.ComId}_Printbaobep",comid truyền lên và sau đó add vàonhoms
+            //xử lý cho việc đưa comid kèm theo,tạo api cho app gọi lấy theo mst có comid lần đầu và lưu tại máy, rồi tạo nhóm kiểu: $"{currentUser.ComId}_Printbaobep",comid truyền lên và sau đó add vàonhoms
             // await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
         }
         public async Task sendNotifyPos(EnumTypeSignalRHub STATUS, EnumTypeSignalRHub type, string note = "")

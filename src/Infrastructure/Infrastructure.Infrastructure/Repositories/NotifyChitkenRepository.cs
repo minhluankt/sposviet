@@ -66,6 +66,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                 Code= item.Code,
                                 Name = item.Name,
                                 RoomTableName = getorder.IsBringBack ? "Mang về": getorder.RoomAndTable?.Name,
+                                StaffName = Cashername,
                                 Quantity= item.Quantity - item.QuantityNotifyKitchen,
                                 Price= item.Price,//giá bán
                                 //Note= item.Note,//giá bán

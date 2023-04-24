@@ -59,7 +59,7 @@
                 hours: "%d giờ",
                 day: "một ngày",
                 days: "%d days",
-                month: "about a month",
+                month: "một tháng",
                 months: "%d tháng",
                 year: "about a year",
                 years: "%d years",

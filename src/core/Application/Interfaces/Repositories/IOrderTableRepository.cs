@@ -12,6 +12,7 @@ namespace Application.Interfaces.Repositories
     public interface IOrderTableRepository
     {
         Task<Result<string>> ConvertInvoice(int comid, Guid idOrder, EnumTypeProduct enumTypeProduct = EnumTypeProduct.BAN_LE);
+        Task<Result<string>> GenHtmlPrintBep(List<NotifyOrderNewModel> model, int ComId);
         Task<Result<string>> AddNote(int comid, Guid idOrder, string note);
         Task<Result<OrderTable>> UpdateTableOrRoomOfOrder(int comid,bool isBringBack, Guid idOrder, Guid? idOldTableOrder, Guid? idRoomOrtable, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC);
         Task<Result<bool>> RemoveOrder(int comid, Guid idOrder, string CasherName, string IdCashername, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC);

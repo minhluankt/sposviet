@@ -19,7 +19,7 @@ namespace Infrastructure.Infrastructure.Repositories
         }
         public CompanyAdminInfo GetCompany(int Comid)
         {
-            return _repositoryAsync.Entities.Where(x => x.Id == Comid).SingleOrDefault();
+            return _repositoryAsync.Entities.AsNoTracking().Where(x => x.Id == Comid).SingleOrDefault();
         }
 
         public async Task UpdateUserNameCompany(int id, string UserName)

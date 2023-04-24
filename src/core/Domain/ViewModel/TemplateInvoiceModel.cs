@@ -26,6 +26,7 @@ namespace Domain.ViewModel
         public string cusPhone { get; set; }
         public string cusAddress { get; set; }
         public string casherName { get; set; }
+        public string staffName { get; set; }
         public string tableProduct { get; set; }
         public string ngaythangnamxuat { get; set; }
         /// <summary>

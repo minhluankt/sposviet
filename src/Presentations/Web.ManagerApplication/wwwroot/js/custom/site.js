@@ -7462,7 +7462,10 @@ var posStaff = {
                 //console.log(res.data);
 
                 if (res.isValid) {
+                    if (res.isbaobep) {
+                        posStaff.eventKitchenNotice(res.dataHtml);
 
+                    }
                     if (res.data.orderTableItems.length == 0) {
                         if (res.data.isBringBack) {
                             res.data.idRoomAndTableGuid = "-1";
@@ -7544,6 +7547,9 @@ var posStaff = {
                 console.log(err)
             }
         });
+    },
+    eventKitchenNotice: function (data) {
+        connection.invoke('Printbaobep', data, "IN");
     },
     eventCheckActivetable: function () {
         let idatable = $(".topbuton button:first").data("idtable");

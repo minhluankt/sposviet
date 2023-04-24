@@ -1,5 +1,6 @@
 ﻿using Application.Enums;
 using AspNetCoreHero.Abstractions.Domain;
+using Domain.ViewModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,8 @@ namespace Domain.Entities
         public virtual Invoice Invoice { get; set; } // trạng thái
         public virtual ICollection<OrderTableItem> OrderTableItems { get; set; } // trạng thái
         public virtual ICollection<HistoryOrder> HistoryOrders { get; set; } // trạng thái
+        [NotMapped]
+        public virtual List<NotifyOrderNewModel> NotifyOrderNewModels { get; set; } // để lưu in thông báo bếp
 
     }
     public class OrderTableItem

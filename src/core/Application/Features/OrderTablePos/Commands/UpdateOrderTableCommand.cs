@@ -4,13 +4,17 @@ using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
 using Domain.Entities;
 using Domain.ViewModel;
+using HelperLibrary;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -188,6 +192,19 @@ namespace Application.Features.OrderTables.Commands
                 orderTableModel.Amount = updatequantity.Data.Amonut;
                 orderTableModel.Quantity = updatequantity.Data.OrderTableItems.Sum(x => x.Quantity);
                 orderTableModel.OrderTableItems.AddRange(updatequantity.Data.OrderTableItems.OrderBy(x => x.Id).Select(x => new OrderTableItemModel() { Code = x.Code, Id = x.Id, IdGuid = x.IdGuid, IdProduct = x.IdProduct, Price = x.Price, Quantity = x.Quantity, QuantityNotifyKitchen = x.QuantityNotifyKitchen, IdOrderTable = x.IdOrderTable, Total = x.Total, Name = x.Name }));
+                // kèm báo bếp
+                if (updatequantity.Data.NotifyOrderNewModels != null)
+                {
+                    var genhtml = await _orderTableRepository.GenHtmlPrintBep(updatequantity.Data.NotifyOrderNewModels, request.ComId);
+                    if (genhtml.Succeeded)
+                    {
+                        if (!string.IsNullOrEmpty(genhtml.Data))
+                        {
+                            orderTableModel.HtmlPrint=genhtml.Data;
+                        }
+                    }
+                   
+                }
                 return Result<OrderTableModel>.Success(orderTableModel);
 
                 //  return await Result<OrderTableModel>.FailAsync("Không đúng loại cập nhật");
@@ -198,5 +215,6 @@ namespace Application.Features.OrderTables.Commands
                 return await Result<OrderTableModel>.FailAsync(e.Message);
             }
         }
+        
     }
 }

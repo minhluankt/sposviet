@@ -126,7 +126,7 @@
     <partial name="Admin/_Scripts" />
     <script src="~/js/custom/sposvietkyso.min.js?time=678"></script>
     <script>
-       
+        testConnetWebSocket();
         document.onreadystatechange = function () {
             var state = document.readyState
             if (state == 'complete') {
@@ -205,7 +205,7 @@
             connection.on('Printbaobep', function (data) {
                 // toastr.success(data)
                 if (data == "TEST") {
-
+                    console.log("Test in bếp");
                 } else {
                     loadeventPos.eventinbaobep(data);
                 }
