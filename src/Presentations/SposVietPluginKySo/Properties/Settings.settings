@@ -2,16 +2,19 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SposVietPluginKySo.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="ComId" Type="System.Int32" Scope="Application">
+    <Setting Name="ComId" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="Company" Type="System.String" Scope="Application">
+    <Setting Name="Company" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="MST" Type="System.String" Scope="Application">
+    <Setting Name="MST" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="Address" Type="System.String" Scope="Application">
+    <Setting Name="Address" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Domain" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

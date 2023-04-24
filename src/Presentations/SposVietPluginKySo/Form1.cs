@@ -22,9 +22,9 @@ namespace SposVietPluginKySo
         private void TrayMenuContext()
         {
             this.notifyIcon1.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
-            this.notifyIcon1.ContextMenuStrip.Items.Add("Thoát ứng dụng",null, this.MenuTest1_Click);
+            this.notifyIcon1.ContextMenuStrip.Items.Add("Thoát ứng dụng", null, this.MenuTest1_Click);
             //this.notifyIcon1.ContextMenuStrip.Items.Add("Mở ứng dụng", null, this.MenuTest2_Click);
-            this.notifyIcon1.ContextMenuStrip.ShowImageMargin= false;
+            this.notifyIcon1.ContextMenuStrip.ShowImageMargin = false;
         }
 
         void MenuTest1_Click(object sender, EventArgs e)
@@ -32,15 +32,6 @@ namespace SposVietPluginKySo
             Application.Exit();
         }
 
-        void MenuTest2_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-
-        void MenuExit_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);

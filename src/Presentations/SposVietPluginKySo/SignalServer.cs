@@ -43,25 +43,25 @@ namespace SposVietPluginKySo
         //        // Console.ReadLine();
         //    }
         //}
-        public  void StartSignalServer()
-        {
-            //chạy loca
-            var getcomid = Properties.Settings.Default.ComId;
-            var url = "https://fnb.sposviet.vn/";
-            //var url = $"https://localhost:7269/{getcomid}SposVietPrint";
-            var server = new Server(url);
-            // Map the default hub url (/signalr)
-            server.MapHubs($"/{getcomid}SposVietPrint");
-            // Start the server
-            server.Start();
-            var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
-            context.Clients.All.addMessage("Server", "Hello from server");
-        }
+        //public  void StartSignalServer()
+        //{
+        //    //chạy loca
+        //    var getcomid = Properties.Settings.Default.ComId;
+        //    var url = "https://fnb.sposviet.vn/";
+        //    //var url = $"https://localhost:7269/{getcomid}SposVietPrint";
+        //    var server = new Server(url);
+        //    // Map the default hub url (/signalr)
+        //    server.MapHubs($"/{getcomid}SposVietPrint");
+        //    // Start the server
+        //    server.Start();
+        //    var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+        //    context.Clients.All.addMessage("Server", "Hello from server");
+        //}
 
         static Microsoft.AspNet.SignalR.Client.HubConnection signalR { get; set; }
         public static Microsoft.AspNet.SignalR.Client.IHubProxy signalRhub { get; set; }
 
-        public async void StartSignalRAsync()
+        public async void StartSignalRAsync()//khởi chạy kết nôi
         {
             int numberRetry2 = 0;
         RetryInvoice2:
@@ -70,7 +70,7 @@ namespace SposVietPluginKySo
              
                 //https://stackoverflow.com/questions/11140164/signalr-console-app-example
                 // var url = "https://fnb.sposviet.vn/Signal";
-                var url = "https://localhost:7269/Signal";
+                var url = "http://fnb.sposviet.vn/Signal";
                 List<TimeSpan> timeSpans = new List<TimeSpan>(0);
                 timeSpans.Add(TimeSpan.FromSeconds(1));
                 timeSpans.Add(TimeSpan.FromSeconds(3));
@@ -97,8 +97,9 @@ namespace SposVietPluginKySo
                 connection.On<string>("PrintbaobepSposViet", (html) => OnReceiveMessage(html));
                 var t = connection.StartAsync();
                 t.Wait();
-                LogControl.Write("PrintbaobepSposViet thành công");
-                await connection.InvokeAsync("PrintbaobepSposViet",1, "TEST");
+                
+                await connection.InvokeAsync("PrintbaobepSposViet", Properties.Settings.Default.ComId, "TEST");
+                LogControl.Write("PrintbaobepSposViet test thành công");
             }
             catch (Exception e)
             {
@@ -110,8 +111,8 @@ namespace SposVietPluginKySo
                     goto RetryInvoice2;
                 }
             }
-
         }
+       
         private void OnReceiveMessage(string json)
         {
             try
