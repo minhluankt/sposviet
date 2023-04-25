@@ -1517,6 +1517,14 @@ div#popupselectDiscount .ele-discount.ele-SaleRetail {
         }
     }
 }
+.form-splitOrder .header-tab {
+    .form-check {
+        display: flex;
+        gap: 10px;
+    }
+
+    gap: 20px;
+}
 #loadingpos {
     position: fixed;
     height: 100vh;

@@ -29,85 +29,102 @@ namespace SposVietPluginKySo
         [STAThread]
         static  void Main()
         {
-            StartInWindow();//khởi động cùng window
-
-         
-            //PrintServer.PrintPageEventHandler();
-
-           // PrintServer.Print("ok");
-           // PrintServer.PrintHmtl();
-            //SignalServer.Start();///khởi tạo web signal
-            WebSocketSharpSposViet.StartWebSocket();//khởi tạo web socket
-
-
-            var signalRConnection = new SignalServer();
-           //signalRConnection.Start();
-            signalRConnection.StartSignalRAsync();
-
-            //Console.WriteLine("WS server started on ws://localhost:7890/SposVietPlugin");
-            //Console.WriteLine("WS server started on ws://localhost:7890/EchoAll");
-
-            // Console.ReadKey();
-            // wssv.Stop();
-            ///end
+            bool ownmutex;
+            // Tạo và lấy quyền sở hữu một Mutex có tên là SposVietPlugin;
+            using (Mutex mutex = new Mutex(true, "SposVietPlugin", out ownmutex))
+            {
+                // Nếu ứng dụng sở hữu Mutex, nó có thể tiếp tục thực thi;
+                // nếu không, ứng dụng sẽ thoát.
+                if (ownmutex)
+                {
+                    StartInWindow();//khởi động cùng window
 
 
-            // X509Certificate2 = null;//taọ null khi chạy
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+                    //PrintServer.PrintPageEventHandler();
+
+                    // PrintServer.Print("ok");
+                    // PrintServer.PrintHmtl();
+                    //SignalServer.Start();///khởi tạo web signal
+                    WebSocketSharpSposViet.StartWebSocket();//khởi tạo web socket
 
 
+                    var signalRConnection = new SignalServer();
+                    //signalRConnection.Start();
+                    signalRConnection.StartSignalRAsync();
 
-            //retrieve certificate from store//
-            ////https://stackoverflow.com/questions/58342269/unable-to-cast-object-of-type-rsacng-to-type-system-security-cryptography-rsa
+                    //Console.WriteLine("WS server started on ws://localhost:7890/SposVietPlugin");
+                    //Console.WriteLine("WS server started on ws://localhost:7890/EchoAll");
 
-
-
-
-            //ví dụ để ký Encrypt
-            // Encryption 
-            //string sEncryptedSecret = string.Empty;
-            //sEncryptedSecret = EncryptRsa(sSecret);
-
-            //// Decryption 
-            //string sDecryptedSecret = string.Empty;
-            //sDecryptedSecret = decryptRsa(sEncryptedSecret);
+                    // Console.ReadKey();
+                    // wssv.Stop();
+                    ///end
 
 
-            //**signing data**//    
-
-            //to sign we need the hash of data//    
-            // byte[] hashBytes = GetDataHash(messageToFatima);
+                    // X509Certificate2 = null;//taọ null khi chạy
+                    // To customize application configuration such as set high DPI settings or default font,
+                    // see https://aka.ms/applicationconfiguration.
 
 
 
-            //X509Certificate2 certificate = GetCertFromStore();//gọi show token
-            //string messageToFatima = "vBHl5jb/fXZQVt5mo539t0F2owg=";//hashtruyeefn vào
-            //byte[] hashBytes = Convert.FromBase64String(messageToFatima);//chuyển hash truyền vào vì nó truyền bas464
-
-            ////https://www.c-sharpcorner.com/article/visual-studio-creating-and-managing-digital-certificates-in-c-sharp/
-            //byte[] signature = GetDigitalSignature(hashBytes);//ký số
-            //var sSecret = Convert.ToBase64String(signature);//chuyển về base64
-            //XmlDocument xmlDoc = new XmlDocument();
-            //XmlNode nVersion = xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
-            //xmlDoc.AppendChild(nVersion);
-            //XmlNode DLieu = xmlDoc.CreateElement("SendInv");
-            //xmlDoc.AppendChild(DLieu);
-
-            //XmlNode Base64Hash = xmlDoc.CreateElement("Base64Hash");
-            //Base64Hash.InnerText= messageToFatima;
-            //DLieu.AppendChild(Base64Hash);
-
-            //XmlNode SignValue = xmlDoc.CreateElement("SignValue");
-            //SignValue.InnerText = sSecret;
-            //DLieu.AppendChild(SignValue);
-            //var xml = xmlDoc.InnerXml;//gửi xml
-            //bool isVerified = VerifyData(signature, messageToFatima);
-            //đến đây thôi nhế
+                    //retrieve certificate from store//
+                    ////https://stackoverflow.com/questions/58342269/unable-to-cast-object-of-type-rsacng-to-type-system-security-cryptography-rsa
 
 
-            ApplicationConfiguration.Initialize();
-            Application.Run(new sposvietform());
+
+
+                    //ví dụ để ký Encrypt
+                    // Encryption 
+                    //string sEncryptedSecret = string.Empty;
+                    //sEncryptedSecret = EncryptRsa(sSecret);
+
+                    //// Decryption 
+                    //string sDecryptedSecret = string.Empty;
+                    //sDecryptedSecret = decryptRsa(sEncryptedSecret);
+
+
+                    //**signing data**//    
+
+                    //to sign we need the hash of data//    
+                    // byte[] hashBytes = GetDataHash(messageToFatima);
+
+
+
+                    //X509Certificate2 certificate = GetCertFromStore();//gọi show token
+                    //string messageToFatima = "vBHl5jb/fXZQVt5mo539t0F2owg=";//hashtruyeefn vào
+                    //byte[] hashBytes = Convert.FromBase64String(messageToFatima);//chuyển hash truyền vào vì nó truyền bas464
+
+                    ////https://www.c-sharpcorner.com/article/visual-studio-creating-and-managing-digital-certificates-in-c-sharp/
+                    //byte[] signature = GetDigitalSignature(hashBytes);//ký số
+                    //var sSecret = Convert.ToBase64String(signature);//chuyển về base64
+                    //XmlDocument xmlDoc = new XmlDocument();
+                    //XmlNode nVersion = xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
+                    //xmlDoc.AppendChild(nVersion);
+                    //XmlNode DLieu = xmlDoc.CreateElement("SendInv");
+                    //xmlDoc.AppendChild(DLieu);
+
+                    //XmlNode Base64Hash = xmlDoc.CreateElement("Base64Hash");
+                    //Base64Hash.InnerText= messageToFatima;
+                    //DLieu.AppendChild(Base64Hash);
+
+                    //XmlNode SignValue = xmlDoc.CreateElement("SignValue");
+                    //SignValue.InnerText = sSecret;
+                    //DLieu.AppendChild(SignValue);
+                    //var xml = xmlDoc.InnerXml;//gửi xml
+                    //bool isVerified = VerifyData(signature, messageToFatima);
+                    //đến đây thôi nhế
+
+
+                    ApplicationConfiguration.Initialize();
+                    Application.Run(new sposvietform());
+                    //giai phong Mutex;
+                    mutex.ReleaseMutex();
+                }
+                else
+                    MessageBox.Show("Ứng dụng đã được chạy, vui lòng chờ","Thông báo",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                    Application.Exit();
+            }
+
+            
 
             
         }

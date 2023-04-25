@@ -122,7 +122,7 @@ namespace Infrastructure.Infrastructure.HubS
             checkExitRoomChitchen(Context.ConnectionId, _Group);
             await Clients.Groups(_Group).SendAsync("PrintbaobepSposViet", datajson);//PrintbaobepSposViet là hàm ở client nhận method
         }
-        thực hiện chỉnh sadmin công ty hiển thị cột comid, lưu ở tool cho phép gọi api lấy dữ liệu, sau đó test nhé
+       // thực hiện chỉnh sadmin công ty hiển thị cột comid, lưu ở tool cho phép gọi api lấy dữ liệu, sau đó test nhé
         public async Task sendNotifyPos(EnumTypeSignalRHub STATUS, EnumTypeSignalRHub type, string note = "")
         {
             using (var scope = _serviceProvider.CreateScope())

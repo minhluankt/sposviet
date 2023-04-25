@@ -50,17 +50,26 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
        
         public async Task<IActionResult> SuppliersEInvoice(int SaleRetail=0)
         {
-            var currentUser = User.Identity.GetUserClaimLogin();
-            //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-            var _send = await _mediator.Send(new GetAllSupplierEInvoiceQuery() { Comid = currentUser.ComId,IsManagerPatternEInvoices=true });
-
-            if (_send.Succeeded)
+            try
             {
-                _send.Data.ForEach(x => x.SaleRetail = SaleRetail);
-                var html = await _viewRenderer.RenderViewToStringAsync("SuppliersEInvoice", _send.Data);
-                return new JsonResult(new { isValid = true, html = html, nodata = _send.Data.Count()>0 }); 
+                var currentUser = User.Identity.GetUserClaimLogin();
+                //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+                var _send = await _mediator.Send(new GetAllSupplierEInvoiceQuery() { Comid = currentUser.ComId, IsManagerPatternEInvoices = true });
+
+                if (_send.Succeeded)
+                {
+                    _send.Data.ForEach(x => x.SaleRetail = SaleRetail);
+                    var html = await _viewRenderer.RenderViewToStringAsync("SuppliersEInvoice", _send.Data);
+                    return new JsonResult(new { isValid = true, html = html, nodata = _send.Data.Count() > 0 });
+                }
+                _notify.Error("Chưa cấu hình hóa đơn điện tử");
+                return new JsonResult(new { isValid = false });
             }
-            return new JsonResult(new { isValid = false });
+            catch (Exception e)
+            {
+                _notify.Error(e.Message);
+                return new JsonResult(new { isValid = false });
+            }
         }
      
         [HttpPost]

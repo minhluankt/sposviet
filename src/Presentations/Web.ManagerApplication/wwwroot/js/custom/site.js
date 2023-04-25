@@ -5859,6 +5859,10 @@ var eventInvocie = {
                             }
                         });
                     }
+                    else {
+                        Swal.close();
+                    }
+                    
                 },
                 error: function (err) {
                     console.log(err)
