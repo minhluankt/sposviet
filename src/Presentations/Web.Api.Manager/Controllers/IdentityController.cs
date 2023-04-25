@@ -25,13 +25,20 @@ namespace Web.Api.Manager.Controllers
         /// </summary>
         /// <param name="tokenRequest"></param>
         /// <returns></returns>
-        [HttpPost("token")]
+        [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> GetTokenAsync(TokenRequest tokenRequest)
         {
             var ipAddress = GenerateIPAddress();
             var token = await _identityService.GetTokenAsync(tokenRequest, ipAddress);
-            return Ok(new ApiResponse("", token) { IsError = false });
+            if (token.Succeeded)
+            {
+                return Ok(new ApiResponse("", token) { IsError = false });
+            }
+            else
+            {
+                return Ok(new ApiResponse(token.Message, null,StatusCodes.Status400BadRequest) { IsError = true });
+            }
         }
         [HttpPost]
         [Route("refresh-token")]

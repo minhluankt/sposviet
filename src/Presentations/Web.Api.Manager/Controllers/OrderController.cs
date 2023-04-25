@@ -11,7 +11,6 @@ namespace Web.Api.Manager.Controllers
     public class OrderController : BaseApiController<OrderController>
     {
         private readonly IOrderRepository<Order> _orderRepository;
-
         public OrderController(IOrderRepository<Order> orderRepository)
         {
             this._orderRepository = orderRepository;

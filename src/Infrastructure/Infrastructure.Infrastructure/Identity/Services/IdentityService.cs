@@ -89,7 +89,11 @@ namespace Infrastructure.Infrastructure.Identity.Services
            // var user = await _customerManager.GetUserByUserNameAsync(request.Email);//khách hàng customer
             var user = await _userManager.FindByNameAsync(request.Email);
 
-            Throw.Exception.IfNull(user, nameof(user), $"Tài khoản chưa đăng ký {request.Email}.");
+            //Throw.Exception.IfNull(user, nameof(user), $"Tài khoản chưa đăng ký {request.Email}.");
+            if (user==null)
+            {
+                return Result<TokenResponse>.Fail($"Tài khoản chưa đăng ký {request.Email}");
+            }
             //var result = _customerAuthenManager.PasswordSignIn(user, request.Password, false);//khách hàng
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
             //Throw.Exception.IfFalse(user.EmailConfirmed, $"Email is not confirmed for '{request.Email}'.");
