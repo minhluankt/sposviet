@@ -10888,7 +10888,7 @@ var eventBanle = {
         let isValid = false;
         $("ul#item-mon").find("li").map(function () {
             let _code = $(this).data("code") || "";
-            if (_code.trim() == code) {
+            if (_code == code) {
                 isValid = true;
                 $(this).find(".item_action").find("i:last-child").trigger("click");
             }
