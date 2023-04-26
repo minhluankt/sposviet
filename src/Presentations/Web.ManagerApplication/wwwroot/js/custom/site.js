@@ -4867,6 +4867,7 @@ var loadeventEinvoice = {
                             $(".btn-continue").click(function () {
                                 Swal.close();
                             });
+                            
                             //$(".btn-cancelinvoice").click(async function () {
                             //    eventInvocie.CancelInvoice(idinvoice, TypeEventInvoice);
                             //});javascript:void(0)
@@ -4923,7 +4924,12 @@ var loadeventEinvoice = {
                         }
                     },
                 }).on('select2:select', function (e) {
-                    $(".btn-sendCQT").data("typesignature", e.params.data.type)
+                    if (e.params.data != null) {
+                        $(".btn-sendCQT").data("typesignature", e.params.data.type)
+                    } else {
+                        $(".btn-sendCQT").data("typesignature", -1);
+                    }
+                    
                     // console.log(data.type);
                 }).on('select2:clear', function (e) {
                     toastrcus.error("Vui lòng chọn nhà cung cấp");
@@ -5395,7 +5401,8 @@ var loadeventEinvoice = {
                                 loadingStart();
                                 sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
                                     if (data == "-1") {
-                                        toastrcus.error("Có lỗi xảy ra");
+                                        loadingStop();
+                                        //toastrcus.error("Có lỗi xảy ra");
                                     } else {
                                         loadeventEinvoice.SendCQTToken(lstid, data);
                                     }
@@ -6732,6 +6739,7 @@ var eventInvocie = {
                     showCancelButton: false,
                     cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                     didRender: () => {
+                        evetnFormatTextnumber3(true);
                         var idinvoice = $("#invoiceid").val();
                         let status = $("#Status").val();
                         var TypeEventInvoice = EnumTypeEventInvoice.Cancel;
@@ -16828,13 +16836,22 @@ function __highlight(s, t) {
     var matcher = new RegExp("(" + $.ui.autocomplete.escapeRegex(t) + ")", "ig");
     return s.replace(matcher, "<strong>$1</strong>");
 }
-function evetnFormatTextnumber3() {
+function evetnFormatTextnumber3(def = false) {
     $('.number3').each(function () {
         if ($(this).is('input:text')) {
-            let idtex = $(this).val().replaceAll(",", "");
+            if (def) {
+                var idtex = $(this).val().replaceAll(",", ".");
+            } else {
+                var idtex = $(this).val().replaceAll(",", "");
+            }
+           
             $(this).val(parseFloat(idtex).format0VND(0, 3, ""))
         } else {
-            let idtex = $(this).text().replaceAll(",", "");
+            if (def) {
+                var idtex = $(this).html().replaceAll(",", ".");
+            } else {
+                var idtex = $(this).html().replaceAll(",", "");
+            }
             $(this).html(parseFloat(idtex).format0VND(0, 3, ""))
         }
     });

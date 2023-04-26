@@ -27,43 +27,39 @@ namespace SposVietPluginKySo
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        static  void Main()
-        {
-            Application.Run(new LoginForm());
-        }
-        //STAThread]
-        //static  void Main()
+        //static void Main()
         //{
-        //    bool ownmutex;
-        //    // Tạo và lấy quyền sở hữu một Mutex có tên là SposVietPlugin;
-        //    using (Mutex mutex = new Mutex(true, "SposVietPlugin", out ownmutex))
-        //    {
-        //        // Nếu ứng dụng sở hữu Mutex, nó có thể tiếp tục thực thi;
-        //        // nếu không, ứng dụng sẽ thoát.
-        //        if (ownmutex)
-        //        {
-        //            StartInWindow();//khởi động cùng window
-
-        //            WebSocketSharpSposViet.StartWebSocket();//khởi tạo web socket
-        //            var signalRConnection = new SignalServer();
-        //            //signalRConnection.Start();
-        //            signalRConnection.StartSignalRAsync();
-
-                   
-        //            ApplicationConfiguration.Initialize();
-        //            Application.Run(new sposvietform());
-        //            //giai phong Mutex;
-        //            mutex.ReleaseMutex();
-        //        }
-        //        else
-        //            MessageBox.Show("Ứng dụng đã được chạy, vui lòng chờ","Thông báo",MessageBoxButtons.OK,MessageBoxIcon.Warning);
-        //            Application.Exit();
-        //    }
-
-            
-
-            
+        //    Application.Run(new LoginForm());
         //}
+
+        static void Main()
+        {
+            bool ownmutex;
+            // Tạo và lấy quyền sở hữu một Mutex có tên là SposVietPlugin;
+            using (Mutex mutex = new Mutex(true, "SposVietPlugin", out ownmutex))
+            {
+                // Nếu ứng dụng sở hữu Mutex, nó có thể tiếp tục thực thi;
+                // nếu không, ứng dụng sẽ thoát.
+                if (ownmutex)
+                {
+                    StartInWindow();//khởi động cùng window
+
+                    WebSocketSharpSposViet.StartWebSocket();//khởi tạo web socket
+                    var signalRConnection = new SignalServer();
+                    //signalRConnection.Start();
+                    signalRConnection.StartSignalRAsync();
+
+
+                    ApplicationConfiguration.Initialize();
+                    Application.Run(new sposvietform());
+                    //giai phong Mutex;
+                    mutex.ReleaseMutex();
+                }
+                else
+                    MessageBox.Show("Ứng dụng đã được chạy, vui lòng chờ", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Application.Exit();
+            }
+        }
 
         private static void StartInWindow()
         {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,10 +36,15 @@ namespace Infrastructure.Infrastructure.Repositories
                 using (HttpClient httpClient = new HttpClient(httpClientHandler))
                 {
                     AddHeaders(httpClient, additionalHeaders);
-                    result = await httpClient.GetStringAsync(requestUri);
+                    using (var response = await httpClient.GetAsync(requestUri))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        return apiResponse;
+                    }
+                   // result = await httpClient.GetStringAsync(requestUri);
                 }
             }
-            return result;
+            //return result;
         }
 
         public async Task<string> PostAsync<T>(string requestUri, T request, Dictionary<string, string> additionalHeaders = null) where T : class

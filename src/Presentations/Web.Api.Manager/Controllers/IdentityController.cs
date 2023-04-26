@@ -33,7 +33,7 @@ namespace Web.Api.Manager.Controllers
             var token = await _identityService.GetTokenAsync(tokenRequest, ipAddress);
             if (token.Succeeded)
             {
-                return Ok(new ApiResponse("", token) { IsError = false });
+                return Ok(new ApiResponse("", token.Data) { IsError = false });
             }
             else
             {

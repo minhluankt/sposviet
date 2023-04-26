@@ -29,84 +29,87 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
-            label1 = new Label();
-            txtUsername = new TextBox();
-            label2 = new Label();
-            txtPassword = new TextBox();
-            btnLogin = new Button();
-            pictureBox1 = new PictureBox();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            SuspendLayout();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtUsername = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtPassword = new System.Windows.Forms.TextBox();
+            this.btnLogin = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.SuspendLayout();
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(140, 114);
-            label1.Name = "label1";
-            label1.Size = new Size(85, 15);
-            label1.TabIndex = 0;
-            label1.Text = "Tên đăng nhập";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(140, 114);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(85, 15);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Tên đăng nhập";
             // 
             // txtUsername
             // 
-            txtUsername.Location = new Point(248, 111);
-            txtUsername.Name = "txtUsername";
-            txtUsername.Size = new Size(147, 23);
-            txtUsername.TabIndex = 1;
+            this.txtUsername.Location = new System.Drawing.Point(248, 111);
+            this.txtUsername.Name = "txtUsername";
+            this.txtUsername.Size = new System.Drawing.Size(147, 23);
+            this.txtUsername.TabIndex = 1;
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(140, 148);
-            label2.Name = "label2";
-            label2.Size = new Size(57, 15);
-            label2.TabIndex = 0;
-            label2.Text = "Mật khẩu";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(140, 148);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(57, 15);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Mật khẩu";
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(248, 145);
-            txtPassword.Name = "txtPassword";
-            txtPassword.Size = new Size(147, 23);
-            txtPassword.TabIndex = 1;
-            txtPassword.UseSystemPasswordChar = true;
+            this.txtPassword.Location = new System.Drawing.Point(248, 145);
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.Size = new System.Drawing.Size(147, 23);
+            this.txtPassword.TabIndex = 1;
+            this.txtPassword.UseSystemPasswordChar = true;
             // 
             // btnLogin
             // 
-            btnLogin.Location = new Point(248, 194);
-            btnLogin.Name = "btnLogin";
-            btnLogin.Size = new Size(147, 31);
-            btnLogin.TabIndex = 2;
-            btnLogin.Text = "Đăng nhập";
-            btnLogin.UseVisualStyleBackColor = true;
-            btnLogin.Click += btnLogin_Click;
+            this.btnLogin.Location = new System.Drawing.Point(248, 194);
+            this.btnLogin.Name = "btnLogin";
+            this.btnLogin.Size = new System.Drawing.Size(147, 31);
+            this.btnLogin.TabIndex = 2;
+            this.btnLogin.Text = "Đăng nhập";
+            this.btnLogin.UseVisualStyleBackColor = true;
+            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
             // pictureBox1
             // 
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(155, 12);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(222, 52);
-            pictureBox1.TabIndex = 3;
-            pictureBox1.TabStop = false;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(161, 12);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(214, 52);
+            this.pictureBox1.TabIndex = 3;
+            this.pictureBox1.TabStop = false;
             // 
             // LoginForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(532, 255);
-            Controls.Add(pictureBox1);
-            Controls.Add(btnLogin);
-            Controls.Add(txtPassword);
-            Controls.Add(txtUsername);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Icon = (Icon)resources.GetObject("$this.Icon");
-            Name = "LoginForm";
-            Text = "LoginForm";
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(532, 255);
+            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.btnLogin);
+            this.Controls.Add(this.txtPassword);
+            this.Controls.Add(this.txtUsername);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "LoginForm";
+            this.Text = "LoginForm";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion

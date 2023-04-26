@@ -28,130 +28,143 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
-            label5 = new Label();
-            txtComid = new TextBox();
-            txtCompany = new TextBox();
-            txtAddress = new TextBox();
-            txtTaxcode = new TextBox();
-            txtDomain = new TextBox();
-            btnSaveCompany = new Button();
-            SuspendLayout();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtComid = new System.Windows.Forms.TextBox();
+            this.txtCompany = new System.Windows.Forms.TextBox();
+            this.txtAddress = new System.Windows.Forms.TextBox();
+            this.txtTaxcode = new System.Windows.Forms.TextBox();
+            this.txtDomain = new System.Windows.Forms.TextBox();
+            this.btnSaveCompany = new System.Windows.Forms.Button();
+            this.btnlogout = new System.Windows.Forms.Button();
+            this.SuspendLayout();
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(38, 28);
-            label1.Name = "label1";
-            label1.Size = new Size(81, 15);
-            label1.TabIndex = 0;
-            label1.Text = "Mã định danh";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(38, 28);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(81, 15);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Mã định danh";
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(38, 67);
-            label2.Name = "label2";
-            label2.Size = new Size(68, 15);
-            label2.TabIndex = 0;
-            label2.Text = "Tên công ty";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(38, 67);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(68, 15);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Tên công ty";
             // 
             // label3
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(38, 106);
-            label3.Name = "label3";
-            label3.Size = new Size(43, 15);
-            label3.TabIndex = 0;
-            label3.Text = "Địa chỉ";
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(38, 106);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(43, 15);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Địa chỉ";
             // 
             // label4
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(38, 142);
-            label4.Name = "label4";
-            label4.Size = new Size(66, 15);
-            label4.TabIndex = 0;
-            label4.Text = "Mã số thuế";
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(38, 142);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(66, 15);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Mã số thuế";
             // 
             // label5
             // 
-            label5.AutoSize = true;
-            label5.Location = new Point(38, 184);
-            label5.Name = "label5";
-            label5.Size = new Size(124, 15);
-            label5.TabIndex = 0;
-            label5.Text = "Link domain hệ thống";
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(38, 184);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(124, 15);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Link domain hệ thống";
             // 
             // txtComid
             // 
-            txtComid.Location = new Point(166, 20);
-            txtComid.Name = "txtComid";
-            txtComid.Size = new Size(302, 23);
-            txtComid.TabIndex = 1;
+            this.txtComid.Location = new System.Drawing.Point(166, 20);
+            this.txtComid.Name = "txtComid";
+            this.txtComid.Size = new System.Drawing.Size(302, 23);
+            this.txtComid.TabIndex = 1;
             // 
             // txtCompany
             // 
-            txtCompany.Location = new Point(166, 59);
-            txtCompany.Name = "txtCompany";
-            txtCompany.Size = new Size(302, 23);
-            txtCompany.TabIndex = 1;
+            this.txtCompany.Location = new System.Drawing.Point(166, 59);
+            this.txtCompany.Name = "txtCompany";
+            this.txtCompany.Size = new System.Drawing.Size(302, 23);
+            this.txtCompany.TabIndex = 1;
             // 
             // txtAddress
             // 
-            txtAddress.Location = new Point(166, 98);
-            txtAddress.Name = "txtAddress";
-            txtAddress.Size = new Size(302, 23);
-            txtAddress.TabIndex = 1;
+            this.txtAddress.Location = new System.Drawing.Point(166, 98);
+            this.txtAddress.Name = "txtAddress";
+            this.txtAddress.Size = new System.Drawing.Size(302, 23);
+            this.txtAddress.TabIndex = 1;
             // 
             // txtTaxcode
             // 
-            txtTaxcode.Location = new Point(166, 134);
-            txtTaxcode.Name = "txtTaxcode";
-            txtTaxcode.Size = new Size(302, 23);
-            txtTaxcode.TabIndex = 1;
+            this.txtTaxcode.Location = new System.Drawing.Point(166, 134);
+            this.txtTaxcode.Name = "txtTaxcode";
+            this.txtTaxcode.Size = new System.Drawing.Size(302, 23);
+            this.txtTaxcode.TabIndex = 1;
             // 
             // txtDomain
             // 
-            txtDomain.Location = new Point(166, 176);
-            txtDomain.Name = "txtDomain";
-            txtDomain.Size = new Size(302, 23);
-            txtDomain.TabIndex = 1;
+            this.txtDomain.Location = new System.Drawing.Point(166, 176);
+            this.txtDomain.Name = "txtDomain";
+            this.txtDomain.Size = new System.Drawing.Size(302, 23);
+            this.txtDomain.TabIndex = 1;
             // 
             // btnSaveCompany
             // 
-            btnSaveCompany.Location = new Point(229, 236);
-            btnSaveCompany.Name = "btnSaveCompany";
-            btnSaveCompany.Size = new Size(166, 46);
-            btnSaveCompany.TabIndex = 2;
-            btnSaveCompany.Text = "Lưu cấu hình";
-            btnSaveCompany.UseVisualStyleBackColor = true;
-            btnSaveCompany.Click += btnSaveCompany_Click;
+            this.btnSaveCompany.Location = new System.Drawing.Point(283, 236);
+            this.btnSaveCompany.Name = "btnSaveCompany";
+            this.btnSaveCompany.Size = new System.Drawing.Size(166, 46);
+            this.btnSaveCompany.TabIndex = 2;
+            this.btnSaveCompany.Text = "Lưu cấu hình";
+            this.btnSaveCompany.UseVisualStyleBackColor = true;
+            this.btnSaveCompany.Click += new System.EventHandler(this.btnSaveCompany_Click);
+            // 
+            // btnlogout
+            // 
+            this.btnlogout.Location = new System.Drawing.Point(64, 236);
+            this.btnlogout.Name = "btnlogout";
+            this.btnlogout.Size = new System.Drawing.Size(145, 46);
+            this.btnlogout.TabIndex = 3;
+            this.btnlogout.Text = "Đăng xuất";
+            this.btnlogout.UseVisualStyleBackColor = true;
+            this.btnlogout.Click += new System.EventHandler(this.btnlogout_Click);
             // 
             // Company
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(504, 294);
-            Controls.Add(btnSaveCompany);
-            Controls.Add(txtDomain);
-            Controls.Add(txtTaxcode);
-            Controls.Add(txtAddress);
-            Controls.Add(txtCompany);
-            Controls.Add(txtComid);
-            Controls.Add(label5);
-            Controls.Add(label4);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Name = "Company";
-            Text = "Cấu hình thông tin công ty";
-            Load += Company_Load;
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(504, 294);
+            this.Controls.Add(this.btnlogout);
+            this.Controls.Add(this.btnSaveCompany);
+            this.Controls.Add(this.txtDomain);
+            this.Controls.Add(this.txtTaxcode);
+            this.Controls.Add(this.txtAddress);
+            this.Controls.Add(this.txtCompany);
+            this.Controls.Add(this.txtComid);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Name = "Company";
+            this.Text = "Cấu hình thông tin công ty";
+            this.Load += new System.EventHandler(this.Company_Load);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion
@@ -167,5 +180,6 @@
         private TextBox txtTaxcode;
         private TextBox txtDomain;
         private Button btnSaveCompany;
+        private Button btnlogout;
     }
 }

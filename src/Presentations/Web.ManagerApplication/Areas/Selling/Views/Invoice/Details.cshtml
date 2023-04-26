@@ -135,49 +135,49 @@
                         <tr>
                             <td>@item.Code</td>
                             <td>@item.Name</td>
-                            <td class="text-center">@item.Quantity.ToString("N0")</td>
-                            <td class="text-right">@item.EntryPrice.ToString("N0")</td>
+                            <td class="text-center number3">@item.Quantity</td>
+                            <td class="text-right number3">@item.EntryPrice</td>
                             <td class="text-right flex-colum-td">
-                                <span>@item.DiscountAmount.ToString("N0")</span>
+                                <span class="number3">@item.DiscountAmount</span>
                                 @if (item.Discount>0)
                                 {
-                                    <small class="required">@(item.Discount)%</small>
+                                    <small class="required number3">@(item.Discount)%</small>
                                 }
                             </td>
-                            <td class="text-right">@item.Price.ToString("N0")</td>
-                            <td class="text-right font-weight-bold">@item.Total.ToString("N0")</td>
+                            <td class="text-right number3">@item.Price</td>
+                            <td class="text-right font-weight-bold number3">@item.Total</td>
                         </tr>
                     }
                     <tr>
                         <td colspan="2" class="text-right">Tổng</td>
-                        <td class="text-center">@Model.InvoiceItems.Sum(x=>x.Quantity)</td>
+                        <td class="text-center number3">@Model.InvoiceItems.Sum(x=>x.Quantity)</td>
                         <td class="text-right" colspan="3">Tổng tiền hàng</td>
-                        <td class="text-right font-weight-bold text-success">@Model.Total.ToString("N0")</td>
+                        <td class="text-right font-weight-bold text-success number3">@Model.Total</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="6" class="text-right">Giảm giá</td>
-                        <td class="text-right font-weight-bold">@Model.DiscountAmount.ToString("N0")</td>
+                        <td class="text-right font-weight-bold number3">@Model.DiscountAmount</td>
                     </tr>
-                    @if (Model.VATRate != (int)Application.Enums.VATRateInv.KHONGVAT)
+                    @if (Model.VATRate != (int)Application.Enums.VATRateInv.KHONGVAT && Model.VATRate != (int)Application.Enums.VATRateInv.NOVAT)
                     {
                         <tr>
                             <td colspan="6" class="text-right">Thuế GTGT: @(Model.VATRate)%</td>
-                            <td class="text-right font-weight-bold">@Model.VATAmount.ToString("N0")</td>
+                            <td class="text-right font-weight-bold number3">@Model.VATAmount</td>
                         </tr>
                     }
                     <tr>
                         <td colspan="6" class="text-right">Khách cần thanh toán</td>
-                        <td class="text-right font-weight-bold red">@Model.Amonut.ToString("N0")</td>
+                        <td class="text-right font-weight-bold red number3">@Model.Amonut</td>
                     </tr>
                     <tr>
                         <td colspan="6" class="text-right">Khách đưa</td>
-                        <td class="text-right font-weight-bold">@Model.AmountCusPayment?.ToString("N0")</td>
+                        <td class="text-right font-weight-bold number3">@Model.AmountCusPayment</td>
                     </tr>
                     <tr>
                         <td colspan="6" class="text-right">Tiền thừa trả khách</td>
-                        <td class="text-right font-weight-bold">@Model.AmountChangeCus?.ToString("N0")</td>
+                        <td class="text-right font-weight-bold number3">@Model.AmountChangeCus</td>
                     </tr>
                 </tfoot>
             </table>

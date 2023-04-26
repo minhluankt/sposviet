@@ -134,7 +134,14 @@ var sposvietplugin = {
                     }
                     
                 } else {
-                    toastrcus.error(json.Message);
+                    if (json.Message == "-1" && parseInt(json.type) == TypeEventWebSocket.SignEInvoice) {
+                        toastrcus.warning("Người dùng hủy bỏ");
+                        resolve("-1");
+                    } else {
+                        toastrcus.error(json.Message);
+                        resolve("-1");
+                    }
+                    
                 }
             };
             // khi lỡi

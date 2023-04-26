@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SposVietPluginKySo
 {
@@ -27,6 +28,10 @@ namespace SposVietPluginKySo
                     x509Certificate2 = certificate;
                 return certificate;
             }
+            if (x509Certificate2==null)
+            {
+                return null;
+            }
             return x509Store.Certificates[0];
         }
         public  byte[] GetDigitalSignature(byte[] hashBytes)
@@ -45,13 +50,43 @@ namespace SposVietPluginKySo
             /*use any asymmetric crypto service provider for encryption of hash   
             with private key of cert.   
             */
-            RSACryptoServiceProvider rsaCryptoService = (RSACryptoServiceProvider)certificate.PrivateKey;
+            //--------------------trường hợp cũ
+            // using (RSACryptoServiceProvider csp = (RSACryptoServiceProvider)cert.PrivateKey)
+            try
+            {
+                
+                LogControl.Write(certificate.SerialNumber);
+                LogControl.Write(certificate.PrivateKey.ToString());
 
-            /*now lets sign the hash   
-            1.spevify hash bytes   
-            2. and hash algorithm name to obtain the bytes   
-            */
-            return rsaCryptoService.SignHash(hashBytes, CryptoConfig.MapNameToOID("SHA1"));
+
+
+                //-------------------trường hợp cts mới SH256
+                if (certificate.PrivateKey.ToString().Contains("RSACryptoServiceProvider"))
+                {
+                    //-----------cách 1
+                    RSACryptoServiceProvider rsaCryptoService = (RSACryptoServiceProvider)certificate.PrivateKey;//mặc định cái này
+                    return rsaCryptoService.SignHash(hashBytes, CryptoConfig.MapNameToOID("SHA1"));
+
+                    //----------end
+                }
+                else
+                {
+                    using (System.Security.Cryptography.RSACng rsaCryptoService = (System.Security.Cryptography.RSACng)certificate.PrivateKey)
+                    {
+                        return rsaCryptoService.SignHash(hashBytes, System.Security.Cryptography.HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                LogControl.Write(e.ToString());
+                return null;
+            }
+           
+            //--------------------trường hợp mới
+            
+
             // return rsaCryptoService.SignHash(hashBytes);
         }
     }

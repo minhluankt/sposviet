@@ -145,10 +145,21 @@ namespace SposVietPluginKySo
                             else {
                                 EInvoiceService eInvoiceService = new EInvoiceService();
                                 string sign = eInvoiceService.SignHashEInvoiceToken(model.hash);
-                                res.isSuccess = true;
-                                res.Message = "Ký số thành công";
-                                res.Data = sign;
-                                Send(JsonConvert.SerializeObject(res));
+                                if (sign=="-1")
+                                {
+                                    res.isSuccess = false;
+                                    res.Message = "-1";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
+                                else
+                                {
+                                    res.isSuccess = true;
+                                    res.Message = "Ký số thành công";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
+                              
                             }
                             
                             break;

@@ -28,160 +28,161 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            notifyIcon1 = new NotifyIcon(components);
-            contextMenuStrip1 = new ContextMenuStrip(components);
-            thoátToolStripMenuItem = new ToolStripMenuItem();
-            mởỨngDụngToolStripMenuItem = new ToolStripMenuItem();
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
-            label5 = new Label();
-            Companyname = new Label();
-            Taxcode = new Label();
-            Address = new Label();
-            Domain = new Label();
-            ComId = new Label();
-            contextMenuStrip1.SuspendLayout();
-            SuspendLayout();
+            this.components = new System.ComponentModel.Container();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.thoátToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mởỨngDụngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.Companyname = new System.Windows.Forms.Label();
+            this.Taxcode = new System.Windows.Forms.Label();
+            this.Address = new System.Windows.Forms.Label();
+            this.Domain = new System.Windows.Forms.Label();
+            this.ComId = new System.Windows.Forms.Label();
+            this.contextMenuStrip1.SuspendLayout();
+            this.SuspendLayout();
             // 
             // notifyIcon1
             // 
-            notifyIcon1.Text = "notifyIcon1";
-            notifyIcon1.Visible = true;
+            this.notifyIcon1.Text = "notifyIcon1";
+            this.notifyIcon1.Visible = true;
             // 
             // contextMenuStrip1
             // 
-            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { thoátToolStripMenuItem, mởỨngDụngToolStripMenuItem });
-            contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(148, 48);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.thoátToolStripMenuItem,
+            this.mởỨngDụngToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(148, 48);
             // 
             // thoátToolStripMenuItem
             // 
-            thoátToolStripMenuItem.Name = "thoátToolStripMenuItem";
-            thoátToolStripMenuItem.Size = new Size(147, 22);
-            thoátToolStripMenuItem.Text = "Thoát";
-            thoátToolStripMenuItem.Click += thoátToolStripMenuItem_Click;
+            this.thoátToolStripMenuItem.Name = "thoátToolStripMenuItem";
+            this.thoátToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.thoátToolStripMenuItem.Text = "Thoát";
             // 
             // mởỨngDụngToolStripMenuItem
             // 
-            mởỨngDụngToolStripMenuItem.Name = "mởỨngDụngToolStripMenuItem";
-            mởỨngDụngToolStripMenuItem.Size = new Size(147, 22);
-            mởỨngDụngToolStripMenuItem.Text = "Mở ứng dụng";
-            mởỨngDụngToolStripMenuItem.Click += mởỨngDụngToolStripMenuItem_Click;
+            this.mởỨngDụngToolStripMenuItem.Name = "mởỨngDụngToolStripMenuItem";
+            this.mởỨngDụngToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.mởỨngDụngToolStripMenuItem.Text = "Mở ứng dụng";
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(45, 47);
-            label1.Name = "label1";
-            label1.Size = new Size(49, 15);
-            label1.TabIndex = 1;
-            label1.Text = "Công ty";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(45, 47);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(49, 15);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Công ty";
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(45, 82);
-            label2.Name = "label2";
-            label2.Size = new Size(66, 15);
-            label2.TabIndex = 1;
-            label2.Text = "Mã số thuế";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(45, 82);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(66, 15);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Mã số thuế";
             // 
             // label3
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(45, 123);
-            label3.Name = "label3";
-            label3.Size = new Size(43, 15);
-            label3.TabIndex = 1;
-            label3.Text = "Địa chỉ";
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(45, 123);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(43, 15);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Địa chỉ";
             // 
             // label4
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(45, 163);
-            label4.Name = "label4";
-            label4.Size = new Size(80, 15);
-            label4.TabIndex = 1;
-            label4.Text = "Link hệ thống";
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(45, 163);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(80, 15);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Link hệ thống";
             // 
             // label5
             // 
-            label5.AutoSize = true;
-            label5.Location = new Point(45, 210);
-            label5.Name = "label5";
-            label5.Size = new Size(83, 15);
-            label5.TabIndex = 1;
-            label5.Text = "Mã Định Danh";
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(45, 210);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(83, 15);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "Mã Định Danh";
             // 
             // Companyname
             // 
-            Companyname.AutoSize = true;
-            Companyname.Location = new Point(145, 47);
-            Companyname.Name = "Companyname";
-            Companyname.Size = new Size(49, 15);
-            Companyname.TabIndex = 1;
-            Companyname.Text = "Công ty";
+            this.Companyname.AutoSize = true;
+            this.Companyname.Location = new System.Drawing.Point(145, 47);
+            this.Companyname.Name = "Companyname";
+            this.Companyname.Size = new System.Drawing.Size(49, 15);
+            this.Companyname.TabIndex = 1;
+            this.Companyname.Text = "Công ty";
             // 
             // Taxcode
             // 
-            Taxcode.AutoSize = true;
-            Taxcode.Location = new Point(145, 82);
-            Taxcode.Name = "Taxcode";
-            Taxcode.Size = new Size(49, 15);
-            Taxcode.TabIndex = 1;
-            Taxcode.Text = "Công ty";
+            this.Taxcode.AutoSize = true;
+            this.Taxcode.Location = new System.Drawing.Point(145, 82);
+            this.Taxcode.Name = "Taxcode";
+            this.Taxcode.Size = new System.Drawing.Size(49, 15);
+            this.Taxcode.TabIndex = 1;
+            this.Taxcode.Text = "Công ty";
             // 
             // Address
             // 
-            Address.AutoSize = true;
-            Address.Location = new Point(145, 123);
-            Address.Name = "Address";
-            Address.Size = new Size(49, 15);
-            Address.TabIndex = 1;
-            Address.Text = "Công ty";
+            this.Address.AutoSize = true;
+            this.Address.Location = new System.Drawing.Point(145, 123);
+            this.Address.Name = "Address";
+            this.Address.Size = new System.Drawing.Size(49, 15);
+            this.Address.TabIndex = 1;
+            this.Address.Text = "Công ty";
             // 
             // Domain
             // 
-            Domain.AutoSize = true;
-            Domain.Location = new Point(145, 163);
-            Domain.Name = "Domain";
-            Domain.Size = new Size(49, 15);
-            Domain.TabIndex = 1;
-            Domain.Text = "Công ty";
+            this.Domain.AutoSize = true;
+            this.Domain.Location = new System.Drawing.Point(145, 163);
+            this.Domain.Name = "Domain";
+            this.Domain.Size = new System.Drawing.Size(49, 15);
+            this.Domain.TabIndex = 1;
+            this.Domain.Text = "Công ty";
             // 
             // ComId
             // 
-            ComId.AutoSize = true;
-            ComId.Location = new Point(145, 210);
-            ComId.Name = "ComId";
-            ComId.Size = new Size(49, 15);
-            ComId.TabIndex = 1;
-            ComId.Text = "Công ty";
+            this.ComId.AutoSize = true;
+            this.ComId.Location = new System.Drawing.Point(145, 210);
+            this.ComId.Name = "ComId";
+            this.ComId.Size = new System.Drawing.Size(49, 15);
+            this.ComId.TabIndex = 1;
+            this.ComId.Text = "Công ty";
             // 
             // sposvietform
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(749, 293);
-            Controls.Add(label5);
-            Controls.Add(label4);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(ComId);
-            Controls.Add(Domain);
-            Controls.Add(Address);
-            Controls.Add(Taxcode);
-            Controls.Add(Companyname);
-            Controls.Add(label1);
-            Name = "sposvietform";
-            Text = "SposViet - Plugin ký số";
-            Load += sposvietform_Load;
-            contextMenuStrip1.ResumeLayout(false);
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(749, 293);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.ComId);
+            this.Controls.Add(this.Domain);
+            this.Controls.Add(this.Address);
+            this.Controls.Add(this.Taxcode);
+            this.Controls.Add(this.Companyname);
+            this.Controls.Add(this.label1);
+            this.Name = "sposvietform";
+            this.Text = "SposViet - Plugin ký số";
+            this.Load += new System.EventHandler(this.sposvietform_Load);
+            this.contextMenuStrip1.ResumeLayout(false);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion

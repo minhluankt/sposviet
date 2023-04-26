@@ -18,12 +18,16 @@ namespace SposVietPluginKySo
         {
             InitializeComponent();
         }
-
+        private void btnlogout_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            LoginForm loginForm = new LoginForm();
+            loginForm.Show();
+        }
         private void btnSaveCompany_Click(object sender, EventArgs e)
         {
             try
             {
-                Properties.Settings.Default.ComId = int.Parse(txtComid.Text.Trim());
                 Properties.Settings.Default.Company = txtCompany.Text.Trim();
                 Properties.Settings.Default.MST = txtTaxcode.Text.Trim();
                 Properties.Settings.Default.Address = txtAddress.Text.Trim();
@@ -47,5 +51,7 @@ namespace SposVietPluginKySo
             txtAddress.Text =Properties.Settings.Default.Address;
             txtDomain.Text=Properties.Settings.Default.Domain;
         }
+
+    
     }
 }

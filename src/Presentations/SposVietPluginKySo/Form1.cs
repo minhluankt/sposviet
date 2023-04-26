@@ -23,13 +23,25 @@ namespace SposVietPluginKySo
         {
             this.notifyIcon1.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
             this.notifyIcon1.ContextMenuStrip.Items.Add("Thoát ứng dụng", null, this.MenuTest1_Click);
-            //this.notifyIcon1.ContextMenuStrip.Items.Add("Mở ứng dụng", null, this.MenuTest2_Click);
+            this.notifyIcon1.ContextMenuStrip.Items.Add("Mở ứng dụng", null, this.ShowLogin_Click);
             this.notifyIcon1.ContextMenuStrip.ShowImageMargin = false;
         }
-
+       
         void MenuTest1_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+        void ShowLogin_Click(object sender, EventArgs e)
+        {
+            if (Properties.Settings.Default.ComId!=0)
+            {
+                new Company().Show();
+            }
+            else
+            {
+                new LoginForm().Show();
+            }
+            
         }
 
         protected override void OnVisibleChanged(EventArgs e)
@@ -51,7 +63,11 @@ namespace SposVietPluginKySo
 
         private void sposvietform_Load(object sender, EventArgs e)
         {
-
+            ComId.Text = Properties.Settings.Default.ComId.ToString();
+            Companyname.Text = Properties.Settings.Default.Company;
+            Taxcode.Text = Properties.Settings.Default.MST;
+            Address.Text = Properties.Settings.Default.Address;
+            Domain.Text = Properties.Settings.Default.Domain;
         }
     }
 }
