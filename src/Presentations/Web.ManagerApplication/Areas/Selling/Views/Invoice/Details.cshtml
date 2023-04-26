@@ -160,7 +160,7 @@
                         <td colspan="6" class="text-right">Giảm giá</td>
                         <td class="text-right font-weight-bold number3">@Model.DiscountAmount</td>
                     </tr>
-                    @if (Model.VATRate != (int)Application.Enums.VATRateInv.KHONGVAT && Model.VATRate != (int)Application.Enums.VATRateInv.NOVAT)
+                    @if (Model.VATRate != (int)Application.Enums.VATRateInv.KHONGVAT && Model.VATRate != (int)Application.Enums.NOVAT.NOVAT)
                     {
                         <tr>
                             <td colspan="6" class="text-right">Thuế GTGT: @(Model.VATRate)%</td>

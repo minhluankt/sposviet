@@ -69,7 +69,7 @@ namespace SposVietPluginKySo
             {
              
                 //https://stackoverflow.com/questions/11140164/signalr-console-app-example
-                // var url = "https://fnb.sposviet.vn/Signal";
+
                 var url = "http://fnb.sposviet.vn/Signal";
                 List<TimeSpan> timeSpans = new List<TimeSpan>(0);
                 timeSpans.Add(TimeSpan.FromSeconds(1));
@@ -89,6 +89,7 @@ namespace SposVietPluginKySo
                 timeSpans.Add(TimeSpan.FromSeconds(170));
                 timeSpans.Add(TimeSpan.FromSeconds(190));
                 timeSpans.Add(TimeSpan.FromSeconds(200));
+                timeSpans.Add(TimeSpan.FromSeconds(300));
 
                 var connection = new HubConnectionBuilder()
                      .WithUrl(url)

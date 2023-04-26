@@ -4,6 +4,7 @@
     {
         public string Email { get; set; }
         public string Password { get; set; }
+        public bool isOwner { get; set; } = false;
     }
     public class RefreshTokenModel
     {

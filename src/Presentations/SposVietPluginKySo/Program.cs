@@ -49,14 +49,13 @@ namespace SposVietPluginKySo
                     //signalRConnection.Start();
                     signalRConnection.StartSignalRAsync();
 
-
                     ApplicationConfiguration.Initialize();
                     Application.Run(new sposvietform());
                     //giai phong Mutex;
                     mutex.ReleaseMutex();
                 }
                 else
-                    MessageBox.Show("Ứng dụng đã được chạy, vui lòng chờ", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Ứng dụng đang hoạt động", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Application.Exit();
             }
         }

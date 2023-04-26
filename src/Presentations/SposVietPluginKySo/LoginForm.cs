@@ -35,6 +35,7 @@ namespace SposVietPluginKySo
                 {
                     email = user,
                     password = pass,
+                    isOwner=true
                 };
                 var getapi = await CommonApi.PostApiAsync("identity/login", JsonConvert.SerializeObject(data));
                 var model = JsonConvert.DeserializeObject<ApiResponse<UserModel>>(getapi);
@@ -76,10 +77,6 @@ namespace SposVietPluginKySo
 
 
 
-        private void LoginForm_Load(object sender, EventArgs e)
-        {
-
-        }
 
     }
 }

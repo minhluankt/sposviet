@@ -88,7 +88,13 @@ namespace Infrastructure.Infrastructure.Identity.Services
         {
            // var user = await _customerManager.GetUserByUserNameAsync(request.Email);//khách hàng customer
             var user = await _userManager.FindByNameAsync(request.Email);
-
+            if (request.isOwner)
+            {
+                if (!user.IsStoreOwner)
+                {
+                    return Result<TokenResponse>.Fail($"Tài khoản không phải là Owner");
+                }
+            }
             //Throw.Exception.IfNull(user, nameof(user), $"Tài khoản chưa đăng ký {request.Email}.");
             if (user==null)
             {
