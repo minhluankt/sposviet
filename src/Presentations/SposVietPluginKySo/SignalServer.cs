@@ -70,6 +70,10 @@ namespace SposVietPluginKySo
 
                 //https://stackoverflow.com/questions/11140164/signalr-console-app-example
                 string domain = !string.IsNullOrEmpty(Properties.Settings.Default.Domain) ? Properties.Settings.Default.Domain : "https://fnb.sposviet.vn";
+                if (!domain.Contains("https"))
+                {
+                    domain = "https://fnb.sposviet.vn";
+                }
                 //string domain = "https://localhost:7269";
                 var url = $"{domain}/Signal";
                 List<TimeSpan> timeSpans = new List<TimeSpan>(0);
@@ -97,8 +101,8 @@ namespace SposVietPluginKySo
                      .WithAutomaticReconnect(timeSpans.ToArray())
                      .Build();
                 connection.On<string>("PrintbaobepSposViet", (html) => OnReceiveMessage(html));
-                var t = connection.StartAsync();
-                t.Wait();
+                await connection.StartAsync();
+               // t.Wait();
                 if (Properties.Settings.Default.ComId > 0)
                 {
                     await connection.InvokeAsync("PrintbaobepSposViet", Properties.Settings.Default.ComId, "TEST");
@@ -126,6 +130,7 @@ namespace SposVietPluginKySo
                 if (dataModel?.type==Enum.EnumTypePrint.PrintBaoBep)
                 {
                     PrintServer.PrintPageBaoBep(dataModel.data);
+                    LogControl.Write("In bill OK");
                 }
                 else
                 {

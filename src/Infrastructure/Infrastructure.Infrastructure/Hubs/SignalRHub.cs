@@ -110,15 +110,15 @@ namespace Infrastructure.Infrastructure.HubS
             else
             {
                 await Clients.Groups(_Group).SendAsync("Printbaobep", data);
-                try
-                {
-                   await this.PrintbaobepSposViet(currentUser.ComId, data);
-                }
-                catch (Exception e)
-                {
-                    _log.LogInformation("PrintbaobepSposViet thất bại");
-                    _log.LogInformation(e.ToString());
-                }
+                //try
+                //{
+                //   await this.PrintbaobepSposViet(currentUser.ComId, data);
+                //}
+                //catch (Exception e)
+                //{
+                //    _log.LogInformation("PrintbaobepSposViet thất bại");
+                //    _log.LogInformation(e.ToString());
+                //}
             }
         }
         public async Task PrintbaobepSposViet(int ComId, string data)//dành cho báo  bếp tại máy khashc hàng phương án 2 k cần bật ứng dụng web, chỉ cần tool

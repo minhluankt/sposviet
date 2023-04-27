@@ -1,25 +1,28 @@
 Unicode True
-;--------------------------------
-!define UNINST_KEY \
-  "Software\Microsoft\Windows\CurrentVersion\Uninstall\SposVietPluginKySo"
-!define MULTIUSER_INSTALLMODE_COMMANDLINE
-!define $MultiUser.InstallMode "AllUsers"
-; Includes
-
-  !include "MUI2.nsh"
-  !include "logiclib.nsh"
-  !include "FileFunc.nsh"
-;--------------------------------
 ; Custom defines
   !define NAME "SPOSVIET-PLUGIN"
   !define APPFILE "SposVietPluginKySo.exe"
   !define VERSION "1.0.0"
   !define SLUG "${NAME} v${VERSION}"
   ;--------------------------------
+;--------------------------------
+!define UNINST_KEY \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\SposVietPluginKySo"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "CurrentUser"
+!define MULTIUSER_INSTALLMODE_COMMANDLINE
+!define MULTIUSER_MUI
+!define MultiUser.InstallMode
+!define MULTIUSER_INSTALLMODE_INSTDIR "$(^NAME)"
+
+  !include "MUI2.nsh"
+  !include "logiclib.nsh"
+  !include "FileFunc.nsh"
+;--------------------------------
+
 ; General
 
   Name "${NAME}"
-  OutFile "${NAME} Setup.exe"
+  OutFile "${NAME}Setup.exe"
   InstallDir "$PROGRAMFILES\${NAME}"
   InstallDirRegKey HKLM "Software\${NAME}" ""
   RequestExecutionLevel admin
@@ -55,6 +58,15 @@ Unicode True
   !insertmacro MUI_LANGUAGE "Vietnamese"
   ;!insertmacro MUI_LANGUAGE "English"
   ;--------------------------------
+  
+
+
+Function onMultiUserModeChanged
+${If} $MultiUser.InstallMode == "CurrentUser"
+    StrCpy $InstDir "$LocalAppdata\Programs\${MULTIUSER_INSTALLMODE_INSTDIR}"
+${EndIf}
+FunctionEnd
+  
 ;--------------------------------
 ; Section - Install App
 ;https://nsis.sourceforge.io/Add_uninstall_information_to_Add/Remove_Programs#With_a_MultiUser_Installer
@@ -70,6 +82,7 @@ Unicode True
 	WriteRegStr HKLM "${UNINST_KEY}" "DisplayVersion" "${VERSION}"
 	WriteRegStr HKLM "${UNINST_KEY}" "UninstallString" \
 		"$\"$INSTDIR\uninstall.exe$\" /$MultiUser.InstallMode"
+	WriteRegStr HKLM "${UNINST_KEY}" $MultiUser.InstallMode 1 
 	WriteRegStr HKLM "${UNINST_KEY}" "QuietUninstallString" \
 		"$\"$INSTDIR\uninstall.exe$\" /$MultiUser.InstallMode /S"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" \

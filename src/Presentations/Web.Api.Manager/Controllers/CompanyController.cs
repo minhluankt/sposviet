@@ -30,7 +30,7 @@ namespace Web.Api.Manager.Controllers
                     Name = getcompany.Name,
                     Taxcode = getcompany.CusTaxCode,
                     Address = getcompany.Address,
-                    Domain = "http://fnb.sposviet.vn",
+                    Domain = "https://fnb.sposviet.vn",
                 };
                 var rs = new ApiResponse("", json) { IsError = false };//k cần IsError vì đã để md, làm để nhớ thôi
                 return Ok(rs);

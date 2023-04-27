@@ -72,8 +72,9 @@ namespace SposVietPluginKySo
                 //chen gia tri key
                 //regkey.SetValue("Index", keyvalue);
                 //registryKey.SetValue("SposVietKySo", "");
-                registryKey.SetValue("SposVietKySo", Application.StartupPath + "SposVietPluginKySo");
-                //registryKey.SetValue("SPOSVIET-PLUGIN", Application.ExecutablePath);
+                registryKey.SetValue("SPOSVIET_PLUGIN",$"\"{Application.StartupPath}SposVietPluginKySo.exe\"");
+                //registryKey.SetValue("SPOSVIET-PLUGIN", Application.StartupPath + "SposVietPluginKySo.exe");
+                
             }
             catch (System.Exception ex)
             {
