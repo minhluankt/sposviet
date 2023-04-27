@@ -58,7 +58,7 @@ namespace Application.Features.ReportPoss.Query
                                 VATAmount = item.VATAmount,
                                 DiscountAmount = item.DiscountAmount,
                                 ServiceChargeAmount = item.ServiceChargeAmount,
-                                CreateDate = item.CreatedOn.ToString("dd/MM/yyyy"),
+                                CreateDate = item.CreatedOn.ToString("dd/MM/yyyy HH:mm"),
                                 RankName = LibraryCommon.DateInWeek(item.CreatedOn)
                             });
                         }

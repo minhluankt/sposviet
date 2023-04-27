@@ -35,7 +35,7 @@ namespace Application.Features.Kitchens.Commands
         private readonly IMapper _mapper;
         private readonly IDistributedCache _distributedCache;
         private IUnitOfWork _unitOfWork { get; set; }
-
+        
         public CreateNotifyChitkenHandler(
             ILogger<CreateNotifyChitkenHandler> log, ICompanyAdminInfoRepository companyProductRepository,
             INotifyChitkenRepository NotifyChitkenRepository,
@@ -81,6 +81,7 @@ namespace Application.Features.Kitchens.Commands
                                 ngaythangnamxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
                                 tongsoluong = add.Data.Sum(x=>x.Quantity).ToString("N0"),
                                 tenbanphong = add.Data.FirstOrDefault()?.RoomTableName,
+                                staffName = request.Cashername,
                             };
                             
                             string tableProduct = string.Empty;

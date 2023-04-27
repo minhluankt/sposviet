@@ -1,12 +1,19 @@
 ﻿@*https://gitbrent.github.io/bootstrap4-toggle/*@
+@using Application.Hepers;
 @model List<Domain.Entities.ConfigSystem>
 @using Application.Enums
 @{
+    
+    var user = User.Identity.GetUserClaimLogin();
+
+
     bool DELETEINVOICENOPAYMENT = false;//XÓA HÓA ĐƠN SAU KHI CHỌN XÓA
     string DELETEIPUBLISHMERGEINVOICEAFTER = "";//XÓA HÓA ĐƠN CŨ SAU KHI GỘP
     string ACCEPTPAYMENTDELETEINVOICE = "";
     string AUTOVATINPAYMENT = "";
+    string PRINT_KET_NOI = "";
     bool PUBLISHMERGEINVOICE = false;
+    bool PRINT_BAO_BEP = false;
     foreach (var item in Model)
     {
         switch (item.Key)
@@ -35,7 +42,19 @@
             case nameof(EnumConfigParameters.PUBLISHMERGEINVOICE):
                 if (Convert.ToBoolean(item.Value))
                 {
-                    PUBLISHMERGEINVOICE = Convert.ToBoolean(item.Value); ;
+                    PUBLISHMERGEINVOICE = Convert.ToBoolean(item.Value); 
+                }
+            break; 
+            case nameof(EnumConfigParameters.PRINT_BAO_BEP):
+                if (Convert.ToBoolean(item.Value))
+                {
+                    PRINT_BAO_BEP = true;
+                }
+            break; 
+            case nameof(EnumConfigParameters.PRINT_KET_NOI):
+                if (Convert.ToBoolean(item.Value))
+                {
+                    PRINT_KET_NOI = "checked";
                 }
             break;
             default:
@@ -86,7 +105,7 @@
                 </div>
             </div>
         </div>
-        
+        <!--Tính năng Mặc định xuất hóa đơn máy tính tiền khi thanh toán-->
         <div class="item-col">
             <div>
                 <span>
@@ -102,6 +121,7 @@
              
             </div>
         </div>
+        <!--Tính năng xuất gộp-->
         <div class="item-col">
             <div>
                 <span>
@@ -129,11 +149,47 @@
                         <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()" data-key="@EnumConfigParameters.DELETEIPUBLISHMERGEINVOICEAFTER.ToString()" data-parent="@EnumConfigParameters.PUBLISHMERGEINVOICE.ToString()" @DELETEIPUBLISHMERGEINVOICEAFTER>
                         <span class="slider"></span>
                     </label>
-
                 </div>
             </div>
         </div>
+        <!--endTính năng xuất gộp-->
+        @if (user.IdDichVu ==EnumTypeProduct.AMTHUC)
+        {
+            <!--Tính năng cho phép in báo bếp-->
+            <div class="item-col">
+                <div>
+                    <span>
+                        Cho phép in báo/hủy  chế biến món
+                    </span>
+                    <small>Tính năng cho phép khi nhấn thông báo sẽ in báo món chế biến, hoặc hủy chế biến,lưu ý: bạn cần cài đặt phần mềm <b>SposViet Kết nối </b><a href="https://fnb.sposviet.vn/download/SPOSVIET-PLUGIN%20Setup.zip">Tại đây</a> </small>
+                </div>
+                <div class="check-b">
+                    <label class="switch-custom">
+                        <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()" class="toggleConfigSaleParameter" data-parent="" data-key="@EnumConfigParameters.PRINT_BAO_BEP.ToString()" @(PRINT_BAO_BEP ? "checked":"")>
+                        <span class="slider"></span>
+                    </label>
 
+                </div>
+            </div>
+            <div class="childrenconfig@(PRINT_BAO_BEP?"":" d-none")">
+                <div class="item-col">
+                    <div>
+                        <span>
+                            In theo phương pháp kết nối gửi lệnh xuống máy in
+                        </span>
+                        <small>Tính năng này cho phép khi nhân viên nhấn thông báo, hệ thống tự kết nối đến máy in đã cài đặt trên máy tính và có cái đặt phần mềm kết nối SposViet</small>
+                    </div>
+                    <div class="check-b">
+                        <label class="switch-custom">
+                            <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()" data-key="@EnumConfigParameters.PRINT_KET_NOI.ToString()" data-parent="@EnumConfigParameters.PRINT_BAO_BEP.ToString()" @PRINT_KET_NOI>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!--end Tính năng cho phép in báo bếp-->
+        }
+       
     </div>
 </div>
 

@@ -3,6 +3,7 @@ Unicode True
 !define UNINST_KEY \
   "Software\Microsoft\Windows\CurrentVersion\Uninstall\SposVietPluginKySo"
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
+!define $MultiUser.InstallMode "AllUsers"
 ; Includes
 
   !include "MUI2.nsh"

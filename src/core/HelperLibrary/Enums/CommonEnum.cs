@@ -196,6 +196,10 @@ public enum EnumTypePrintBarCode
         PUBLISHMERGEINVOICE = 5, 
         [Display(Name = "Xóa hóa đơn bán hàng sau khi đã gộp thành một đơn")]
         DELETEIPUBLISHMERGEINVOICEAFTER = 6,
+        [Display(Name = "In báo bếp")]
+        PRINT_BAO_BEP = 7, 
+        [Display(Name = "Phương pháp in kết nối Plugin SposViet")]
+        PRINT_KET_NOI = 8,
     }  
     public enum EnumConfigParametersType // loại nào
     {

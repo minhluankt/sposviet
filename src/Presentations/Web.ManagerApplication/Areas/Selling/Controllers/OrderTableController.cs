@@ -1,5 +1,6 @@
 ﻿using Application.Constants;
 using Application.Enums;
+using Application.Features.ConfigSystems.Query;
 using Application.Features.Invoices.Query;
 using Application.Features.Kitchens.Commands;
 using Application.Features.OrderTablePos.Commands;
@@ -13,6 +14,7 @@ using Application.Interfaces.Repositories;
 using Application.Providers;
 using Domain.Entities;
 using Domain.ViewModel;
+using Infrastructure.Infrastructure.HubS;
 using Infrastructure.Infrastructure.Identity.Models;
 using Infrastructure.Infrastructure.Migrations;
 using Microsoft.AspNetCore.Authorization;
@@ -31,11 +33,13 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
     [Area("Selling")]
     public class OrderTableController : BaseController<OrderTableController>
     {
+        private SignalRHub dashboardHub;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPaymentMethodRepository _payment;
-        public OrderTableController(UserManager<ApplicationUser> userManager, IPaymentMethodRepository payment)
+        public OrderTableController(UserManager<ApplicationUser> userManager, SignalRHub _dashboardHub,IPaymentMethodRepository payment)
         {
             _payment = payment;
+            dashboardHub = _dashboardHub;
             _userManager = userManager;
         }
         [Authorize(Policy = "pos.order")]
@@ -238,7 +242,46 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 {
                     if (!string.IsNullOrEmpty(UpdateQuantity.Data.HtmlPrint))
                     {
-                        return Json(new { isValid = true, data = UpdateQuantity.Data , isbaobep = true, dataHtml = UpdateQuantity.Data.HtmlPrint });
+                        //--------------mowr2 dòng này chạy bản mới
+                        //await dashboardHub.PrintbaobepSposViet(currentUser.ComId, UpdateQuantity.Data.HtmlPrint);
+                        //return Json(new { isValid = true, data = UpdateQuantity.Data , isbaobep = false});
+
+                        try
+                        {
+                            var _send = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.PRINT_BAO_BEP.ToString()) { ComId = currentUser.ComId });
+                            if (_send.Succeeded)
+                            {
+                                bool getvalue = Convert.ToBoolean(_send.Data.Value);
+                                if (getvalue)
+                                {
+                                    var checkconfig = _send.Data.ConfigSystems.SingleOrDefault(x => x.Key == EnumConfigParameters.PRINT_KET_NOI.ToString());
+                                    if (checkconfig != null)
+                                    {
+                                        if (Convert.ToBoolean(checkconfig.Value))
+                                        {
+                                            _notify.Success("Báo bếp thành công");
+                                            await dashboardHub.PrintbaobepSposViet(currentUser.ComId, UpdateQuantity.Data.HtmlPrint);
+                                            return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = false });
+                                        }
+                                    }
+                                    return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = true, dataHtml = UpdateQuantity.Data.HtmlPrint });
+                                }
+                                else
+                                {
+                                    return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = false });
+                                }
+                            }
+                            else
+                            {
+                                return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = false });
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogInformation("Xử lý báo bếp");
+                            _logger.LogError(e.ToString());
+                        }
+                        
                     }
                     return Json(new { isValid = true, data = UpdateQuantity.Data });
                 }
@@ -544,7 +587,35 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             if (send.Succeeded)
             {
                 _notify.Success("Thông báo bếp thành công!");
-                return Json(new { isValid = true , html = send.Data });
+
+                //await dashboardHub.PrintbaobepSposViet(currentUser.ComId, send.Data);
+                // return Json(new { isValid = true, isNotPrint=true });
+                var _send = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.PRINT_BAO_BEP.ToString()) { ComId = currentUser.ComId });
+                if (_send.Succeeded)
+                {
+                    bool getvalue = Convert.ToBoolean(_send.Data.Value);
+                    if (getvalue)
+                    {
+                        var checkconfig = _send.Data.ConfigSystems.SingleOrDefault(x => x.Key == EnumConfigParameters.PRINT_KET_NOI.ToString());
+                        if (checkconfig!=null)
+                        {
+                            if (Convert.ToBoolean(checkconfig.Value))
+                            {
+                                 await dashboardHub.PrintbaobepSposViet(currentUser.ComId, send.Data);
+                                 return Json(new { isValid = true, isNotPrint=true });
+                            }
+                        }
+                        return Json(new { isValid = true, html = send.Data, isNotPrint = false });
+                    }
+                    else
+                    {
+                        return Json(new { isValid = true, html = send.Data, isNotPrint = true });
+                    }
+                }
+                else
+                {
+                    return Json(new { isValid = true, html = send.Data, isNotPrint = true });
+                }
             }
             _notify.Error(GeneralMess.ConvertStatusToString(send.Message));
             return Json(new { isValid = false });

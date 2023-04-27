@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,11 @@ namespace Infrastructure.Infrastructure.HubS
     [AllowAnonymous]
     public class SignalRHub : Hub
     {
+        private readonly ILogger<SignalRHub> _log;
         private readonly IServiceProvider _serviceProvider;
-        public SignalRHub(IServiceProvider serviceProvider)
+        public SignalRHub(IServiceProvider serviceProvider, ILogger<SignalRHub> log)
         {
+            _log = log;
             _serviceProvider = serviceProvider;
         }
         public static List<KeyValuePair<string, string>> Ids = new List<KeyValuePair<string, string>>();
@@ -94,7 +97,7 @@ namespace Infrastructure.Infrastructure.HubS
 
             // await Clients.All.SendAsync("broadcastMessage", name, message);
         }
-        public async Task Printbaobep(string data,string text= "IN")
+        public async Task Printbaobep(string data,string text= "IN")//dành cho phương án 1
         {
             var currentUser = Context.User.Identity.GetUserClaimLogin();
             string _Group = $"{currentUser.ComId}_Printbaobep";
@@ -107,9 +110,18 @@ namespace Infrastructure.Infrastructure.HubS
             else
             {
                 await Clients.Groups(_Group).SendAsync("Printbaobep", data);
+                try
+                {
+                   await this.PrintbaobepSposViet(currentUser.ComId, data);
+                }
+                catch (Exception e)
+                {
+                    _log.LogInformation("PrintbaobepSposViet thất bại");
+                    _log.LogInformation(e.ToString());
+                }
             }
         }
-        public async Task PrintbaobepSposViet(int ComId, string data)//dành cho báo  bếp tại máy khashc hàng 
+        public async Task PrintbaobepSposViet(int ComId, string data)//dành cho báo  bếp tại máy khashc hàng phương án 2 k cần bật ứng dụng web, chỉ cần tool
         {
             var json = new
             {
@@ -131,56 +143,60 @@ namespace Infrastructure.Infrastructure.HubS
                 //var currentUser = await _userManager.GetUserAsync(Context.User);
                 // var currentUser = await _userManager.GetUserAsync(Context.User);
                 var currentUser = Context.User.Identity.GetUserClaimLogin();
-                if (STATUS == EnumTypeSignalRHub.POS && type == EnumTypeSignalRHub.POS)
+                if (currentUser!=null)
                 {
-                    string _Group = $"{currentUser.ComId}_POS";
-                    if (!Ids.Where(x => x.Key == Context.ConnectionId && x.Value == _Group).Any())
+                    if (STATUS == EnumTypeSignalRHub.POS && type == EnumTypeSignalRHub.POS)
                     {
-                        Ids.Add(new KeyValuePair<string, string>(Context.ConnectionId, _Group));
-                    }
-
-                    await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
-
-                    bool isValid = true;
-                    await Clients.OthersInGroup(_Group).SendAsync("addMessagePOS", isValid); // OthersInGroup là báo cho các người trong nhóm trừ thèn dg gọi,GroupExcept là trừ chỉ định
-
-                    /// thông báo cho bếp khi cấm thông báo
-                    if (type == EnumTypeSignalRHub.POS)
-                    {
-                        string _Groupbep = $"{currentUser.ComId}_CHITCHEN";
-                        if (!Ids.Where(x => x.Key == Context.ConnectionId && x.Value == _Groupbep).Any())
+                        string _Group = $"{currentUser.ComId}_POS";
+                        if (!Ids.Where(x => x.Key == Context.ConnectionId && x.Value == _Group).Any())
                         {
-                            Ids.Add(new KeyValuePair<string, string>(Context.ConnectionId, _Groupbep));
+                            Ids.Add(new KeyValuePair<string, string>(Context.ConnectionId, _Group));
                         }
-                        await Groups.AddToGroupAsync(Context.ConnectionId, _Groupbep);
-                        await Clients.OthersInGroup(_Group).SendAsync("addMessageCHITKEN", isValid);
+
+                        await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
+
+                        bool isValid = true;
+                        await Clients.OthersInGroup(_Group).SendAsync("addMessagePOS", isValid); // OthersInGroup là báo cho các người trong nhóm trừ thèn dg gọi,GroupExcept là trừ chỉ định
+
+                        /// thông báo cho bếp khi cấm thông báo
+                        if (type == EnumTypeSignalRHub.POS)
+                        {
+                            string _Groupbep = $"{currentUser.ComId}_CHITCHEN";
+                            if (!Ids.Where(x => x.Key == Context.ConnectionId && x.Value == _Groupbep).Any())
+                            {
+                                Ids.Add(new KeyValuePair<string, string>(Context.ConnectionId, _Groupbep));
+                            }
+                            await Groups.AddToGroupAsync(Context.ConnectionId, _Groupbep);
+                            await Clients.OthersInGroup(_Group).SendAsync("addMessageCHITKEN", isValid);
+                        }
+
                     }
+                    else if (STATUS == EnumTypeSignalRHub.CHITKEN && type == EnumTypeSignalRHub.KITCHENTOPOS)// KHI BẤm bếp sang ready thông báo cho pos thu ngân biết
+                    {
+                        string _Group = $"{currentUser.ComId}_POS";
+                        checkExitRoomChitchen(Context.ConnectionId, _Group);
+                        await Clients.Group(_Group).SendAsync("addMessageCHITKENBYPOS", note);
+                    }
+                    else if (STATUS == EnumTypeSignalRHub.CHITKEN && type == EnumTypeSignalRHub.CHITKEN)// thông báo từ thu ngân qua bếp
+                    {
+                        string _Group = $"{currentUser.ComId}_CHITCHEN";
+                        checkExitRoomChitchen(Context.ConnectionId, _Group);
+                        //bool checkuser = Ids.Contains(Context.ConnectionId);
+                        //await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
+                        bool isValid = true;//là k cần thông báo chuông
+                        await Clients.Group(_Group).SendAsync("addMessageCHITKEN", isValid);
+                    }
+                    else if (STATUS == EnumTypeSignalRHub.CHITKEN && (type == EnumTypeSignalRHub.UPDATECHITKEN || type == EnumTypeSignalRHub.DELETECHITKEN))//cái này là lúc bấm chuyển từ bếp đang nấu sang ready
+                    {
+                        string _Group = $"{currentUser.ComId}_CHITCHEN";
+                        checkExitRoomChitchen(Context.ConnectionId, _Group);
+                        //bool checkuser = Ids.Contains(Context.ConnectionId);
 
+                        bool isValid = false;//là k cần thông báo
+                        await Clients.Group(_Group).SendAsync("addMessageCHITKEN", isValid);
+                    }
                 }
-                else if (STATUS == EnumTypeSignalRHub.CHITKEN && type == EnumTypeSignalRHub.KITCHENTOPOS)// KHI BẤm bếp sang ready thông báo cho pos thu ngân biết
-                {
-                    string _Group = $"{currentUser.ComId}_POS";
-                    checkExitRoomChitchen(Context.ConnectionId, _Group);
-                    await Clients.Group(_Group).SendAsync("addMessageCHITKENBYPOS", note);
-                }
-                else if (STATUS == EnumTypeSignalRHub.CHITKEN && type == EnumTypeSignalRHub.CHITKEN)// thông báo từ thu ngân qua bếp
-                {
-                    string _Group = $"{currentUser.ComId}_CHITCHEN";
-                    checkExitRoomChitchen(Context.ConnectionId, _Group);
-                    //bool checkuser = Ids.Contains(Context.ConnectionId);
-                    //await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
-                    bool isValid = true;//là k cần thông báo chuông
-                    await Clients.Group(_Group).SendAsync("addMessageCHITKEN", isValid);
-                }
-                else if (STATUS == EnumTypeSignalRHub.CHITKEN && (type == EnumTypeSignalRHub.UPDATECHITKEN || type == EnumTypeSignalRHub.DELETECHITKEN))//cái này là lúc bấm chuyển từ bếp đang nấu sang ready
-                {
-                    string _Group = $"{currentUser.ComId}_CHITCHEN";
-                    checkExitRoomChitchen(Context.ConnectionId, _Group);
-                    //bool checkuser = Ids.Contains(Context.ConnectionId);
-
-                    bool isValid = false;//là k cần thông báo
-                    await Clients.Group(_Group).SendAsync("addMessageCHITKEN", isValid);
-                }
+               
             }
         }
         private async void checkExitRoomChitchen(string ConnectionId, string _Group)

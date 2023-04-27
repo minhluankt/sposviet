@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Configuration;
-namespace SposVietPluginKySo
+﻿namespace SposVietPluginKySo
 {
     public partial class Company : Form
     {
@@ -20,6 +8,8 @@ namespace SposVietPluginKySo
         }
         private void btnlogout_Click(object sender, EventArgs e)
         {
+            Properties.Settings.Default.ComId = 0;
+            Properties.Settings.Default.Save();
             this.Hide();
             LoginForm loginForm = new LoginForm();
             loginForm.Show();
@@ -45,13 +35,13 @@ namespace SposVietPluginKySo
 
         private void Company_Load(object sender, EventArgs e)
         {
-            txtComid.Text= Properties.Settings.Default.ComId.ToString();
-            txtCompany.Text= Properties.Settings.Default.Company;
-            txtTaxcode.Text=Properties.Settings.Default.MST;
-            txtAddress.Text =Properties.Settings.Default.Address;
-            txtDomain.Text=Properties.Settings.Default.Domain;
+            txtComid.Text = Properties.Settings.Default.ComId.ToString();
+            txtCompany.Text = Properties.Settings.Default.Company;
+            txtTaxcode.Text = Properties.Settings.Default.MST;
+            txtAddress.Text = Properties.Settings.Default.Address;
+            txtDomain.Text = Properties.Settings.Default.Domain;
         }
 
-    
+
     }
 }

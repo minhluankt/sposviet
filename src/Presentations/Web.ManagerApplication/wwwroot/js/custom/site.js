@@ -7476,7 +7476,6 @@ var posStaff = {
                 if (res.isValid) {
                     if (res.isbaobep) {
                         posStaff.eventKitchenNotice(res.dataHtml);
-
                     }
                     if (res.data.orderTableItems.length == 0) {
                         if (res.data.isBringBack) {
@@ -7596,7 +7595,10 @@ var posStaff = {
                 if (res.isValid) {
                     console.log("Thông báo ok");
                     posStaff.eventUpdateQuantityItemMonOrder();
-                    connection.invoke('Printbaobep', res.html,"IN");
+                    if (!res.isNotPrint) {
+                        connection.invoke('Printbaobep', res.html, "IN");
+                    }
+                    
                 } else {
 
                     $(".btn-notif").removeAttr("disabled");
@@ -10178,8 +10180,8 @@ var eventBanle = {
                         if (getdata.VATMTT) {
                             $.ajax({
                                 type: 'GET',
-                                global: false,
-                                async: false,
+                                //global: false,
+                                //async: false,
                                 url: "/Selling/Invoice/SuppliersEInvoice?SaleRetail=1",
                                 // data: fomrdata,
                                 contentType: false,
@@ -11436,11 +11438,16 @@ var eventBanle = {
                     let retailPrice = $(this).data("retailPrice");
                     let code = $(this).data("code");
                     let name = $(this).data("name");
-                    await eventBanle.eventselectProductCompelteOffline(idProductAutocom,
-                        parseFloat(price),
-                        parseFloat(retailPrice),
-                        code,
-                        name);
+                    if (typeof code != "undefined" && typeof price != "undefined") {
+                        await eventBanle.eventselectProductCompelteOffline(idProductAutocom,
+                            parseFloat(price),
+                            parseFloat(retailPrice),
+                            code,
+                            name);
+
+                    } else {
+                        toastrcus.error("Dữ liệu không hợp lệ");
+                    }
                     $(this).select();
                 } else if (_dt.length == 0) {
                     idProductAutocom = 0;
@@ -12291,7 +12298,7 @@ var loadeventPos = {
                     htmlcate = `<ul id="lst-product" class="ul-nonestyle">`;
 
                     res.jsonPro.forEach(function (item, index) {
-                        console.log(item.img);
+                        //console.log(item.img);
                         htmlimg = '<img src="../' + item.img + '">';
 
                         if (item.img == "" || item.img == null) {
@@ -12529,6 +12536,10 @@ var loadeventPos = {
                 //console.log(res.data);
 
                 if (res.isValid) {
+                    if (res.isbaobep) {
+                        loadeventPos.eventinbaobep(res.dataHtml);
+                    }
+
                     if (res.data.orderTableItems.length == 0) {
                         if (res.data.isBringBack) {
                             res.data.idRoomAndTableGuid = "-1";
@@ -14184,7 +14195,9 @@ var loadeventPos = {
             success: function (res) {
                 if (res.isValid) {
                     loadeventPos.eventUpdateQuantityItemMonOrder();
-                    loadeventPos.eventinbaobep(res.html);
+                    if (!res.isNotPrint) {
+                        loadeventPos.eventinbaobep(res.html);
+                    }
                 } else {
                     $(".btn-notif").removeAttr("disabled");
                 }
@@ -14204,7 +14217,7 @@ var loadeventPos = {
                         sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
                             //loadingStop();
                             if (data == "-1") {
-                                toastrcus.error("Có lỗi xảy ra");
+                                toastrcus.error("Có lỗi xảy raaaaaaaa");
                             }
                         });
                     });

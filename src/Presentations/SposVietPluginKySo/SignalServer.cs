@@ -67,10 +67,11 @@ namespace SposVietPluginKySo
         RetryInvoice2:
             try
             {
-             
-                //https://stackoverflow.com/questions/11140164/signalr-console-app-example
 
-                var url = "http://fnb.sposviet.vn/Signal";
+                //https://stackoverflow.com/questions/11140164/signalr-console-app-example
+                string domain = !string.IsNullOrEmpty(Properties.Settings.Default.Domain) ? Properties.Settings.Default.Domain : "https://fnb.sposviet.vn";
+                //string domain = "https://localhost:7269";
+                var url = $"{domain}/Signal";
                 List<TimeSpan> timeSpans = new List<TimeSpan>(0);
                 timeSpans.Add(TimeSpan.FromSeconds(1));
                 timeSpans.Add(TimeSpan.FromSeconds(3));
@@ -98,9 +99,12 @@ namespace SposVietPluginKySo
                 connection.On<string>("PrintbaobepSposViet", (html) => OnReceiveMessage(html));
                 var t = connection.StartAsync();
                 t.Wait();
-                
-                await connection.InvokeAsync("PrintbaobepSposViet", Properties.Settings.Default.ComId, "TEST");
-                LogControl.Write("PrintbaobepSposViet test thành công");
+                if (Properties.Settings.Default.ComId > 0)
+                {
+                    await connection.InvokeAsync("PrintbaobepSposViet", Properties.Settings.Default.ComId, "TEST");
+                    LogControl.Write("PrintbaobepSposViet test thành công");
+                }
+               
             }
             catch (Exception e)
             {
@@ -125,7 +129,7 @@ namespace SposVietPluginKySo
                 }
                 else
                 {
-                    LogControl.Write("Test ok: "+dataModel.data);
+                    LogControl.Write("Test ok: "+dataModel?.data);
                 }
             }
             catch (Exception e)
