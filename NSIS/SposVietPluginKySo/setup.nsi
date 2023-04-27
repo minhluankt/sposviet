@@ -90,19 +90,19 @@ FunctionEnd
  ; MessageBox MB_OK "Plugin SPOSVIET-PLUGIN sẽ khởi động cùng window"
 	WriteUninstaller $INSTDIR\uninstall.exe
   SectionEnd
-  ;--------------------------------
+  ;-------------khởi động cùng win-------------------
   ;khởi động cùng win
-  !ifndef BUILD_UNINSTALLER
-  Function AddToStartup
-    CreateShortCut "$SMSTARTUP\AppName.lnk" "$INSTDIR\AppName.exe" ""
-  FunctionEnd
+ ; !ifndef BUILD_UNINSTALLER
+ ; Function AddToStartup
+  ;  CreateShortCut "$SMSTARTUP\AppName.lnk" "$INSTDIR\AppName.exe" ""
+ ; FunctionEnd
 
   ; Using the read me setting as an easy way to add an add to startup option
-  !define MUI_FINISHPAGE_SHOWREADME
-  !define MUI_FINISHPAGE_SHOWREADME_TEXT "Run at startup"
-  !define MUI_FINISHPAGE_SHOWREADME_FUNCTION AddToStartup
-!endif
- ; -------------------------
+ ; !define MUI_FINISHPAGE_SHOWREADME
+  ;!define MUI_FINISHPAGE_SHOWREADME_TEXT "Run at startup"
+ ; !define MUI_FINISHPAGE_SHOWREADME_FUNCTION AddToStartup
+;!endif
+ ; ----------end khởi động cùng win---------------
 ; Section - Shortcut
 
   Section "Desktop Shortcut" DeskShort
