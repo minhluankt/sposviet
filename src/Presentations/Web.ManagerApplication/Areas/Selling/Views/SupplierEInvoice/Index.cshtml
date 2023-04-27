@@ -37,7 +37,10 @@
                     <div class="col-md-7 infoaccount">
                         <label><a target="_blank" href="@getVNPT.DomainName">@getVNPT.DomainName</a></label>
                         <span><b>Tài khoản admin:</b> @getVNPT.UserNameAdmin/******</span>
-                        <span><b>Tài khoản webservice:</b> @getVNPT.UserNameService/******</span>
+                        @if (!getVNPT.IsHKD)
+                        {
+                            <span><b>Tài khoản webservice:</b> @getVNPT.UserNameService/******</span>
+                        }
                         <a href="/Selling/ManagerPatternEInvoice?secret=@(getVNPT.screcttype)" class="btn btn-success btn-sm">Quản lý mẫu số ký hiệu hóa đơn VNPT</a>
                     </div>
                     <div class="col-md-12 text-center">

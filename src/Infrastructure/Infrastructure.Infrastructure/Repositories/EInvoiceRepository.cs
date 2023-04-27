@@ -24,7 +24,6 @@ using Application.Hepers;
 using Infrastructure.Infrastructure.Migrations;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Microsoft.AspNetCore.SignalR;
-using Infrastructure.Infrastructure.Migrations.Identity;
 using System.Security.Policy;
 using Library;
 using Domain.XmlDataModel;
@@ -39,6 +38,8 @@ using System.Threading;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using HelperLibrary;
 using Org.BouncyCastle.Utilities;
+using Application.CacheKeys;
+using X.PagedList;
 
 namespace Infrastructure.Infrastructure.Repositories
 {
@@ -50,6 +51,7 @@ namespace Infrastructure.Infrastructure.Repositories
         private UserManager<ApplicationUser> _userManager;
         private IOptions<CryptoEngine.Secrets> _config;
         private readonly IRepositoryAsync<Customer> _repositoryCusomer;
+        private readonly IVNPTHKDApiRepository _hkdvnptrepository;
         private readonly IVNPTPublishServiceRepository _vnptrepository;
         private readonly IVNPTBusinessServiceRepository _vnptbusinessrepository;
         private readonly IVNPTPortalServiceRepository _vnptportalrepository;
@@ -58,7 +60,7 @@ namespace Infrastructure.Infrastructure.Repositories
         private readonly IRepositoryAsync<Invoice> _Invoicerepository;
         private readonly IRepositoryAsync<HistoryEInvoice> _HistoryEInvoicerepository;
         private readonly ILogger<EInvoiceRepository> _log;
-        public EInvoiceRepository(IRepositoryAsync<EInvoice> repository,
+        public EInvoiceRepository(IRepositoryAsync<EInvoice> repository, IVNPTHKDApiRepository hkdvnptrepository,
             IRepositoryAsync<HistoryEInvoice> HistoryEInvoicerepository,
             IVNPTPortalServiceRepository vnptportalrepository, IUnitOfWork unitOfWork, IServiceScopeFactory serviceScopeFactory,
             IManagerInvNoRepository managerInvNoRepository, IVNPTBusinessServiceRepository vnptbusinessrepository,
@@ -68,6 +70,7 @@ namespace Infrastructure.Infrastructure.Repositories
             IVNPTPublishServiceRepository vnptrepository, ILogger<EInvoiceRepository> log
             )
         {
+            _hkdvnptrepository = hkdvnptrepository;
             _serviceScopeFactory = serviceScopeFactory;
             _HistoryEInvoicerepository = HistoryEInvoicerepository;
             _vnptbusinessrepository = vnptbusinessrepository;
@@ -1447,6 +1450,7 @@ namespace Infrastructure.Infrastructure.Repositories
         {
             SupplierEInvoice company = new SupplierEInvoice();
             List<DetailInvoice> ListDetailInvoice = new List<DetailInvoice>();
+
             await _unitOfWork.CreateTransactionAsync();
             try
             {
@@ -1478,6 +1482,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                 {
                                     item.IsDelete = true;
                                     item.InvoiceCode = item.InvoiceCode + "-D";
+
                                     await UpdateStatusPublishInvoice(item.IdInvoice, EnumStatusPublishInvoiceOrder.NONE);
                                     update = true;
                                     ListDetailInvoice.Add(new DetailInvoice()
@@ -1487,30 +1492,68 @@ namespace Infrastructure.Infrastructure.Repositories
                                         TypePublishEinvoice = ENumTypePublishEinvoice.KHONGTONTAINHACUNGCAP,
                                     });
                                 }
-
-                                var pub = await _vnptportalrepository.getInvViewFkeyNoPayAsync(item.FkeyEInvoice, company.UserNameService, company.PassWordService, company.DomainName);
-                                if (pub.Equals("ERR:6"))
+                                if (!company.IsHKD)
                                 {
-                                    item.IsDelete = true;
-                                    item.InvoiceCode = item.InvoiceCode + "-D";
-                                    await UpdateStatusPublishInvoice(item.IdInvoice, EnumStatusPublishInvoiceOrder.NONE);
-                                    update = true;
-                                    ListDetailInvoice.Add(new DetailInvoice()
+                                    //---------------------------------------xem hóa đơn theo webservice
+                                    var pub = await _vnptportalrepository.getInvViewFkeyNoPayAsync(item.FkeyEInvoice, company.UserNameService, company.PassWordService, company.DomainName);
+                                    if (pub.Equals("ERR:6"))
                                     {
-                                        code = item.EInvoiceCode,
-                                        note = $"Xóa bỏ thành công",
-                                        TypePublishEinvoice = ENumTypePublishEinvoice.HUYHOADONOK,
-                                    });
-                                    AddHistori(new HistoryEInvoice() { Carsher = Carsher, StatusEvent = StatusStaffEventEInvoice.XoaHoaDon, IdCarsher = IdCarsher, EInvoiceCode = item.EInvoiceCode, IdEInvoice = item.Id, Name = $"Xóa hóa đơn" });
+                                        item.IsDelete = true;
+                                        item.InvoiceCode = item.InvoiceCode + "-D";
+                                        await UpdateStatusPublishInvoice(item.IdInvoice, EnumStatusPublishInvoiceOrder.NONE);
+                                        update = true;
+                                        ListDetailInvoice.Add(new DetailInvoice()
+                                        {
+                                            code = item.EInvoiceCode,
+                                            note = $"Xóa bỏ thành công",
+                                            TypePublishEinvoice = ENumTypePublishEinvoice.XOADONTHANHCONG,
+                                        });
+                                        AddHistori(new HistoryEInvoice() { Carsher = Carsher, StatusEvent = StatusStaffEventEInvoice.XoaHoaDon, IdCarsher = IdCarsher, EInvoiceCode = item.EInvoiceCode, IdEInvoice = item.Id, Name = $"Xóa hóa đơn" });
+                                    }
+                                    else
+                                    {
+                                        ListDetailInvoice.Add(new DetailInvoice()
+                                        {
+                                            code = item.EInvoiceCode,
+                                            note = $"Hóa đơn này đã tồn tại hóa đơn điện tử VNPT, vui lòng đồng bộ",
+                                            TypePublishEinvoice = ENumTypePublishEinvoice.XOADONTHATBAI,
+                                        });
+
+                                    }
                                 }
                                 else
                                 {
-                                    ListDetailInvoice.Add(new DetailInvoice()
+                                    //-----------------xem hóa đơn theo API HKD
+                                    if (item.IdHoaDonHKD==null)
                                     {
-                                        code = item.EInvoiceCode,
-                                        note = $"Hóa đơn này đã tồn tại hóa đơn điện tử VNPT, vui lòng đồng bộ",
-                                        TypePublishEinvoice = ENumTypePublishEinvoice.HUYHOADONTHATBAI,
-                                    });
+                                        item.IsDelete = true;
+                                        item.InvoiceCode = item.InvoiceCode + "-D";
+                                        await UpdateStatusPublishInvoice(item.IdInvoice, EnumStatusPublishInvoiceOrder.NONE);
+                                        update = true;
+                                    }
+                                    else
+                                    {
+                                        var gettoken = _hkdvnptrepository.GetTokenCache(ComId);
+                                        if (string.IsNullOrEmpty(gettoken))
+                                        {
+                                            var login = await _hkdvnptrepository.Login(ComId, company.DomainName, company.UserNameAdmin, company.PassWordAdmin);
+                                            if (!login.success)
+                                            {
+                                                ListDetailInvoice.Add(new DetailInvoice()
+                                                {
+                                                    code = item.EInvoiceCode,
+                                                    note = $"{string.Join(",", login.errors?.ToArray())}",
+                                                    TypePublishEinvoice = ENumTypePublishEinvoice.XOADONTHATBAI,
+                                                });
+                                            }
+                                            else
+                                            {
+                                                gettoken = login.Token;
+                                            }
+                                        }
+                                        var callgetinv = await _hkdvnptrepository.XemHoaDon(company.DomainName, gettoken,0);
+                                        xử lý tiếp xem hóa đơn.
+                                    }
 
                                 }
                             }
@@ -1534,8 +1577,8 @@ namespace Infrastructure.Infrastructure.Repositories
                         ListDetailInvoice.Add(new DetailInvoice()
                         {
                             code = item.EInvoiceCode,
-                            note = $"Đồng bộ hóa đơn điện tử thất bại, có lỗi hệ thống: {e.ToString()}",
-                            TypePublishEinvoice = ENumTypePublishEinvoice.DONGBOTHATBAI,
+                            note = $"Xóa hóa đơn điện tử thất bại, có lỗi hệ thống: {e.ToString()}",
+                            TypePublishEinvoice = ENumTypePublishEinvoice.XOADONTHATBAI,
                         });
                         _log.LogError($"Lỗi conver dữ liệu Exception -> {e.ToString()}");
                     }
@@ -1548,7 +1591,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 }
                 else
                 {
-                    _unitOfWork.Dispose();
+                    _unitOfWork.Rollback();
                 }
                 var PublishInvoiceModelView = new PublishInvoiceModelView();
                 PublishInvoiceModelView.DetailInvoices = ListDetailInvoice;

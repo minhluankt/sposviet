@@ -1160,6 +1160,7 @@ var validateForm = {
     },
     formEivnoiceVNPT: function () {
         $("#create-form").validate({
+            ignore: 'input[disabled=disabled]',
             ignore: 'input[type=hidden]',
             rules: {
                 "DomainName": {
@@ -15980,7 +15981,7 @@ var supplierEInvoice = {
                             cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                             didRender: () => {
                                 validateForm.formEivnoiceVNPT();
-
+                                loadEventIcheck()
                                 $(".btn-continue").click(function () {
                                     Swal.close();
                                 });
@@ -16020,6 +16021,10 @@ var supplierEInvoice = {
                                                     PassWordAdmin = $("#PassWordAdmin").val();
                                                     UserNameService = $("#UserNameService").val();
                                                     PassWordService = $("#PassWordService").val();
+                                                    htmlws = " <span><b>Tài khoản webservice:</b> " + UserNameService + "/******</span>";
+                                                    if ($("#IsHKD").prop("checked")) {
+                                                        htmlws = "";
+                                                    }
                                                     html = `<div class="row">
                                                                     <div class="col-md-5">
                                                                         <img class="" src="../images/VNPT_Logo.png" />
@@ -16029,7 +16034,7 @@ var supplierEInvoice = {
                                                                     <div class="col-md-7 infoaccount">
                                                                         <label><a target="_blank" href="`+ DomainName + `">` + DomainName + `</a></label>
                                                                         <span><b>Tài khoản admin:</b> `+ UserNameAdmin + `/******</span>
-                                                                        <span><b>Tài khoản webservice:</b> `+ UserNameService + `/******</span>
+                                                                       `+ htmlws +`
                                                                         <a href="/Selling/ManagerPatternEInvoice?secret=`+ res.secrettype + `" class="btn btn-success btn-sm">Quản lý mẫu số ký hiệu hóa đơn VNPT</a>
                                                                     </div>
                                                                     <div class="col-md-12 text-center">
@@ -16068,6 +16073,7 @@ var supplierEInvoice = {
             });
         });
     },
+   
     showViewConnect: function () {
 
         supplierEInvoice.loadeventremoveidatata();
@@ -16100,7 +16106,7 @@ var supplierEInvoice = {
 
                             },
                             showCloseButton: true,
-
+                            
                             title: "Cấu hình kết nối hóa đơn điện tử VNPT",
                             html: res.html,
                             //showClass: {
@@ -16114,7 +16120,8 @@ var supplierEInvoice = {
                             cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                             didRender: () => {
                                 validateForm.formEivnoiceVNPT();
-
+                                loadEventIcheck();
+                                eventChangeHKD();
                                 $(".btn-continue").click(function () {
                                     Swal.close();
                                 });
@@ -16152,6 +16159,10 @@ var supplierEInvoice = {
                                                     PassWordAdmin = $("#PassWordAdmin").val();
                                                     UserNameService = $("#UserNameService").val();
                                                     PassWordService = $("#PassWordService").val();
+                                                    htmlws = " <span><b>Tài khoản webservice:</b> "+ UserNameService + "/******</span>";
+                                                    if ($("#IsHKD").prop("checked")) {
+                                                        htmlws = "";
+                                                    }
                                                     html = `<div class="row">
                                                                     <div class="col-md-5">
                                                                         <img class="" src="../images/VNPT_Logo.png" />
@@ -16161,7 +16172,8 @@ var supplierEInvoice = {
                                                                     <div class="col-md-7 infoaccount">
                                                                         <label><a target="_blank" href="`+ DomainName + `">` + DomainName + `</a></label>
                                                                         <span><b>Tài khoản admin:</b> `+ UserNameAdmin + `/******</span>
-                                                                        <span><b>Tài khoản webservice:</b> `+ UserNameService + `/******</span>
+                                                                       `+ htmlws +`
+                                                                        <a href="/Selling/ManagerPatternEInvoice?secret=`+ res.secrettype + `" class="btn btn-success btn-sm">Quản lý mẫu số ký hiệu hóa đơn VNPT</a>
                                                                     </div>
                                                                     <div class="col-md-12 text-center">
                                                                           <div class="sltbtn">
@@ -16209,6 +16221,23 @@ var supplierEInvoice = {
                 }
             });
         });
+        function eventChangeHKD() {
+            $('input#IsHKD').on('ifChanged', function (event) {
+                if ($(this).prop("checked") == true) {
+                    $(".accountWebservice").toggleClass("d-none");
+                    $(".txtexempal").toggleClass("d-none");
+                    $(".accountWebservice").find("input.form-control").attr("disabled", "disabled");
+                    $(".txtdomain").html("Link domain hệ thống hộ kinh doanh (HKD)");
+                    $("#DomainName").attr("placeholder","https://hkd.vnpt.vn");
+                } else if ($(this).prop("checked") == false) {
+                    $(".accountWebservice").toggleClass("d-none");
+                    $(".txtexempal").toggleClass("d-none");
+                    $(".accountWebservice").find("input.form-control").removeAttr("disabled");
+                    $(".txtdomain").html("Link phát hành hóa đơn VNPT");
+                    $("#DomainName").attr("placeholder", "https://xxxx-tt78admin.vnpt-invoice.com.vn");
+                }
+            });
+        }
     },
 }
 var ManagerPatternEInvoice = {

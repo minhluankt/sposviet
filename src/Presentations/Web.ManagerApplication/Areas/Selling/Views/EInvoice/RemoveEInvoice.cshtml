@@ -8,12 +8,16 @@
     var TRANGTHAIPHATHANHKHONGHOPLE = new List<DetailInvoice>();
     var KHONGTONTAINHACUNGCAP = new List<DetailInvoice>();
     var HOADONCHUAPHATHANH = new List<DetailInvoice>();
+    var XOADONTHATBAI = new List<DetailInvoice>();
 
     foreach (var item in gr)
     {
         switch (item.Key)
         {
-            case ENumTypePublishEinvoice.HUYHOADONOK:
+            case ENumTypePublishEinvoice.XOADONTHATBAI:
+                XOADONTHATBAI = item.ToList();
+                break; 
+                case ENumTypePublishEinvoice.HUYHOADONOK:
                 HUYHOADONOK = item.ToList();
                 break;
             case ENumTypePublishEinvoice.HUYHOADONTHATBAI:
@@ -100,6 +104,30 @@
             <div class="body-data">
                 <ul>
                     @foreach (var item in KHONGTONTAINHACUNGCAP)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+    }
+    @if (XOADONTHATBAI.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#">
+                <h5 class="m-0">
+                    <i class="fas fa-chevron-down mr-2"></i>Xóa hóa đơn thất bại
+                    <span class="text-muted font-14">(@XOADONTHATBAI.Count())</span>
+                </h5>
+            </a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in XOADONTHATBAI)
                     {
                         <li>
                             <a href="#" class="text-blue">@item.code</a>

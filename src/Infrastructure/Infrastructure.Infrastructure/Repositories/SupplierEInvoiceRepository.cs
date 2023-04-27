@@ -55,6 +55,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 getdata.PassWordService= Entity.PassWordService;
                 getdata.UserNameAdmin= Entity.UserNameAdmin;
                 getdata.PassWordAdmin= Entity.PassWordAdmin;
+                getdata.IsHKD= Entity.IsHKD;
                 getdata.Active= Entity.Active;
                 getdata.SerialCert= Entity.SerialCert;
                 getdata.TypeSeri= Entity.TypeSeri;

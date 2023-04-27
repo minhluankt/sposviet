@@ -1,4 +1,5 @@
 ﻿using Application.Constants;
+using Application.EInvoices.Interfaces.VNPT;
 using Application.Enums;
 using Application.Features.SupplierEInvoices.Commands;
 using Application.Features.SupplierEInvoices.Query;
@@ -7,6 +8,7 @@ using Application.Interfaces.Repositories;
 using Application.Providers;
 using Domain.Entities;
 using Domain.ViewModel;
+using Hangfire.MemoryStorage.Database;
 using Infrastructure.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +18,7 @@ using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Web.ManagerApplication.Abstractions;
+using X.PagedList;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -25,10 +28,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         private IOptions<CryptoEngine.Secrets> _config;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEInvoiceRepository<EInvoice> _einvoice;
+        private readonly IVNPTHKDApiRepository _apiHkd;
         public SupplierEInvoiceController(UserManager<ApplicationUser> userManager,
-            IOptions<CryptoEngine.Secrets> config,
+            IOptions<CryptoEngine.Secrets> config, IVNPTHKDApiRepository apiHkd,
             IEInvoiceRepository<EInvoice> einvoice)
         {
+            _apiHkd = apiHkd;
             _config = config;
             _einvoice = einvoice;
             _userManager = userManager;
@@ -107,7 +112,52 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     var data = await _mediator.Send(new GetByIdSupplierEInvoiceQuery() { Id = id, ComId = currentUser.ComId });
                     if (data.Succeeded)
                     {
-                        var check = await _einvoice.CheckConnectWebserviceAsync(data.Data.DomainName, data.Data.UserNameService, data.Data.PassWordService, data.Data.UserNameAdmin, data.Data.PassWordAdmin);
+                        if (data.Data.IsHKD)
+                        {
+                            var check = await _apiHkd.Login(currentUser.ComId,data.Data.DomainName, data.Data.UserNameAdmin, data.Data.PassWordAdmin);
+                            if (check.success)
+                            {
+                                _notify.Success("Kết nối thành công");
+                            }
+                            else
+                            {
+                                _notify.Error(string.Join(",", check.errors?.ToArray()));
+                            }
+                        }
+                        else
+                        {
+                            var check = await _einvoice.CheckConnectWebserviceAsync(data.Data.DomainName, data.Data.UserNameService, data.Data.PassWordService, data.Data.UserNameAdmin, data.Data.PassWordAdmin);
+                            if (check.Succeeded)
+                            {
+                                _notify.Success(check.Message);
+                            }
+                            else
+                            {
+                                _notify.Error(check.Message);
+                            }
+                        }
+                       
+                        return new JsonResult(new { isValid = true });
+                    }
+                    return new JsonResult(new { isValid = false });
+                }
+                else
+                {
+                    if (model.IsHKD)
+                    {
+                        var check = await _apiHkd.Login(currentUser.ComId, model.DomainName, model.UserNameAdmin, model.PassWordAdmin);
+                        if (check.success)
+                        {
+                            _notify.Success("Kết nối thành công");
+                        }
+                        else
+                        {
+                            _notify.Error(string.Join(",", check.errors?.ToArray()));
+                        }
+                    }
+                    else
+                    {
+                        var check = await _einvoice.CheckConnectWebserviceAsync(model.DomainName, model.UserNameService, model.PassWordService, model.UserNameAdmin, model.PassWordAdmin);
                         if (check.Succeeded)
                         {
                             _notify.Success(check.Message);
@@ -116,20 +166,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         {
                             _notify.Error(check.Message);
                         }
-                        return new JsonResult(new { isValid = true });
-                    }
-                    return new JsonResult(new { isValid = false });
-                }
-                else
-                {
-                    var check = await _einvoice.CheckConnectWebserviceAsync(model.DomainName, model.UserNameService, model.PassWordService, model.UserNameAdmin, model.PassWordAdmin);
-                    if (check.Succeeded)
-                    {
-                        _notify.Success(check.Message);
-                    }
-                    else
-                    {
-                        _notify.Error(check.Message);
                     }
                     return new JsonResult(new { isValid = true });
                 }
@@ -194,7 +230,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         {
                             var values = "id=" + result.Data.Id;
                              secret = CryptoEngine.Encrypt(values, _config.Value.Key);
-                            var valuestype = "TypeSupplierEInvoice=" + result.Data.TypeSupplierEInvoice;
+                            var valuestype = "type=" + (int)result.Data.TypeSupplierEInvoice;
                             secrettype = CryptoEngine.Encrypt(valuestype, _config.Value.Key);
                             _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS008));
                         }
@@ -212,7 +248,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         {
                             var values = "id=" + result.Data;
                             secret = CryptoEngine.Encrypt(values, _config.Value.Key);
-                            var valuestype = "TypeSupplierEInvoice=" + model.TypeSupplierEInvoice;
+                            var valuestype = "type=" + (int)model.TypeSupplierEInvoice;
                             secrettype = CryptoEngine.Encrypt(valuestype, _config.Value.Key);
                             _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
                         }

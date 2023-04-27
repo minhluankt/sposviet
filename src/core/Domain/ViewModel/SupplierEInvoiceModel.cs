@@ -25,6 +25,7 @@ namespace Domain.ViewModel
         public string PassWordAdmin { get; set; }//
         public string UserNameService { get; set; }//
         public string PassWordService { get; set; }//
+        public bool IsHKD { get; set; }
         public bool Selected { get; set; }
         public bool Active { get; set; }
         public int SaleRetail { get; set; }

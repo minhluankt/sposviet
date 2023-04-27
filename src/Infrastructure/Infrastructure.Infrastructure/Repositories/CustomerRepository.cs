@@ -11,7 +11,6 @@ using Domain.Entities;
 using Domain.ViewModel;
 using Hangfire.Logging;
 using HelperLibrary;
-using Infrastructure.Infrastructure.Migrations.Identity;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;

@@ -7,8 +7,6 @@ using Domain.Entities;
 using Domain.ViewModel;
 using Hangfire.Logging;
 using HelperLibrary;
-using Infrastructure.Infrastructure.Migrations;
-using Infrastructure.Infrastructure.Migrations.Identity;
 using Joker.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;

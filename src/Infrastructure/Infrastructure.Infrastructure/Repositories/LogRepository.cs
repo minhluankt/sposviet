@@ -5,7 +5,6 @@ using Application.Interfaces.Shared;
 using AutoMapper;
 using Dapper;
 using Domain.Entities;
-using Infrastructure.Infrastructure.Migrations.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

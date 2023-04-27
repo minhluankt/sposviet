@@ -74,6 +74,7 @@ namespace Application.Features.SupplierEInvoices.Query
                 TypeSeri = x.TypeSeri,
                 Active = x.Active,
                 Selected = x.Selected,
+                IsHKD = x.IsHKD,
                 ManagerPatternEInvoices = x.ManagerPatternEInvoices?.ToList(),
             }).ToList();
             foreach (var item in productList)

@@ -10,7 +10,6 @@ using Domain.Entities;
 using Domain.XmlDataModel;
 using Infrastructure.Infrastructure.DbContexts;
 using Infrastructure.Infrastructure.Identity.Models;
-using Infrastructure.Infrastructure.Migrations.Identity;
 using IronBarCode;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

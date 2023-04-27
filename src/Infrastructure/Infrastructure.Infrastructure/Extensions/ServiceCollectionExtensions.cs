@@ -12,8 +12,10 @@ using Infrastructure.Infrastructure.HubS;
 using Infrastructure.Infrastructure.Identity.Services;
 using Infrastructure.Infrastructure.Repositories;
 using Infrastructure.Webservice.Repository.VNPT;
+using Infrastructure.Webservice.Repository.VNPT.HKD;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 using System.Reflection;
 using VNPay.Services;
 using Yanga.Module.EntityFrameworkCore.AuditTrail;
@@ -35,6 +37,8 @@ namespace Infrastructure.Infrastructure.Extensions
            // services.AddTransient<AuditableContext, ApplicationDbContext>();
             services.AddTransient<AuditableLogContext, ApplicationDbContext>();
             services.AddTransient<IIdentityService, IdentityService>();
+
+            services.AddTransient<IMemoryCacheRepository, MemoryCacheRepository>();
 
             services.AddTransient<IPermissionRepository<Permission>, PermissionRepository>();
             services.AddTransient<IPermissionCacheRepository, PermissionCacheRepository>();
@@ -70,11 +74,19 @@ namespace Infrastructure.Infrastructure.Extensions
             services.AddTransient<IAreaRepository, AreaRepository>();
             services.AddTransient<IRevenueExpenditureRepository<RevenueExpenditure>, RevenueExpenditureRepository>();
 
-            // wweb service
+            // web service VNPT
             services.AddTransient<IVNPTPortalServiceRepository, VNPTPortalServiceRepository>();
             services.AddTransient<IVNPTPublishServiceRepository, VNPTPublishServiceRepository>();
             services.AddTransient<IVNPTBusinessServiceRepository, VNPTBusinessServiceRepository>();
+
             ///end
+            //----------APi HDK
+            //services.AddTransient<HttpClient>();//helper
+            services.AddHttpClient<IRestClientHelper, RestClientHelper>();
+           services.AddTransient<IRestClientHelper, RestClientHelper>();//helper
+
+            services.AddTransient<IVNPTHKDApiRepository, VNPTHKDApiRepository>();
+            //-------------
             services.AddTransient<IReportPosRepository, ReportPosRepository>();
 
             services.AddTransient<IProductPepository<Product>, ProductPepository>();

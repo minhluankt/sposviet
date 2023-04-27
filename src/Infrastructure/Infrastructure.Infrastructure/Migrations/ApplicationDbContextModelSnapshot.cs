@@ -1351,6 +1351,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<int?>("IdCustomer")
                         .HasColumnType("int");
 
+                    b.Property<int?>("IdHoaDonHKD")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdInvoice")
                         .HasColumnType("int");
 
@@ -3810,6 +3813,9 @@ namespace Infrastructure.Infrastructure.Migrations
 
                     b.Property<string>("DomainName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsHKD")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");

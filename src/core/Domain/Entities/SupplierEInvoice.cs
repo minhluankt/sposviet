@@ -24,6 +24,7 @@ namespace Domain.Entities
         public string SerialCert { get; set; }// seri chứng thư số
         public bool Selected { get; set; }//mặc định hiển thị nhà cung cấp này
         public bool Active { get; set; }
+        public bool IsHKD { get; set; }//là hệ thống hộ kinh doanh
         [NotMapped]
         public List<SelectListItem> Selectlist { get; set; }
         public virtual ICollection<ManagerPatternEInvoice> ManagerPatternEInvoices { get; set; }

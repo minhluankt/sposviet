@@ -1,7 +1,6 @@
 ﻿
 using Application.Constants;
 using Application.Interfaces.Shared;
-using Infrastructure.Infrastructure.Migrations.Identity;
 using System.Security.Claims;
 using Telegram.Bot.Types;
 

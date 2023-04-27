@@ -11,8 +11,6 @@ using Domain.XmlDataModel;
 using Hangfire.Logging;
 using HelperLibrary;
 using Infrastructure.Infrastructure.Identity.Models;
-using Infrastructure.Infrastructure.Migrations;
-using Infrastructure.Infrastructure.Migrations.Identity;
 using Infrastructure.Webservice.Repository.VNPT;
 using Library;
 using Microsoft.AspNetCore.Identity;

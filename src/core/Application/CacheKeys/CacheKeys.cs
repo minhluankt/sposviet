@@ -167,6 +167,11 @@
     {
         public static string ListKey => " CompanyAdminInfo";
 
+    } 
+    public static class LoginTokenkey
+    {
+        public static string Key(int comid) => $"{comid}_LoginTokenkey";
+
     }
     public static class CategoryCacheKeys
     {

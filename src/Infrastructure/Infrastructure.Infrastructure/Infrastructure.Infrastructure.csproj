@@ -43,10 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\Identity\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\BankService\BankService.csproj" />
     <ProjectReference Include="..\..\core\ApiHttpClient\ApiHttpClient.csproj" />
     <ProjectReference Include="..\..\core\Application\Application.csproj" />

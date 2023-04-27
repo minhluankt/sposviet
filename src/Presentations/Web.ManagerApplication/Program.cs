@@ -4,6 +4,7 @@ using Application.Interfaces.Repositories;
 using AspNetCoreHero.Extensions.Logging;
 using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
+using DeviceDetectorNET.Parser.Device;
 using Domain.Entities;
 using FluentValidation.AspNetCore;
 using Hangfire;
@@ -83,6 +84,7 @@ builder.Services.AddControllersWithViews().AddFluentValidation(fv =>
 #pragma warning restore CS0618 // Type or member is obsolete
 });
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+builder.Services.AddMemoryCache();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddProgressiveWebApp(new PwaOptions { RegisterServiceWorker = true });
 builder.Services.AddNotyf(o =>

@@ -30,6 +30,7 @@ namespace Domain.Entities
         [StringLength(20)]
         public string FkeyEInvoice { get; set; }//tên người tạo
         public int? IdCustomer { get; set; }// khách hàng
+        public int? IdHoaDonHKD { get; set; }// id hóa đơn của HKD
         public bool IsDelete { get; set; }//Hóa đơn xóa bỏ khỏi hệ thốn
         public int InvoiceNo { get; set; }//số hóa đơn
         [StringLength(50)]

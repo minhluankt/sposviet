@@ -4,6 +4,7 @@
     {
         public static readonly string[] listTypeSpecification = { "MUCGIA" };
         public const string PassDefault = "123456aA@";
+        public const string URIApiHKD = "/apigateway/api";
     }
     public class FolderRootImg
     {

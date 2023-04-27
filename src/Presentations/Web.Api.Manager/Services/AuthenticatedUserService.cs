@@ -1,6 +1,5 @@
 ﻿using Application.Constants;
 using Application.Interfaces.Shared;
-using Infrastructure.Infrastructure.Migrations.Identity;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 namespace Web.Api.Manager.Services
