@@ -100,7 +100,7 @@ namespace SposVietPluginKySo
                      .WithUrl(url)
                      .WithAutomaticReconnect(timeSpans.ToArray())
                      .Build();
-                connection.ServerTimeout = TimeSpan.FromSeconds(15);
+                connection.ServerTimeout = TimeSpan.FromHours(15);
               
                 connection.On<string>("PrintbaobepSposViet", (html) => OnReceiveMessage(html));
                 await connection.StartAsync();
