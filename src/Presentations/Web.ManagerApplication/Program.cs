@@ -104,8 +104,8 @@ builder.Services.AddNotyf(o =>
 builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.EnableDetailedErrors = true;
-    hubOptions.ClientTimeoutInterval = TimeSpan.FromHours(12);
-    hubOptions.KeepAliveInterval = TimeSpan.FromMilliseconds(15);
+    hubOptions.ClientTimeoutInterval = TimeSpan.FromHours(15);
+    hubOptions.KeepAliveInterval = TimeSpan.FromMilliseconds(5);
 
 });
 //builder.Services.AddBreadcrumbs(GetType().Assembly, options =>

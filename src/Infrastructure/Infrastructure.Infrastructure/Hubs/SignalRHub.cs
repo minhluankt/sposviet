@@ -47,6 +47,7 @@ namespace Infrastructure.Infrastructure.HubS
                     checkExitRoomChitchen(Context.ConnectionId, _Group);
                     await this.LoadOrdertable(EnumTypePrint.TEST, "reconcect LoadOrdertable");
                     await Printbaobep("reconcect Printbaobep", "TEST");
+                    await PrintbaobepSposViet(currentUser.ComId, "TEST");
                     isreconncet = false;
                 }
                 await base.OnConnectedAsync();
@@ -156,7 +157,7 @@ namespace Infrastructure.Infrastructure.HubS
                 data = data,
             };
             string datajson = Common.ConverModelToJson(json);
-            string _Group = $"{ComId}_Printbaobep";
+            string _Group = $"{ComId}_PrintbaobepSposViet";
             checkExitRoomChitchen(Context.ConnectionId, _Group);
             await Clients.Group(_Group).SendAsync("PrintbaobepSposViet", datajson);//PrintbaobepSposViet là hàm ở client nhận method
         }

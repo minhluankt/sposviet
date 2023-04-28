@@ -74,7 +74,7 @@ namespace SposVietPluginKySo
                 {
                     domain = "https://fnb.sposviet.vn";
                 }
-                //string domain = "https://localhost:7269";
+                //domain = "https://localhost:7269";
                 var url = $"{domain}/Signal";
                 List<TimeSpan> timeSpans = new List<TimeSpan>(0);
                 timeSpans.Add(TimeSpan.FromSeconds(1));
@@ -100,6 +100,8 @@ namespace SposVietPluginKySo
                      .WithUrl(url)
                      .WithAutomaticReconnect(timeSpans.ToArray())
                      .Build();
+                connection.ServerTimeout = TimeSpan.FromSeconds(15);
+              
                 connection.On<string>("PrintbaobepSposViet", (html) => OnReceiveMessage(html));
                 await connection.StartAsync();
                // t.Wait();
@@ -108,7 +110,42 @@ namespace SposVietPluginKySo
                     await connection.InvokeAsync("PrintbaobepSposViet", Properties.Settings.Default.ComId, "TEST");
                     LogControl.Write("PrintbaobepSposViet test thành công");
                 }
-               
+                else
+                {
+                    LogControl.Write("Comid faile:" + Properties.Settings.Default.ComId);
+                }
+                connection.Closed += async (error) =>
+                {
+
+                    await Task.Delay(2000);
+                    await connection.StartAsync();
+                    if (Properties.Settings.Default.ComId > 0)
+                    {
+                        await connection.InvokeAsync("PrintbaobepSposViet", Properties.Settings.Default.ComId, "TEST");
+                        LogControl.Write("PrintbaobepSposViet test thành công");
+                    }
+                    else
+                    {
+                        LogControl.Write("Comid faile:"+ Properties.Settings.Default.ComId);
+                    }
+                    LogControl.Write("Kết nối bị đóng chạy lại");
+                };
+                connection.Reconnecting += async (error) =>
+                {
+                    await Task.Delay(2000);
+                    await connection.StartAsync();
+                    if (Properties.Settings.Default.ComId > 0)
+                    {
+                        await connection.InvokeAsync("PrintbaobepSposViet", Properties.Settings.Default.ComId, "TEST");
+                        LogControl.Write("PrintbaobepSposViet test thành công");
+                    }
+                    else
+                    {
+                        LogControl.Write("Comid faile" + Properties.Settings.Default.ComId);
+                    }
+                    LogControl.Write("Reconnecting lại");
+                };
+
             }
             catch (Exception e)
             {
