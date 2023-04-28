@@ -83,13 +83,18 @@ FunctionEnd
 	WriteRegStr HKLM "${UNINST_KEY}" "UninstallString" \
 		"$\"$INSTDIR\uninstall.exe$\" /$MultiUser.InstallMode"
 	WriteRegStr HKLM "${UNINST_KEY}" $MultiUser.InstallMode 1 
-	WriteRegStr HKLM "${UNINST_KEY}" "QuietUninstallString" \
+	WriteRegStr HKEY_LOCAL_MACHINE "${UNINST_KEY}" "QuietUninstallString" \
 		"$\"$INSTDIR\uninstall.exe$\" /$MultiUser.InstallMode /S"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" \
-		"SposVietKySo" "$InstDir\SposVietPluginKySo.exe"
+	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" \
+"SposVietPluginKySo" "$INSTDIR\SposVietPluginKySo.exe"
+	;WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" \
+		;"SposVietKySo" "$InstDir\SposVietPluginKySo.exe"
  ; MessageBox MB_OK "Plugin SPOSVIET-PLUGIN sẽ khởi động cùng window"
 	WriteUninstaller $INSTDIR\uninstall.exe
   SectionEnd
+Section
+
+SectionEnd
   ;-------------khởi động cùng win-------------------
   ;khởi động cùng win
  ; !ifndef BUILD_UNINSTALLER
@@ -114,7 +119,7 @@ FunctionEnd
 
   ;Language strings
   ;LangString DESC_DeskShort ${LANG_ENGLISH} "Create Shortcut on Dekstop."
-  LangString DESC_DeskShort ${LANG_Vietnamese} "Create Shortcut on Dekstop."
+  LangString DESC_DeskShort ${LANG_Vietnamese} "Tạo thư mục ngoài Deskop."
   LangString PAGE_INSTALL_TYPE_SUBTITLE ${LANG_Vietnamese} "Choose installation type."
 
   ;Assign language strings to sections

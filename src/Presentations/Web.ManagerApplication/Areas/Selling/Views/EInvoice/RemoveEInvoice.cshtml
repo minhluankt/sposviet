@@ -3,7 +3,7 @@
 @model Domain.ViewModel.PublishInvoiceModelView
 @{
     var gr = Model.DetailInvoices.GroupBy(x => x.TypePublishEinvoice).ToList();
-    var HUYHOADONOK = new List<DetailInvoice>();
+    var XOADONTHANHCONG = new List<DetailInvoice>();
     var HUYHOADONTHATBAI = new List<DetailInvoice>();
     var TRANGTHAIPHATHANHKHONGHOPLE = new List<DetailInvoice>();
     var KHONGTONTAINHACUNGCAP = new List<DetailInvoice>();
@@ -17,12 +17,10 @@
             case ENumTypePublishEinvoice.XOADONTHATBAI:
                 XOADONTHATBAI = item.ToList();
                 break; 
-                case ENumTypePublishEinvoice.HUYHOADONOK:
-                HUYHOADONOK = item.ToList();
+            case ENumTypePublishEinvoice.XOADONTHANHCONG:
+                XOADONTHANHCONG = item.ToList();
                 break;
-            case ENumTypePublishEinvoice.HUYHOADONTHATBAI:
-                HUYHOADONTHATBAI = item.ToList();
-                break;
+            
             case ENumTypePublishEinvoice.KHONGTONTAINHACUNGCAP:
                 KHONGTONTAINHACUNGCAP = item.ToList();
                 break;
@@ -37,13 +35,13 @@
 <h4 class="mb-3">Kết quả xử lý dữ liệu đã hoàn tất!</h4>
 <div id="accordionkqpubinv">
 
-    @if (HUYHOADONOK.Count() > 0)
+    @if (XOADONTHANHCONG.Count() > 0)
     {
         <div class="col-grouppublish">
-            <a class="text-dark" href="#"><h5 class="m-0"><i class="fas fa-chevron-down mr-2"></i>Xóa hóa đơn thành công  <span class="text-muted font-14">(@HUYHOADONOK.Count())</span></h5></a>
+            <a class="text-dark" href="#"><h5 class="m-0"><i class="fas fa-chevron-down mr-2"></i>Xóa hóa đơn thành công  <span class="text-muted font-14">(@XOADONTHANHCONG.Count())</span></h5></a>
             <div class="body-data">
                 <ul>
-                    @foreach (var item in HUYHOADONOK)
+                    @foreach (var item in XOADONTHANHCONG)
                     {
                         <li>
                             <a href="#" class="text-blue">@item.code</a>

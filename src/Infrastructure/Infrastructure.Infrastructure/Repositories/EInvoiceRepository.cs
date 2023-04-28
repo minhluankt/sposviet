@@ -239,6 +239,7 @@ namespace Infrastructure.Infrastructure.Repositories
             return await Result<string>.FailAsync($"Không tìm thấy hóa đơn cần phát hành");
 
         }
+      
         private async Task<IResult<string>> ImportAndPublishInvMTTAsync(EInvoice einvoice, SupplierEInvoice company, string pattern, string serial, string Carsher, string IdCarsher)
         {
             switch (einvoice.TypeSupplierEInvoice)
@@ -251,6 +252,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             return await Result<string>.FailAsync("Sản phẩm không được trống khi phát hành hóa đơn điện tử");
                         }
+
                         string xmlData = string.Empty;
                         try
                         {
@@ -273,6 +275,7 @@ namespace Infrastructure.Infrastructure.Repositories
                             _log.LogError($"XML VNPT -> {xmlData}");
                             return await Result<string>.FailAsync($"{pub}");
                         }
+
                     }
                     catch (Exception e)
                     {
@@ -1488,7 +1491,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                     ListDetailInvoice.Add(new DetailInvoice()
                                     {
                                         code = item.EInvoiceCode,
-                                        note = $"Hóa đơn có mã {item.EInvoiceCode}, không tìm thấy nhà cung cấp",
+                                        note = $"Hóa đơn có mã {item.EInvoiceCode}, không tìm thấy nhà cung cấp hóa đơn, đã xóa thành công",
                                         TypePublishEinvoice = ENumTypePublishEinvoice.KHONGTONTAINHACUNGCAP,
                                     });
                                 }
@@ -1515,7 +1518,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                         ListDetailInvoice.Add(new DetailInvoice()
                                         {
                                             code = item.EInvoiceCode,
-                                            note = $"Hóa đơn này đã tồn tại hóa đơn điện tử VNPT, vui lòng đồng bộ",
+                                            note = $"Hóa đơn này đã tồn tại hóa đơn điện tử VNPT, vui lòng đồng bộ, mã lỗi: {pub}",
                                             TypePublishEinvoice = ENumTypePublishEinvoice.XOADONTHATBAI,
                                         });
 
@@ -1533,26 +1536,35 @@ namespace Infrastructure.Infrastructure.Repositories
                                     }
                                     else
                                     {
-                                        var gettoken = _hkdvnptrepository.GetTokenCache(ComId);
-                                        if (string.IsNullOrEmpty(gettoken))
+                                        ListDetailInvoice.Add(new DetailInvoice()
                                         {
-                                            var login = await _hkdvnptrepository.Login(ComId, company.DomainName, company.UserNameAdmin, company.PassWordAdmin);
-                                            if (!login.success)
-                                            {
-                                                ListDetailInvoice.Add(new DetailInvoice()
-                                                {
-                                                    code = item.EInvoiceCode,
-                                                    note = $"{string.Join(",", login.errors?.ToArray())}",
-                                                    TypePublishEinvoice = ENumTypePublishEinvoice.XOADONTHATBAI,
-                                                });
-                                            }
-                                            else
-                                            {
-                                                gettoken = login.Token;
-                                            }
-                                        }
-                                        var callgetinv = await _hkdvnptrepository.XemHoaDon(company.DomainName, gettoken,0);
-                                        xử lý tiếp xem hóa đơn.
+                                            code = item.EInvoiceCode,
+                                            note = $"Hệ thống chưa hỗ trợ hóa đơn VNPT HKD",
+                                            TypePublishEinvoice = ENumTypePublishEinvoice.XOADONTHATBAI,
+                                        });
+
+
+                                        //var gettoken = _hkdvnptrepository.GetTokenCache(ComId);
+                                        //if (string.IsNullOrEmpty(gettoken))
+                                        //{
+                                        //    var login = await _hkdvnptrepository.Login(ComId, company.DomainName, company.UserNameAdmin, company.PassWordAdmin);
+                                        //    if (!login.success)
+                                        //    {
+                                        //        ListDetailInvoice.Add(new DetailInvoice()
+                                        //        {
+                                        //            code = item.EInvoiceCode,
+                                        //            note = $"{string.Join(",", login.errors?.ToArray())}",
+                                        //            TypePublishEinvoice = ENumTypePublishEinvoice.XOADONTHATBAI,
+                                        //        });
+                                        //    }
+                                        //    else
+                                        //    {
+                                        //        gettoken = login.Token;
+                                        //    }
+                                        //}
+                                        //var callgetinv = await _hkdvnptrepository.XemHoaDon(company.DomainName, gettoken,0);
+
+
                                     }
 
                                 }
@@ -1568,7 +1580,7 @@ namespace Infrastructure.Infrastructure.Repositories
                             {
                                 code = item.EInvoiceCode,
                                 note = $"Xóa bỏ thành công",
-                                TypePublishEinvoice = ENumTypePublishEinvoice.HUYHOADONOK,
+                                TypePublishEinvoice = ENumTypePublishEinvoice.XOADONTHANHCONG,
                             });
                         }
                     }

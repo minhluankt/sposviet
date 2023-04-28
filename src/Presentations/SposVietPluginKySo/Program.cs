@@ -34,43 +34,48 @@ namespace SposVietPluginKySo
 
         static void Main()
         {
+            LogControl.Write("Bắt đầu chạy");
             bool ownmutex;
             // Tạo và lấy quyền sở hữu một Mutex có tên là SposVietPlugin;
-            using (Mutex mutex = new Mutex(true, "SposVietPlugin", out ownmutex))
+            using (Mutex mutex = new Mutex(true, "SposVietPluginPrint", out ownmutex))
             {
                 // Nếu ứng dụng sở hữu Mutex, nó có thể tiếp tục thực thi;
                 // nếu không, ứng dụng sẽ thoát.
                 if (ownmutex)
                 {
+                    Thread.Sleep(800);
                     StartInWindow();//khởi động cùng window
 
                     WebSocketSharpSposViet.StartWebSocket();//khởi tạo web socket
                     var signalRConnection = new SignalServer();
                     //signalRConnection.Start();
                     signalRConnection.StartSignalRAsync();
-
+                    mutex.ReleaseMutex();
+                    LogControl.Write("Ứng dụng đã chạy");
                     ApplicationConfiguration.Initialize();
                     Application.Run(new sposvietform());
                     //giai phong Mutex;
-                    mutex.ReleaseMutex();
+                  
                 }
                 else
-                    MessageBox.Show("Ứng dụng đang hoạt động", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Application.Exit();
+                {
+                    LogControl.Write("Vui lòng kiểm tra lại ứng dụng, có thể đang hoạt động!");
+                    MessageBox.Show("Vui lòng kiểm tra lại ứng dụng, có thể đang hoạt động!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                } 
             }
         }
 
         private static void StartInWindow()
         {
-            //RegistryKey regkey = Registry.CurrentUser.CreateSubKey("Software\\SPOSVIET-PLUGIN");
+            RegistryKey regkey = Registry.CurrentUser.CreateSubKey("Software\\SPOSVIET_PLUGIN");
             //mo registry khoi dong cung win
             RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
            // RegistryKey registryKey = Registry.CurrentUser.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
-          //  string keyvalue = "1";
+           string keyvalue = "1";
             try
             {
                 //chen gia tri key
-                //regkey.SetValue("Index", keyvalue);
+                regkey.SetValue("Index", keyvalue);
                 //registryKey.SetValue("SposVietKySo", "");
                 registryKey.SetValue("SPOSVIET_PLUGIN",$"\"{Application.StartupPath}SposVietPluginKySo.exe\"");
                 //registryKey.SetValue("SPOSVIET-PLUGIN", Application.StartupPath + "SposVietPluginKySo.exe");
