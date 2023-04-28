@@ -192,6 +192,7 @@ namespace SposVietPluginKySo
                                 res.isSuccess = true;
                                 res.Message = "In thành công";
                                 Send(JsonConvert.SerializeObject(res));
+                                LogControl.Write("in thành công");
                             }
 
                             break;

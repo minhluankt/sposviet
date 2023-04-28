@@ -115,7 +115,8 @@ namespace SposVietPluginKySo
             //Font font = new Font("Arial", 18.0f);
             //var size = Measurement.Graphics.MeasureString(html, font);
             Stream stream = new MemoryStream(bytes);
-            Bitmap image = new Bitmap(Bitmap.FromStream(stream));
+            //Bitmap image = new Bitmap(Bitmap.FromStream(stream));
+            Bitmap image = new Bitmap(stream);
             //----------
 
             System.Text.EncodingProvider ppp = System.Text.CodePagesEncodingProvider.Instance;
