@@ -53,6 +53,7 @@ namespace Application.Features.OrderTables.Commands
         {
             try
             {
+                OrderTableModel orderTableModel = new OrderTableModel();
                 Result<OrderTable> updatequantity = null;
                 Customer customer = null;
                 bool isRemoveRow = false;
@@ -160,6 +161,7 @@ namespace Application.Features.OrderTables.Commands
                             {
                                 return await Result<OrderTableModel>.FailAsync(HeperConstantss.ERR043);
                             }
+                            
                             return await Result<OrderTableModel>.SuccessAsync(HeperConstantss.SUS007);
                         }
                         else
@@ -169,7 +171,10 @@ namespace Application.Features.OrderTables.Commands
                             {
                                 return await Result<OrderTableModel>.FailAsync(HeperConstantss.ERR043);
                             }
-                            return await Result<OrderTableModel>.SuccessAsync(HeperConstantss.SUS007);
+                            orderTableModel.IdRoomAndTableGuid = remove.Data.IdRoomAndTableGuid;
+                            orderTableModel.IsBringBack = remove.Data.IsBringBack;
+                            orderTableModel.IdGuid = request.IdGuid.Value;
+                            return await Result<OrderTableModel>.SuccessAsync(orderTableModel,HeperConstantss.SUS007);
                         }
 
                     case EnumTypeUpdatePos.Unknown:
@@ -182,11 +187,12 @@ namespace Application.Features.OrderTables.Commands
                 {
                     return await Result<OrderTableModel>.FailAsync(updatequantity.Message);
                 }
-                OrderTableModel orderTableModel = new OrderTableModel();
+                
                 orderTableModel = request;
                 orderTableModel.IdGuid = updatequantity.Data.IdGuid;
                 orderTableModel.IdRoomAndTableGuid = request.IdRoomAndTableGuid;
                 orderTableModel.OrderCode = updatequantity.Data.OrderTableCode;
+                orderTableModel.IsBringBack = updatequantity.Data.IsBringBack;
                 orderTableModel.IdOrder = updatequantity.Data.Id;
                 orderTableModel.Buyer = updatequantity.Data.Buyer;
                 orderTableModel.Amount = updatequantity.Data.Amonut;

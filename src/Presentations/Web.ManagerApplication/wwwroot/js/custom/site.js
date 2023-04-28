@@ -22,6 +22,12 @@ var ListCusByOrderPos = [];
 var ListNoteOrder = [];//
 var listport = [8056];
 var NOVATRate = -3;
+var EnumTypePrint = // loại in
+{
+    TEST : 0,//TEST
+        PrintBaoBep : 1,//báo hủy và chế biến
+        RealtimeOrder : 2,//load đơn
+}
 var TypeEventWebSocket = {
     SendTestConnect: -1,//ký hóa đơn
     SignEInvoice: 0,//ký hóa đơn
@@ -12267,6 +12273,33 @@ var eventBanle = {
     },
 }
 var loadeventPos = {
+    eventRealtimeOrdertable:  function (data) {
+        json = JSON.parse(data);
+        $("#lst-roomandtable li").filter(async function () {
+            let iddata = $(this).data("id");
+            if (json.IdRoomAndTableGuid == iddata) {
+                if (json.OrderTableItems.length == 0 || json.TypeProduct == _TypeUpdatePos.RemoveOrder) {
+                    $(this).removeClass("CurentOrder");
+                } else if (!$(this).hasClass("CurentOrder")) {
+                    $(this).addClass("CurentOrder");
+                }
+                if ($(this).hasClass("active")) {
+                    let GetTable = $(this).find("b").html();
+                   
+                    if (json.IsBringBack) {
+                        await loadeventPos.loadOrderByTable("-1");
+                    } else {
+                        await loadeventPos.loadOrderByTable(json.IdRoomAndTableGuid);
+                    }
+                    $(".btn-showttable").data("id", iddata);
+                    $(".btn-showttable").find(".showTableOrder").html(GetTable);
+                    
+                }
+            }
+        });
+        
+       
+    },
     eventShowTabProductByCategory: function () {
         $.ajax({
             global: false,
@@ -12550,7 +12583,8 @@ var loadeventPos = {
                         loadeventPos.checkHighlightTableInOrder();// check highlight
                         // sau khi load lại gán order mới thì update bàn active qua tab order
                         let GetTable = $("#lst-roomandtable").find("li.active");
-                        $(".btn-showttable").attr("data-id", GetTable.data("id"));
+                        //$(".btn-showttable").attr("data-id", GetTable.data("id"));
+                        $(".btn-showttable").data("id", GetTable.data("id"));
                         $(".btn-showttable").find(".showTableOrder").html(GetTable.find("b").html());
                     } else {
                         let html = `<ul id="item-mon"> `;

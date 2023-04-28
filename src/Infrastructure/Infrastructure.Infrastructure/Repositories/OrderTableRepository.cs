@@ -397,8 +397,9 @@ namespace Infrastructure.Infrastructure.Repositories
             return _repository.Entities.Where(x => x.ComId == ComId && x.Status == enumStatusOrderTable && x.IsBringBack && x.TypeProduct== enumTypeProduct);
         }
 
-        public async Task<Result<bool>> RemoveOrder(int comid, Guid idOrder,string CasherName, string IdCashername, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC)
+        public async Task<Result<OrderTableModel>> RemoveOrder(int comid, Guid idOrder,string CasherName, string IdCashername, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC)
         {
+            OrderTableModel orderTableModel = new OrderTableModel();
             var checkOrder = await _repository.Entities.SingleOrDefaultAsync(x => x.ComId == comid && x.IdGuid == idOrder && x.TypeProduct == enumTypeProduct);
             if (checkOrder != null)
             {
@@ -410,9 +411,13 @@ namespace Infrastructure.Infrastructure.Repositories
                 });
                 await _notifyChitkenRepository.UpdateNotifyKitchenCancelListAsync(lstId, comid, CasherName, IdCashername);
                 await _unitOfWork.SaveChangesAsync();
-                return await Result<bool>.SuccessAsync(true);
+                orderTableModel.IdOrder = checkOrder.Id;
+                orderTableModel.IdGuid = checkOrder.IdGuid;
+                orderTableModel.IdRoomAndTableGuid = checkOrder.IdRoomAndTableGuid;
+                orderTableModel.IsBringBack = checkOrder.IsBringBack;
+                return await Result<OrderTableModel>.SuccessAsync(orderTableModel, HeperConstantss.SUS007);
             }
-            return await Result<bool>.FailAsync();
+            return await Result<OrderTableModel>.FailAsync();
         }
 
         public async Task<Result<PublishInvoiceResponse>> CheckOutOrderAsync(int comid, int Idpayment, Guid idOrder,

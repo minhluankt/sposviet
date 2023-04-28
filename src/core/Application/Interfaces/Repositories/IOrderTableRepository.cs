@@ -15,7 +15,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<string>> GenHtmlPrintBep(List<NotifyOrderNewModel> model, int ComId);
         Task<Result<string>> AddNote(int comid, Guid idOrder, string note);
         Task<Result<OrderTable>> UpdateTableOrRoomOfOrder(int comid,bool isBringBack, Guid idOrder, Guid? idOldTableOrder, Guid? idRoomOrtable, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC);
-        Task<Result<bool>> RemoveOrder(int comid, Guid idOrder, string CasherName, string IdCashername, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC);
+        Task<Result<OrderTableModel>> RemoveOrder(int comid, Guid idOrder, string CasherName, string IdCashername, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC);
         Task<Result<bool>> RemoveCustomerOrder(int comid, Guid idOrder, EnumTypeProduct enumTypeProduct);
         Task<Result<bool>> SplitOrderAsync(int comid, Guid idOrderOld, List<Guid> lstIdoder, EnumTypeSpitOrder Type, string CasherName, string IdCashername);
         Task<Result<bool>> SplitOrderSeparateAsync(int comid, Guid idOrderOld, List<DetailtSpitModel> lstitem, bool IsCreate, bool IsBringBack, Guid? IdOrderNew, Guid? IdTable, string CasherName, string IdCasher);

@@ -385,6 +385,7 @@ public enum EnumTypePrintBarCode
     {
         TEST = 0,//TEST
         PrintBaoBep = 1,//báo hủy và chế biến
+        RealtimeOrder = 2,//load đơn
     }
     public enum EnumTypeNotifyKitchenOrder // cập nhật thông báo beepslaf đã xong chờ cung ứng
     {

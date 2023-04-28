@@ -1,4 +1,5 @@
 ﻿using Application.Enums;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,9 +36,10 @@ namespace Domain.ViewModel
         public decimal Amount { get; set; } //  thu ngân
         public decimal Quantity { get; set; } //  thu ngân
         public string QuantityFloat { get; set; } //  thu ngân
+        [JsonIgnore]
         public string HtmlPrint { get; set; } //  html báo bếp
         public DateTime? DateCreateService { get; set; } //  thu ngân
-        public EnumTypeUpdatePos TypeUpdate { get; set; } //  thu ngân
+        public EnumTypeUpdatePos TypeUpdate { get; set; } // 
         public EnumTypeProduct TypeProduct { get; set; } // loại dịch vụ
         public EnumTypeInvoice TypeInvoice { get; set; } // loại hóa đơn, đươn đặt
         public List<OrderTableItemModel> OrderTableItems { get; set; }

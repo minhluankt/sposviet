@@ -119,6 +119,7 @@ namespace Application.Features.OrderTablePos.Commands
                 }
                 OrderTableModel orderTableModel = new OrderTableModel();
                 orderTableModel = request.orderTableModel;
+                orderTableModel.IsBringBack = update.Data.IsBringBack;
                 orderTableModel.IdGuid = update.Data.IdGuid;
                 orderTableModel.IdOrder = update.Data.Id;
                 orderTableModel.OrderCode = update.Data.OrderTableCode;

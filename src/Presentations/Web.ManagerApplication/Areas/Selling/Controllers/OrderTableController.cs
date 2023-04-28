@@ -240,12 +240,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 var UpdateQuantity = await _mediator.Send(ipdateOrderTableCommand);
                 if (UpdateQuantity.Succeeded)
                 {
+                    //------------------báo cho các clinet khác cập nhật dataoder realtime
+                    await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder,JsonConvert.SerializeObject(UpdateQuantity.Data));
                     if (!string.IsNullOrEmpty(UpdateQuantity.Data.HtmlPrint))
                     {
-                        //--------------mowr2 dòng này chạy bản mới
-                        //await dashboardHub.PrintbaobepSposViet(currentUser.ComId, UpdateQuantity.Data.HtmlPrint);
-                        //return Json(new { isValid = true, data = UpdateQuantity.Data , isbaobep = false});
-
+                      
+                        //---------------------------báo bếp--------------------------------
                         try
                         {
                             var _send = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.PRINT_BAO_BEP.ToString()) { ComId = currentUser.ComId });
@@ -261,6 +261,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                                         {
                                             _notify.Success("Báo bếp thành công");
                                             await dashboardHub.PrintbaobepSposViet(currentUser.ComId, UpdateQuantity.Data.HtmlPrint);
+                                          
                                             return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = false });
                                         }
                                     }
@@ -281,19 +282,18 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                             _logger.LogInformation("Xử lý báo bếp");
                             _logger.LogError(e.ToString());
                         }
+                        //----------------------------
                         
                     }
-                    return Json(new { isValid = true, data = UpdateQuantity.Data });
+                    return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = false });
                 }
                 _notify.Error(UpdateQuantity.Message);
-                return Json(new { isValid = false, mess = UpdateQuantity.Message });
+                return Json(new { isValid = false, mess = UpdateQuantity.Message, isbaobep = false });
             }
-
-
-
             var update = await _mediator.Send(new CreateOrderTableCommand(model));
             if (update.Succeeded)
-            {
+            { //------------------báo cho các clinet khác cập nhật dataoder realtime
+                await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder, JsonConvert.SerializeObject(update.Data));
                 return Json(new { isValid = true, data = update.Data });
             }
             _notify.Error(update.Message);
@@ -403,7 +403,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> RemoveOder(EnumTypeUpdatePos TypeUpdate, Guid IdOrder)
+        public async Task<IActionResult> RemoveOder(EnumTypeUpdatePos TypeUpdate, Guid IdOrder)//xóa đơn
         {
             var currentUser = User.Identity.GetUserClaimLogin();
             OrderTableModel model = new OrderTableModel();
@@ -417,6 +417,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var UpdateQuantity = await _mediator.Send(ipdateOrderTableCommand);
             if (UpdateQuantity.Succeeded)
             {
+                //------------------báo cho các clinet khác cập nhật dataoder realtime
+                UpdateQuantity.Data.IdGuid = IdOrder;
+                UpdateQuantity.Data.TypeUpdate = TypeUpdate;
+                await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder, JsonConvert.SerializeObject(UpdateQuantity.Data));
                 _notify.Success(GeneralMess.ConvertStatusToString(UpdateQuantity.Message));
                 return Json(new { isValid = true });
             }

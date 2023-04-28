@@ -359,6 +359,7 @@
                             console.log("đang connect lại tự động");
                             // If we've been reconnecting for less than 60 seconds so far,
                             // wait between 0 and 10 seconds before the next reconnect attempt.
+                           
                             return Math.random() * 3000;
                         } else {
                             // If we've been reconnecting for more than 60 seconds so far, stop reconnecting.
@@ -369,13 +370,15 @@
                 .withUrl('/Signal')
                 .build();
 
-
+          
             function start() {
                 try {
                     connection.start()
                         .then(function () {
                             console.assert(connection.state === signalR.HubConnectionState.Connected);
-                            console.log("SignalR Connected.");
+                            connection.invoke('Printbaobep', "ok", "TEST");
+                            connection.invoke('LoadOrdertable', EnumTypePrint.TEST, "connect dữ liệu");
+                            console.log('connect started');
                             clearInterval(interval);
                         })
                         .catch(error => {
@@ -395,13 +398,23 @@
 
                 }
 
-            }); 
+            });
+            connection.on('LoadOrdertable', function (res) {//load các đơn
+                json = JSON.parse(res);
+                if (json.type == EnumTypePrint.RealtimeOrder) {
+                    loadeventPos.eventRealtimeOrdertable(json.data);
+                }
+                else{
+                    console.log(json.data);
+                }
+
+            });
             //connection.on('Printbaobep', function (data) { phần để tự độn in báo bếp
             //   // toastr.success(data)
             //    if (data == "TEST"){
 
             //    }else{
-            //        console.log("In bếp");
+            //        console.log("In bếp");  
             //        loadeventPos.eventinbaobep(data);
             //    }
                 
@@ -423,7 +436,8 @@
             connection.start()
                 .then(function () {
                     connection.invoke('Printbaobep', "ok","TEST");
-                    // console.log('connection started');
+                    connection.invoke('LoadOrdertable', EnumTypePrint.TEST,"connect dữ liệu");
+                    console.log('connect started');
                     $(".btn-notif").click(function () {
                         loadeventPos.NotifyChitken();
                         //connection.invoke('sendNotifyPos', EnumTypeSignalRHub.POS, EnumTypeSignalRHub.POS);
