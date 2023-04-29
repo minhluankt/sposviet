@@ -39,7 +39,7 @@ namespace SposVietPluginKySo
             try
             {
                 
-                w.Write("[{0} {1}]", DateTime.Now.ToString("dd/MM/yyyy HH:mm"), DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
+                w.Write("[{0} {1}]", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"), DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
                 w.Write("\t");
                 w.WriteLine(" {0}", msg);
                 w.WriteLine("-----------------------");
