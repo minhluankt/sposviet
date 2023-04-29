@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing.Printing;
 using PdfiumViewer;
-using ESC_POS_USB_NET.Printer;
-using HtmlToImageCore;
+
 using ESC_POS_USB_NET.Enums;
 using System.Windows.Forms;
 using iTextSharp.text.pdf.qrcode;
@@ -17,10 +16,8 @@ using System.Diagnostics.Metrics;
 using GrapeCity.Documents.Html;
 
 using CoreHtmlToImage;
-using Aspose.Html;
-using Aspose.Html.Converters;
-using Aspose.Html.Saving;
 using System.Reflection;
+using ESC_POS_USB_NET.Printer;
 
 namespace SposVietPluginKySo
 {
@@ -117,9 +114,6 @@ namespace SposVietPluginKySo
             {
                 PrinterSettings settings = new PrinterSettings();
                 Printer printer = new Printer(settings.PrinterName);
-
-
-
                 //------------in hình
                 var converter = new HtmlConverter();
                 //------------cách 2

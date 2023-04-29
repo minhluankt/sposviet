@@ -241,7 +241,16 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 if (UpdateQuantity.Succeeded)
                 {
                     //------------------báo cho các clinet khác cập nhật dataoder realtime
-                    await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder,JsonConvert.SerializeObject(UpdateQuantity.Data));
+                    try
+                    {
+                        await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder, JsonConvert.SerializeObject(UpdateQuantity.Data));
+                    }
+                    catch (Exception e)
+                    {
+
+                        _logger.LogError(e.ToString());
+                    }
+                   
                     if (!string.IsNullOrEmpty(UpdateQuantity.Data.HtmlPrint))
                     {
                       
@@ -292,8 +301,17 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             var update = await _mediator.Send(new CreateOrderTableCommand(model));
             if (update.Succeeded)
-            { //------------------báo cho các clinet khác cập nhật dataoder realtime
-                await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder, JsonConvert.SerializeObject(update.Data));
+            {
+                try
+                {
+                    //------------------báo cho các clinet khác cập nhật dataoder realtime
+                    await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder, JsonConvert.SerializeObject(update.Data));
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.ToString());
+                }
+               
                 return Json(new { isValid = true, data = update.Data });
             }
             _notify.Error(update.Message);
