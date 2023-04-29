@@ -188,6 +188,7 @@ namespace SposVietPluginKySo
                             }
                             else
                             {
+                                LogControl.Write("Bắt đầu in wss thành công");
                                 PrintServer.PrintPageBaoBep(model.html);
                                 res.isSuccess = true;
                                 res.Message = "In thành công";

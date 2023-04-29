@@ -17,7 +17,10 @@ using System.Diagnostics.Metrics;
 using GrapeCity.Documents.Html;
 
 using CoreHtmlToImage;
-
+using Aspose.Html;
+using Aspose.Html.Converters;
+using Aspose.Html.Saving;
+using System.Reflection;
 
 namespace SposVietPluginKySo
 {
@@ -25,7 +28,7 @@ namespace SposVietPluginKySo
     {
         private static Bitmap measurementBitmap;
         private static Graphics measurementGraphics;
-       
+
 
         static Measurement()
         {
@@ -41,15 +44,15 @@ namespace SposVietPluginKySo
             }
         }
     }
-    public  class PrintServer
+    public class PrintServer
     {
-       
+
 
         public static void Print(string data)
         {
             PrinterSettings settings = new PrinterSettings();
             //Console.WriteLine(settings.PrinterName);
-           string defaultPrinter = settings.PrinterName;
+            string defaultPrinter = settings.PrinterName;
             NReco.PdfGenerator.HtmlToPdfConverter htmlToPdfConverter = new NReco.PdfGenerator.HtmlToPdfConverter();
             var bytes = htmlToPdfConverter.GeneratePdf(data);
 
@@ -68,10 +71,10 @@ namespace SposVietPluginKySo
                         //printDocument.DocumentName = Path.Combine(path, "file" + count++ + ".pdf");
                         printDocument.DefaultPageSettings = new PageSettings(printDocument.PrinterSettings)
                         {
-                           // Margins = new Margins(0, 0, 0, 0),
+                            // Margins = new Margins(0, 0, 0, 0),
                             PaperSize = GetPaperSize(settings, (int)PaperKind.A6),
                             //PaperSize = new PaperSize("Custom",250,750),
-                            
+
                         };
                         //printDocument.DefaultPageSettings.PaperSize.RawKind = (int)PaperKind.Custom;
                         //printDocument.PrinterSettings.DefaultPageSettings.PaperSize.RawKind = (int)PaperKind.Custom;
@@ -91,9 +94,9 @@ namespace SposVietPluginKySo
 
             //recordDoc.PrintPage += new PrintPageEventHandler(PrintPageEventHandler); // function below    
             //recordDoc.PrintController = new StandardPrintController(); // hides status dialog popup    
-                                                                       // Comment if debugging     
+            // Comment if debugging     
             PrinterSettings ps = new PrinterSettings();
-            ps.PrinterName = settings.PrinterName; 
+            ps.PrinterName = settings.PrinterName;
             recordDoc.PrinterSettings = ps;
             recordDoc.Print();
             // --------------------------------------    
@@ -117,49 +120,21 @@ namespace SposVietPluginKySo
 
 
 
-            //------------in hình
-            var converter = new HtmlConverter();
-           //------------cách 2
-            //var bytes = converter.FromHtmlString(html);
-            //cách 1
-            //----------
-            var browserPath = BrowserFetcher.GetSystemChromePath();
-            using var browser = new GcHtmlBrowser(browserPath);
-            using var pg = browser.NewPage(html, new PageOptions
-            {
-                TimeoutOptions= new TimeoutOptions() { MaxCloseTime = 800000},
-                DefaultBackgroundColor = Color.White,
-                WindowSize = new Size(1024, 1024)
-            });
-
-            //now create the png file
-            //pg.SaveAsPng("thankYou.png");
-            var bytes = pg.ToJpegBytes();
-            //---------
-            //Font font = new Font("Arial", 18.0f);
-            //var size = Measurement.Graphics.MeasureString(html, font);
-            Stream stream = new MemoryStream(bytes);
-            //Bitmap image = new Bitmap(Bitmap.FromStream(stream));
-            Bitmap image = new Bitmap(stream);
-           
-
-                //------------in hình cách 1
+                //------------in hình
                 var converter = new HtmlConverter();
-               
-                LogControl.Write("Bắt đầu tạo byte"+ html);
-                var bytes = converter.FromHtmlString(html, 1024, CoreHtmlToImage.ImageFormat.Jpg, 100);
-
-
-                //--cách 2
-                //var bytes = _htmlconvert.ConvertHtmlString(html, "bmp", null, null);
-                //--cách 2
-
-                LogControl.Write("Tạo byte thành công");
-
-                Stream stream = new MemoryStream(bytes);
-                Bitmap image = new Bitmap(Bitmap.FromStream(stream));
-                //Bitmap image = new Bitmap(stream);
+                //------------cách 2
+                var bytes = converter.FromHtmlString(html);
+                //cách 1
                 //----------
+              
+                //---------
+                //Font font = new Font("Arial", 18.0f);
+                //var size = Measurement.Graphics.MeasureString(html, font);
+                Stream stream = new MemoryStream(bytes);
+                //Bitmap image = new Bitmap(Bitmap.FromStream(stream));
+                Bitmap image = new Bitmap(stream);
+
+
 
                 System.Text.EncodingProvider ppp = System.Text.CodePagesEncodingProvider.Instance;
                 Encoding.RegisterProvider(ppp);
@@ -173,9 +148,9 @@ namespace SposVietPluginKySo
             {
                 LogControl.Write(e.ToString());
 
-                throw new Exception("IN thất bại",e);
+                throw new Exception("IN thất bại", e);
             }
-         
+
 
         }
         public static void PrintHmtl()
@@ -186,8 +161,8 @@ namespace SposVietPluginKySo
             var bytes = converter.FromHtmlString(html);
             Printer printer = new Printer(settings.PrinterName);
             //Stream stream = new MemoryStream(bytes);
-           // Bitmap image = new Bitmap(Bitmap.FromStream(stream));
-           // Bitmap newImage = ResizeBitmap(image, 512, 512);
+            // Bitmap image = new Bitmap(Bitmap.FromStream(stream));
+            // Bitmap newImage = ResizeBitmap(image, 512, 512);
             //   printer.Image(newImage);
             // printer.PrintDocument(
             //  printer.FullPaperCut();

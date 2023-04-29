@@ -21,10 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspose.HTML" Version="22.2.0" />
     <PackageReference Include="CoreHtmlToImage" Version="1.0.6" />
     <PackageReference Include="ESC-POS-USB-NET" Version="1.1.3" />
     <PackageReference Include="GrapeCity.Documents.Html" Version="6.1.0" />
-    <PackageReference Include="GrapeCity.Documents.Imaging" Version="6.1.0" />
     <PackageReference Include="HtmlToImageCore" Version="0.0.1" />
     <PackageReference Include="iTextSharp" Version="5.5.13.3" />
     <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.3" />
