@@ -19,7 +19,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<int>> UpdateNotifyOrder(int Comid, Guid? IdOrder, Guid? IdKitchen, int? IdProduct, bool UpdateOne, EnumTypeNotifyKitchenOrder typeupdate, EnumStatusKitchenOrder Status, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC);
         IQueryable<Kitchen> GetAllNotifyOrder(int Comid, EnumStatusKitchenOrder status = EnumStatusKitchenOrder.MOI);
         Task UpdateNotifyKitchenCancelAsync(int Comid, Guid IdOrder, int IdProduct, decimal Quantity, string CasherName, string IdCasher, bool removeAllfood = false);
-        Task UpdateNotifyKitchenCancelListAsync(List<Kitchen> entity, int ComId,string CasherName, string IdCashername);
+        Task<List<NotifyOrderNewModel>> UpdateNotifyKitchenCancelListAsync(List<Kitchen> entity, int ComId,string CasherName, string IdCashername);
         Task UpdateNotifyKitchenDoneListAsync(List<OrderTableItem> entity, OrderTable newOrder, Guid idorderOld, int ComId);
         Task UpdateNotifyKitchenSpitOrderAsync(OrderTable OrderOld, List<OrderTableItem> lstorderold, int ComId, OrderTable newOrder, List<OrderTableItem> lstordernew = null, bool isCreatNewOrder = false,DateTime? _createDateHis = null);//hủy khi tách đơn
         Task UpdateNotifyKitchenTachdonVaoDonDacoAsync(OrderTable OrderOld, List<OrderTableItem> lstorderold, int ComId, OrderTable newOrder, List<OrderTableItem> lstordernew, List<OrderTableItem> lstorderoldremove, string CasherName, string IdCasher);//dùng cho tách đơn dạng đươn đã có

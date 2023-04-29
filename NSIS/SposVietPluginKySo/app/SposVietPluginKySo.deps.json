@@ -10,6 +10,7 @@
         "dependencies": {
           "CoreHtmlToImage": "1.0.6",
           "ESC-POS-USB-NET": "1.1.3",
+          "HtmlToImageCore": "0.0.1",
           "Microsoft.AspNet.SignalR": "2.4.3",
           "Microsoft.AspNet.SignalR.Client": "2.4.3",
           "Microsoft.AspNet.SignalR.SelfHost": "2.4.3",
@@ -58,6 +59,14 @@
           "lib/netstandard2.0/ESC-POS-USB-NET.dll": {
             "assemblyVersion": "1.1.3.0",
             "fileVersion": "1.1.3.0"
+          }
+        }
+      },
+      "HtmlToImageCore/0.0.1": {
+        "runtime": {
+          "lib/netstandard2.0/HtmlToImageCore.dll": {
+            "assemblyVersion": "0.0.1.0",
+            "fileVersion": "0.0.1.0"
           }
         }
       },
@@ -823,6 +832,13 @@
       "sha512": "sha512-sqHGbIRFllb4BL0NrUYiRpPctOjC9zFi7vVww5YHVPfvmKGivEdIndxWBd2/qfyzZB8q5QOp+rJGNb/QDkexcw==",
       "path": "esc-pos-usb-net/1.1.3",
       "hashPath": "esc-pos-usb-net.1.1.3.nupkg.sha512"
+    },
+    "HtmlToImageCore/0.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ns1cRaD3XzWFD3oaSlifswaQjPllC6F9uwhFl8QancudXe5FE8LHv9poPvhCbr4PVPPfImb+7z7D31bee7yMMA==",
+      "path": "htmltoimagecore/0.0.1",
+      "hashPath": "htmltoimagecore.0.0.1.nupkg.sha512"
     },
     "iTextSharp/5.5.13.3": {
       "type": "package",
