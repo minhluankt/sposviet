@@ -409,12 +409,23 @@ namespace Infrastructure.Infrastructure.Repositories
                 {
                     IdOrder = idOrder
                 });
-                await _notifyChitkenRepository.UpdateNotifyKitchenCancelListAsync(lstId, comid, CasherName, IdCashername);
+                if (enumTypeProduct == EnumTypeProduct.AMTHUC)
+                {
+                    var update = await _notifyChitkenRepository.UpdateNotifyKitchenCancelListAsync(lstId, comid, CasherName, IdCashername);
+                    if (update.Count() > 0)
+                    {
+                        orderTableModel.NotifyOrderNewModels = update;
+                    }
+                }
+               
+              
                 await _unitOfWork.SaveChangesAsync();
                 orderTableModel.IdOrder = checkOrder.Id;
                 orderTableModel.IdGuid = checkOrder.IdGuid;
                 orderTableModel.IdRoomAndTableGuid = checkOrder.IdRoomAndTableGuid;
                 orderTableModel.IsBringBack = checkOrder.IsBringBack;
+               
+              
                 return await Result<OrderTableModel>.SuccessAsync(orderTableModel, HeperConstantss.SUS007);
             }
             return await Result<OrderTableModel>.FailAsync();

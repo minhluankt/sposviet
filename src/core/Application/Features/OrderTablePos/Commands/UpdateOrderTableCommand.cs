@@ -174,6 +174,19 @@ namespace Application.Features.OrderTables.Commands
                             orderTableModel.IdRoomAndTableGuid = remove.Data.IdRoomAndTableGuid;
                             orderTableModel.IsBringBack = remove.Data.IsBringBack;
                             orderTableModel.IdGuid = request.IdGuid.Value;
+                            // kèm báo bếp
+                            if (remove.Data.NotifyOrderNewModels != null)
+                            {
+                                var genhtml = await _orderTableRepository.GenHtmlPrintBep(remove.Data.NotifyOrderNewModels, request.ComId);
+                                if (genhtml.Succeeded)
+                                {
+                                    if (!string.IsNullOrEmpty(genhtml.Data))
+                                    {
+                                        orderTableModel.HtmlPrint = genhtml.Data;
+                                    }
+                                }
+
+                            }
                             return await Result<OrderTableModel>.SuccessAsync(orderTableModel,HeperConstantss.SUS007);
                         }
 

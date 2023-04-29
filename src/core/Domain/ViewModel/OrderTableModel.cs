@@ -11,6 +11,7 @@ namespace Domain.ViewModel
         public OrderTableModel()
         {
             this.OrderTableItems = new List<OrderTableItemModel>();
+            this.NotifyOrderNewModels = new List<NotifyOrderNewModel>();
             // this.IdGuid = Guid.NewGuid();
         }
         public Guid? IdGuid { get; set; }
@@ -43,7 +44,8 @@ namespace Domain.ViewModel
         public EnumTypeProduct TypeProduct { get; set; } // loại dịch vụ
         public EnumTypeInvoice TypeInvoice { get; set; } // loại hóa đơn, đươn đặt
         public List<OrderTableItemModel> OrderTableItems { get; set; }
-       // public List<NotifyOrderNewModel> NotifyOrderNewModels { get; set; }//dùng để báo hủy bếp
+        [JsonIgnore]
+        public List<NotifyOrderNewModel> NotifyOrderNewModels { get; set; }//dùng để báo hủy bếp
 
 
     }

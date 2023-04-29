@@ -614,8 +614,9 @@ namespace Infrastructure.Infrastructure.Repositories
             }
         }
 
-        public async Task UpdateNotifyKitchenCancelListAsync(List<Kitchen> entity, int ComId,string CasherName,string IdCashername)
+        public async Task<List<NotifyOrderNewModel>> UpdateNotifyKitchenCancelListAsync(List<Kitchen> entity, int ComId,string CasherName,string IdCashername)
         {
+            List<NotifyOrderNewModel> NotifyOrderNewModels = new List<NotifyOrderNewModel>();
             List<DetailtKitchen> lstde = new List<DetailtKitchen>();
             var getAll = _kitchenRepository.Entities.Where(x => x.ComId == ComId && entity.Select(x => x.IdOrder).ToArray().Contains(x.IdOrder) && x.Quantity > 0 && (x.Status == EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.READY));
 
@@ -632,6 +633,17 @@ namespace Infrastructure.Infrastructure.Repositories
                     Note = $"-{item.Quantity} {item.ProName}",
                 };
                 //////
+                /////-------------------add vào để báo bếp
+                NotifyOrderNewModels.Add(new NotifyOrderNewModel()
+                {
+                    Code=item.ProCode,
+                    Name= item.ProName,
+                    Quantity= item.Quantity,
+                    RoomTableName= item.RoomTableName,
+                    StaffName = item.Cashername,
+                   
+                });
+                /////--------------------------
                 lstde.Add(his);
                 item.Quantity = 0;
             }
@@ -645,6 +657,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 getcu.ForEach(x => { x.IsCancelAll = true; });
                 await _kitchenRepository.UpdateRangeAsync(getcu);
             }
+            return NotifyOrderNewModels;
         }
         public async Task UpdateNotifyKitchenSpitOrderGraftAsync(int ComId, List<Guid> lstOrderOld, OrderTable ordernew, List<OrderTableItem> itemlistbyordernew, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC)
         {

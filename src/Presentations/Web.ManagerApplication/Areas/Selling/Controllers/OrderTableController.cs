@@ -421,6 +421,51 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 UpdateQuantity.Data.IdGuid = IdOrder;
                 UpdateQuantity.Data.TypeUpdate = TypeUpdate;
                 await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder, JsonConvert.SerializeObject(UpdateQuantity.Data));
+
+                if (!string.IsNullOrEmpty(UpdateQuantity.Data.HtmlPrint))
+                {
+
+                    //---------------------------báo bếp--------------------------------
+                    try
+                    {
+                        var _send = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.PRINT_BAO_BEP.ToString()) { ComId = currentUser.ComId });
+                        if (_send.Succeeded)
+                        {
+                            bool getvalue = Convert.ToBoolean(_send.Data.Value);
+                            if (getvalue)
+                            {
+                                var checkconfig = _send.Data.ConfigSystems.SingleOrDefault(x => x.Key == EnumConfigParameters.PRINT_KET_NOI.ToString());
+                                if (checkconfig != null)
+                                {
+                                    if (Convert.ToBoolean(checkconfig.Value))
+                                    {
+                                       // _notify.Success("Báo bếp thành công");
+                                        await dashboardHub.PrintbaobepSposViet(currentUser.ComId, UpdateQuantity.Data.HtmlPrint);
+
+                                        return Json(new { isValid = true, isbaobep = false });
+                                    }
+                                }
+                                return Json(new { isValid = true, isbaobep = true, dataHtml = UpdateQuantity.Data.HtmlPrint });
+                            }
+                            else
+                            {
+                                return Json(new { isValid = true,  isbaobep = false });
+                            }
+                        }
+                        else
+                        {
+                            return Json(new { isValid = true,isbaobep = false });
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogInformation("Xử lý báo bếp");
+                        _logger.LogError(e.ToString());
+                    }
+                    //----------------------------
+
+                }
+
                 _notify.Success(GeneralMess.ConvertStatusToString(UpdateQuantity.Message));
                 return Json(new { isValid = true });
             }
