@@ -61,14 +61,13 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     doanhthudondangphucvu = dondangpv.Sum(),
                     dondangphucvu = model.DONDANGPHUCVU });
             }
-            làm ghi chú cho đơn
+            
             catch (Exception e)
             {
                 _logger.LogError(e.ToString());
                 _notify.Error(e.Message);
                 return Json(new { isValid = false });
             }
-
         }
     }
 }

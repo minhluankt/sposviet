@@ -1479,12 +1479,41 @@ div#parentautocomplete {
 
         div.name {
             flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            position: relative;
 
             b {
                 font-size: 16px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                position: relative;
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+            }
+
+            button.note {
+                
+                position: absolute;
+                bottom: -24px;
+                left: 0;
+                font-size: 17px;
+                color: #959595;
+                border: none;
+                background: transparent;
+                height: 45px;
+                line-height: 13px;
+                display: flex;
+                z-index: 5;
+                gap: 5px;
+                align-items: end;
+
+                &:hover {
+                    color: #000;
+                    cursor: pointer
+                }
             }
         }
     }
@@ -1667,61 +1696,61 @@ div#popupselectDiscount .ele-discount.ele-SaleRetail {
                     border-bottom: 1px solid #dfe1e5;
                     /*   border-right: 1px solid #dfe1e5;
                     border-left: 1px solid #dfe1e5;*/
-                    background-color: #ffffff;
-                    color: #646464;
+            background-color: #ffffff;
+            color: #646464;
 
-                    &:hover {
-                        text-decoration: none;
-                        background-color: #1487ae;
-                        color: #fff;
+            &:hover {
+                text-decoration: none;
+                background-color: #1487ae;
+                color: #fff;
 
-                        b {
-                            background-color: #ef7e2c;
-                            color: #fff;
-                        }
-                    }
-
-                    b {
-                        background-color: #16aaff;
-                        padding: 3px 5px;
-                        border-radius: 50%;
-                        margin-right: 10px;
-                        font-size: 15px;
-                        font-weight: bold;
-                        color: #ffffff;
-                    }
-
-                    span {
-                        //font-weight: bold;
-                        font-size: 14px;
-                        text-transform: uppercase;
-                        font-weight: 500;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        -webkit-line-clamp: 2;
-                        display: -webkit-box;
-                        -webkit-box-orient: vertical;
-                    }
-                }
-
-
-
-                &:last-child {
-                    a {
-                        /*   border-bottom-right-radius: 5px;
-                        border-bottom-left-radius: 5px;*/
-                        border-bottom: 0px solid #dfe1e5;
-                    }
-                }
-
-                &:first-child {
-                    a {
-                        border-top-right-radius: 5px;
-                        border-top-left-radius: 5px;
-                    }
+                b {
+                    background-color: #ef7e2c;
+                    color: #fff;
                 }
             }
+
+            b {
+                background-color: #16aaff;
+                padding: 3px 5px;
+                border-radius: 50%;
+                margin-right: 10px;
+                font-size: 15px;
+                font-weight: bold;
+                color: #ffffff;
+            }
+
+            span {
+                //font-weight: bold;
+                font-size: 14px;
+                text-transform: uppercase;
+                font-weight: 500;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                -webkit-line-clamp: 2;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+            }
         }
+
+
+
+        &:last-child {
+            a {
+                /*   border-bottom-right-radius: 5px;
+                        border-bottom-left-radius: 5px;*/
+                border-bottom: 0px solid #dfe1e5;
+            }
+        }
+
+        &:first-child {
+            a {
+                border-top-right-radius: 5px;
+                border-top-left-radius: 5px;
+            }
+        }
+    }
+}
     }
 }
 .btn-moreaction-pos{
@@ -4045,9 +4074,16 @@ span.discountAmountItemPro {
         overflow: auto;
     }
 
-    #item-mon li input.quantity {
-        width: 72px !important;
+    #item-mon {
+        li {
+            input.quantity {
+                width: 72px !important;
+            }
+
+            padding-bottom: 26px;
+        }
     }
+
 
     .tab-productselectorder {
         background-color: #eeeeee;
