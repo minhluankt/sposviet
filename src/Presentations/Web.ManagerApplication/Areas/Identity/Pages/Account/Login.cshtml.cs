@@ -5,6 +5,7 @@
 using Application.Constants;
 using Application.Enums;
 using Application.Features.ActivityLog.Commands.AddLog;
+using Application.Features.CompanyInfo.Query;
 using Application.Features.Permissions.Query;
 using Application.Interfaces.Repositories;
 using AutoMapper;
@@ -147,6 +148,18 @@ namespace Web.ManagerApplication.Areas.Identity.Pages.Account
                 var user = await _userManager.FindByNameAsync(userName);
                 if (user != null)
                 {
+                    var data = await _mediator.Send(new GetByIdCompanyInfoQuery() { Id = user.ComId });
+                    if (data.Succeeded)
+                    {
+                        if (data.Data.DateExpiration<=DateTime.Now.Date)
+                        {
+                            _notyf.Error("Hệ thống đã hết hạn sử dụng, vui lòng liên hệ admin để được gia hạn");
+                            //ModelState.AddModelError(string.Empty, "Email Not Confirmed.");
+                           // return Page();
+                            return LocalRedirect("/Selling/Error/ExpiredStort");
+                        }
+                    }
+
                     if (!user.IsActive)
                     {
                         return RedirectToPage("./Deactivated");

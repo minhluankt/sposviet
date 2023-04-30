@@ -71,20 +71,23 @@
                                     <label for="tb-email">Email</label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3">
                                 <div class="form-floating">
                                     <input asp-for="PhoneNumber" class="form-control" id="tb-pwd" >
                                     <label for="tb-pwd">Số điện thoại</label>
                                     <span asp-validation-for="PhoneNumber"></span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            @if(Model.Id==0){
+                                   <div class="col-md-6 mb-3">
                                 <div class="form-floating">
                                     <input asp-for="AccountName" class="form-control" id="tb-pwd">
                                     <label for="tb-pwd">Tài khoản đăn nhập</label>
                                     <span asp-validation-for="AccountName"></span>
                                 </div>
                             </div>
+                            }
+                         
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     @Html.DropDownList("IdDichVu", (IEnumerable<SelectListItem>)ViewBag.SelectList,  new { @style = "width:100%" ,@class="SelectListIdType form-control"} )
@@ -92,13 +95,20 @@
                                     <span asp-validation-for="IdDichVu"></span>
                                 </div>
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    @Html.DropDownList("TypeCompany", (IEnumerable<SelectListItem>)ViewBag.SelectListTypeCompany,  new { @style = "width:100%" ,@class="SelectListIdType form-control"} )
+                                    <label for="tb-pwd">Loại hệ thống</label>
+                                    <span asp-validation-for="TypeCompany"></span>
+                                </div>
+                            </div>
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
                                     <select asp-for="NumberDateExpiration" class="form-select form-control col-12" id="inlineFormCustomSelect">
                                       <option value="0" selected="">Chọn gói</option>
-                                      @for (int i = 1; i <= 10; i++)
+                                      @for (int i = 1; i <= 70; i++)
                                         {
-                                            <option value="@i">@i Năm</option>
+                                            <option value="@i">@i Tháng</option>
                                         }
                                     </select>
                                     <label for="tb-pwd">Đăng ký gói</label>
@@ -114,8 +124,16 @@
                             </div>
                              <div class="col-md-6">
                                 <div class="form-floating mb-3">
+                                    <input asp-for="DateExpiration" type="date" class="form-control" id="tb-pwd">
+                                    <label for="tb-pwd">Ngày kết thúc</label>
+                                    <span asp-validation-for="DateExpiration"></span>
+                                </div>
+                            </div>
+
+                             <div class="col-md-6">
+                                <div class="mb-3 d-flex">
                                     <input asp-for="Active"id="tb-pwd">
-                                    <label for="tb-pwd">Kích hoạt</label>
+                                    <label for="tb-pwd" class="ms-3 mb-0">Kích hoạt</label>
                                 </div>
                             </div>
                             

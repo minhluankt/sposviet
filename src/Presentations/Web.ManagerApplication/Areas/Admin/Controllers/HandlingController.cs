@@ -3,6 +3,7 @@ using Application.Enums;
 using Application.Features.CategorysPost.Query;
 using Application.Features.CategorysProduct.Query;
 using Application.Features.Comments.Commands;
+using Application.Features.CompanyInfo.Query;
 using Application.Features.PaymentMethods.Query;
 using Application.Features.Products.Query;
 using Application.Features.Specification.Query;
@@ -19,6 +20,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using Newtonsoft.Json;
+using Telegram.Bot.Types;
 using Web.ManagerApplication.Abstractions;
 
 namespace Web.ManagerApplication.Areas.Admin.Controllers
@@ -51,6 +53,61 @@ namespace Web.ManagerApplication.Areas.Admin.Controllers
         {
             return View();
         }
+
+        public async Task<IActionResult> CheckExpiredAsync()
+        {
+            var currentUser = User.Identity.GetUserClaimLogin();
+            if (currentUser==null)
+            {
+                return Content("[]");
+
+            }
+            var data = await _mediator.Send(new GetByIdCompanyInfoQuery() { Id = currentUser.ComId });
+            if (data.Succeeded)
+            {
+               
+                if (data.Data.DateExpiration <= DateTime.Now.Date)
+                {
+                    var jsondata = new
+                    {
+                        isExpired = true,
+                        numdate = 0,
+                        todate = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
+                        datesExpired = data.Data.DateExpiration.Value.ToString("dd/MM/yyyy"),
+                    };
+                    var json = JsonConvert.SerializeObject(jsondata);
+                    return Content(json);
+                }
+                else
+                {
+                    TimeSpan span = data.Data.DateExpiration.Value.Subtract(DateTime.Now.Date);
+                    int datenumber = span.Days;
+                    if (datenumber<=7)
+                    {
+                        var jsondata = new
+                        {
+                            todate = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
+                            isExpired = true,
+                            numdate = datenumber,
+                            datesExpired = data.Data.DateExpiration.Value.ToString("dd/MM/yyyy"),
+                        };
+                        var json = JsonConvert.SerializeObject(jsondata);
+                        return Content(json);
+                    }
+
+                }
+            }
+            var jsondatas = new
+            {
+                numdate = 0,
+                todate = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
+                isExpired = false,
+                datesExpired = data.Data.DateExpiration.Value.ToString("dd/MM/yyyy"),
+            };
+            var jsonkq = JsonConvert.SerializeObject(jsondatas);
+            return Content(jsonkq);
+        }
+
         public async Task<IActionResult> GetAllUnitAsync(int? idselectd)
         {
             var currentUser = User.Identity.GetUserClaimLogin();

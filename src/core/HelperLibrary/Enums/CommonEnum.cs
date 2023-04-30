@@ -266,7 +266,9 @@ public enum EnumTypePrintBarCode
     }
     public enum EnumTypeCompany // chính thức hay thử nghiệm
     {
+        [Display(Name = "Hệ thống thử nghiệm")]
         DEMO = 0,//demo
+        [Display(Name = "Hệ thống chính thức")]
         Active = 1,//thử nghiệm
     
     }

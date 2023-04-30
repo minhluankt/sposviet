@@ -11,6 +11,7 @@ namespace Domain.ViewModel
         public decimal DOANHSO { get; set; }
         public decimal DOANHSOHOMQUA { get; set; }
         public int DONDANGPHUCVU { get; set; }
+        public int DOANHTHUDONDANGPHUCVU { get; set; }
         public int DONHUUY { get; set; }
         public int DONDAXONG { get; set; }
         public int DONDAXONGHOMQUA { get; set; }

@@ -103,6 +103,7 @@ namespace Application.Features.CompanyInfo.Commands
 
                     brand.FaxNumber = command.FaxNumber;
 
+                    brand.TypeCompany = command.TypeCompany;
                     brand.IdDichVu = command.IdDichVu;
                     brand.IdWard = command.IdWard;
                     brand.IdCity = command.IdCity;
@@ -114,10 +115,16 @@ namespace Application.Features.CompanyInfo.Commands
                     {
                         brand.StartDate = command.StartDate;
                         brand.NumberDateExpiration = command.NumberDateExpiration;
-                        brand.DateExpiration = brand.StartDate.Value.AddYears(command.NumberDateExpiration);
-
+                        
                     }
-
+                    if (command.DateExpiration == null)
+                    {
+                        brand.DateExpiration = brand.StartDate.Value.AddMonths(command.NumberDateExpiration);
+                    }
+                    else
+                    {
+                        brand.DateExpiration = command.DateExpiration;
+                    }
 
                     brand.Keyword = command.Keyword;
                     brand.Description = command.Description;

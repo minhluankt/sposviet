@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
+using System.Drawing.Drawing2D;
 using System.Reflection;
 using Web.ManagerCompany.Abstractions;
 
@@ -60,6 +61,7 @@ namespace Web.ManagerCompany.Controllers
                     Id = x.Id,
                     IdType = x.IdType,
                     IdDichVu = x.IdDichVu,
+                    TypeCompany = x.TypeCompany,
                     secret = CryptoEngine.Encrypt("id=" + x.Id, _config.Value.Key)
                 }));
             }
@@ -69,11 +71,21 @@ namespace Web.ManagerCompany.Controllers
         public ActionResult Create()
         {
             LoadViewbag();
+            LoadViewbagDemoThat();
             return View(new CompanyAdminInfoViewModel() { Active = true });
         }
         private void LoadViewbag(EnumTypeProduct type = EnumTypeProduct.NONE)
         {
             ViewBag.SelectList = Enum.GetValues(typeof(EnumTypeProduct)).Cast<EnumTypeProduct>().OrderBy(x => (Convert.ToInt32(x))).Select(x => new SelectListItem
+            {
+                Text = GetDisplayName(x),
+                Value = Convert.ToInt32(x).ToString(),
+                Selected = x == type
+            });
+        }
+        private void LoadViewbagDemoThat(EnumTypeCompany type = EnumTypeCompany.DEMO)
+        {
+            ViewBag.SelectListTypeCompany = Enum.GetValues(typeof(EnumTypeCompany)).Cast<EnumTypeCompany>().OrderBy(x => (Convert.ToInt32(x))).Select(x => new SelectListItem
             {
                 Text = GetDisplayName(x),
                 Value = Convert.ToInt32(x).ToString(),
@@ -110,11 +122,21 @@ namespace Web.ManagerCompany.Controllers
             model.CusTaxCode = model.CusTaxCode?.Replace(" ", "").Trim();
             model.Email = model.Email?.Trim();
             model.AccountName = model.AccountName?.Trim();
-            model.TypeCompany = EnumTypeCompany.DEMO;
-            model.Status = EnumStatusCompany.New;
+            //model.TypeCompany = EnumTypeCompany.DEMO;
+            model.Status = EnumStatusCompany.Active;
             _logger.LogInformation(User.Identity.Name + "--> CompanyInfo OnPostCreateOrEdit");
             try
             {
+                if (model.DateExpiration!=null)
+                {
+                    if (model.DateExpiration<DateTime.Now.Date)
+                    {
+                        LoadViewbag(model.IdDichVu);
+                        LoadViewbagDemoThat(model.TypeCompany);
+                        _notify.Error("Ngày hết hạn không được nhỏ hơn ngày hôm nay");
+                        return View("Create", model);
+                    }
+                }
                 if (model.Id == 0)
                 {
                     if (ModelState.IsValid)
@@ -122,6 +144,7 @@ namespace Web.ManagerCompany.Controllers
                         if (string.IsNullOrEmpty(model.AccountName))
                         {
                             LoadViewbag(model.IdDichVu);
+                            LoadViewbagDemoThat(model.TypeCompany);
                             _notify.Error("Chưa điền tài khoản");
                             return View("Create", model);
                         }
@@ -167,6 +190,7 @@ namespace Web.ManagerCompany.Controllers
                         }
                         else
                         {
+                            LoadViewbagDemoThat(model.TypeCompany);
                             LoadViewbag(model.IdDichVu);
                             _notify.Error(GeneralMess.ConvertStatusToString(result.Message));
                             return View("Create", model);
@@ -175,7 +199,7 @@ namespace Web.ManagerCompany.Controllers
                     //var errors = ModelState.Select(x => x.Value.Errors)
                     //       .Where(y => y.Count > 0)
                     //       .ToList();
-
+                    LoadViewbagDemoThat(model.TypeCompany);
                     LoadViewbag(model.IdDichVu);
                     return View("Create", model);
                 }
@@ -194,11 +218,13 @@ namespace Web.ManagerCompany.Controllers
                         }
                         else
                         {
+                            LoadViewbagDemoThat(model.TypeCompany);
                             LoadViewbag(model.IdDichVu);
                             _notify.Error(GeneralMess.ConvertStatusToString(result.Message));
                             return View("Edit", model);
                         }
                     }
+                    LoadViewbagDemoThat(model.TypeCompany);
                     LoadViewbag(model.IdDichVu);
                     return View("Edit", model);
                 }
@@ -220,6 +246,7 @@ namespace Web.ManagerCompany.Controllers
             if (data.Succeeded)
             {
                 LoadViewbag(data.Data.IdDichVu);
+                LoadViewbagDemoThat(data.Data.TypeCompany);
                 var _ndt = _mapper.Map<CompanyAdminInfoViewModel>(data.Data);
                 return View(_ndt);
             }

@@ -56,15 +56,19 @@
                     @if (user.IdDichVu == Application.Enums.EnumTypeProduct.BAN_LE || user.IdDichVu == Application.Enums.EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == Application.Enums.EnumTypeProduct.THOITRANG)
                     {
                         <a href="/Selling/SaleRetail" class="nav-link">
-                            <i class="nav-link-icon fa fa-edit"></i>
+                            <i class="nav-link-icon fas fa-desktop"></i>
                             Bán hàng tại quầy
                         </a>
                     }
                     else
                     {
                         <a href="/Selling/Pos" class="nav-link">
-                            <i class="nav-link-icon fa fa-edit"></i>
+                            <i class="nav-link-icon fas fa-desktop"></i>
                             Bán hàng tại quầy
+                        </a>
+                        <a href="/Selling/PosKitchen" class="nav-link">
+                            <i class="nav-link-icon fas fa-concierge-bell"></i>
+                            Nhà bếp
                         </a>
                     }
 

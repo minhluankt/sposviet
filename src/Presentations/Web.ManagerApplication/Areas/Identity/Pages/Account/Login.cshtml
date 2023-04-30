@@ -124,7 +124,7 @@
                                                     <label class="custom-control-label" for="customControlInline">Ghi nhớ</label>
                                                 </div>
 
-                                                <div class="text-center mt-3">
+                                                <div class="text-center mt-3" id="btnactionlogin">
                                                     <button class="ladda-button mb-2 mr-2 btn btn-primary btn-block waves-effect waves-light" data-style="expand-left">
                                                         <span class="ladda-label">Đăng nhập</span>
 
@@ -170,12 +170,15 @@
                 });
             }, false);
         })();
+        
     </script>
 
-    <partial name="_Scripts" />
+  @*  <partial name="_Scripts" />*@
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    @await Component.InvokeAsync("Notyf")
 </body>
 </html>
-@await Component.InvokeAsync("Notyf")
+
 
 
 

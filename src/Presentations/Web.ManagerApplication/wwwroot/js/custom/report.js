@@ -996,7 +996,7 @@ var dashboardreport = {
                                                 </div>
                                             </div>
                                             <div class="bottom">
-                                                <p class=""> <span class="float-right"></span></p>
+                                                <p class="">Tổng dự thu: <span class="float-right amount">`+ res.doanhthudondangphucvu.format0VND(3,3)+`</span></p>
                                             </div>
                                         </div>
                                        

@@ -12219,8 +12219,10 @@ a, button, .btn {
         }
 
         .app-footer .app-footer__inner .app-footer-right {
-            margin-left: auto;
-            display: flex
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center
         }
 
 .footer-dots {

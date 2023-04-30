@@ -116,20 +116,11 @@ namespace SposVietPluginKySo
                 Printer printer = new Printer(settings.PrinterName);
                 //------------in hình
                 var converter = new HtmlConverter();
-                //------------cách 2
                 var bytes = converter.FromHtmlString(html);
-                //cách 1
-                //----------
-              
-                //---------
-                //Font font = new Font("Arial", 18.0f);
-                //var size = Measurement.Graphics.MeasureString(html, font);
+                //------------cách 1
                 Stream stream = new MemoryStream(bytes);
-                //Bitmap image = new Bitmap(Bitmap.FromStream(stream));
-                Bitmap image = new Bitmap(stream);
-
-
-
+                Bitmap image = new Bitmap(Bitmap.FromStream(stream));
+               // Bitmap image = new Bitmap(stream);
                 System.Text.EncodingProvider ppp = System.Text.CodePagesEncodingProvider.Instance;
                 Encoding.RegisterProvider(ppp);
 
@@ -141,7 +132,6 @@ namespace SposVietPluginKySo
             catch (Exception e)
             {
                 LogControl.Write(e.ToString());
-
                 throw new Exception("IN thất bại", e);
             }
 

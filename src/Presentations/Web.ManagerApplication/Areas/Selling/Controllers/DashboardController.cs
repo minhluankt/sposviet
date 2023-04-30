@@ -44,7 +44,9 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 model.DOANHSOHOMQUA = getall.Where(x => x.Status == Application.Enums.EnumStatusInvoice.DA_THANH_TOAN && x.CreatedOn.Date == DateTime.Now.AddDays(-1).Date).Sum(X => X.Amonut);
                 model.DONDAXONG = await getall.Where(x => x.Status == Application.Enums.EnumStatusInvoice.DA_THANH_TOAN && x.CreatedOn.Date == DateTime.Now.Date).CountAsync();
                 model.DONDAXONGHOMQUA = getallorder.Where(x => x.Status == Application.Enums.EnumStatusOrderTable.DA_THANH_TOAN && x.CreatedOn.Date == DateTime.Now.AddDays(-1).Date).Count();
-                model.DONDANGPHUCVU = await getallorder.Where(x => x.Status == Application.Enums.EnumStatusOrderTable.DANG_DAT && x.CreatedOn.Date == DateTime.Now.Date).CountAsync();
+                
+                var dondangpv = await getallorder.Where(x => x.Status == Application.Enums.EnumStatusOrderTable.DANG_DAT && x.CreatedOn.Date == DateTime.Now.Date).Select(x=>x.Amonut).ToListAsync();
+                model.DONDANGPHUCVU = dondangpv.Count();
                 model.Customer = await getall.Where(x => !x.IsRetailCustomer && x.CreatedOn.Date == DateTime.Now.Date).CountAsync();
                 model.CustomerHomQua = await getall.Where(x => !x.IsRetailCustomer && x.CreatedOn.Date == DateTime.Now.AddDays(-1).Date).CountAsync();
                 _logger.LogInformation(User.Identity.Name + "--> Product index");
@@ -56,8 +58,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     doanhsohomqua = model.DOANHSOHOMQUA,
                     dondaxong = model.DONDAXONG,
                     donxonghomqua = model.DONDAXONGHOMQUA,
+                    doanhthudondangphucvu = dondangpv.Sum(),
                     dondangphucvu = model.DONDANGPHUCVU });
             }
+            làm ghi chú cho đơn
             catch (Exception e)
             {
                 _logger.LogError(e.ToString());

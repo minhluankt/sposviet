@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Domain.ViewModel.CompanyAdminInfoViewModel>
+@using Application.Enums
 <div class="page-breadcrumb border-bottom">
     <div class="row">
         <div class="
@@ -63,6 +64,7 @@
                                     <th class="border-top-0">Tài khoản</th>
                                     <th class="border-top-0">Số điện thoại</th>
                                     <th class="border-top-0">Số hóa đơn phát hành</th>
+                                    <th class="border-top-0">Hệ thống</th>
                                     <th class="border-top-0">Ngày khởi tạo</th>
                                     <th class="border-top-0">Ngày hoạt động</th>
                                     <th class="border-top-0">Gói</th>
@@ -81,9 +83,21 @@
                                         <td><a href="">@item.AccountName</a></td>
                                         <td>@item.PhoneNumber</td>
                                         <td>@item.PhoneNumber</td>
+                                        <td>
+                                            @switch (item.TypeCompany)
+                                            {
+                                                case EnumTypeCompany.DEMO:
+                                                    <span>Thử nghiệm</span>
+                                                    break;
+                                                case EnumTypeCompany.Active:
+                                                    <span>Chính thức</span>
+                                                    break;
+                                              
+                                            }
+                                        </td>
                                         <td>@item.CreatedOn</td>
                                         <td>@item.StartDate?.ToString("dd/MM/yyy")</td>
-                                        <td>@item.NumberDateExpiration Năm</td>
+                                        <td>@item.NumberDateExpiration Tháng</td>
                                         <td>@(item.DateExpiration.HasValue?item.DateExpiration.Value.ToString("dd/MM/yyy"):"")</td>
                                         <td>
                                             <div class="btn-group" role="group" aria-label="First group">

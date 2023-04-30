@@ -73,6 +73,8 @@ namespace Domain.Entities
         public string FaxNumber { get; set; }
         public string Domain { get; set; }
         public DateTime? StartDate { get; set; }//ngày hoạt động
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DateExpiration { get; set; }//ngày hết hạn
         public int NumberDateExpiration { get; set; }//số tháng khách mua 1 năm 2 năm
         [DefaultValue(true)]

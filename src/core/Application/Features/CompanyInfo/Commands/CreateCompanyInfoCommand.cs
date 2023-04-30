@@ -69,9 +69,9 @@ namespace Application.Features.CompanyInfo.Commands
                 }
 
                 var product = _mapper.Map<CompanyAdminInfo>(request);
-                if (product.NumberDateExpiration > 0)
+                if (product.NumberDateExpiration > 0 && product.DateExpiration==null)
                 {
-                    product.DateExpiration = product.StartDate.Value.AddYears(product.NumberDateExpiration);
+                    product.DateExpiration = product.StartDate.Value.AddMonths(product.NumberDateExpiration);
                 }
                 await _Repository.AddAsync(product);
                 await _distributedCache.RemoveAsync(CompanyAdminInfoCacheKeys.ListKey);

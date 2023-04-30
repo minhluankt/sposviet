@@ -16829,6 +16829,7 @@ $(search).click(function () {
     loadLadda();
     dataTableOut.draw();
     Ladda.stopAll();
+  
 });
 // upload exxcel
 
@@ -17009,6 +17010,7 @@ $('.image-upload-wrap').bind('dragleave', function () {
 });
 loadFormatnumber();
 loaddaterangepicker();
+ CheckExpired();
 //end
 // add default
 $.validator.addMethod('minStrict', function (value, el, param) {
@@ -17052,6 +17054,73 @@ function testConnetWebSocket() {
     sposvietplugin.sendConnectSocket(listport[0]).then(function (data) {
         console.log(data);
     });
+}
+async function CheckExpired() {
+    try {
+        let getloca = localStorage.getItem("CheckExpired");
+        if (typeof (getloca) !== "undefined" && getloca != null) {
+            getloca = JSON.parse(getloca);
+
+            var date = moment(getloca.date, 'DD/MM/YYYY HH:mm');
+            let getdate = date.format("DD-MM-YYYY");
+            if (getdate == moment().format("DD-MM-YYYY")) {
+                if (getloca.IsExpired) {
+                    if (getloca.numdate == 0) {
+                        let getlogout = await axios.get("/Identity/Account/logout");
+                        if (getlogout) {
+                            window.location.href = "/Selling/Error/ExpiredStort";
+                        }
+                    } else if (getloca.numdate > 0) {
+
+                        let html = "<div class='ExpiredStort'><b class='red'>Hệ thống sắp hết hạn sử dụng, thời hạn còn " + getloca.numdate + " ngày, đến ngày: " + getloca.datesExpired + " </b> <i class='fas fa-sync-alt checkagin'></i> </div>";
+                        if ($(".ExpiredStort").length > 0) {
+                            $(".ExpiredStort").remove();
+                        }
+                        if ($(".app-footer-right").length > 0) {
+                            $(".app-footer-right .nav").before(html);
+                        }
+                        $(".checkagin").click(function () {
+                            localStorage.removeItem("CheckExpired");
+                            getCheckExpired();
+                        });
+                    }
+                } else {
+                    if ($(".ExpiredStort").length > 0) {
+                        $(".ExpiredStort").remove();
+                    }
+                    let gettimestart = parseInt(date.format("HH"));
+                    let end = parseInt(moment().format("HH"));
+                    if ((end - gettimestart) >=1 ) {
+                        getCheckExpired();
+                    }
+                }
+            } else {
+                getCheckExpired();
+            }
+        } else {
+            getCheckExpired();
+        }
+    } catch (e) {
+        getCheckExpired();
+    }
+} 
+async function getCheckExpired() {
+    let getCustomre = await axios.get("/API/Handling/CheckExpired");
+    if (getCustomre.data != null) {
+        if (typeof (Storage) !== "undefined") {
+            // Store
+            let data = {};
+            data.date = getCustomre.data.todate;
+            data.numdate = getCustomre.data.numdate;
+            data.datesExpired = getCustomre.data.datesExpired;
+            data.IsExpired = getCustomre.data.isExpired;
+            localStorage.setItem("CheckExpired", JSON.stringify(data)); // tham số active table
+            CheckExpired();
+            // Retrieve
+        } else {
+            alert("Liên hệ đội ngủ hỗ  trợ lỗi trình duyệt của bạn không hỗ  trợ Storage");
+        }
+    }
 }
 function parseDecimal(equation, precision = 9) {
     //return Math.floor(equation * (10 ** precision)) / (10 ** precision);

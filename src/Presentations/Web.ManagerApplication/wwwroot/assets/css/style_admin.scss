@@ -718,10 +718,19 @@ input.select2-search__field {
                 .bottom {
                     display: flex;
                     justify-content: space-between;
+                    justify-content: space-between;
+                    align-items: center;
 
                     p {
                         margin-bottom: 0;
                         width: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+
+                        .amount {
+                            font-size: 20px;
+                        }
 
                         i {
                             margin-right: 10px;
@@ -1551,6 +1560,11 @@ div#popupselectDiscount .ele-discount.ele-SaleRetail {
         img {
             width: 130px;
         }
+    }
+}
+.ExpiredStort {
+    b {
+        font-size: 20px
     }
 }
 .bodyDataproduct {
