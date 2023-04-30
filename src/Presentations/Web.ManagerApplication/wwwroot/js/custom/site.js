@@ -12593,7 +12593,7 @@ var loadeventPos = {
                                 index = index + 1;
                                 html += ` <li data-id="` + item.idGuid + `" data-idpro ="` + item.idProduct + `" data-slNotify=` + item.quantityNotifyKitchen + ` data-sl=` + item.quantity + ` >
                                             <div  class="btn-remove" data-idquan="`+ item.quantity + `"><i data-idquan="` + item.quantity + `" class="fas fa-trash-alt"></i></div>
-                                            <div class="name"><b>` + index + ". " + item.name + `</b></div>
+                                            <div class="name"><b>` + index + ". " + item.name + `</b><button class="note"><i class="fas fa-notes-medical"></i> Ghi chú</button></div>
                                             <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="`+ item.quantity + `"> <i class="fas fa-plus"></i></div>
                                             <div><input type="text" class="form-control priceFormat" readonly value="`+ (item.price) + `" /></div>
                                             <div class="amount"><b class="priceFormat">`+ (item.total) + `</b></div>
@@ -12609,6 +12609,7 @@ var loadeventPos = {
                         $(".tab-content-order").find(".tab-pane.active").html(html);
 
 
+                        loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
                         loadeventPos.eventUpdatedataItemMonOrder();
 
 
@@ -12643,6 +12644,12 @@ var loadeventPos = {
             }
         });
     },// sự kiện order
+    loadeventAddNote: function () {
+        $("ul#item-mon").children("li").find("button.note").unbind();
+        $("ul#item-mon").children("li").find("button.note").click(function () {
+            alert("ok");
+        });
+    },//thê, ghi chú, thêm món thêm
     loadactiveClickItemMon: function (idorder, IdProduct) {
         $("ul#item-mon").children("li").map(function () {
             if ($(this).data("id") == idorder || $(this).data("idpro") == IdProduct) {
@@ -13605,13 +13612,12 @@ var loadeventPos = {
     loadOrderByTable: async function (idTable) {
         var loadOrder = await axios.get("/Selling/OrderTable/LoadDataOrder?idtable=" + idTable);
         if (loadOrder.data.isValid) {
-
             $("#container-tableOder").html(loadOrder.data.data);
+            loadeventPos.loadeventAddNote();
             loadeventPos.eventUpdatedataItemMonOrder();
             if (loadOrder.data.dataCus.length > 0) {
                 ListCusByOrderPos = loadOrder.data.dataCus;
             }
-
             if (loadOrder.data.dataNote.length > 0) {
                 ListNoteOrder = loadOrder.data.dataNote;
             }
