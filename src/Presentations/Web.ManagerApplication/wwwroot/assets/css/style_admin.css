@@ -1677,6 +1677,17 @@ div#popupselectDiscount .ele-discount.ele-SaleRetail .item div.text {
   border-top-left-radius: 5px;
 }
 
+.swal2-container.swal2-center.Swalcontainer-small #swal2-html-container {
+  margin: 0;
+  margin-top: 20px;
+}
+.swal2-container.swal2-center.Swalcontainer-small .swal2-title.title-swal-small {
+  /* border-bottom: #ccc solid thin; */
+  padding-bottom: 7px;
+  text-align: left;
+  font-size: 22px;
+}
+
 .btn-moreaction-pos {
   display: none;
 }
@@ -3589,6 +3600,23 @@ span.discountAmountItemPro {
 }
 #orderstaff table .leftfood .content i {
   color: #ff2626;
+}
+#orderstaff table .leftfood .content .eventaddnote {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 10px;
+}
+#orderstaff table .leftfood .content .eventaddnote .note {
+  border: none;
+  background-color: transparent;
+  color: #000;
+}
+#orderstaff table .leftfood .content .eventaddnote .note i {
+  color: #000;
 }
 #orderstaff table .leftfood > i {
   font-size: 20px;

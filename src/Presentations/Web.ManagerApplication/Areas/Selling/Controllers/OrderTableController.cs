@@ -530,6 +530,31 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             _notify.Error(GeneralMess.ConvertStatusToString(updatenote.Message));
             return Json(new { isValid = false });
+        }  
+        [HttpPost]
+        public async Task<IActionResult> AddNoteAndToppingItemOrder(Guid? IdOrder,Guid? IdOrderItem, string Note)
+        {
+            if (IdOrderItem==null || IdOrder==null)
+            {
+                _notify.Error("Đơn hàng đã bị xóa vui lòng thử lại");
+                return Json(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            OrderTableModel model = new OrderTableModel();
+            model.ComId = currentUser.ComId;
+            model.TypeUpdate = EnumTypeUpdatePos.UpdateNoteAndTopping;
+            model.IdOrderItem = IdOrderItem;
+            model.IdGuid = IdOrder ;
+            model.Note = Note;
+            var ipdateOrderTableCommand = _mapper.Map<UpdateOrderTableCommand>(model);
+            var updatenote = await _mediator.Send(ipdateOrderTableCommand);
+            if (updatenote.Succeeded)
+            {
+                _notify.Success(GeneralMess.ConvertStatusToString(updatenote.Message));
+                return Json(new { isValid = true });
+            }
+            _notify.Error(GeneralMess.ConvertStatusToString(updatenote.Message));
+            return Json(new { isValid = false });
         }
         public async Task<IActionResult> LoadDataOrderByTableInSplit(Guid? idtable, Guid IdOrder, EnumTypeSpitOrder Type = EnumTypeSpitOrder.Graft, bool IsBringBack = false)
         {

@@ -1,4 +1,19 @@
 //https://datatables.net/examples/api/show_hide.html
+//customClass: {
+//    container: 'eventpublisinvoice90p',
+//        //popup: 'your-popup-class',
+//        //header: 'your-header-class',
+//        //title: 'your-title-class',
+//        //closeButton: 'your-close-button-class',
+//        //icon: 'your-icon-class',
+//        //image: 'your-image-class',
+//        //content: 'your-content-class',
+//        //input: 'your-input-class',
+//        //actions: 'your-actions-class',
+//        //confirmButton: 'your-confirm-button-class',
+//        //cancelButton: 'your-cancel-button-class',
+//        footer: 'footer-Swal'
+//},
 var dataTableOut;
 var dataTable;
 var ProductsArrays = "ProductsArrays";
@@ -7500,7 +7515,10 @@ var posStaff = {
                                                     <i class="fas fa-trash-alt"></i>
                                                     <div class="content">
                                                         <span>` + index + ". " + item.name + `</span>
-                                                        <i class="priceFormat">`+ (item.price) + `</i>
+                                                         <div class="eventaddnote">
+                                                           <i class="priceFormat">`+ (item.price) + `</i> 
+                                                           <button class="note"><i class="fas fa-notes-medical"></i> <span class="text">Ghi chú</span></button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -7519,6 +7537,7 @@ var posStaff = {
                         $(".bodybill table .ordercode").html("Mã order:" + res.data.orderCode);
                         $("#id-order").data("id", res.data.idGuid);
 
+                        posStaff.loadeventAddNote();//sự kienj thêm ghi chú
                         posStaff.loadeventUpdatedataidtable();
 
 
@@ -7566,6 +7585,59 @@ var posStaff = {
             }
         });
     },
+    loadeventAddNote: function () {
+        $(".bodybill table .itemorderbody").find("tr").find("button.note").unbind();
+        $(".bodybill table .itemorderbody").find("tr").find("button.note").click(function () {
+            var sel = $(this);
+            let idItemOrder = $(this).parents("tr").data("id");
+            let idOrder = $("#id-order").data("id");
+            htmlcontent = ' <textarea class="form-control addnoteitem"  placeholder="Nhập ghi chú"></textarea>';
+            Swal.fire({
+                title: 'Nhập ghi chú đơn',
+                customClass: {
+                    container: 'Swalcontainer-small',
+                    title: 'title-swal-small'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Lưu',
+                html:htmlcontent,
+                cancelButtonText: 'Hủy bỏ',
+                showLoaderOnConfirm: true,
+                didRender: () => {
+                   
+                },
+                preConfirm: (note) => {
+                    console.log(note);
+                    if ($(".addnoteitem").val().trim() == "") {
+                        toastrcus.error("Vui lòng nhập ghi chú");
+                        return;
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        //global: false,
+                        url: '/Selling/OrderTable/AddNoteAndToppingItemOrder',
+                        data: {
+                            TypeUpdate: _TypeUpdatePos.AddNoteOrder,
+                            IdOrderItem: idItemOrder,
+                            IdOrder: idOrder,
+                            Note: note,
+                        },
+
+                        success: function (res) {
+                            if (res.isValid) {
+                                sel.data("note", $(".addnoteitem").val().trim());
+                                sel.find("span.text").html($(".addnoteitem").val().trim());
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            })
+        });
+    },//thê, ghi chú, thêm món thêm
     eventKitchenNotice: function (data) {
         connection.invoke('Printbaobep', data, "IN");
     },
@@ -8192,7 +8264,7 @@ var posStaff = {
             //loadeventPos.eventUpdatedataItemMonOrder();
             posStaff.loadeventUpdatedataidtable();
             posStaff.loadEventNoitfyStaff();
-
+            posStaff.loadeventAddNote();//sự kienj thêm ghi chú
             posStaff.loadeventadditemorder();
             //if (loadOrder.data.dataNote.length > 0) {
             //    ListNoteOrder = loadOrder.data.dataNote;

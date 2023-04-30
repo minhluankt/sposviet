@@ -77,7 +77,18 @@ namespace Application.Features.OrderTables.Commands
                         {
                             return await Result<OrderTableModel>.FailAsync(addnote.Message);
                         }
-                        return await Result<OrderTableModel>.SuccessAsync(addnote.Message); 
+                        return await Result<OrderTableModel>.SuccessAsync(addnote.Message);
+                    case EnumTypeUpdatePos.UpdateNoteAndTopping:
+                        if (request.IdOrderItem == null || request.IdGuid == null)
+                        {
+                            return await Result<OrderTableModel>.FailAsync("Đơn hàng không tồn tại");
+                        }
+                        var addnoteandtopping = await _orderTableRepository.AddNoteAndToppingItemOrder(request.ComId,request.IdGuid.Value, request.IdOrderItem.Value, request.Note);
+                        if (addnoteandtopping.Failed)
+                        {
+                            return await Result<OrderTableModel>.FailAsync(addnoteandtopping.Message);
+                        }
+                        return await Result<OrderTableModel>.SuccessAsync(addnoteandtopping.Message);
                     case EnumTypeUpdatePos.UpdateRoomOrTableInOrder:
 
                         if (request.IdGuid==null)

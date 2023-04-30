@@ -1753,8 +1753,22 @@ div#popupselectDiscount .ele-discount.ele-SaleRetail {
 }
     }
 }
-.btn-moreaction-pos{
-    display:none
+
+.swal2-container.swal2-center.Swalcontainer-small {
+    #swal2-html-container {
+        margin: 0;
+        margin-top: 20px;
+    }
+
+    .swal2-title.title-swal-small {
+        /* border-bottom: #ccc solid thin; */
+        padding-bottom: 7px;
+        text-align: left;
+        font-size: 22px;
+    }
+}
+.btn-moreaction-pos {
+    display: none
 }
 button.btnfullScreen {
     border: none;
@@ -3792,6 +3806,22 @@ span.discountAmountItemPro {
 
                 i {
                     color: #ff2626;
+                }
+
+                .eventaddnote {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    .note {
+                        border: none;
+                        background-color: transparent;
+                        color: #000;
+
+                        i {
+                            color: #000;
+                        }
+                    }
                 }
             }
 

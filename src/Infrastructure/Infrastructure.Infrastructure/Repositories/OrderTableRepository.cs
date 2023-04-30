@@ -1519,5 +1519,31 @@ namespace Infrastructure.Infrastructure.Repositories
             }
            
         }
+
+        public async Task<Result<string>> AddNoteAndToppingItemOrder(int comid, Guid idOrder, Guid idOrderItem, string note)
+        {
+            var getorder = await _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.ComId == comid && x.IdGuid == idOrder && x.Status==EnumStatusOrderTable.DANG_DAT);
+            if (getorder!=null)
+            {
+                var getitem = await _OrderTableItemrepository.Entities.SingleOrDefaultAsync(x => x.IdOrderTable == getorder.Id && x.IdGuid == idOrderItem);
+                if (getitem!=null)
+                {
+                    if (getitem.Quantity>getitem.QuantityNotifyKitchen)//tức là phải có đặt mới thì mới ghi chú dc, cái nào bấm thông báo rồi thì không cho
+                    {
+                        getitem.Note = note;
+                        await  _OrderTableItemrepository.UpdateAsync(getitem);
+                        await _unitOfWork.SaveChangesAsync();
+                        return await Result<string>.SuccessAsync("Thêm ghi chú thành công");
+                    }
+                    else
+                    {
+                        return await Result<string>.FailAsync("Món đã thông báo bếp không thể thêm ghi chú");
+                    }
+
+                }
+                return await Result<string>.FailAsync("Món không tồn tại");
+            }
+            return await Result<string>.FailAsync("Không tìm thấy đơn, vui lòng thử lại");
+        }
     }
 }
