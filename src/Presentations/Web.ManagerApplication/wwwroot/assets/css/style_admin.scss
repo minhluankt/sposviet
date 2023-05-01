@@ -1495,7 +1495,6 @@ div#parentautocomplete {
             }
 
             button.note {
-                
                 position: absolute;
                 bottom: -24px;
                 left: 0;
@@ -1513,6 +1512,10 @@ div#parentautocomplete {
                 &:hover {
                     color: #000;
                     cursor: pointer
+                }
+
+                &.active {
+                    color: #1284e3;
                 }
             }
         }
