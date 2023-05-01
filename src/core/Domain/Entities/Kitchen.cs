@@ -16,17 +16,23 @@ namespace Domain.Entities
         }
         public Guid IdKitchen { get; set; }
         [Required]
+        [StringLength(250)]
         public string ProName { get; set; }
         [Required]
         public string ProCode { get; set; }
+        [StringLength(250)]
+        public string Note { get; set; }
+        [StringLength(200)]
         public string Buyer { get; set; }
         public int? IdProduct { get; set; }
         public int ComId { get; set; }
         public EnumTypeProduct IdDichVu { get; set; }
         public Guid IdOrder { get; set; }
         public string IdCashername { get; set; }
+        [StringLength(100)]
         public string Cashername { get; set; }
         [Required]
+        [StringLength(50)]
         public string OrderCode { get; set; }
         [Required]
         public string RoomTableName { get; set; }

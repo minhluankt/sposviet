@@ -253,7 +253,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                    
                     if (!string.IsNullOrEmpty(UpdateQuantity.Data.HtmlPrint))
                     {
-                      
                         //---------------------------báo bếp--------------------------------
                         try
                         {

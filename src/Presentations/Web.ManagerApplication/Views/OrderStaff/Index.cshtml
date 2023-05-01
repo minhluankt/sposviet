@@ -301,23 +301,12 @@
             .then(function () {
 
                 console.log('connection started');
-                $(".btn-notif").click(function () {
-                    posStaff.NotifyChitken();
-                    // connection.invoke('sendNotifyPos', EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.KITCHENTOPOS);
-                    event.preventDefault();
-                });
-                //document.getElementById('sendmessage').addEventListener('click', function (event) {
-                //    // Call the Send method on the hub.
-                //    loadeventPos.NotifyChitken();
-                //    // name = document.getElementById('user').value;
-                //    connection.invoke('sendChitken', EnumTypeSignalRHub.POS);
-                //    //connection.invoke('sendPos', name, messageInput.value);
-
-                //    // Clear text box and reset focus for next comment.
-                //    // messageInput.value = '';
-                //    //messageInput.focus();
+                //$(".btn-notif").click(function () {
+                //    posStaff.NotifyChitken();
+                //    // connection.invoke('sendNotifyPos', EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.KITCHENTOPOS);
                 //    event.preventDefault();
                 //});
+               
             })
             .catch(error => {
                 // loadeventPos.NotifyChitken();

@@ -56,6 +56,7 @@ namespace Domain.ViewModel
         public int IdOrderTable { get; set; }
         public int? IdProduct { get; set; }
         public string Name { get; set; }
+        public string Note { get; set; }
         public string Code { get; set; }
         public decimal QuantityNotifyKitchen { get; set; }
         public decimal Quantity { get; set; }

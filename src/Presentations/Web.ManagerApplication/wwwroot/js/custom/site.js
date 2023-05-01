@@ -7509,15 +7509,15 @@ var posStaff = {
                         res.data.orderTableItems
                             .forEach(function (item, index) {
                                 index = index + 1;
-                                html += ` <tr data-id="` + item.idGuid + `" data-idpro="` + item.idProduct + `" data-slNotify="` + item.quantityNotifyKitchen + `" data-sl="` + item.quantity + `">
+                                html += `<tr data-id="` + item.idGuid + `" data-idpro="` + item.idProduct + `" data-slNotify="` + item.quantityNotifyKitchen.toString().replaceAll(",", ".") + `" data-sl="` + item.quantity.toString().replaceAll(",", ".") + `">
                                             <td>
                                                 <div class="leftfood">
                                                     <i class="fas fa-trash-alt"></i>
                                                     <div class="content">
                                                         <span>` + index + ". " + item.name + `</span>
                                                          <div class="eventaddnote">
-                                                           <i class="priceFormat">`+ (item.price) + `</i> 
-                                                           <button class="note"><i class="fas fa-notes-medical"></i> <span class="text">Ghi chú</span></button>
+                                                           <i class="number3">`+ (item.price.toString().replaceAll(",", ".")) + `</i> 
+                                                           <button class="note" data-note="`+ (item.note != null ? item.note : "") +`"><i class="far fa-sticky-note"></i> <span class="text">`+ ((item.note != "" && item.note!=null)? item.note:"Thêm ghi chú")+`</span></button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -7525,7 +7525,7 @@ var posStaff = {
                                             <td>
                                                 <div class="actionaddfood">
                                                     <i class="fas fa-minus"></i>
-                                                    <input type="text" class="quantitynew " value="`+ (parseFloat(item.quantity.toString().replaceAll(",", "."))) + `" />
+                                                    <input type="text" class="quantitynew number3" value="`+ (parseFloat(item.quantity.toString().replaceAll(",", "."))) + `" />
                                                     <i class="fas fa-plus"></i>
                                                 </div>
                                             </td>
@@ -7534,19 +7534,16 @@ var posStaff = {
                             });
 
                         $(".bodybill table .itemorderbody").html(html);
-                        $(".bodybill table .ordercode").html("Mã order:" + res.data.orderCode);
+                        $(".bodybill table .ordercode").html("Mã đơn:" + res.data.orderCode);
                         $("#id-order").data("id", res.data.idGuid);
 
                         posStaff.loadeventAddNote();//sự kienj thêm ghi chú
-                        posStaff.loadeventUpdatedataidtable();
-
-
-
-
+                        posStaff.loadeventUpdatedataidtable();//update data tr
                         posStaff.loadAmoutAndQuantity(res.data.amount, res.data.quantity);
                         posStaff.loadeventadditemorder();
                         posStaff.eventCheckBtnNotifyOrder();
                         posStaff.eventCheckActivetable();
+                        evetnFormatTextnumber3();
                         // loadeventPos.loadEventClickIconAddAndMinus();
                         // loadeventPos.loadAddOrRemoveCurentClassTable(true);// xem có sản phẩm thì add class curen table
                         // console.log(dataObject.IdOrderItem);
@@ -7567,8 +7564,7 @@ var posStaff = {
                         //        ListCusByOrderPos.push(arrCus);
                         //    }
                         //}
-                        numberFormat();
-                        priceFormat();
+                       
                     }
                     if (parseFloat(dataObject.QuantityFloat) > 0) {
                         toastrcus.success("Thêm món thành công");
@@ -7588,10 +7584,18 @@ var posStaff = {
     loadeventAddNote: function () {
         $(".bodybill table .itemorderbody").find("tr").find("button.note").unbind();
         $(".bodybill table .itemorderbody").find("tr").find("button.note").click(function () {
+            let soluongbaobep = parseFloat($(this).parents("tr").data("slnotify").toString().replaceAll(",", ""));
+            //let soluonggoc = parseFloat($(this).parents("tr").data("sl").toString().replaceAll(",", ""));
+
+            if (soluongbaobep > 0) {
+                toastrcus.error("Món đã thông báo chế biến, không thể điều chỉnh ghi chú");
+                return;
+            }
             var sel = $(this);
             let idItemOrder = $(this).parents("tr").data("id");
             let idOrder = $("#id-order").data("id");
-            htmlcontent = ' <textarea class="form-control addnoteitem"  placeholder="Nhập ghi chú"></textarea>';
+            let notedata = $(this).data("note");
+            htmlcontent = ' <textarea class="form-control addnoteitem"  placeholder="Nhập ghi chú">' + notedata +'</textarea>';
             Swal.fire({
                 title: 'Nhập ghi chú đơn',
                 customClass: {
@@ -7607,6 +7611,7 @@ var posStaff = {
                 footer: "<button class='swal2-cancel swal2-styled btn-cancel mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='swal2-styled btn btn-success btn-save'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
                 showLoaderOnConfirm: true,
                 didRender: () => {
+                    $(".addnoteitem").select();
                     $(".btn-cancel").click(function () {
                         Swal.close();
                     });
@@ -7699,6 +7704,8 @@ var posStaff = {
         });
     },//dành cho nhân viên phục vụ
     loadEventNoitfyStaff: function () {
+
+        $(".btn-notif").unbind();
         $(".btn-notif").click(function () {
             posStaff.NotifyChitken();
             //connection.invoke('sendNotifyPos', EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.KITCHENTOPOS);
@@ -8010,13 +8017,11 @@ var posStaff = {
         });
         //sự kiện xóa dòng đó luôn
         $(".bodybill table tbody tr .leftfood i").click(function () {
-
             let IdOrderItem = $(this).parents("tr").data("id");
             let idTable = $(".topbuton button:first").data("idtable");
             let Quantity = parseFloat($(this).parents("tr").data("sl")) || 0;
             let slgoc = parseFloat($(this).parents("tr").data("sl")) || 0;
             let slnotify = parseFloat($(this).parents("tr").data("slnotify")) || 0;
-
             if (parseFloat(slnotify) > 0) {
                 let html = `
                             <div class="form-confirmremoveitem">
@@ -8205,7 +8210,7 @@ var posStaff = {
 
         if (amount != null && quantity != null) {
             $(".amountFull").html(amount);
-            $(".fullQuantity").html("(" + parseFloat(quantity.toString().replaceAll(",", ".")) + ")");
+            $(".fullQuantity").html(parseFloat(quantity.toString().replaceAll(",", ".")));
         } else {
             amount = 0;
             quantity = 0;
@@ -8224,10 +8229,9 @@ var posStaff = {
             //}
 
             $(".amountFull").html(amount);
-            $(".fullQuantity").html("(" + 0 + ")");
+            $(".fullQuantity").html(0);
             // $(".quantitySum").html(quantity);
         }
-        priceFormat();
     },//load toongrquantity và tiền:
     loadeventUpdatedataidtable: function () {
 
@@ -8332,6 +8336,7 @@ var posStaff = {
     },
     eventIntwindow: function () {
         //$(".topbuton button:first").trigger("click");
+        $(".bottomFix").remove();
         posStaff.loadDanhSachBan();
         //loadTableActive();
         //function loadTableActive() { // load active
@@ -8361,6 +8366,7 @@ var posStaff = {
         //}
     },
     loadDanhSachBan: function () {
+        
         $(".topbuton button:first").attr("disabled", "disabled");
         if (!$("#dataListFood").hasClass("d-none")) {
             $("#dataListFood").addClass("d-none");
@@ -8442,7 +8448,7 @@ var posStaff = {
                             });
                             //sự kiện kích chọn bàn
                             posStaff.evntSelectTabel();
-                            posStaff.eventCheckLoaddatatableOld();
+                            posStaff.eventCheckLoaddatatableOld();//load bàn lịch đã chọn trước đó
                             // sự kiện kích vào bàn khi đã lưu trước đó.
                         }
                     },
@@ -8566,106 +8572,9 @@ var posStaff = {
         $(".topbuton button:first").data("id", 0);
         $(".topbuton button:first").click(function () {
             posStaff.loadDanhSachBan();
-            //$(this).attr("disabled", "disabled");
-            //if (!$("#dataListFood").hasClass("d-none")) {
-            //    $("#dataListFood").addClass("d-none");
-            //}
-            //if ($("#dataTableRoom").hasClass("d-none")) {
-            //    if ($("#dataTableRoom .litstbale li").length == 0) {//nếu có rồi thì thôi
-            //        $.ajax({
-            //            type: 'GET',
-            //            //async: false,
-            //            url: '/Selling/RoomTable/GetTableJson',
-            //            data: {
-
-            //            },
-
-            //            success: function (res) {
-            //                if (res.isValid) {
-            //                    htmlcate = `<ul class="litstbale">`;
-            //                    htmlcate += `<li class="active" data-id="0">
-            //                       <a href="javascript:void(0)" data-id="0">
-            //                            <span>`+ res.jsonPro.length + `</span> Tất cả
-            //                        </a>
-            //                     </li>`;
-
-            //                    res.jsoncate.forEach(function (item, index) {
-            //                        htmlcate += `<li>
-            //                             <a href="javascript:void(0)" data-id="`+ item.id + `">
-            //                                 <span>`+ item.countpro + `</span> ` + item.name + `
-            //                             </a>
-            //                          </li>`;
-            //                    });
-            //                    htmlcate += '</ul>';
-            //                    $("#dataTableRoom .dataArea").html(htmlcate);
-            //                    htmlcate = `<ul id="lst-roomandtable" class="ul-nonestyle">`;
-            //                    htmlcate += `<li class="mangve" style="display: flex;" data-id="-1" data-idcategory="-1">
-            //                            <i class="fas fa-baby-carriage"></i>
-            //                            <b>Mang về</b>
-            //                        </li>`;
-            //                    res.jsonPro.forEach(function (item, index) {
-            //                        htmlMac = ` <li class="" style="display: flex;"  data-id="` + item.idtable + `" data-idcategory="` + item.idArea + `">`;
-            //                        if (item.numberProduct > 0) {
-            //                            htmlMac = `<li class="active" style="display: flex;"  data-id="` + item.idtable + `" data-idcategory="` + item.idArea + `"> <div class="ribbon-two ribbon-two-primary"><span>` + item.numberProduct + `</span></div>`;
-            //                        }
-            //                        htmlcate += htmlMac + `
-            //                                <i class="fas fa-utensils"></i>
-            //                                <b>` + item.tableName + `</b>
-            //                            </li>`;
-            //                    });
-            //                    htmlcate += '</ul>';
-            //                    $("#dataTableRoom .datatable").html(htmlcate);
-            //                    //update lại iddata
-            //                    $("#dataTableRoom .dataArea ul li").map(function () {
-            //                        //let idata = $(this).children("a").data("id");
-            //                        let idatacate = $(this).children("a").data("id");
-            //                        $(this).children("a").removeAttr("data-id");
-            //                        $(this).children("a").data("id", idatacate);
-            //                    });
-            //                    $("#dataTableRoom .datatable ul li").map(function () {
-            //                        let idata = $(this).data("id");
-            //                        let idatacate = $(this).data("idcategory");
-            //                        $(this).removeAttr("data-idcategory");
-            //                        $(this).removeAttr("data-id");
-            //                        $(this).data("idcategory", idatacate);
-            //                        $(this).data("id", idata);
-            //                    });
-            //                    $("#dataTableRoom .dataArea a").click(function () {
-            //                        let ididcategory = $(this).data("id");
-            //                        $("#dataTableRoom #lst-roomandtable li").filter(function () {
-            //                            var element = $(this);
-            //                            let idcategory = $(this).data("idcategory");
-            //                            if (ididcategory == idcategory || ididcategory == 0) {
-            //                                element.css('display', "flex");
-            //                            } else {
-            //                                element.css('display', "none");
-
-            //                            }
-            //                        });
-            //                        $(this).parents("ul.litstbale").find("li.active").removeClass("active");
-            //                        $(this).parent("li").addClass("active");
-            //                    });
-            //                    //sự kiện kích chọn bàn
-            //                    posStaff.evntSelectTabel();
-
-            //                    //posStaff.eventCheckLoaddatatableOld();
-            //                    // sự kiện kích vào bàn khi đã lưu trước đó.
-            //                }
-            //            },
-            //            error: function (err) {
-            //                console.log(err)
-            //            }
-            //        });
-            //    }
-            //    $("#dataTableRoom").toggleClass("d-none");
-            //}
-            //else {
-            //    $("#dataTableRoom").toggleClass("d-none");
-            //}
-
-            //$(this).removeAttr("disabled");
+            
         });
-    },
+    },//kích vào bàn
     eventCheckLoaddatatableOld: function () {
         if (typeof (Storage) !== "undefined") {
             // Store
@@ -8688,7 +8597,7 @@ var posStaff = {
         } else {
             alert("Liên hệ đội ngủ hỗ  trợ lỗi trình duyệt của bạn không hỗ  trợ Storage");
         }
-    },
+    },//load cái bàn cũ
     eventloadShownametable: function (sel) {
         let idata = $(sel).data("id");
         let text = $(sel).children("b").html();
@@ -12447,7 +12356,6 @@ var eventBanle = {
             JSeach.parents(".box-data-customer").data("id", 0);
         }
     },
-
     loadEventAddCustomer: function () {
         $(".btn-addCus").click(function () {
             eventCreate.addOrEditCustomer('/Selling/Customer/Create?IsPos=true');
@@ -14410,7 +14318,7 @@ var loadeventPos = {
         $.ajax({
             type: 'POST',
             traditional: true,
-            async: false,
+            async: true,
             url: '/Selling/OrderTable/NotifyKitChen',
             data: {
                 IdOrder: idOrder,
@@ -14432,7 +14340,7 @@ var loadeventPos = {
     },
     eventinbaobep: function (html) {
         dataObject = {};
-                    dataObject.type = TypeEventWebSocket.PrintBep;
+        dataObject.type = TypeEventWebSocket.PrintBep;
         dataObject.html = html;
                    // loadingStart();
                     sposvietplugin.sendConnectSocket(listport[0]).then(function (data) {

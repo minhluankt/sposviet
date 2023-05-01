@@ -24,15 +24,17 @@
                             <div class="content">
                                 <span>@(i++). @item.Name</span>
                                 <div class="eventaddnote">
-                                    <i>@item.Price.ToString("N0")</i> 
-                                    <button class="note"><i class="fas fa-notes-medical"></i> 
+                                    <i class="number3">@item.Price.ToString().Replace(",",".")</i>
+                                    <button class="note" data-note="@item.Note">
+                                        <i class="far fa-sticky-note"></i>
+
                                         @if (!string.IsNullOrEmpty(item.Note))
                                         {
                                             <span class="text">@item.Note</span>
                                         }
                                         else
                                         {
-                                            <span class="text">Ghi chú</span>
+                                            <span class="text">Thêm ghi chú</span>
                                         }
                                     </button>
                                 </div>

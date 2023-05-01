@@ -45,6 +45,7 @@ namespace Domain.ViewModel
         public string createDate { get; set; }
         public string orderStaff { get; set; }
         public string orderCode { get; set; }
+        public string Note { get; set; }
         public Guid idKitchen { get; set; }
         public decimal quantity { get; set; }
         public string tableName { get; set; }

@@ -2714,6 +2714,11 @@ ul.dashboardEinvoice {
                             font-size: 12px;
                         }
                     }
+
+                    .note {
+                        color: #eb1111;
+                        font-size: 15px;
+                    }
                 }
             }
 
@@ -4013,6 +4018,7 @@ span.discountAmountItemPro {
                         height: 100px;
                         width: 100%;
                         object-fit: cover;
+                        border-top-left-radius: 7px;
                     }
 
                     .conent-botom {

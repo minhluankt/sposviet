@@ -113,12 +113,12 @@ namespace Domain.Entities
     {
         [ForeignKey("IdOrderTable")]
         public int IdOrderTable { get; set; } // bàn/phòng
-
         public int Id { get; set; }
         public decimal Quantity { get; set; }
         public string Code { get; set; }// các thức là khi thông báo thì update các bản chưa notif chauw IsNotif thì randome code này để groupby
         public string ProductName { get; set; }// tên sản phẩm
         public string Name { get; set; }// +1 hướng dương
+        public string Note { get; set; }// ghi chú
         public string NewTableName { get; set; }//  đến bàn nào cho lúc chuyển món
         public string OrderCode { get; set; }//  mã đơn của bàn mới cho lúc chuyển món
         public string Carsher { get; set; }// người thêm

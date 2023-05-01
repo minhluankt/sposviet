@@ -50,6 +50,7 @@ namespace Application.Features.Kitchens.Querys
                     updateDate = x.LastModifiedOn,
                     dateReady = x.DateReady,
                     orderCode = x.OrderCode,
+                    Note = x.Note,
                     orderStaff = x.Cashername,
                     proName = x.ProName,
                     quantity = x.Quantity,

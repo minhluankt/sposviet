@@ -63,11 +63,11 @@ namespace Infrastructure.Infrastructure.Repositories
                             {
                                 Code= item.Code,
                                 Name = item.Name,
+                                Note = item.Note,
                                 RoomTableName = getorder.IsBringBack ? "Mang về": getorder.RoomAndTable?.Name,
                                 StaffName = Cashername,
                                 Quantity= item.Quantity - item.QuantityNotifyKitchen,
                                 Price= item.Price,//giá bán
-                                //Note= item.Note,//giá bán
                             });
                             //-----------
 
@@ -76,6 +76,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                 IdOrderTable = getorder.Id,
                                 Carsher = Cashername,
                                 Code = randowm,
+                                Note = item.Note,
                                 IsNotif = true,
                                 Quantity = item.Quantity - item.QuantityNotifyKitchen,
                                 CreateDate = DateTime.Now,
@@ -172,6 +173,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 }
                 kitchen.ProName = item.Name;
                 kitchen.ProCode = item.Code;
+                kitchen.Note = item.Note;
                 kitchen.IdProduct = item.IdProduct;
                 kitchen.Quantity = item.Quantity;
                 kitchen.Status = item.Status;
@@ -191,7 +193,7 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public IQueryable<Kitchen> GetAllNotifyOrder(int Comid, EnumStatusKitchenOrder status = EnumStatusKitchenOrder.MOI)
         {
-            return _kitchenRepository.GetAllQueryable().Include(x => x.DetailtKitchens).Where(x => x.ComId == Comid && x.Status == status);
+            return _kitchenRepository.GetAllQueryable().AsNoTracking().Include(x => x.DetailtKitchens).Where(x => x.ComId == Comid && x.Status == status);
         }
 
         public async Task<Result<int>> UpdateNotifyOrder(int Comid, Guid? IdOrder, Guid? IdKitchen, int? IdProduct, bool UpdateOne, EnumTypeNotifyKitchenOrder typeupdate, EnumStatusKitchenOrder Status, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC)

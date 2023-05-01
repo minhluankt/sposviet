@@ -10,6 +10,7 @@
             <li data-id="@item.idKitchen" class="item-data">
                 <div class="left-name">
                     <b class="name">@item.proName</b>
+                    <small class="note">@item.Note</small>
                     <small>Mã đơn: <b>@item.orderCode</b> - @item.createDate - @item.orderStaff</small>
                 </div>
                 <span class="quantity">@item.quantity.ToString("0.###")</span>
@@ -22,15 +23,12 @@
                     @if (item.quantity <= 0)
                     {
                         <button class="btn btn-delete"><i class="fas fa-trash-alt"></i></button>
-
                     }
                     else
                     {
                         <button class="btn btn-next"><i class="fas fa-caret-right"></i></button>
                         <button class="btn btn-nextAll"><i class="fas fa-forward"></i></button>
-
                     }
-
                 </div>
                 @if (item.detailtKitchenModels.Count() > 0)
                 {
