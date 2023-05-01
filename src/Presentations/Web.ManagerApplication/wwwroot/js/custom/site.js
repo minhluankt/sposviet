@@ -7514,10 +7514,10 @@ var posStaff = {
                                                 <div class="leftfood">
                                                     <i class="fas fa-trash-alt"></i>
                                                     <div class="content">
-                                                        <span>` + index + ". " + item.name + `</span>
+                                                        <span class="name">` + index + ". " + item.name + `</span>
                                                          <div class="eventaddnote">
                                                            <i class="number3">`+ (item.price.toString().replaceAll(",", ".")) + `</i> 
-                                                           <button class="note" data-note="`+ (item.note != null ? item.note : "") +`"><i class="far fa-sticky-note"></i> <span class="text">`+ ((item.note != "" && item.note!=null)? item.note:"Thêm ghi chú")+`</span></button>
+                                                           <button class="note `+ (item.note != null ? "active" : "") +`" data-note="`+ (item.note != null ? item.note : "") +`"><i class="far fa-sticky-note"></i> <span class="text">`+ ((item.note != "" && item.note!=null)? item.note:"Thêm ghi chú")+`</span></button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -7597,7 +7597,7 @@ var posStaff = {
             let notedata = $(this).data("note");
             htmlcontent = ' <textarea class="form-control addnoteitem"  placeholder="Nhập ghi chú">' + notedata +'</textarea>';
             Swal.fire({
-                title: 'Nhập ghi chú đơn',
+                title: 'Nhập ghi chú cho sản phẩm: <b class="red">' + $(this).parents("tr").find(".name").html()+"</b>",
                 customClass: {
                     container: 'Swalcontainer-small',
                     title: 'title-swal-small'
@@ -8270,12 +8270,16 @@ var posStaff = {
             posStaff.orderTable(dataObject);//lưu đơn
         });
     },
+    updateDataAttr: function () {
+        let idorder = $("#id-order").data("id");
+        $("#id-order").removeAttr("data-id");
+        $("#id-order").data("id", idorder);
+    },
     getdatataorderbytable: async function (idTable) {
         var loadOrder = await axios.get("/Selling/OrderTable/LoadDataOrderStaff?idtable=" + idTable);
         if (loadOrder.data.isValid) {
-
             $(".bodybill").html(loadOrder.data.data);
-            //loadeventPos.eventUpdatedataItemMonOrder();
+            posStaff.updateDataAttr();//load xóa các data attr
             posStaff.loadeventUpdatedataidtable();
             posStaff.loadEventNoitfyStaff();
             posStaff.loadeventAddNote();//sự kienj thêm ghi chú
@@ -8285,10 +8289,13 @@ var posStaff = {
             //}
             $(".actionstaff").find(".btn-addNeworderStaff").remove();
             $(".actionstaff").find(".btn-removerOrder").remove();
+            $(".actionstaff").find(".btn-historyOrder").remove();
             if (loadOrder.data.active) {
                 $(".actionstaff").append('<button type="button" class="btn-addNeworderStaff btn btn-primary"><i class="fas fa-plus"></i></button>')
                 $(".actionstaff").append('<button type="button" class="btn-removerOrder btn btn-danger ml-2"><i class="fas fa-trash"></i></button>');
+                $(".actionstaff").append('<button type="button" class="btn-historyOrder btn btn-info ml-2"><i class="fas fa-history"></i></button>');
                 posStaff.loadeventremoveOrder();
+                posStaff.loadShowHistoryOrder();//sự kện xem lịch sử gọi món
                 $("#lst-roomandtable li.active").addClass("active");
                 $(".topbuton button:first").trigger("click");
             } else {
@@ -8300,6 +8307,42 @@ var posStaff = {
         } else {
             return false;
         }
+    },
+    loadShowHistoryOrder: function () {
+        $("button.btn-historyOrder").click(async function () {
+            let idOrder = $("#id-order").data("id");
+            const ipAPI = '/Selling/OrderTable/GetHistoryOrder?IdOrder=' + idOrder;
+            var loadhis = await axios.get(ipAPI);
+            if (loadhis.data.isValid) {
+                Swal.fire({
+                    title: 'Lịch sử gọi món đã báo bếp',
+                    customClass: {
+                        container: 'Swalcontainer-small SwalHistoryOrderChitken',
+                        title: 'title-swal-small'
+                    },
+                    allowOutsideClick: true,
+                    showConfirmButton: false,
+                    showCancelButton: false,
+                    confirmButtonText: 'Lưu',
+                    html: loadhis.data.html,
+                    cancelButtonText: 'Hủy bỏ',
+                    footer: "<button class='swal2-cancel swal2-styled btn-cancel mr-3'><i class='icon-cd icon-add_cart icon'></i>Đóng</button>",
+                    showLoaderOnConfirm: true,
+                    didRender: () => {
+                        $(".addnoteitem").select();
+                        $(".btn-cancel").click(function () {
+                            Swal.close();
+                        });
+                       
+                    },
+                    preConfirm: (note) => {
+                        console.log(note);
+
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                })
+            }
+        });
     },
     eventUpdateQuantityItemMonOrder: function () {
 
@@ -12755,7 +12798,7 @@ var loadeventPos = {
             let notedata = $(this).data("note");
             htmlcontent = ' <textarea class="form-control addnoteitem"  placeholder="Nhập ghi chú">' + notedata + '</textarea>';
             Swal.fire({
-                title: 'Nhập ghi chú đơn',
+                title: 'Nhập ghi chú cho sản phẩm: <b class="red">' + $(this).parents("li").find(".name").find("b").html()+"</b>",
                 customClass: {
                     container: 'Swalcontainer-small',
                     title: 'title-swal-small'

@@ -29,7 +29,7 @@ namespace Application.Features.OrderTablePos.Querys
             public async Task<Result<OrderTable>> Handle(GetHistoryQuery query, CancellationToken cancellationToken)
             {
 
-                var product = await _repository.GetAllQueryable().Include(x => x.HistoryOrders).SingleOrDefaultAsync(x => x.IdGuid == query.IdOrder);
+                var product = await _repository.GetAllQueryable().AsNoTracking().Include(x => x.HistoryOrders).SingleOrDefaultAsync(x => x.IdGuid == query.IdOrder);
 
                 return await Result<OrderTable>.SuccessAsync(product);
             }

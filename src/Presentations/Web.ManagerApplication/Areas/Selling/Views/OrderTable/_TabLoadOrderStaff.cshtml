@@ -22,7 +22,7 @@
                         <div class="leftfood">
                             <i class="fas fa-trash-alt"></i>
                             <div class="content">
-                                <span>@(i++). @item.Name</span>
+                                <span class="name">@(i++). @item.Name</span>
                                 <div class="eventaddnote">
                                     <i class="number3">@item.Price.ToString().Replace(",",".")</i>
                                     <button class="note @(!string.IsNullOrEmpty(item.Note)?"active":"")" data-note="@item.Note">
