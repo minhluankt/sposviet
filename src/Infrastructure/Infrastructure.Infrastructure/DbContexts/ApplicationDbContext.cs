@@ -246,10 +246,16 @@ namespace Infrastructure.Infrastructure.DbContexts
             });
             builder.Entity<OrderTableItem>(entity =>
             {
-         
                 entity.HasIndex(p => new { p.IdGuid }).IsUnique();
                 // Tạo Index Unique trên 1 cột
                 entity.HasOne(x => x.OrderTable).WithMany(x => x.OrderTableItems).HasForeignKey(x => x.IdOrderTable);
+                entity.HasMany(x => x.ToppingsOrders).WithOne(x => x.OrderTableItem).HasForeignKey(x => x.IdOrderTableItem);
+            });
+            builder.Entity<ToppingsOrder>(entity =>
+            {
+                entity.HasIndex(p => new { p.Id }).IsUnique();
+                // Tạo Index Unique trên 1 cột
+                entity.HasOne(x => x.OrderTableItem).WithMany(x => x.ToppingsOrders).HasForeignKey(x => x.IdOrderTableItem);
             });
             builder.Entity<RoomAndTable>(entity =>
             {

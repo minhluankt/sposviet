@@ -532,7 +532,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             return Json(new { isValid = false });
         }  
         [HttpPost]
-        public async Task<IActionResult> AddNoteAndToppingItemOrder(Guid? IdOrder,Guid? IdOrderItem, string Note)
+        public async Task<IActionResult> AddNoteAndToppingItemOrder(Guid? IdOrder,Guid? IdOrderItem, string Note) 
         {
             if (IdOrderItem==null || IdOrder==null)
             {

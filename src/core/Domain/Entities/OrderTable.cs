@@ -91,6 +91,23 @@ namespace Domain.Entities
         public EnumStatusKitchenOrder Status { get; set; } = EnumStatusKitchenOrder.MOI;
         [JsonIgnore]
         public virtual OrderTable OrderTable { get; set; }
+        public virtual ICollection<ToppingsOrder> ToppingsOrders { get; set; }
+    }
+    public class ToppingsOrder//là món thêm cho 1 đơn
+    {
+        public ToppingsOrder() { }
+        public int Id { get; set; }
+        [StringLength(250)]
+        public string ProductName { get; set; }
+        [StringLength(25)]
+        public string ProductCode { get; set; }
+        public int IdProduct { get; set; }
+        public int IdOrderTableItem { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal Price { get; set; }
+        public string Unit { get; set; }
+        [ForeignKey("IdOrderTableItem")]
+        public virtual OrderTableItem OrderTableItem { get; set; }
     }
     public class HistoryOrder
     {
