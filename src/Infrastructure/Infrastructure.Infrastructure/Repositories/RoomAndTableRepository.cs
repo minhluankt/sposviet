@@ -33,13 +33,13 @@ namespace Infrastructure.Infrastructure.Repositories
         }
         public List<RoomAndTable> GetAll(int ComId)
         {
-            return _repositoryRoomAndTable.GetAllQueryable().Where(x => x.ComId == ComId).Include(x=>x.Area).ToList();
+            return _repositoryRoomAndTable.GetAllQueryable().AsNoTracking().Where(x => x.ComId == ComId).Include(x=>x.Area).ToList();
         }
 
         public List<RoomAndTableModel> GetAllInOrderStatus(EnumStatusOrderTable enumStatusOrder, int ComId, EnumTypeProduct enumTypeProduct)
         {
-            var getdata = (from tb in _repositoryRoomAndTable.Entities
-                    join od in _OrderTablerepository.Entities on tb.IdGuid equals od.IdRoomAndTableGuid
+            var getdata = (from tb in _repositoryRoomAndTable.Entities.AsNoTracking()
+                    join od in _OrderTablerepository.Entities.AsNoTracking() on tb.IdGuid equals od.IdRoomAndTableGuid
                     where tb.ComId == ComId && od.Status == enumStatusOrder && od.TypeProduct == enumTypeProduct
                     select new RoomAndTableModel()
                     {

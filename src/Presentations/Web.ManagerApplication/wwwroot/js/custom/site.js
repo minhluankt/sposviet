@@ -12640,6 +12640,11 @@ var loadeventPos = {
             if (slnotify != sl) {
                 checkShowNotify = true;
             }
+            //ghi chú
+            let note = $(this).find(".note").data("note");
+            $(this).find(".note").removeAttr("data-note")
+            $(this).find(".note").data("note", note);
+
         });
 
         if (checkShowNotify) {
@@ -12683,7 +12688,9 @@ var loadeventPos = {
                                 index = index + 1;
                                 html += ` <li data-id="` + item.idGuid + `" data-idpro ="` + item.idProduct + `" data-slNotify=` + item.quantityNotifyKitchen + ` data-sl=` + item.quantity + ` >
                                             <div  class="btn-remove" data-idquan="`+ item.quantity + `"><i data-idquan="` + item.quantity + `" class="fas fa-trash-alt"></i></div>
-                                            <div class="name"><b>` + index + ". " + item.name + `</b><button class="note"><i class="fas fa-notes-medical"></i> Ghi chú</button></div>
+                                            <div class="name"><b>` + index + ". " + item.name + `</b>
+                                            <button class="note `+ (item.note != null ? "active" : "") + `" data-note="`+ (item.note != null ? item.note : "") + `"><i class="far fa-sticky-note"></i> <span class="text">` + ((item.note != "" && item.note != null) ? item.note : "Thêm ghi chú") +`</span></button>
+                                            </div>
                                             <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="`+ item.quantity + `"> <i class="fas fa-plus"></i></div>
                                             <div><input type="text" class="form-control priceFormat" readonly value="`+ (item.price) + `" /></div>
                                             <div class="amount"><b class="priceFormat">`+ (item.total) + `</b></div>
@@ -12737,7 +12744,71 @@ var loadeventPos = {
     loadeventAddNote: function () {
         $("ul#item-mon").children("li").find("button.note").unbind();
         $("ul#item-mon").children("li").find("button.note").click(function () {
-            alert("ok");
+            let soluongbaobep = parseFloat($(this).parents("li").data("slnotify").toString().replaceAll(",", ""));
+            if (soluongbaobep > 0) {
+                toastrcus.error("Món đã thông báo chế biến, không thể điều chỉnh ghi chú");
+                return;
+            }
+            var sel = $(this);
+            let idItemOrder = $(this).parents("li").data("id");
+            let idOrder = $("#ul-tab-order a.active").data("id");
+            let notedata = $(this).data("note");
+            htmlcontent = ' <textarea class="form-control addnoteitem"  placeholder="Nhập ghi chú">' + notedata + '</textarea>';
+            Swal.fire({
+                title: 'Nhập ghi chú đơn',
+                customClass: {
+                    container: 'Swalcontainer-small',
+                    title: 'title-swal-small'
+                },
+                allowOutsideClick: true,
+                showConfirmButton: false,
+                showCancelButton: false,
+                confirmButtonText: 'Lưu',
+                html: htmlcontent,
+                cancelButtonText: 'Hủy bỏ',
+                footer: "<button class='swal2-cancel swal2-styled btn-cancel mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='swal2-styled btn btn-success btn-save'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                showLoaderOnConfirm: true,
+                didRender: () => {
+                    $(".addnoteitem").select();
+                    $(".btn-cancel").click(function () {
+                        Swal.close();
+                    });
+                    $(".btn-save").click(function () {
+
+                        if ($(".addnoteitem").val().trim() == "") {
+                            toastrcus.error("Vui lòng nhập ghi chú");
+                            return;
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            //global: false,
+                            url: '/Selling/OrderTable/AddNoteAndToppingItemOrder',
+                            data: {
+                                // TypeUpdate: _TypeUpdatePos.AddNoteOrder,
+                                IdOrderItem: idItemOrder,
+                                IdOrder: idOrder,
+                                Note: $(".addnoteitem").val().trim(),
+                            },
+                            success: function (res) {
+                                if (res.isValid) {
+                                    sel.data("note", $(".addnoteitem").val().trim());
+                                    sel.find("span.text").html($(".addnoteitem").val().trim());
+                                    Swal.close();
+                                }
+                            },
+                            error: function (err) {
+                                console.log(err)
+                            }
+                        });
+
+                    });
+                },
+                preConfirm: (note) => {
+                    console.log(note);
+
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            })
         });
     },//thê, ghi chú, thêm món thêm
     loadactiveClickItemMon: function (idorder, IdProduct) {
@@ -13703,8 +13774,8 @@ var loadeventPos = {
         var loadOrder = await axios.get("/Selling/OrderTable/LoadDataOrder?idtable=" + idTable);
         if (loadOrder.data.isValid) {
             $("#container-tableOder").html(loadOrder.data.data);
-            loadeventPos.loadeventAddNote();
-            loadeventPos.eventUpdatedataItemMonOrder();
+            loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
+            loadeventPos.eventUpdatedataItemMonOrder();//update lại các data
             if (loadOrder.data.dataCus.length > 0) {
                 ListCusByOrderPos = loadOrder.data.dataCus;
             }

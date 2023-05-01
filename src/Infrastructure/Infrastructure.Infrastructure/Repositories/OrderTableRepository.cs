@@ -1183,7 +1183,7 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public IQueryable<OrderTable> GetOrderInvoiceRetail(int ComId, EnumStatusOrderTable enumStatusOrderTable, EnumTypeProduct enumTypeProduct = EnumTypeProduct.BAN_LE)
         {
-            return _repository.Entities.Where(x => x.ComId == ComId && x.Status == enumStatusOrderTable && x.TypeProduct == enumTypeProduct);
+            return _repository.Entities.AsNoTracking().Where(x => x.ComId == ComId && x.Status == enumStatusOrderTable && x.TypeProduct == enumTypeProduct);
         }
 
         public async Task<Result<OrderTable>> UpdateTableOrRoomOfOrder(int comid, bool isBringBack, Guid idOrder, Guid? idOldTableOrder, Guid? idRoomOrtable, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC)

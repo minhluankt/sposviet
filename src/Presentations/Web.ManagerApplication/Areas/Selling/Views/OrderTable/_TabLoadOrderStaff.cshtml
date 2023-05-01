@@ -25,7 +25,7 @@
                                 <span>@(i++). @item.Name</span>
                                 <div class="eventaddnote">
                                     <i class="number3">@item.Price.ToString().Replace(",",".")</i>
-                                    <button class="note" data-note="@item.Note">
+                                    <button class="note @(!string.IsNullOrEmpty(item.Note)?"active":"")" data-note="@item.Note">
                                         <i class="far fa-sticky-note"></i>
 
                                         @if (!string.IsNullOrEmpty(item.Note))

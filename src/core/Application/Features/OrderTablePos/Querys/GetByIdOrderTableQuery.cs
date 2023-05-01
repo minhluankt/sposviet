@@ -53,7 +53,7 @@ namespace Application.Features.OrderTablePos.Querys
                         var getInvno = await _managerInvNoRepository.GetInvNoAsync(query.Comid, ENumTypeManagerInv.OrderTable);
                         OutInvNo = getInvno + 1;
                     }
-                    var product = _repository.GetMulti(x => x.IsBringBack && x.ComId == query.Comid && x.TypeProduct == query.TypeProduct && x.Status == query.Status, x => x.Include(x => x.OrderTableItems).Include(x => x.Customer));
+                    var product = _repository.GetMulti(x => x.IsBringBack && x.ComId == query.Comid && x.TypeProduct == query.TypeProduct && x.Status == query.Status, x => x.Include(x => x.OrderTableItems).Include(x => x.Customer)).AsNoTracking();
 
                     return await Result<List<OrderTable>>.SuccessAsync(await product.OrderByDescending(x => x.Id).ToListAsync(), OutInvNo.ToString());
                 }

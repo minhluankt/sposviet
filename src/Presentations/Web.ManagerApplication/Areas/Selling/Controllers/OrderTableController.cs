@@ -711,7 +711,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             _notify.Error(GeneralMess.ConvertStatusToString(send.Message));
             return Json(new { isValid = false });
         }
-
         [HttpGet]
         public async Task<IActionResult> Payment(EnumTypeUpdatePos TypeUpdate, Guid IdOrder,bool vat)
         {

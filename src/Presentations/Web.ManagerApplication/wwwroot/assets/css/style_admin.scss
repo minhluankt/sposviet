@@ -1760,6 +1760,16 @@ div#popupselectDiscount .ele-discount.ele-SaleRetail {
         margin-top: 20px;
     }
 
+    textarea.addnoteitem {
+        font-size: 18px;
+    }
+
+    .swal2-footer {
+        button.swal2-styled {
+            font-size: 22px !important;
+        }
+    }
+
     .swal2-title.title-swal-small {
         /* border-bottom: #ccc solid thin; */
         padding-bottom: 7px;
@@ -4117,6 +4127,15 @@ span.discountAmountItemPro {
             }
 
             padding-bottom: 26px;
+
+            .btn-remove {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 15px
+            }
+
+           
         }
     }
 

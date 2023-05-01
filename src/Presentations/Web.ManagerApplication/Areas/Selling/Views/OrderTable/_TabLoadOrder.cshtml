@@ -66,9 +66,19 @@
                         <div data-idquan="@item.Quantity.ToString().Replace(",",".")" class="btn-remove"><i data-idquan="@item.Quantity.ToString("0.###").Replace(",",".")" class="fas fa-trash-alt"></i></div>
                         <div class="name">
                             <b>@(i++). @item.Name</b>
-                            <button class="note"><i class="fas fa-notes-medical"></i> Ghi chú</button>
+                            <button class="note @(!string.IsNullOrEmpty(item.Note)?"active":"")" data-note="@item.Note">
+                                <i class="far fa-sticky-note"></i>
+
+                                @if (!string.IsNullOrEmpty(item.Note))
+                                {
+                                    <span class="text">@item.Note</span>
+                                }
+                                else
+                                {
+                                    <span class="text">Thêm ghi chú</span>
+                                }
+                            </button>
                         </div>
-                        @*<div class="item_action"><i class="fas fa-minus"></i><span class="quantity">@item.Quantity</span> <i class="fas fa-plus"></i></div>*@
                         <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="@item.Quantity.ToString("0.###").Replace(",",".")"> <i class="fas fa-plus"></i></div>
                         <div><input type="text" class="form-control priceFormat" readonly value="@item.Price.ToString("N0")" /></div>
                         <div class="amount"><b class="priceFormat">@item.Total.ToString("N0")</b></div>
