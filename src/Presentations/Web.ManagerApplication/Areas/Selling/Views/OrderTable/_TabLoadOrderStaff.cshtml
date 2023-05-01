@@ -24,7 +24,17 @@
                             <div class="content">
                                 <span>@(i++). @item.Name</span>
                                 <div class="eventaddnote">
-                                    <i>@item.Price.ToString("N0")</i>  <button class="note"><i class="fas fa-notes-medical"></i> <span class="text">Ghi chú</span></button>
+                                    <i>@item.Price.ToString("N0")</i> 
+                                    <button class="note"><i class="fas fa-notes-medical"></i> 
+                                        @if (!string.IsNullOrEmpty(item.Note))
+                                        {
+                                            <span class="text">@item.Note</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text">Ghi chú</span>
+                                        }
+                                    </button>
                                 </div>
                                
                             </div>
@@ -58,7 +68,7 @@
 </table> 
 <div class="bottomFix">
             <div class="leftcol">
-        <span class="text-am">Tổng tiền <b class="fullQuantity number3">(@(Model.OrderTable != null ? Model.OrderTable.Quantity.ToString().Replace(",", ".") : 0))</b></span>
+        <span class="text-am">Tổng tiền (<b class="fullQuantity number3">@(Model.OrderTable != null ? Model.OrderTable.Quantity.ToString().Replace(",", ".") : 0)</b>)</span>
         <span class="value-am priceFormat amountFull number3">@(Model.OrderTable != null ? Model.OrderTable.OrderTableItems.Sum(x => x.Total).ToString().Replace(",", ".") : "0")</span>
             </div>
             <div class="rightcol">
