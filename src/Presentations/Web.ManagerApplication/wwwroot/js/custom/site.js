@@ -7605,7 +7605,7 @@ var posStaff = {
                 showLoaderOnConfirm: true,
                 didRender: () => {
                    
-                },
+                },  
                 preConfirm: (note) => {
                     console.log(note);
                     if ($(".addnoteitem").val().trim() == "") {
@@ -7617,7 +7617,7 @@ var posStaff = {
                         //global: false,
                         url: '/Selling/OrderTable/AddNoteAndToppingItemOrder',
                         data: {
-                            TypeUpdate: _TypeUpdatePos.AddNoteOrder,
+                           // TypeUpdate: _TypeUpdatePos.AddNoteOrder,
                             IdOrderItem: idItemOrder,
                             IdOrder: idOrder,
                             Note: note,
