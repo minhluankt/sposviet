@@ -198,6 +198,13 @@ namespace Infrastructure.Infrastructure.DbContexts
             {
                 // Tạo Index Unique trên 1 cột
                 entity.HasIndex(p => new { p.Slug, p.ComId }).IsUnique();
+                entity.HasOne(x=>x.CategoryInvoiceTemplate).WithMany(x=>x.TemplateInvoices).HasForeignKey(x=>x.IdCategoryInvoiceTemplate);
+            }); 
+            builder.Entity<CategoryInvoiceTemplate>(entity =>
+            {
+                // Tạo Index Unique trên 1 cột
+                entity.HasIndex(p => new { p.Slug }).IsUnique();
+                entity.HasMany(x => x.TemplateInvoices).WithOne(x => x.CategoryInvoiceTemplate).HasForeignKey(x => x.IdCategoryInvoiceTemplate).OnDelete(deleteBehavior: DeleteBehavior.Cascade);
             });
             builder.Entity<Kitchen>(entity =>
             {
