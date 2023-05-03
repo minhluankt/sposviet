@@ -24,6 +24,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<PublishInvoiceResponse>> CheckOutOrderInvoiceAsync(OrderInvoicePaymentSaleRetailModel model, EnumTypeProduct enumType = EnumTypeProduct.BAN_LE);
         Task UpdateCustomerOrder(int comid, Guid idOrder, Customer customer, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC);
         Task<Result<OrderTable>> UpdateItemOrderAsync(int? IdCustomer, string CusCode, int comid, Guid idOrder, Guid idItem, Guid? idTable, bool IsBringBack, decimal Quantity, string Cashername, string IdCasher, string note = "", bool IsRemoverow = false, bool IsCancelItem = false);
+        Task<Result<OrderTable>> CloneItemAsync(int comid, Guid idOrder, Guid idItem);
         Task<Result<OrderTable>> UpdateAllQuantityOrderTable(int comid, Guid idOrder, Guid idOrderItem, decimal quantity);
         Task<Result<OrderTable>> AddOrUpdateOrderTable(bool IsNewOrder, OrderTable model, OrderTableItem item);
         Task<OrderTable> GetByIdAsync(int id);

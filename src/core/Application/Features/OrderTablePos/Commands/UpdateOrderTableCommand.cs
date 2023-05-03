@@ -63,6 +63,13 @@ namespace Application.Features.OrderTables.Commands
                     case EnumTypeUpdatePos.UpdateQuantity:
                         updatequantity = await _orderTableRepository.UpdateItemOrderAsync(request.IdCustomer, request.CusCode, request.ComId, request.IdGuid.Value, request.IdOrderItem.Value, request.IdRoomAndTableGuid, request.IsBringBack, request.Quantity, request.CasherName, request.IdCasher, request.Note,  isRemoveRow, request.IsCancel);
                         break;
+                    case EnumTypeUpdatePos.CloneItemOrder:
+                        if (request.IdGuid == null || request.IdOrderItem == null)
+                        {
+                            return await Result<OrderTableModel>.FailAsync("Không tìm thấy dữ liệu phù hợp khi cập nhật thay thế số lượng");
+                        }
+                        updatequantity = await _orderTableRepository.CloneItemAsync(request.ComId, request.IdGuid.Value, request.IdOrderItem.Value);
+                        break;
                     case EnumTypeUpdatePos.ReplaceQuantity:
                         if (request.IdGuid == null || request.IdOrderItem == null)
                         {

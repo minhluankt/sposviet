@@ -91,6 +91,7 @@ namespace Domain.Entities
         public EnumStatusKitchenOrder Status { get; set; } = EnumStatusKitchenOrder.MOI;
         [JsonIgnore]
         public virtual OrderTable OrderTable { get; set; }
+        [JsonIgnore]
         public virtual ICollection<ToppingsOrder> ToppingsOrders { get; set; }
     }
     public class ToppingsOrder//là món thêm cho 1 đơn

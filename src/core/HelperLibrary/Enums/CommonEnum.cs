@@ -516,6 +516,7 @@ public enum EnumTypePrintBarCode
         ConvertInvoice = 11,// chuyển từ hóa đơn sang đơn đặt hàng dành cho bán lẻ
         UpdateRoomOrTableInOrder = 12,// update lại bàn hoặc phòng cho đơn đó khi khách chuyển bàn/phòng
         UpdateNoteAndTopping = 13,// cập nhật note và món thêm của 1 item trong order
+        CloneItemOrder = 14,// clone item order
     }
     public enum EnumTypeSpitOrder
     {

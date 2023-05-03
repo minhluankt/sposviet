@@ -22,7 +22,9 @@ namespace Domain.ViewModel
     {
         public Guid? idOrder { get; set; }
         public string Code { get; set; }
-        public Guid? idOrderItem { get; set; }
+        public string Note { get; set; }
+        public Guid? idOrderItem { get; set; } //id này là id kiểu Guid 
+        public int? idOrderItemInt { get; set; }//id này là id kiểu int 
         public int? IdProduct { get; set; }
         public decimal? Quantity { get; set; }
         public decimal QuantityNotifyKitchen { get; set; }

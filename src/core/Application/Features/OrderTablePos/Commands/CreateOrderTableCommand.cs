@@ -56,67 +56,83 @@ namespace Application.Features.OrderTablePos.Commands
         {
             try
             {
-
+                Result<OrderTable> update = null;
                 bool IsNewOrder = true;
                 OrderTable orderTable = new OrderTable();
                 orderTable.Id = request.orderTableModel.IdOrder;
+                orderTable.TypeProduct = request.orderTableModel.TypeProduct;
+                orderTable.ComId = request.orderTableModel.ComId;
                 if (request.orderTableModel.IdGuid != null)
                 {
                     IsNewOrder = false;
                     orderTable.IdGuid = request.orderTableModel.IdGuid.Value;
                 }
 
-                orderTable.TypeProduct = request.orderTableModel.TypeProduct;
-                orderTable.ComId = request.orderTableModel.ComId;
-                orderTable.IdRoomAndTableGuid = request.orderTableModel.IdRoomAndTableGuid;
                 OrderTableItem orderTableItem = new OrderTableItem();
                 orderTableItem.DateCreateService = request.orderTableModel.DateCreateService;// 
-                if (!string.IsNullOrEmpty(request.orderTableModel.CusCode))
-                {
-                    Customer customer = await _customerRepository.Entities.SingleOrDefaultAsync(x => x.Code == request.orderTableModel.CusCode && x.Comid== request.orderTableModel.ComId);
-                    if (customer == null)
-                    {
-                        return await Result<OrderTableModel>.FailAsync("Không tìm thấy khách hàng đã chọn");
-                    }
-                    orderTable.IdCustomer = customer.Id;
-                    orderTable.Buyer = customer.Name;
-                    orderTable.CusCode = customer.Code;
-                    orderTable.IsRetailCustomer = false;
-                }
-                else
-                {
-                    orderTable.IdCustomer = null;
-                    orderTable.IsRetailCustomer = true;
-                    orderTable.Buyer = "Khách lẻ";
-                }
-                if (request.orderTableModel.IdRoomAndTableGuid != null)
-                {
-                    var table = await _roomAndTableRepository.Entities.SingleOrDefaultAsync(x => x.IdGuid == request.orderTableModel.IdRoomAndTableGuid && x.ComId == request.orderTableModel.ComId);
-                    if (table == null)
-                    {
-                        return await Result<OrderTableModel>.FailAsync("Không tìm thấy bàn phù hợp");
-                    }
-                    orderTable.IdRoomAndTable = table.Id;
-                }
-
-                orderTable.IsBringBack = request.orderTableModel.IsBringBack;//mang về
-                orderTable.IdStaff = request.orderTableModel.IdCasher;//nhân viên phục vụ
-                orderTable.StaffName = request.orderTableModel.CasherName;//nhân viên phục vụ
-                orderTable.Quantity = request.orderTableModel.Quantity;
-
                 orderTableItem.IdProduct = request.orderTableModel.IdProduct;//
-             
                 orderTableItem.Code = request.orderTableModel.ProductCode;// 
-              
-                if (orderTable.IsBringBack && orderTable.IdRoomAndTable > 0)
+
+                if (!IsNewOrder)//nếu là có rồi thì thôi vào việc luôn
                 {
-                    return await Result<OrderTableModel>.FailAsync("Không hỗ trợ đơn vừa mang về vừa là bàn");
+                    update = await _orderTableRepository.AddOrUpdateOrderTable(IsNewOrder, orderTable, orderTableItem);
+                    if (update.Failed)
+                    {
+                        return await Result<OrderTableModel>.FailAsync(update.Message);
+                    }
                 }
-                var update = await _orderTableRepository.AddOrUpdateOrderTable(IsNewOrder, orderTable, orderTableItem);
-                if (update.Failed)
+                else if (IsNewOrder)
                 {
-                    return await Result<OrderTableModel>.FailAsync(update.Message);
+                
+                    orderTable.IdRoomAndTableGuid = request.orderTableModel.IdRoomAndTableGuid;
+
+                    if (!string.IsNullOrEmpty(request.orderTableModel.CusCode))
+                    {
+                        Customer customer = await _customerRepository.Entities.SingleOrDefaultAsync(x => x.Code == request.orderTableModel.CusCode && x.Comid == request.orderTableModel.ComId);
+                        if (customer == null)
+                        {
+                            return await Result<OrderTableModel>.FailAsync("Không tìm thấy khách hàng đã chọn");
+                        }
+                        orderTable.IdCustomer = customer.Id;
+                        orderTable.Buyer = customer.Name;
+                        orderTable.CusCode = customer.Code;
+                        orderTable.IsRetailCustomer = false;
+                    }
+                    else
+                    {
+                        orderTable.IdCustomer = null;
+                        orderTable.IsRetailCustomer = true;
+                        orderTable.Buyer = "Khách lẻ";
+                    }
+                    if (request.orderTableModel.IdRoomAndTableGuid != null)
+                    {
+                        var table = await _roomAndTableRepository.Entities.SingleOrDefaultAsync(x => x.IdGuid == request.orderTableModel.IdRoomAndTableGuid && x.ComId == request.orderTableModel.ComId);
+                        if (table == null)
+                        {
+                            return await Result<OrderTableModel>.FailAsync("Không tìm thấy bàn phù hợp");
+                        }
+                        orderTable.IdRoomAndTable = table.Id;
+                    }
+
+                    orderTable.IsBringBack = request.orderTableModel.IsBringBack;//mang về
+                    orderTable.IdStaff = request.orderTableModel.IdCasher;//nhân viên phục vụ
+                    orderTable.StaffName = request.orderTableModel.CasherName;//nhân viên phục vụ
+                    orderTable.Quantity = request.orderTableModel.Quantity;
+
+
+                    if (orderTable.IsBringBack && orderTable.IdRoomAndTable > 0)
+                    {
+                        return await Result<OrderTableModel>.FailAsync("Không hỗ trợ đơn vừa mang về vừa là bàn");
+                    }
+
+
+                    update = await _orderTableRepository.AddOrUpdateOrderTable(IsNewOrder, orderTable, orderTableItem);
+                    if (update.Failed)
+                    {
+                        return await Result<OrderTableModel>.FailAsync(update.Message);
+                    }
                 }
+                // xử lý sau khi đã cập nhật
                 OrderTableModel orderTableModel = new OrderTableModel();
                 orderTableModel = request.orderTableModel;
                 orderTableModel.IsBringBack = update.Data.IsBringBack;

@@ -25,6 +25,7 @@ namespace Domain.Entities
         [StringLength(200)]
         public string Buyer { get; set; }
         public int? IdProduct { get; set; }
+        public int IdItemOrder { get; set; }//là id của dòng sản phẩm báo bếp
         public int ComId { get; set; }
         public EnumTypeProduct IdDichVu { get; set; }
         public Guid IdOrder { get; set; }

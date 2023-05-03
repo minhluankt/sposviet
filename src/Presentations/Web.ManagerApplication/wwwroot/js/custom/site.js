@@ -149,7 +149,9 @@ var _TypeUpdatePos = {
     SplitOrder: 9,// tach don
     ReplaceQuantity: 10,// lấy số này luôn
     ConvertInvoice: 11,// chuyển từ hóa đơn sang đơn đặt hàng dành cho bán lẻ
-    UpdateRoomOrTableInOrder: 12// update lại bàn hoặc phòng cho đơn đó khi khách chuyển bàn/phòng
+    UpdateRoomOrTableInOrder: 12,// update lại bàn hoặc phòng cho đơn đó khi khách chuyển bàn/phòng
+    UpdateNoteAndTopping : 13,// cập nhật note và món thêm của 1 item trong order
+    CloneItemOrder : 14,// clone item order
 }
 var _TypeSpitOrderPos = {
     Unknown: 0,
@@ -12406,7 +12408,7 @@ var eventBanle = {
     },
 }
 var loadeventPos = {
-    eventRealtimeOrdertable:  function (data) {
+    eventRealtimeOrdertable: function (data) {
         json = JSON.parse(data);
         $("#lst-roomandtable li").filter(async function () {
             let iddata = $(this).data("id");
@@ -12418,7 +12420,7 @@ var loadeventPos = {
                 }
                 if ($(this).hasClass("active")) {
                     let GetTable = $(this).find("b").html();
-                   
+
                     if (json.IsBringBack) {
                         await loadeventPos.loadOrderByTable("-1");
                     } else {
@@ -12426,12 +12428,12 @@ var loadeventPos = {
                     }
                     $(".btn-showttable").data("id", iddata);
                     $(".btn-showttable").find(".showTableOrder").html(GetTable);
-                    
+
                 }
             }
         });
-        
-       
+
+
     },
     eventShowTabProductByCategory: function () {
         $.ajax({
@@ -12732,11 +12734,11 @@ var loadeventPos = {
                                 html += ` <li data-id="` + item.idGuid + `" data-idpro ="` + item.idProduct + `" data-slNotify=` + item.quantityNotifyKitchen + ` data-sl=` + item.quantity + ` >
                                             <div  class="btn-remove" data-idquan="`+ item.quantity + `"><i data-idquan="` + item.quantity + `" class="fas fa-trash-alt"></i></div>
                                             <div class="name"><b>` + index + ". " + item.name + `</b>
-                                            <button class="note `+ (item.note != null ? "active" : "") + `" data-note="`+ (item.note != null ? item.note : "") + `"><i class="far fa-sticky-note"></i> <span class="text">` + ((item.note != "" && item.note != null) ? item.note : "Thêm ghi chú") +`</span></button>
+                                            <button class="note`+ (item.note != null && item.note != "" ? " active" : "") + `" data-note="` + (item.note != null ? item.note : "") + `"><i class="far fa-sticky-note"></i> <span class="text">` + ((item.note != "" && item.note != null) ? item.note : "Thêm ghi chú") + `</span></button>
                                             </div>
                                             <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="`+ item.quantity + `"> <i class="fas fa-plus"></i></div>
                                             <div><input type="text" class="form-control priceFormat" readonly value="`+ (item.price) + `" /></div>
-                                            <div class="amount"><b class="priceFormat">`+ (item.total) + `</b></div>
+                                            <div class="amount"><b class="priceFormat">`+ (item.total) + `</b><button class="CloneItem"><i class="fas fa-plus"></i></button></div>
                                         </li>`;
                                 // <div class="item_action"><i class="fas fa-minus"></i><span class="quantity">`+ item.quantity + `</span> <i class="fas fa-plus"></i></div>
                             });
@@ -12750,6 +12752,7 @@ var loadeventPos = {
 
 
                         loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
+                        loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
                         loadeventPos.eventUpdatedataItemMonOrder();
 
 
@@ -12758,10 +12761,17 @@ var loadeventPos = {
                         loadeventPos.loadEventClickIconAddAndMinus();
                         loadeventPos.loadAddOrRemoveCurentClassTable(true);// xem có sản phẩm thì add class curen table
                         // console.log(dataObject.IdOrderItem);
-
-                        loadeventPos.loadactiveClickItemMon(dataObject.IdOrderItem, dataObject.IdProduct);// 
-
-
+                        if (dataObject.TypeUpdate == _TypeUpdatePos.CloneItemOrder) {
+                            const ids = res.data.orderTableItems.map(object => {
+                                return object.id;
+                            }); //lọc lấy ra danh sách id
+                            const max = Math.max(...ids);//lấy id lớn nhất
+                            var getIdorderItemClone = res.data.orderTableItems.find(x => x.idProduct == dataObject.IdProduct && x.id == max);
+                            loadeventPos.loadactiveClickItemMon(getIdorderItemClone.idGuid, dataObject.IdProduct);// sự kiện animaiton cho dòng vừa dc thêm
+                        } else {
+                            loadeventPos.loadactiveClickItemMon(dataObject.IdOrderItem, dataObject.IdProduct);// sự kiện animaiton cho dòng vừa dc thêm
+                        }
+                       
                         // xử lý giữ lại khách hàng khi có nhiều tab dg mở nhưng kích vào tab active xong kích qua lại bị mất khách k hiển thị
                         if (dataObject.TypeUpdate == _TypeUpdatePos.AddProduct && typeof dataObject.IdGuid == "undefined") {//xử lý với cái thêm mới
 
@@ -12784,6 +12794,23 @@ var loadeventPos = {
             }
         });
     },// sự kiện order
+    loadCloneitem: function () {
+        $("ul#item-mon").children("li").find("button.CloneItem").unbind();
+        $("ul#item-mon").children("li").find("button.CloneItem").click(function () {
+            let idTable = $(".btn-showttable").data("id");
+            let idItemOrder = $(this).parents("li").data("id");
+            var dataObject = {
+                QuantityFloat: 1,
+                TypeUpdate: _TypeUpdatePos.CloneItemOrder,
+                IdRoomAndTableGuid: idTable != "-1" ? idTable : "",
+                IsBringBack: idTable == "-1" ? true : false,
+                IdGuid: $("#ul-tab-order").find("a.active").data("id"),
+                IdOrderItem: idItemOrder,
+                IdProduct: $(this).parents("li").data("idpro")
+            };
+            loadeventPos.orderTable(dataObject);//lưu đơn
+        });
+    },
     loadeventAddNote: function () {
         $("ul#item-mon").children("li").find("button.note").unbind();
         $("ul#item-mon").children("li").find("button.note").click(function () {
@@ -12834,6 +12861,7 @@ var loadeventPos = {
                             },
                             success: function (res) {
                                 if (res.isValid) {
+                                    sel.addClass("active");
                                     sel.data("note", $(".addnoteitem").val().trim());
                                     sel.find("span.text").html($(".addnoteitem").val().trim());
                                     Swal.close();
@@ -12854,9 +12882,10 @@ var loadeventPos = {
             })
         });
     },//thê, ghi chú, thêm món thêm
-    loadactiveClickItemMon: function (idorder, IdProduct) {
+    loadactiveClickItemMon: function (IdOrderItem, IdProduct) {
         $("ul#item-mon").children("li").map(function () {
-            if ($(this).data("id") == idorder || $(this).data("idpro") == IdProduct) {
+            //if ($(this).data("id") == IdOrderItem || $(this).data("idpro") == IdProduct) {
+            if ($(this).data("id") == IdOrderItem) {
                 $(this).addClass("animatino");
                 $(this).addClass("active");
                 sel = $(this);
@@ -13818,6 +13847,7 @@ var loadeventPos = {
         if (loadOrder.data.isValid) {
             $("#container-tableOder").html(loadOrder.data.data);
             loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
+            loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
             loadeventPos.eventUpdatedataItemMonOrder();//update lại các data
             if (loadOrder.data.dataCus.length > 0) {
                 ListCusByOrderPos = loadOrder.data.dataCus;

@@ -218,7 +218,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             // model.TypeProduct = currentUser.IdDichVu;
             model.TypeProduct = EnumTypeProduct.AMTHUC;
 
-            if (model.TypeUpdate == EnumTypeUpdatePos.UpdateQuantity || model.TypeUpdate == EnumTypeUpdatePos.RemoveRowItem|| model.TypeUpdate == EnumTypeUpdatePos.ReplaceQuantity)
+            if (model.TypeUpdate == EnumTypeUpdatePos.UpdateQuantity 
+                || model.TypeUpdate == EnumTypeUpdatePos.CloneItemOrder 
+                || model.TypeUpdate == EnumTypeUpdatePos.RemoveRowItem|| 
+                model.TypeUpdate == EnumTypeUpdatePos.ReplaceQuantity)
             {
                 if (model.IdGuid == null || model.IdOrderItem == null)
                 {
@@ -230,7 +233,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     _notify.Error("Số lượng không hợp lệ");
                     return Json(new { isValid = false });
                 }
-                 if (model.TypeUpdate == EnumTypeUpdatePos.ReplaceQuantity && model.Quantity == 0)
+                else  if (model.TypeUpdate == EnumTypeUpdatePos.ReplaceQuantity && model.Quantity == 0)
+                {
+                    _notify.Error("Số lượng không hợp lệ");
+                    return Json(new { isValid = false });
+                } 
+                else if (model.TypeUpdate == EnumTypeUpdatePos.CloneItemOrder && model.Quantity == 0)
                 {
                     _notify.Error("Số lượng không hợp lệ");
                     return Json(new { isValid = false });

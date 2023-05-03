@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using NStandard;
+using NStandard.Evaluators;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Spire.Doc;
 using System;
@@ -170,7 +171,8 @@ namespace Infrastructure.Infrastructure.Repositories
                         });
                         order.NotifyOrderNewModels = notifyOrderNewModels;
                         // thông báo cho bếp nữa nhé
-                        await _notifyChitkenRepository.UpdateNotifyKitchenCancelAsync(comid, idOrder, getItem.IdProduct.Value, _newquantity, Cashername,IdCasher);
+                       // await _notifyChitkenRepository.UpdateNotifyKitchenCancelAsync(comid, idOrder, getItem.IdProduct.Value, _newquantity, Cashername,IdCasher);
+                        await _notifyChitkenRepository.UpdateNotifyKitchenCancelAsync(comid, idOrder, getItem.Id, _newquantity, Cashername,IdCasher);
 
                     }
                     if (IsRemoverow || ((getItem.Quantity * -1) == Quantity))// trường hợp xóa dòng hoặc giảm tất cả
@@ -288,7 +290,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         // throw new Exception("không tìm thấy đơn đặt bàn");
                     }
                     var order = await orders.SingleOrDefaultAsync();
-                    var getItem = order.OrderTableItems.Where(x => x.IdOrderTable == order.Id && x.IdProduct == product.Id).SingleOrDefault();
+                    var getItem = order.OrderTableItems.Where(x => x.IdOrderTable == order.Id && x.IdProduct == product.Id).FirstOrDefault();
                     if (getItem != null)
                     {
                         if (getItem.IsServiceDate)
@@ -298,7 +300,8 @@ namespace Infrastructure.Infrastructure.Repositories
                         //phải chạy lai list đó vì nếu k sẽ k update dc list đó
                         order.OrderTableItems.ToList().ForEach(x =>
                         {
-                            if (x.IdOrderTable == order.Id && x.IdProduct == product.Id)
+                            //if (x.IdOrderTable == order.Id && x.IdProduct == product.Id)
+                            if (x.IdOrderTable == order.Id && x.Id == getItem.Id)
                             {
                                 x.Quantity = x.Quantity + 1;
                                 x.Total = Convert.ToDecimal(x.Quantity) * x.Price;
@@ -701,7 +704,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
 
                 }
-
+                lỗi trong việc ghép đơn từ A sang B và ngược lại hiện chưa ghi nhận lịch sử, xong làm lại cái mất luôn =))
 
                 orderTables.ForEach(x => { x.IdOrderTable = 0; x.Id = 0; });
                 //update cái sp nào dg có Quantity và tiền
@@ -718,12 +721,12 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
 
 
-                    var getitem = orderTables.SingleOrDefault(z => z.Code == x.Code);
-                    if (getitem != null)
+                    var getitem = orderTables.Where(z => z.Code == x.Code).ToList();
+                    if (getitem.Count()>0)
                     {
-                        x.Quantity += getitem.Quantity;
-                        x.QuantityNotifyKitchen = x.Quantity;
-                        x.Total += getitem.Total;
+                        x.Quantity += getitem.Sum(x=>x.Quantity);
+                        x.QuantityNotifyKitchen += getitem.Sum(x => x.Quantity);
+                        x.Total += getitem.Sum(x => x.Total);
                     }
                 }
 
@@ -786,8 +789,14 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         isValid = true;
                     }
-                    x.Code = getdt.Code;
-                    x.IdProduct = getdt.IdProduct;
+                    else
+                    {
+                        x.Note = getdt.QuantityNotifyKitchen == 0? getdt.Note:string.Empty;
+                    }
+                    x.Code = getdt?.Code;
+                    x.IdProduct = getdt?.IdProduct;
+                    x.idOrderItemInt = getdt?.Id;
+                    x.QuantityNotifyKitchen = getdt.QuantityNotifyKitchen;
                 });// danh sachs item cần tách
 
                 if (isValid)
@@ -806,10 +815,10 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
 
                             decimal quannotify = 0;
-                            if (item.Quantity == item.QuantityNotifyKitchen)//TH =
+                            if (item.Quantity == item.QuantityNotifyKitchen)//TH = nhau tức là chuyển k phải là dạng thêm và chuyển
                             {
                                 item.QuantityNotifyKitchen = item.QuantityNotifyKitchen - getitem.Quantity.Value;
-
+                                quannotify = getitem.Quantity.Value;//tức là nếu đã thông báo bếp hết rồi thì quannotify mới này phải = đúng sl chuyển, vì để báo chuyển chứ k phải là th
                             }
                             else if (item.Quantity > item.QuantityNotifyKitchen)//TH  đã thông báo 1 ít
                             {
@@ -834,13 +843,13 @@ namespace Infrastructure.Infrastructure.Repositories
 
                                 }
                             }
-                            //quannotify = getitem.Quantity.Value;
                             item.Quantity = item.Quantity - getitem.Quantity.Value;
                             item.Total = Convert.ToDecimal(item.Quantity) * item.Price;
 
                             lstitem.ForEach(x =>
                             {
-                                if (x.Code == item.Code)
+                                //if (x.Code == item.Code)
+                                if (x.idOrderItem == item.IdGuid)
                                 {
                                     x.QuantityNotifyKitchen = quannotify;// dùng số này báo cho đơn mới
 
@@ -891,8 +900,8 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         var getItme = orderitemNguyenthuy.SingleOrDefault(x => x.IdGuid == item.idOrderItem);
                         OrderTableItem orderTableItem = new OrderTableItem();
-                        orderTableItem.IdGuid = Guid.NewGuid();
                         orderTableItem.Code = getItme.Code;
+                        orderTableItem.Note = getItme.Note;
                         orderTableItem.Name = getItme.Name;
                         orderTableItem.Unit = getItme.Unit;
                         orderTableItem.Price = getItme.Price;
@@ -904,17 +913,22 @@ namespace Infrastructure.Infrastructure.Repositories
                         orderTableItem.QuantityNotifyKitchen = item.Quantity.Value;
                         orderTableItem.Total = Convert.ToDecimal(orderTableItem.Quantity) * getItme.Price;
                         OrderTableItemS.Add(orderTableItem);
-                      //  if (item.QuantityNotifyKitchen > 0)
-                        //{
-                            var cloneitem = orderTableItem.CloneJson();
-                            cloneitem.QuantityNotifyKitchen = item.QuantityNotifyKitchen;
-                            if (item.QuantityNotifyKitchen == 0)//mục đich nếu đã báo bếp thì lấy số lượng từ đơn gốc là clone, còn chưa báo gì lấy số lượng từ truyền vào
-                            {
-                                cloneitem.Quantity = (item.Quantity == null ? 0 : item.Quantity.Value);
-                            }
+                        //xử lý cho đơn mới
+                        var cloneitem = orderTableItem.CloneJson();
+                        cloneitem.QuantityNotifyKitchen = item.QuantityNotifyKitchen;
+                        if (item.QuantityNotifyKitchen == 0)//mục đich nếu đã báo bếp thì lấy số lượng từ đơn gốc là clone, còn chưa báo gì lấy số lượng từ truyền vào
+                        {
+                            cloneitem.Quantity = (item.Quantity == null ? 0 : item.Quantity.Value);
+                        }
+                        else if (item.Quantity <= (getItme.Quantity - getItme.QuantityNotifyKitchen))
+                        {
+                            cloneitem.QuantityNotifyKitchen = 0;
+                        }
+                        if (cloneitem.Quantity != cloneitem.QuantityNotifyKitchen)//có khác mới báo cho đơn mới
+                        {
                             OrderTableItemNewNotifyOrder.Add(cloneitem);
-                       // }
-                       
+                        }
+
                     }
 
                     if (IsBringBack)
@@ -950,7 +964,6 @@ namespace Infrastructure.Infrastructure.Repositories
                     DateTime CreateDateHis = DateTime.Now;
                     foreach (var item in OrderTableItemNewNotifyOrder)//báo cho đơn mới
                     {
-
                         var his = new HistoryOrder()
                         {
                             ProductName = item.Name,
@@ -968,8 +981,6 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             his.TypeKitchenOrder = EnumTypeKitchenOrder.THEM;
                             his.Name = $"+ {item.Quantity.ToString("0.###")} {item.Name}";
-                            //his.Name = $"+ {item.Quantity.ToString("0.###")} {item.Name} (được chuyển từ {(getBr.RoomAndTable != null ? getBr.RoomAndTable.Name : "mang về")} sang)".ToLower();
-                            //vì là chưa báo bếp là món mới từ bàn kia chuyển qua nên báo bếp nhé add vào  danh sách new của đơn mới 
                             var newitem = item.CloneJson();
                             newitem.Quantity = item.Quantity;
                             lstItemNewInDonMoi.Add(newitem);
@@ -1006,8 +1017,8 @@ namespace Infrastructure.Infrastructure.Repositories
                             }
                             else
                             {
-                                lstItemNewInDonMoi.Add(item);
-                                his.Name = $"+ {item.Quantity.ToString("0.###")} {item.Name}";
+                                //lstItemNewInDonMoi.Add(item);
+                                //his.Name = $"+ {item.Quantity.ToString("0.###")} {item.Name}";
                             }
 
                         }
@@ -1016,11 +1027,6 @@ namespace Infrastructure.Infrastructure.Repositories
                     this.AddHistoryOrder(lsthsi);
                     bool isnew = false;
 
-                    //if (lstItemNewInDonMoi.Count() > 0)
-                    //{
-                    //    isnew = true;
-
-                    //}
                     await _notifyChitkenRepository.UpdateNotifyKitchenSpitOrderAsync(getBr, OrderTableItemold, comid, model, model.OrderTableItems.ToList(), isnew, CreateDateHis);
 
 
@@ -1052,12 +1058,13 @@ namespace Infrastructure.Infrastructure.Repositories
                     var lstnoex = new List<Guid>();
                     foreach (var x in getod.OrderTableItems)
                     {
-                        var geti = lstitem.SingleOrDefault(z => z.Code == x.Code);// tìm cái trpong list mới có thì update vào cái danh sách hiện tại của đơn mới đó
-                        if (geti != null)
+                      // var getitem = lstitem.SingleOrDefault(z => z.Code == x.Code);// tìm cái trpong list mới có thì update vào cái danh sách hiện tại của đơn mới đó
+                        var getitem = lstitem.SingleOrDefault(z => z.idOrderItemInt == x.Id);// tìm cái trpong list mới có thì update vào cái danh sách hiện tại của đơn mới đó, tìm theo id mới đúng vì 1 đơn có lặp lại nhiều lần 1 sản phẩm
+                        if (getitem != null)
                         {
-                            lstnoex.Add(geti.idOrderItem.Value);
-                            x.Quantity = x.Quantity + geti.Quantity.Value;
-                            x.QuantityNotifyKitchen = x.QuantityNotifyKitchen + geti.Quantity.Value;// mục đích để tí kiểm tra và báo lại 
+                            lstnoex.Add(getitem.idOrderItem.Value);
+                            x.Quantity = x.Quantity + getitem.Quantity.Value;
+                            x.QuantityNotifyKitchen = x.QuantityNotifyKitchen + getitem.Quantity.Value;// mục đích để tí kiểm tra và báo lại 
                             x.Total = Convert.ToDecimal(x.Quantity) * x.Price;
                         }
 
@@ -1065,7 +1072,6 @@ namespace Infrastructure.Infrastructure.Repositories
 
 
                     var newlstitem = lstitem.Where(x => !lstnoex.Contains(x.idOrderItem.Value)).ToList();//tìm cái còn lại k có, vì cái có đã update bên trên
-                    var lstNew = new List<OrderTableItem>();
                     if (newlstitem.Count() > 0)
                     {
                         var getNew = orderitemNguyenthuy.Where(x => newlstitem.Select(x => x.idOrderItem).ToArray().Contains(x.IdGuid)).ToList();// danh sasch item cos  trong order cũ
@@ -1093,12 +1099,12 @@ namespace Infrastructure.Infrastructure.Repositories
                     
 
                     //danh sách món mà có chứa các món chưa thông báo hết cho bép, ví dụ, có 5 món mà thông báo 3, còn 2 chưa thông báo mà đã dc tách từ bàn kahsc hêm vào
-
                     var newlist = lstitem.Select(x => new OrderTableItem()
                     {
                         IdProduct = x.IdProduct,
                         IdGuid = x.idOrderItem.Value,
                         Quantity = x.Quantity.Value,
+                        Note = x.Note,
                     }).ToList();
 
 
@@ -1544,6 +1550,49 @@ namespace Infrastructure.Infrastructure.Repositories
                 return await Result<string>.FailAsync("Món không tồn tại");
             }
             return await Result<string>.FailAsync("Không tìm thấy đơn, vui lòng thử lại");
+        }
+
+        public async Task<Result<OrderTable>> CloneItemAsync(int comid, Guid idOrder, Guid idItem)
+        {
+            try
+            {
+                var getorder = await _repository.Entities.Include(x => x.OrderTableItems).SingleOrDefaultAsync(x => x.ComId == comid && x.IdGuid == idOrder && x.Status == EnumStatusOrderTable.DANG_DAT);
+                if (getorder != null)
+                {
+                    var getitem = getorder.OrderTableItems.SingleOrDefault(x => x.IdOrderTable == getorder.Id && x.IdGuid == idItem);
+                    if (getitem != null)
+                    {
+                        var newitem = getitem.CloneJson();
+                        newitem.Id = 0;
+                        newitem.IdGuid = Guid.NewGuid();
+                        newitem.Quantity = 1;
+                        newitem.QuantityNotifyKitchen = 0;
+                        newitem.Total = 1 * newitem.Price;
+                        newitem.Discount = 0;
+                        newitem.Note = string.Empty;
+                        newitem.DiscountAmount = 0;
+                        newitem.ToppingsOrders = null;
+                        getorder.OrderTableItems.Add(newitem);
+
+                    }
+                    else
+                    {
+                        return await Result<OrderTable>.FailAsync("Món không tồn tại hoặc đã bị xóa, không thể sao chép");
+                    }
+                    getorder.Quantity = getorder.OrderTableItems.Sum(x => x.Quantity);
+                    getorder.Amonut = getorder.OrderTableItems.Sum(x => x.Total);
+                    await _repository.UpdateAsync(getorder);
+                    await _unitOfWork.SaveChangesAsync();
+                    return await Result<OrderTable>.SuccessAsync(getorder);
+                }
+                return await Result<OrderTable>.FailAsync("Không tìm thấy đơn, vui lòng thử lại");
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e.Message);
+                return await Result<OrderTable>.FailAsync("Có lỗi trong quá trình sao chép đơn, vui lòng thử lại");
+            }
+          
         }
     }
 }

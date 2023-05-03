@@ -2041,6 +2041,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<int>("IdDichVu")
                         .HasColumnType("int");
 
+                    b.Property<int>("IdItemOrder")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("IdKitchen")
                         .HasColumnType("uniqueidentifier");
 
