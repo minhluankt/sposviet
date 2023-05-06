@@ -437,54 +437,6 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.ToTable("CategoryCevenue");
                 });
 
-            modelBuilder.Entity("Domain.Entities.CategoryInvoiceTemplate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("Slug")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasFilter("[Slug] IS NOT NULL");
-
-                    b.ToTable("CategoryInvoiceTemplate");
-                });
-
             modelBuilder.Entity("Domain.Entities.CategoryPost", b =>
                 {
                     b.Property<int>("Id")
@@ -4045,9 +3997,6 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("IdCategoryInvoiceTemplate")
-                        .HasColumnType("int");
-
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -4068,9 +4017,10 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<string>("Template")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.Property<int>("TypeTemplatePrint")
+                        .HasColumnType("int");
 
-                    b.HasIndex("IdCategoryInvoiceTemplate");
+                    b.HasKey("Id");
 
                     b.HasIndex("Slug", "ComId")
                         .IsUnique()
@@ -4831,16 +4781,6 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Navigation("StyleOptionsProduct");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TemplateInvoice", b =>
-                {
-                    b.HasOne("Domain.Entities.CategoryInvoiceTemplate", "CategoryInvoiceTemplate")
-                        .WithMany("TemplateInvoices")
-                        .HasForeignKey("IdCategoryInvoiceTemplate")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("CategoryInvoiceTemplate");
-                });
-
             modelBuilder.Entity("Domain.Entities.ToppingsOrder", b =>
                 {
                     b.HasOne("Domain.Entities.OrderTableItem", "OrderTableItem")
@@ -4905,11 +4845,6 @@ namespace Infrastructure.Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.CategoryCevenue", b =>
                 {
                     b.Navigation("RevenueExpenditures");
-                });
-
-            modelBuilder.Entity("Domain.Entities.CategoryInvoiceTemplate", b =>
-                {
-                    b.Navigation("TemplateInvoices");
                 });
 
             modelBuilder.Entity("Domain.Entities.CategoryPost", b =>

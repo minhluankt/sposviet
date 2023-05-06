@@ -14,24 +14,24 @@ namespace Application.Enums
     {
         VAT = 1,
         VAT_MTT = 2
-    }  
+    }
     public enum EnumTypeSyncEInvoice
     {
         TRANG_THAI_HOA_DON = 0,
         TRANG_THAI_CQT = 1
-    } 
-    public enum AutocompleteTypeCustomer 
-    {
-        NONE= 0,
-        CUSCODE= 1,
-        CUSNAME= 2,
-        BUYER= 3,
-        TAXCODE= 4,
     }
-public enum EnumTypePrintBarCode
+    public enum AutocompleteTypeCustomer
+    {
+        NONE = 0,
+        CUSCODE = 1,
+        CUSNAME = 2,
+        BUYER = 3,
+        TAXCODE = 4,
+    }
+    public enum EnumTypePrintBarCode
     {
         XPRINTER_2TEM = 1
-    } 
+    }
     public enum EnumTypeValue
     {
         BOOL = 1,
@@ -55,19 +55,20 @@ public enum EnumTypePrintBarCode
         Personal = 0,
         Company = 1
 
-    }  public enum ENumTypeEventEinvoicePosrtal
+    }
+    public enum ENumTypeEventEinvoicePosrtal
     {
         Print = 0,
         ExportXML = 1,
         ExportPDF = 2
 
-    }   
+    }
     public enum ENumTypeUpdateProduct
     {
         STOPBUSINESS = 1,
         UNSTOPBUSINESS = 2,
 
-    }  
+    }
     public enum ENumTypeStausSendCQT
     {
         CHUAGUI_CQT = 0,
@@ -86,10 +87,10 @@ public enum EnumTypePrintBarCode
         BANHANG = 2,
         KHAC = 5,
 
-    } 
+    }
     public enum ENumTypePublishEinvoice
     {
-        
+
         ERROR = 0,//lỗi=
         DONDAHUY = 1,//DƯƠN ĐÃ HỦY
         PHATHANHOK = 2,//THỰC HIỆN PHÁT HÀNH OK
@@ -121,24 +122,24 @@ public enum EnumTypePrintBarCode
         KMai = 2, // Khuyến mại
         CKhau = 3, // Chiết khấu thương mại 
         GChu = 4, // Ghi chú/diễn giải
-    } 
+    }
     public enum VATRateInv
     {
         KHONGVAT = -1, // Hàng hóa, dịch vụ không chịu thuế là  hóa đơn bán hàng
-    }  
+    }
     public enum NOVAT
     {
         NOVAT = -3, // hóa đơn không có thuế, tức là k xuất hóa đơn k tính thuế, 
-    }  
+    }
     public enum StatusStaffEventEInvoice
     {
-      TaoMoiHoaDon =1,
-      InHoaDon =1,
-      HuyHoaDon =2,
-      PhatHanhHoaDon =3,
-      DongBoHoaDon =4,
-      XoaHoaDon =5,
-      SendCQT =6,
+        TaoMoiHoaDon = 1,
+        InHoaDon = 1,
+        HuyHoaDon = 2,
+        PhatHanhHoaDon = 3,
+        DongBoHoaDon = 4,
+        XoaHoaDon = 5,
+        SendCQT = 6,
     }
     public enum StatusEinvoice
     {
@@ -163,24 +164,24 @@ public enum EnumTypePrintBarCode
         AcceptedInv = 8,
         [Display(Name = "Hóa đơn bị Cơ quan thuế từ chối")]
         RejectedInv = 9
-    } 
+    }
     public enum ENumSupplierEInvoice
     {
         [Display(Name = "Không xác định nhà cung cấp")]
-        NONE =0,
-        [Display(Name ="VNPT - Tập đoàn Bưu chính Viễn thông Việt Nam")]
+        NONE = 0,
+        [Display(Name = "VNPT - Tập đoàn Bưu chính Viễn thông Việt Nam")]
         VNPT = 1
     }
     public enum ENumTypeSeri //chữ ký số
     {
-        NONE =0,
+        NONE = 0,
         [Display(Name = "VNPT HSM")]
         HSM = 1,
         [Display(Name = "VNPT Token")]
         TOKEN = 2,
         [Display(Name = "VNPT SmartCA")]
         VNPTSmartCA = 3,
-    }  
+    }
     public enum EnumConfigParameters //chữ ký số
     {
         NONE = 0,
@@ -193,14 +194,14 @@ public enum EnumTypePrintBarCode
         [Display(Name = "Mặc định xuất hóa đơn máy tính tiền khi thanh toán")]
         AUTOVATINPAYMENT = 4,
         [Display(Name = "Xuất gộp thành một hóa đơn điện tử")]
-        PUBLISHMERGEINVOICE = 5, 
+        PUBLISHMERGEINVOICE = 5,
         [Display(Name = "Xóa hóa đơn bán hàng sau khi đã gộp thành một đơn")]
         DELETEIPUBLISHMERGEINVOICEAFTER = 6,
         [Display(Name = "In báo bếp")]
-        PRINT_BAO_BEP = 7, 
+        PRINT_BAO_BEP = 7,
         [Display(Name = "Phương pháp in kết nối Plugin SposViet")]
         PRINT_KET_NOI = 8,
-    }  
+    }
     public enum EnumConfigParametersType // loại nào
     {
         NONE = 0,
@@ -224,7 +225,8 @@ public enum EnumTypePrintBarCode
 
         Printer = 1,
         PrintConvert = 2
-    } public enum ENumTypeCustomerSEX
+    }
+    public enum ENumTypeCustomerSEX
     {
 
         Nam = 1,
@@ -241,7 +243,7 @@ public enum EnumTypePrintBarCode
     {
         BIEUTUONG = 0,
         THUTU = 1
-    } 
+    }
     public enum EnumStatusRevenueExpenditure
     {
         HOANTHANH = 0,
@@ -270,7 +272,7 @@ public enum EnumTypePrintBarCode
         DEMO = 0,//demo
         [Display(Name = "Hệ thống chính thức")]
         Active = 1,//thử nghiệm
-    
+
     }
     public enum EnumtypeComponentProduct
     {
@@ -279,12 +281,12 @@ public enum EnumTypePrintBarCode
     }
     public enum EnumTypeProductCategory
     {
-       NONE = 0,//
-       PRODUCT = 1,//SẢN PHẨM
-       COOKING = 2,//MÓN CHẾ BIẾN
-       SERVICE  = 3,//LÀ SP DỊCH VỤ như tinhstieefn giờ cho thuế
-       COMBO = 4,//LÀ Combo
-       EXTRA_TOPPING = 5//LÀ MÓN THÊM,(dành cho món chế biến và hàng hóa thông thường, và dịch vụ)
+        NONE = 0,//
+        PRODUCT = 1,//SẢN PHẨM
+        COOKING = 2,//MÓN CHẾ BIẾN
+        SERVICE = 3,//LÀ SP DỊCH VỤ như tinhstieefn giờ cho thuế
+        COMBO = 4,//LÀ Combo
+        EXTRA_TOPPING = 5//LÀ MÓN THÊM,(dành cho món chế biến và hàng hóa thông thường, và dịch vụ)
     }
     public enum EnumTypeProduct // loại dịch vụ
     {
@@ -302,7 +304,7 @@ public enum EnumTypePrintBarCode
         VATLIEU_XAYDUNG = 4, // tạp hóa siêu thị
         [Display(Name = "Nhà nghỉ, Bida, Karaoke")]
         HOTEL_BIDA = 5, // bida, karaoke, hotel,motel
-    } 
+    }
     public enum EnumTypeReportDashboard
     {
         DOANHTHU = 0,// 
@@ -321,7 +323,7 @@ public enum EnumTypePrintBarCode
         HINHTHUCPHUVU = 3, //
         //[Display(Name = "Hóa đơn chưa thanh toán")]
         //HOADONCHUATHANHTOAN = 4, // 
-    } 
+    }
     public enum EnumTypeReportProduct // loại bsao cáo theo mặt hàng
     {
         [Display(Name = "None")]
@@ -351,13 +353,13 @@ public enum EnumTypePrintBarCode
         THEM = 1,
         CHUYEN = 2,
         GHEP = 3,
-    } 
+    }
     public enum EnumTypeRevenueExpenditure// là thu hay chi
     {
-      
+
         THU = 1,
         CHI = 2
-    }   
+    }
     public enum EnumTypeCategoryThuChi// là danh mục thu chi mặc định của hệ thống khi thu bán hàng và chi nhập hàng
     {
         None = 0,
@@ -365,10 +367,10 @@ public enum EnumTypePrintBarCode
         THUCHIKKHAC = 1,
         [Display(Name = "Tiền hàng")]
         TIENHANG = 2,
-    }  
+    }
     public enum EnumTypeObjectRevenueExpenditure// là thu hay chi
     {
-        [Display(Name  = "Khách hàng")]
+        [Display(Name = "Khách hàng")]
         KHACHHANG = 1,
         [Display(Name = "Đối tác/Nhà cung cấp")]
         DOITAC = 2,
@@ -382,7 +384,7 @@ public enum EnumTypePrintBarCode
         UPDATECHITKEN = 2,
         DELETECHITKEN = 3,
         KITCHENTOPOS = 4,
-    } 
+    }
     public enum EnumTypePrint // loại in
     {
         TEST = 0,//TEST
@@ -529,5 +531,17 @@ public enum EnumTypePrintBarCode
         NONE = -1,
         NGUNG_HOAT_DONG = 0,
         DANG_HOAT_DONG = 1, // tách
+    }
+    public enum EnumTypeTemplatePrint
+    {
+        NONE = -1,
+        [Display(Name = "Mẫu in thanh toán nhà hàng")]
+        IN_BILL_NHA_HANG = 0,
+        [Display(Name = "Mãu in thanh toán bán lẻ")]
+        IN_BILL_BANLE = 1,
+        [Display(Name = "Mãu in báo bếp món chế biến")]
+        IN_BA0_CHE_BIEN =2,
+        [Display(Name = "Mãu in báo bếp hủy món")]
+        IN_BA0_HUY_CHE_BIEN =3,
     }
 }

@@ -5,6 +5,12 @@
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.Id)
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="TypeTemplatePrint" class="control-label">Loại mẫu in</label>
+            <select asp-items="(IEnumerable<SelectListItem>)Model.Selectlist" asp-for="TypeTemplatePrint" style="width:100%" class="form-control" id="SelectListTypeTemplatePrint">
+            </select>
+            <span asp-validation-for="TypeTemplatePrint" class="text-danger"></span>
+        </div>
 
         <div class="fromOnetable">
             <div class="form-group">
@@ -14,15 +20,13 @@
             </div>
         </div>
 
-
-
-
         <div class="form-group">
             <label asp-for="Template" class="control-label">Nội dung</label>
             <textarea asp-for="Template" class="form-control" rows="3" style="height:200px"></textarea>
             <span asp-validation-for="Template" class="text-danger"></span>
         </div>
-
+        
+       
         <div class="form-group" style="
             display: flex;
             align-items: center;

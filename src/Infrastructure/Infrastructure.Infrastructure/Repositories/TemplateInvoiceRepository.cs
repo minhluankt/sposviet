@@ -52,17 +52,20 @@ namespace Infrastructure.Infrastructure.Repositories
             await _unitOfWorkrepository.CreateTransactionAsync();
             try
             {
+                var find = await _repository.Entities.Where(x => x.Id == model.Id && x.ComId == model.ComId).SingleOrDefaultAsync();
                 if (model.Active)
                 {
-                    var getu = _repository.Entities.Where(x => x.Active && x.ComId == model.ComId).ToList();
-                    getu.ForEach(x => x.Active = false);
-                    await _repository.UpdateAsync(model);
-                    await _unitOfWorkrepository.SaveChangesAsync();
-
+                    var getu = await _repository.Entities.Where(x => x.Active && x.ComId == model.ComId && x.Id!=find.Id).ToListAsync();
+                    if (getu.Count()>0)
+                    {
+                        getu.ForEach(x => x.Active = false);
+                        await _repository.UpdateAsync(model);
+                        //await _unitOfWorkrepository.SaveChangesAsync();
+                    }
                 }
-                var find = await _repository.Entities.Where(x => x.Id == model.Id && x.ComId == model.ComId).SingleOrDefaultAsync();
                 find.Name = model.Name;
                 find.Template = model.Template;
+                find.TypeTemplatePrint = model.TypeTemplatePrint;
                 find.Active = model.Active;
                 await _repository.UpdateAsync(model);
                 await _unitOfWorkrepository.SaveChangesAsync();
@@ -70,6 +73,7 @@ namespace Infrastructure.Infrastructure.Repositories
             }
             catch (System.Exception e)
             {
+                await _unitOfWorkrepository.RollbackAsync();
                 throw new System.Exception(e.Message);
             }
 

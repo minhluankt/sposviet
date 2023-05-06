@@ -88,6 +88,8 @@ namespace Domain.Entities
         public decimal DiscountAmount { get; set; } // ck
         public EnumTypeProductCategory TypeProductCategory { get; set; }
         [NotMapped]
+        public int? IdItemOrderOld { get; set; }// dùng để tiện khi thông báo bếp
+        [NotMapped]
         public EnumStatusKitchenOrder Status { get; set; } = EnumStatusKitchenOrder.MOI;
         [JsonIgnore]
         public virtual OrderTable OrderTable { get; set; }

@@ -203,7 +203,6 @@ namespace Application.Features.OrderTables.Commands
                                         orderTableModel.HtmlPrint = genhtml.Data;
                                     }
                                 }
-
                             }
                             return await Result<OrderTableModel>.SuccessAsync(orderTableModel,HeperConstantss.SUS007);
                         }

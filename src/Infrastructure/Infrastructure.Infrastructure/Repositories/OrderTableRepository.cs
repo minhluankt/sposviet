@@ -704,7 +704,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
 
                 }
-                lỗi trong việc ghép đơn từ A sang B và ngược lại hiện chưa ghi nhận lịch sử, xong làm lại cái mất luôn =))
+              
 
                 orderTables.ForEach(x => { x.IdOrderTable = 0; x.Id = 0; });
                 //update cái sp nào dg có Quantity và tiền
@@ -782,6 +782,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 }
                 var orderitemNguyenthuy = getBr.OrderTableItems.ToList();//giữ cái gốc để tìm kiếm
                 bool isValid = false;
+                //chạy for này để update các dữ liệu từ db vào các item đã chọn cho đầy đủ thông tin như note, hay số lượng thông báo
                 lstitem.ForEach(x =>
                 {
                     var getdt = orderitemNguyenthuy.SingleOrDefault(z => z.IdGuid == x.idOrderItem);
@@ -797,6 +798,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     x.IdProduct = getdt?.IdProduct;
                     x.idOrderItemInt = getdt?.Id;
                     x.QuantityNotifyKitchen = getdt.QuantityNotifyKitchen;
+                    x.Note = getdt.Note;
                 });// danh sachs item cần tách
 
                 if (isValid)
@@ -860,7 +862,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         }
                         else
                         {
-                            // khi = nhau tức là tách hết sản phẩm luôn nha item.Quantity = getitem.Quantity 
+                            // khi = nhau tức là tách hết sản phẩm qua đơn mới luôn nha item.Quantity = getitem.Quantity 
                             OrderTableItemremove.Add(item);
                         }
                     }
@@ -900,6 +902,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         var getItme = orderitemNguyenthuy.SingleOrDefault(x => x.IdGuid == item.idOrderItem);
                         OrderTableItem orderTableItem = new OrderTableItem();
+                        orderTableItem.IdItemOrderOld = getItme.Id;
                         orderTableItem.Code = getItme.Code;
                         orderTableItem.Note = getItme.Note;
                         orderTableItem.Name = getItme.Name;
@@ -1056,32 +1059,46 @@ namespace Infrastructure.Infrastructure.Repositories
 
 
                     var lstnoex = new List<Guid>();
-                    foreach (var x in getod.OrderTableItems)
+                    //tạm đóng nhé tính sau, tính năng này là update các món đã chọn vào món có sẵn trên đơn cũ để k bị lặp, nhưng vậy thì lỗi bếp nhé chưa tìm dc id để update
+                    //phần này là tìm các item của đơn mới để update vào nhưng hiện tại lỗi cho phần báo bếp, nên chọn sao thì cứ đẩy qua như tạo mới, có thể hiển thị nhiều dòng
+                    //foreach (var x in getod.OrderTableItems)
+                    //{
+                    //    DetailtSpitModel getitem = null;
+                    //    if (string.IsNullOrEmpty(x.Note))// đối với item của bàn mới nếu k có ghi chú thì xử lý tìm theo mã sản phẩm để update số lượng
+                    //    {
+                    //        // tìm cái trpong list mới có thì update vào cái danh sách hiện tại của đơn mới đó, lưu ý chỉ update vào các item k có ghi chú
+                    //        getitem = lstitem.FirstOrDefault(z => z.Code == x.Code && string.IsNullOrEmpty(z.Note) && !lstnoex.Contains(z.idOrderItem.Value));
+                    //    }
+                    //    else //đối với item có ghi chú thì tìm theo iditem mà k tìm theo mã sản phẩm của item đó
+                    //    {
+                    //         getitem = lstitem.SingleOrDefault(z => z.idOrderItemInt == x.Id && !lstnoex.Contains(z.idOrderItem.Value));// tìm cái trpong list mới có thì update vào cái danh sách hiện tại của đơn mới đó, tìm theo id mới đúng vì 1 đơn có lặp lại nhiều lần 1 sản phẩm
+                    //    }
+                    //    if (getitem != null)
+                    //    {
+                    //        lstnoex.Add(getitem.idOrderItem.Value);//tìm dc thì add item đó vào list để tí lọc ra các item k update (item của list chọn ở view)
+                    //        x.Quantity = x.Quantity + getitem.Quantity.Value;
+                    //        x.QuantityNotifyKitchen = x.QuantityNotifyKitchen + getitem.Quantity.Value;// mục đích để tí kiểm tra và báo lại 
+                    //        x.Total = Convert.ToDecimal(x.Quantity) * x.Price;
+                    //    }
+
+                    //}//update các món có trong đơn mới
+
+
+                    var newlstitem = lstitem;//tìm item còn lại k có trong đơn mới, vì cái có đã update thêm số lượng vào item hiện có trong đơn mới
+                   // bản cũ var newlstitem = lstitem.Where(x => !lstnoex.Contains(x.idOrderItem.Value)).ToList();//tìm item còn lại k có trong đơn mới, vì cái có đã update thêm số lượng vào item hiện có trong đơn mới
+                    if (newlstitem.Count() > 0)//các item thêm mới vào trong đơn mới mà k phải là update số lượng
                     {
-                      // var getitem = lstitem.SingleOrDefault(z => z.Code == x.Code);// tìm cái trpong list mới có thì update vào cái danh sách hiện tại của đơn mới đó
-                        var getitem = lstitem.SingleOrDefault(z => z.idOrderItemInt == x.Id);// tìm cái trpong list mới có thì update vào cái danh sách hiện tại của đơn mới đó, tìm theo id mới đúng vì 1 đơn có lặp lại nhiều lần 1 sản phẩm
-                        if (getitem != null)
-                        {
-                            lstnoex.Add(getitem.idOrderItem.Value);
-                            x.Quantity = x.Quantity + getitem.Quantity.Value;
-                            x.QuantityNotifyKitchen = x.QuantityNotifyKitchen + getitem.Quantity.Value;// mục đích để tí kiểm tra và báo lại 
-                            x.Total = Convert.ToDecimal(x.Quantity) * x.Price;
-                        }
-
-                    }// update các món dg có 
-
-
-                    var newlstitem = lstitem.Where(x => !lstnoex.Contains(x.idOrderItem.Value)).ToList();//tìm cái còn lại k có, vì cái có đã update bên trên
-                    if (newlstitem.Count() > 0)
-                    {
-                        var getNew = orderitemNguyenthuy.Where(x => newlstitem.Select(x => x.idOrderItem).ToArray().Contains(x.IdGuid)).ToList();// danh sasch item cos  trong order cũ
+                        // danh sasch item đã chọn ở view của order của đơn cũ tìm để có dữ liệu mà thêm vào đơn mới, item này là newlstitem
+                        var getNew = orderitemNguyenthuy.Where(x => newlstitem.Select(x => x.idOrderItem).ToArray().Contains(x.IdGuid)).ToList();// tìm trong item đơn cũ cần tách
 
                         foreach (var item in getNew)
                         {
-                            var geti = newlstitem.SingleOrDefault(z => z.idOrderItem == item.IdGuid);// tìm cái trpong list mới có thì update vào
+                            var geti = newlstitem.SingleOrDefault(z => z.idOrderItem == item.IdGuid);// tìm theo id
                             OrderTableItem orderTableItem = new OrderTableItem();
+                            orderTableItem.IdItemOrderOld = item.Id;
                             orderTableItem.Code = item.Code;
                             orderTableItem.Name = item.Name;
+                            orderTableItem.Note = item.QuantityNotifyKitchen==0? item.Note:string.Empty;
                             orderTableItem.Unit = item.Unit;
                             orderTableItem.IdProduct = item.IdProduct;
                             orderTableItem.Price = item.Price;
@@ -1093,14 +1110,16 @@ namespace Infrastructure.Infrastructure.Repositories
                         }
 
                     }
-                    // getod.OrderTableItems = tl;
                     getod.Amonut = getod.OrderTableItems.Sum(x => x.Total);
                     getod.Quantity = getod.OrderTableItems.Sum(x => x.Quantity);
-                    
 
-                    //danh sách món mà có chứa các món chưa thông báo hết cho bép, ví dụ, có 5 món mà thông báo 3, còn 2 chưa thông báo mà đã dc tách từ bàn kahsc hêm vào
+                    await _repository.UpdateAsync(getod);
+                    await _unitOfWork.SaveChangesAsync();
+                    //danh sách món mà có chứa các món chưa thông báo hết cho bép, ví dụ,
+                    //có 5 món mà thông báo 3, còn 2 chưa thông báo mà đã dc tách từ bàn kahsc hêm vào
                     var newlist = lstitem.Select(x => new OrderTableItem()
                     {
+                        IdItemOrderOld = x.idOrderItemInt.Value,//gán id của đơn cũ đã chọn để xử lý báo bếp
                         IdProduct = x.IdProduct,
                         IdGuid = x.idOrderItem.Value,
                         Quantity = x.Quantity.Value,
@@ -1109,17 +1128,15 @@ namespace Infrastructure.Infrastructure.Repositories
 
 
                     await _notifyChitkenRepository.UpdateNotifyKitchenTachdonVaoDonDacoAsync(getBr, OrderTableItemold, comid, getod, newlist, OrderTableItemremove, CasherName, IdCasher);
-                    await _repository.UpdateAsync(getod);
                     await _unitOfWork.SaveChangesAsync();
                     await _unitOfWork.CommitAsync();
-
-
                 }
                 return await Result<bool>.SuccessAsync(HeperConstantss.SUS006);
             }
 
             catch (Exception e)
             {
+                _log.LogError(e.ToString());
                 await _unitOfWork.RollbackAsync();
                 return await Result<bool>.FailAsync(e.Message);
             }

@@ -20,6 +20,14 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="">
+                    <label>Loại mẫu in</label>
+                        <select asp-items="(IEnumerable<SelectListItem>)ViewBag.Selectlist" style="width:100%" class="form-control" id="TypeTemplatePrint">
+                            <option value=""></option>
+                        </select>
+                </div>
+            </div> 
+            <div class="col-md-6">
+                <div class="">
                     <label>Tên mẫu</label>
                     <input type="text" name="Name" id="Name" placeholder="Tên phòng/bàn......" class="form-control">
                 </div>
@@ -68,7 +76,7 @@
 @section Scripts
     {
     <script>
-
+        loadEventSelect2("#TypeTemplatePrint");
         $(document).ready(function () {
             dataTableOut = $('#dataTable').DataTable({
                 "responsive": true,
@@ -128,7 +136,7 @@
                     datatype: "json",
                     data: {
                         Name: function () { return $('#Name').val().trim() },
-                        // Name: function () { return $('#CompanyName').val().trim() },
+                        TypeTemplatePrint: function () { return $('#TypeTemplatePrint').val() },
                     }
                 },
                 "columns": [

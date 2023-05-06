@@ -1622,7 +1622,9 @@ div#parentautocomplete {
         }
     }
 }
-
+:focus-visible {
+    outline: -webkit-focus-ring-color auto 0px !important;
+}
 .popup-change-price {
     .content {
         .btn-action:not(.btn-primary) {

@@ -1581,11 +1581,17 @@ var validateForm = {
                     required: true,
                     minlength: 3
                 },
+                "TypeTemplatePrint": {
+                    required: true
+                },
                 "Template": {
                     required: true,
                 }
             },
             messages: {
+                "TypeTemplatePrint": {
+                    required: errrequired
+                },
                 "Name": {
                     required: errrequired,
                     minlength: errminlength3
@@ -1593,6 +1599,55 @@ var validateForm = {
                     required: errrequired,
                     minlength: errminlength3
                 }
+            },
+            errorElement: 'span',
+            errorPlacement: function errorPlacement(error, element) {
+                Ladda.stopAll();
+                // input.removeAttr('readonly').removeAttr('disabled');
+                error.addClass('invalid-feedback');
+
+                if (element.prop('type') === 'checkbox') {
+                    error.insertAfter(element.parent('label'));
+                    Ladda.stopAll();
+                    //input.removeAttr('readonly').removeAttr('disabled');
+                } else {
+                    var a = element.parent();
+                    a = a.children().last();
+
+                    error.insertAfter(a.last());
+                    Ladda.stopAll();
+                    //input.removeAttr('readonly').removeAttr('disabled');
+                }
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    // element = $("#select2-" + elem.attr("id") + "-container").parent();
+                    element = $("#select2-" + elem.attr("id") + "-container").parents(".form-group");
+                    //error.insertAfter(element);
+                    element.append(error);
+                }
+            },
+            // eslint-disable-next-line object-shorthand
+            highlight: function highlight(element) {
+                let errorClass = "is-invalid";
+                $(element).addClass('is-invalid').removeClass('is-valid');
+                Ladda.stopAll();
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    // $("#select2-" + elem.attr("id") + "-container").parent().addClass(errorClass).removeClass('is-valid');
+                    $("#select2-" + elem.attr("id") + "-container").parents(".form-group").find("span.select2-selection--single").addClass(errorClass).removeClass('is-valid');
+                }
+                //input.removeAttr('readonly').removeAttr('disabled');
+            },
+            // eslint-disable-next-line object-shorthand
+            unhighlight: function unhighlight(element) {
+                let errorClass = "is-invalid";
+                $(element).removeClass('is-invalid');
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    // $("#select2-" + elem.attr("id") + "-container").parent().removeClass(errorClass).addClass('is-valid');
+                    $("#select2-" + elem.attr("id") + "-container").parents(".form-group").find("span.select2-selection--single").removeClass(errorClass).addClass('is-valid');
+                }
+                //Ladda.stopAll();
             },
             submitHandler: function (form) {
             }
@@ -1849,6 +1904,17 @@ function loadEventIcheck() {
 function loadevent() {
     loadEventIcheck();
     $(".select2").select2({
+        placeholder: "Chọn giá trị",
+        allowClear: true,
+        language: {
+            noResults: function () {
+                return "Không tìm thấy dữ liệu";
+            }
+        },
+    });
+}
+function loadEventSelect2(id) {
+    $(id).select2({
         placeholder: "Chọn giá trị",
         allowClear: true,
         language: {
@@ -4119,6 +4185,10 @@ var eventCreate = {
                             validateForm.EditAndAddTemplateInvoice();
                             $(".btn-continue").click(function () {
                                 Swal.close();
+                            });
+                            loadEventSelect2("#SelectListTypeTemplatePrint");
+                            $('#SelectListTypeTemplatePrint').on("change", function (e) {
+                                $(this).valid()
                             });
                             $(".btn-save").click(function () {
                                 if ($("form#create-form").valid()) {
@@ -17341,7 +17411,8 @@ async function CheckExpired() {
             getCheckExpired();
         }
     } catch (e) {
-        getCheckExpired();
+        console.log(e);
+        //getCheckExpired();
     }
 } 
 async function getCheckExpired() {
