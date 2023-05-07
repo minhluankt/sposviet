@@ -317,10 +317,14 @@ namespace Infrastructure.Infrastructure.Repositories
 
                     order.Amonut = Math.Round(order.OrderTableItems.Sum(x => x.Total), MidpointRounding.AwayFromZero);
                     order.Quantity = order.OrderTableItems.Sum(x => x.Quantity);
-                    order.IdCustomer = model.IdCustomer;
-                    order.IsBringBack = model.IsBringBack;
-                    order.IsRetailCustomer = model.IsRetailCustomer;
-                    order.Buyer = model.Buyer;
+                    if (IsNewOrder)
+                    {
+                        order.IdCustomer = model.IdCustomer;
+                        order.IsBringBack = model.IsBringBack;
+                        order.IsRetailCustomer = model.IsRetailCustomer;
+                        order.Buyer = model.Buyer;
+                    }
+
                     await _repository.UpdateAsync(order);
                     await _unitOfWork.SaveChangesAsync();
                     await _unitOfWork.CommitAsync();
@@ -456,17 +460,26 @@ namespace Infrastructure.Infrastructure.Repositories
                     await _repository.UpdateAsync(checkOrder);
 
                     var inv = _map.Map<Invoice>(checkOrder);
-                    inv.ArrivalDate = checkOrder.CreatedOn;
+                    inv.ArrivalDate = checkOrder.CreatedOn;//giờ vào
                     var getInv = await _managerInvNorepository.UpdateInvNo(comid, ENumTypeManagerInv.Invoice,false);
 
                     inv.InvoiceCode = $"HD-{getInv.ToString("00000000")}";
                     inv.Id = 0;
-                    inv.PurchaseDate = checkOrder.PurchaseDate;
+                    inv.PurchaseDate = checkOrder.PurchaseDate;//giờ thanh toán
                     inv.IdPaymentMethod = Idpayment;
                     inv.IdOrderTable = checkOrder.Id;
                     inv.CasherName = Cashername;
                     inv.IdCasher = IdCasher;
-                    var invitem = _map.Map<List<InvoiceItem>>(checkOrder.OrderTableItems);
+                    var newlistitem = new List<OrderTableItem>();
+                    foreach (var item in checkOrder.OrderTableItems.GroupBy(x=>x.IdProduct))
+                    {
+                        var _item = item.First().CloneJson();
+                        _item.Quantity = item.Sum(x => x.Quantity);
+                        _item.Total = item.Sum(x => x.Quantity) * _item.Price;
+                        newlistitem.Add(_item);
+                    }
+                   
+                    var invitem = _map.Map<List<InvoiceItem>>(newlistitem);
                     invitem.ForEach(x => x.Id = 0);
                     
                     inv.InvoiceItems = invitem;
@@ -551,6 +564,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     //-----------------------------------//
                     // update lại sản phẩm tồn kho
                     var list = new List<KeyValuePair<string, decimal>>();
+                    //------grby item lại vì nó có nhiều sản phẩm trên nhiều dòng
                     foreach (var item in inv.InvoiceItems)
                     {
                         if (item.TypeProductCategory!=EnumTypeProductCategory.SERVICE && item.TypeProductCategory != EnumTypeProductCategory.COMBO)//lấy ra mấy csai k phải là combo và dịch vụ
@@ -618,7 +632,10 @@ namespace Infrastructure.Infrastructure.Repositories
 
                     if (!inv.IsBringBack && inv.IdCustomer.HasValue)
                     {
-                        inv.Customer = _customerRepository.GetById(inv.IdCustomer.Value);
+                        if (inv.Customer==null)
+                        {
+                            inv.Customer = await _customerRepository.Entities.AsNoTracking().SingleOrDefaultAsync(x=>x.Id== inv.IdCustomer.Value);
+                        }
                     }
                     publishInvoiceResponse.Invoice = inv;
                     return await Result<PublishInvoiceResponse>.SuccessAsync(publishInvoiceResponse);
@@ -674,7 +691,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 await _repository.DeleteAsync(checkOrder);
                 await _unitOfWork.SaveChangesAsync();
                 var lstod = await _repository.Entities.Include(x => x.OrderTableItems).Where(x => x.ComId == comid && lstIdoder.Contains(x.IdGuid)).ToListAsync();
-                var newOrder = lstod.FirstOrDefault();// đây là bàn mới nè lựa chọn đại 1 cái
+                var newOrder = lstod.FirstOrDefault();// đây là bàn mới nè lựa chọn đại 1 cái vì 1 bàn nếu có nhiều đơn mà chọn nhiều đơn đó thì ghép tất cả thành 1
                 newOrder.RoomAndTable = await _roomadntableRepository.GetByIdAsync(newOrder.IdRoomAndTable.Value);
                 guids.Remove(newOrder.IdGuid);// xóa đi cái bàn cần ghép vào nè
                 if (lstod.Count() > 1)
@@ -890,9 +907,9 @@ namespace Infrastructure.Infrastructure.Repositories
                     model.CasherName = CasherName;
                     model.IdCasher = IdCasher;
                     model.IsBringBack = IsBringBack;
-                    model.IdCustomer = getBr.IdCustomer;
+                    model.IdCustomer = null; //getBr.IdCustomer;
                     model.IdCasher = getBr.IdCasher;
-                    model.IsRetailCustomer = getBr.IsRetailCustomer;
+                    model.IsRetailCustomer = true; //getBr.IsRetailCustomer;
                     model.Buyer = getBr.Buyer;
                     model.TypeProduct = getBr.TypeProduct;
 
@@ -933,7 +950,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         }
 
                     }
-
+                    RoomAndTable roomAndTable = null;
                     if (IsBringBack)
                     {
                         model.IdRoomAndTable = null;
@@ -944,9 +961,10 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             return await Result<bool>.FailAsync(HeperConstantss.ERR045);
                         }
-                        var getphong = await _roomadntableRepository.Entities.SingleOrDefaultAsync(x => x.IdGuid == IdTable.Value && x.ComId == comid);
-                        model.IdRoomAndTable = getphong.Id;
-                        model.IdRoomAndTableGuid = getphong.IdGuid;
+                        roomAndTable = await _roomadntableRepository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.IdGuid == IdTable.Value && x.ComId == comid);
+                        model.IdRoomAndTable = roomAndTable.Id;
+                        model.IdRoomAndTableGuid = roomAndTable.IdGuid;
+                        
                     }
 
                     string cn = "en-US"; //Vietnamese
@@ -961,7 +979,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     await _repository.AddAsync(model);
                     await _unitOfWork.SaveChangesAsync();
                     string randowm = LibraryCommon.RandomString(8);
-
+                    model.RoomAndTable = roomAndTable;
                     List<OrderTableItem> lstItemNewInDonMoi = new List<OrderTableItem>();// danh sách item mới cho đơn mới, là sl chưa thông báo ở bàn cũ mà chuyển qua
                     List<HistoryOrder> lsthsi = new List<HistoryOrder>();
                     DateTime CreateDateHis = DateTime.Now;
@@ -1032,7 +1050,7 @@ namespace Infrastructure.Infrastructure.Repositories
 
                     await _notifyChitkenRepository.UpdateNotifyKitchenSpitOrderAsync(getBr, OrderTableItemold, comid, model, model.OrderTableItems.ToList(), isnew, CreateDateHis);
 
-
+                    //
                     if (lstItemNewInDonMoi.Count() > 0)
                     {
                         await _notifyChitkenRepository.NotifyOrderByItem(lstItemNewInDonMoi, model, CasherName, IdCasher);

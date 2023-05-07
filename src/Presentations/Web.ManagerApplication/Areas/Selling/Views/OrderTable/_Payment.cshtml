@@ -55,14 +55,14 @@
                     @{
                         int i = 1;
                     }
-                    @foreach (var item in Model.OrderTable.OrderTableItems)
+                    @foreach (var item in Model.OrderTable.OrderTableItems.GroupBy(x=>x.IdProduct))
                     {
                         <tr>
                             <td class="text-rcenter">@(i++)</td>
-                            <td>@item.Name</td>
-                            <td class="text-center">@string.Format("{0:0.##}",item.Quantity).Replace(",",".")</td>
-                            <td class="priceFormat text-right">@item.Price.ToString("0.###").Replace(",",".")</td>
-                            <td class="priceFormat text-right">@item.Total.ToString("0.###").Replace(",",".")</td>
+                            <td>@item.First().Name</td>
+                            <td class="text-center">@string.Format("{0:0.##}",item.Sum(x=>x.Quantity)).Replace(",",".")</td>
+                            <td class="priceFormat text-right">@item.Sum(x=>x.Price).ToString("0.###").Replace(",",".")</td>
+                            <td class="priceFormat text-right">@item.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
                         </tr>
                     }
                     <tr>

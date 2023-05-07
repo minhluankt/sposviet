@@ -1,12 +1,15 @@
-﻿using Application.Interfaces.Repositories;
+﻿using Application.Constants;
+using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +17,7 @@ namespace Application.Features.TemplateInvoices.Commands
 {
     public class DeleteTemplateInvoiceCommand : IRequest<Result<int>>
     {
+        public int ComId { get; set; }
         public int Id { get; set; }
         public class DeleteTemplateInvoiceHandler : IRequestHandler<DeleteTemplateInvoiceCommand, Result<int>>
         {
@@ -42,10 +46,10 @@ namespace Application.Features.TemplateInvoices.Commands
                 try
                 {
                     _log.LogInformation("DeleteTemplateInvoiceCommand start");
-                    var product = await _Repository.GetByIdAsync(command.Id);
+                    var product = await _Repository.Entities.SingleOrDefaultAsync(x=>x.Id==command.Id && x.ComId==command.ComId);
                     await _Repository.DeleteAsync(product); ;
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
-                    return await Result<int>.SuccessAsync(product.Id);
+                    return await Result<int>.SuccessAsync(product.Id,HeperConstantss.SUS007);
                 }
                 catch (Exception e)
                 {

@@ -50,7 +50,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
 
         //[Authorize(Policy = "pos.order")]
 
-
+        chỉnh bên mẫu bếp add vào template và add ghi chú cho mẫu
         public async Task<IActionResult> LoadDataOrderStaff(string idtable,Guid? idOrder=null)
         {
             //sự kiện kích thêm oder trên bàn, sự kiện thêm khách hàng,
@@ -849,7 +849,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return Json(new { isValid = false });
             }
             var currentUser = User.Identity.GetUserClaimLogin();
-            var response = await _mediator.Send(new PrintOrderTaleQuery() { Comid = currentUser.ComId,VATRate= Vatrate, IdOrder = id ,vat= vat });
+            var response = await _mediator.Send(new PrintOrderTaleQuery() { Comid = currentUser.ComId,VATRate= Vatrate, IdOrder = id ,vat= vat , casherName = currentUser.FullName});
             if (response.Succeeded)
             {
                 return Json(new { isValid = true, html = response.Data });

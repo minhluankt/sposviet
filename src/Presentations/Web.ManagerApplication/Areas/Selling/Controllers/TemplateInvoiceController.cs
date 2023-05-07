@@ -1,5 +1,6 @@
 ﻿using Application.Constants;
 using Application.Enums;
+using Application.Features.RoomAndTables.Commands;
 using Application.Features.TemplateInvoices.Commands;
 using Application.Features.TemplateInvoices.Query;
 using Application.Hepers;
@@ -59,11 +60,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var attributes = field.GetCustomAttribute<DisplayAttribute>();
             return attributes != null ? attributes.Name : value.ToString();
         }
-        private List<SelectListItem> GetSelectListItem(EnumTypeTemplatePrint type = EnumTypeTemplatePrint.IN_BILL_NHA_HANG)
+        private List<SelectListItem> GetSelectListItem(EnumTypeTemplatePrint type = EnumTypeTemplatePrint.NONE)
         {
             var select = Enum.GetValues(typeof(EnumTypeTemplatePrint)).Cast<EnumTypeTemplatePrint>()
                 .OrderBy(x => (Convert.ToInt32(x)))
-                .Where(x => (Convert.ToInt32(x)) >= 0)
+                .Where(x => (Convert.ToInt32(x)) > 0)
                 .Select(x => new SelectListItem
             {
                 Text = GetDisplayName(x),
@@ -137,6 +138,33 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
 
         }
+        [Authorize(Policy = "templateInvoice.delete")]
+        [HttpPost]
+        [EncryptedParameters("secret")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                var getusser = User.Identity.GetUserClaimLogin();
+
+                var deleteCommand = await _mediator.Send(new DeleteTemplateInvoiceCommand() { ComId=getusser.ComId,Id=id});
+                if (deleteCommand.Succeeded)
+                {
+                    _notify.Success(GeneralMess.ConvertStatusToString(deleteCommand.Message));
+                    return new JsonResult(new { isValid = true, loadTable = true });
+                }
+                else
+                {
+                    _notify.Error(GeneralMess.ConvertStatusToString(deleteCommand.Message));
+                    return new JsonResult(new { isValid = false });
+                }
+            }
+            catch (Exception ex)
+            {
+                _notify.Error(ex.Message);
+                return new JsonResult(new { isValid = false });
+            }
+        }
         [Authorize(Policy = "templateInvoice.create")]
         public async Task<ActionResult> CreateAsync()
         {
@@ -144,8 +172,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             {
               
                 _logger.LogInformation(User.Identity.Name + "--> templateInvoice create");
-                var htmlview = await _viewRenderer.RenderViewToStringAsync("_Create", new TemplateInvoice() { Selectlist = this.GetSelectListItem() , Active=true});
-                return new JsonResult(new { isValid = true, html = htmlview });
+                var htmlview = await _viewRenderer.RenderViewToStringAsync("_Create", new TemplateInvoice() {TypeTemplatePrint=EnumTypeTemplatePrint.NONE, Selectlist = this.GetSelectListItem() , Active=true});
+                return new JsonResult(new { isValid = true, html = htmlview, title="Thêm mới mẫu in" });
             }
             catch (Exception e)
             {
@@ -164,7 +192,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             {
                 data.Data.Selectlist = this.GetSelectListItem(data.Data.TypeTemplatePrint);
                 var html = await _viewRenderer.RenderViewToStringAsync("_Edit", data.Data);
-                return new JsonResult(new { isValid = true, html = html });
+                return new JsonResult(new { isValid = true, html = html, title = "Chỉnh sửa mẫu in" });
             }
             return new JsonResult(new { isValid = false, html = string.Empty });
         }

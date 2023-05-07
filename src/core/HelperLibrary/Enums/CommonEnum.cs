@@ -252,7 +252,8 @@ namespace Application.Enums
     public enum EnumTypeTemplate // loại sản phẩm
     {
         INVOICEPOS = 1,
-        PRINT_BEP = 2//in bếp
+        PRINT_BEP = 2,//in bếp
+        PRINT_TAM_TINH = 3//in bếp
     }
     public enum EnumTypeInvoice // loại sản phẩm
     {
@@ -534,14 +535,14 @@ namespace Application.Enums
     }
     public enum EnumTypeTemplatePrint
     {
-        NONE = -1,
-        [Display(Name = "Mẫu in thanh toán nhà hàng")]
-        IN_BILL_NHA_HANG = 0,
-        [Display(Name = "Mãu in thanh toán bán lẻ")]
-        IN_BILL_BANLE = 1,
+        NONE = 0,
+        [Display(Name = "Mẫu in thanh toán")]
+        IN_BILL = 1, 
+        [Display(Name = "Mẫu in tạm tính")]
+        IN_TAM_TINH = 2,
         [Display(Name = "Mãu in báo bếp món chế biến")]
-        IN_BA0_CHE_BIEN =2,
+        IN_BA0_CHE_BIEN =3,
         [Display(Name = "Mãu in báo bếp hủy món")]
-        IN_BA0_HUY_CHE_BIEN =3,
+        IN_BA0_HUY_CHE_BIEN =4,
     }
 }

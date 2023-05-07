@@ -1,5 +1,6 @@
 ﻿using Application.Constants;
 using Application.Enums;
+using Application.Hepers;
 using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
 using Domain.Entities;
@@ -67,14 +68,22 @@ namespace Application.Features.Invoices.Query
                 {
                     TemplateInvoiceParameter templateInvoiceParameter = new TemplateInvoiceParameter()
                     {
+                        giovao = InvoiceData.ArrivalDate.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                        ngaythangnamxuat = InvoiceData.PurchaseDate.Value.ToString("dd/MM/yyyy HH:mm:ss"),
                         lienhehotline = SystemVariableHelper.lienhehotline,
+                        TypeTemplatePrint = EnumTypeTemplatePrint.IN_BILL,
                         invoiceNo = InvoiceData.InvoiceCode,
-                        buyer = InvoiceData.Buyer,
+                        buyer = !string.IsNullOrEmpty(InvoiceData.CusName)? InvoiceData.CusName : InvoiceData.Buyer,
                         casherName = InvoiceData.CasherName,
+                        staffName = InvoiceData.StaffName,
                         cusPhone = InvoiceData.Customer?.PhoneNumber,
                         cusAddress = InvoiceData.Customer?.Address,
+                        cuscode = InvoiceData.Customer?.Code,
+
                         comname = !string.IsNullOrEmpty(company.Title) ? company.Title.Trim() : company.Name,
                         comaddress = company?.Address,
+                        comphone = company?.PhoneNumber,
+                        comemail = company?.Email,
 
                         tongtien = InvoiceData.Amonut.ToString("N0"),
                         tientruocthue = InvoiceData.Total.ToString("N0"),
@@ -87,21 +96,21 @@ namespace Application.Features.Invoices.Query
                        
 
                     };
-                    string tableProduct = string.Empty;
-                    foreach (var item in InvoiceData.InvoiceItems)
-                    {
-                        tableProduct += $"<tr>" +
-                                            $"<td colspan=\"4\"><span style=\"display: block;font-size: 11px\">{item.Name}</span></td>" +
-                                        "</tr>" +
-                                        "<tr>" +
-                                            $"<td><span style=\"display: block;  text-align: left;font-size: 11px\">{item.Price.ToString("N0")}</span></td>" +
-                                            $"<td style='text-align: center'><span style=\"display: block;font-size: 11px\">{item.Quantity.ToString("N0")}</span></td>" +
-                                            $"<td><span style=\"display: block; text-align: center;font-size: 11px\">{item.Unit}</span></td>" +
-                                            $"<td><span style=\"display: block; text-align: right;font-size: 11px\">{item.Total.ToString("N0")}</span></td>" +
-                                        "</tr>";
+                    //string tableProduct = string.Empty;
+                    //foreach (var item in InvoiceData.InvoiceItems)
+                    //{
+                    //    tableProduct += $"<tr>" +
+                    //                        $"<td colspan=\"4\"><span style=\"display: block;font-size: 11px\">{item.Name}</span></td>" +
+                    //                    "</tr>" +
+                    //                    "<tr>" +
+                    //                        $"<td><span style=\"display: block;  text-align: left;font-size: 11px\">{item.Price.ToString("N0")}</span></td>" +
+                    //                        $"<td style='text-align: center'><span style=\"display: block;font-size: 11px\">{item.Quantity.ToString("N0")}</span></td>" +
+                    //                        $"<td><span style=\"display: block; text-align: center;font-size: 11px\">{item.Unit}</span></td>" +
+                    //                        $"<td><span style=\"display: block; text-align: right;font-size: 11px\">{item.Total.ToString("N0")}</span></td>" +
+                    //                    "</tr>";
 
-                    }
-                    templateInvoiceParameter.tableProduct = tableProduct;
+                    //}
+                    //templateInvoiceParameter.tableProduct = tableProduct;
                     if (InvoiceData.IdEInvoice!=null)
                     {
                    
@@ -117,53 +126,58 @@ namespace Application.Features.Invoices.Query
                                 var companyvnpt = await _supplierEInvoicerepository.GetByIdAsync(query.ComId, inv.TypeSupplierEInvoice);
                                 if (companyvnpt!=null) {
                                     string urlportal = ConvertSupport.ConverDoaminVNPTPortal<string>(companyvnpt.DomainName);
-                                    thongtintracuuhoadon = InfoSeachInvCons.thong_tin_tra_cuu(urlportal, inv.FkeyEInvoice, inv.MCQT);
+                                    //thongtintracuuhoadon = InfoSeachInvCons.thong_tin_tra_cuu(urlportal, inv.FkeyEInvoice, inv.MCQT);
+                                    templateInvoiceParameter.UrlDomain = urlportal;
+                                    templateInvoiceParameter.Fkey = inv.FkeyEInvoice;
+                                    templateInvoiceParameter.MCQT = inv.MCQT;
                                 }
                             }
-                            string thongtinthue = string.Empty;
+                            //string thongtinthue = string.Empty;
                             if (InvoiceData.VATRate != (int)VATRateInv.KHONGVAT)
                             {
-                                thongtinthue = $"<tr style='font-size: 11px; text-align: left'>" +
-                                        $"<td colspan=\"3\">Tiền thuế: {templateInvoiceParameter.thuesuat}%</td>\r\n\t\t\t<td style=\"text-align: right;\">{templateInvoiceParameter.tienthue}</td>" +
-                                        $"</tr>";
+                                templateInvoiceParameter.isVAT = true;
+                                //thongtinthue = $"<tr style='font-size: 11px; text-align: left'>" +
+                                //        $"<td colspan=\"3\">Tiền thuế: {templateInvoiceParameter.thuesuat}%</td>\r\n\t\t\t<td style=\"text-align: right;\">{templateInvoiceParameter.tienthue}</td>" +
+                                //        $"</tr>";
 
                             }
-                            templateInvoiceParameter.thongtinthue = thongtinthue;
-                            if (!string.IsNullOrEmpty(thongtintracuuhoadon))
-                            {
-                                templateInvoiceParameter.thongtintracuuhoadon = $"<hr />" +
-                                                $"<table style='margin-top: 0mm;width: 100%;'>" +
-                                                $"<tr style='width: 100%;'>" +
-                                                $"<td style='text-align: center; font-size: 11px;'>" +
-                                                $"<span style='display: block;'>{thongtintracuuhoadon}</span>" +
-                                                $"</td>" +
-                                                $"</tr>" +
-                                                $"</table>";
-                            }
+                           //templateInvoiceParameter.thongtinthue = thongtinthue;
+                            //if (!string.IsNullOrEmpty(thongtintracuuhoadon))
+                            //{
+                            //    templateInvoiceParameter.thongtintracuuhoadon = $"<hr />" +
+                            //                    $"<table style='margin-top: 0mm;width: 100%;'>" +
+                            //                    $"<tr style='width: 100%;'>" +
+                            //                    $"<td style='text-align: center; font-size: 11px;'>" +
+                            //                    $"<span style='display: block;'>{thongtintracuuhoadon}</span>" +
+                            //                    $"</td>" +
+                            //                    $"</tr>" +
+                            //                    $"</table>";
+                            //}
 
                         }
                         else
                         {
                             //đoạn này là xóa đi vì chưa phát hành hóa đơn điện tử
-                            string regex = @"<.*?{kyhieuhoadon}.*?>";
-                            Regex rg = new Regex(regex);
-                            var match = rg.Match(templateInvoice.Template);
-                            String result = match.Groups[0].Value;
-                            if (!string.IsNullOrEmpty(result))
-                            {
-                                templateInvoice.Template = templateInvoice.Template.Replace(result,"");
-                            }//số hóa đơn
-                            regex = @"<.*?{sohoadon}.*?>";
-                            rg = new Regex(regex);
-                            match = rg.Match(templateInvoice.Template);
-                            result = match.Groups[0].Value;
-                            if (!string.IsNullOrEmpty(result))
-                            {
-                                templateInvoice.Template = templateInvoice.Template.Replace(result, "");
-                            }
+                            //string regex = @"<.*?{kyhieuhoadon}.*?>";
+                            //Regex rg = new Regex(regex);
+                            //var match = rg.Match(templateInvoice.Template);
+                            //String result = match.Groups[0].Value;
+                            //if (!string.IsNullOrEmpty(result))
+                            //{
+                            //    templateInvoice.Template = templateInvoice.Template.Replace(result,"");
+                            //}//số hóa đơn
+                            //regex = @"<.*?{sohoadon}.*?>";
+                            //rg = new Regex(regex);
+                            //match = rg.Match(templateInvoice.Template);
+                            //result = match.Groups[0].Value;
+                            //if (!string.IsNullOrEmpty(result))
+                            //{
+                            //    templateInvoice.Template = templateInvoice.Template.Replace(result, "");
+                            //}
                         }
                     }
-                    string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice.Template, EnumTypeTemplate.INVOICEPOS);
+                    //string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice.Template, EnumTypeTemplate.INVOICEPOS);
+                    string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, InvoiceData.InvoiceItems.ToList(), templateInvoice.Template);
                     return Result<string>.Success(content, HeperConstantss.SUS014);
                 }
                 return await Result<string>.FailAsync("Không tìm thấy mẫu hóa đơn");

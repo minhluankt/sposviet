@@ -1,148 +1,93 @@
-<!DOCTYPE html>
-<html lang='vi'>
-
-<head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <meta http-equiv='X-UA-Compatible' content='ie=edge'>
-    <title>Vé điện tử</title>
-    <script type="text/javascript" charset="UTF-8"></script>
-	
-	<style>
-        body {
-            font-size: 15px;
-            font-family: Arial;
-        }
-
-        hr {
-            margin: 0px;
-            border-top: 1px solit #000;
-        }
-
-        .ticket {
-          
-            padding: 0mm;
-            margin: 0 auto;
-            height: auto;
-    max-width: 500px;
-            background: #FFF;
-            transform-origin: left;
-        }
-table { 
-    border-collapse: collapse; 
-}
-table td,table th{
-padding:2px 2px 2px 0px;
-}
-        img {
-            max-width: inherit;
-            width: inherit;
-        }
-
-        @media print {
-
-            .hidden-print,
-            .hidden-print * {
-                display: none !important;
-            }
-
-            .ticket {
-                page-break-after: always;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div class='ticket'>
-		<!-- <table style='margin-top: 0mm;width: 100%;'>
-            <tr style='width: 100%;'>
-                <td style="text-align: center;"> 
-                    <b style='display: block;    font-size: 25px;'>SposViet</b> 
-                </td>
-            </tr>
-        </table> -->
-        <table style='width:100%;'>
-            <tr>
-                <td style='text-align: center;'>
-					<span style='font-weight: bold;font-size: 16px;'>{comname}</span>
-					<span style='font-size: 12px; display: block;'>{comaddress}</span>
-					<span style='font-size: 12px; display: block; text-align: center'>----------***----------</span>
-					<span style='font-size: 12px; display: block;'>Ngày bán: {ngaythangnamxuat}</span>
-				</td>
-            </tr>
-            <tr>
-                <td style='font-size: 18px; text-align: center; padding-top: 7px; padding-bottom: 7px;'>
-					<span style='display: block; font-size: 12px; font-weight: bold;text-align: right'>Ký hiệu: {kyhieuhoadon}</span>
-					<span style='display: block; font-size: 12px; font-weight: bold;text-align: right;margin-bottom: 10px;'>Số HD: {sohoadon}</span>
-					<span style='display: block; font-size: 14px; font-weight: bold;'>HÓA ĐƠN BÁN HÀNG</span>
-					<span style='display: block; font-size: 12px; font-weight: bold;'>Số NB: {invoiceNo}</span>
-                </td>
-            </tr>
-        </table>
-	
-        <table style='width:100%; margin-bottom:5px;'>
-            <tr>
-                <td style='font-size: 12px; text-align: left;'>
-					<span style='display: block; margin-top:10px'>Tên khách: {buyer}</span>
-				</td>
-            </tr>
-            <tr>
-                <td style='font-size: 12px; text-align: left'>
-					<span style='display: block;'>SĐT: {cusPhone}</span>
-				</td>
-            </tr>
-            <tr>
-                <td style='font-size: 12px; text-align: left'>
-					<span style='display: block;'>Địa chỉ: {cusAddress}</span>
-				</td>
-            </tr>
-			 <tr>
-                <td style='font-size: 12px; text-align: left'>
-					<span style='display: block;'>NV phục vụ: {staffName}</span>
-				</td>
-            </tr>
-        </table>
-		<hr />
-	<table style='width:100%;margin-top:2px;margin-bottom:10px'>			
-	    <thead>
-		<tr  style="border-botom-style: dotted;border-width: 0.3px">
-		<th style='font-size: 11px; text-align: left'>Đ.Gia</th>
-		<th style='font-size: 11px; text-align: center'>S.Lượng</th>
-		<th style='font-size: 11px; text-align: center'>ĐVT</th>
-		<th style='font-size: 11px; text-align: right'>Thành tiền</th>
+<table style="width:100%">
+	<tbody>
+		<tr>
+			<td style="text-align:center"><strong>{comname}</strong><br />
+			<span style="font-size:12px">{comaddress}</span><br />
+			<span style="font-size:12px">----------***----------</span><br />
+			<span style="font-size:12px">Ng&agrave;y b&aacute;n: {ngaythangnamxuat}</span></td>
 		</tr>
-		</thead>
-		<tbody>
-	{tableProduct} 
-		
-		</tbody>
-		<tfoot>
-		<tr style='font-size: 11px;text-align: left;margin-top:4px;border-top-style: dotted;border-width: 0.1px;'>
-			<td colspan="3">Tổng tiền</td>
-			<td style="text-align: right;">{tientruocthue}</td>
+		<tr>
+			<td style="text-align:center">
+			<p><strong>H&Oacute;A ĐƠN B&Aacute;N H&Agrave;NG</strong><br />
+			<strong>Số HD: {invoiceNo}</strong></p>
+
+			<p style="text-align:right"><span style="font-size:12px"><strong>K&yacute; hiệu: {kyhieuhoadon}</strong><br />
+			<strong>Số HD: {sohoadon}</strong></span></p>
+			</td>
 		</tr>
-		<tr style='font-size: 11px; text-align: left'>
-			<td colspan="3">Chiết khấu</td>
-			<td style="text-align: right;">{giamgia}</td>
+	</tbody>
+</table>
+
+<table style="margin-bottom:5px; width:100%">
+	<tbody>
+		<tr>
+			<td style="text-align:left"><span style="font-size:12px">T&ecirc;n kh&aacute;ch: {buyer}</span></td>
 		</tr>
-		{thongtinthue} 
-		<tr style='font-size: 11px; text-align: left'>
-			<td colspan="3">Khách cần trả</td>
-			<td style="text-align: right;font-size: 12px;font-weight:bold">{khachcantra}</td>
+		<tr>
+			<td style="text-align:left"><span style="font-size:12px">SĐT: {cusPhone}</span></td>
 		</tr>
-		
-		</tfoot>
-	</table>
-	{thongtintracuuhoadon}
-	<hr />
-        <table style='margin-top: 0mm;width: 100%;'>
-            <tr style='width: 100%;'>
-                <td style='text-align: center; font-size: 11px;'>
-                    <span style='display: block;'>Đơn vị cung cấp giải pháp: SposViet, liên hệ:{lienhehotline}</span>
-                </td>
-            </tr>
-        </table>
-    </div>
-</body>
-</html>
+		<tr>
+			<td style="text-align:left"><span style="font-size:12px">Địa chỉ: {cusAddress}</span></td>
+		</tr>
+		<tr>
+			<td style="text-align:left"><span style="font-size:12px">Nh&acirc;n vi&ecirc;n b&aacute;n: {casherName}</span></td>
+		</tr>
+	</tbody>
+</table>
+
+<table style="margin-bottom:10px; margin-top:2px; width:100%">
+	<thead>
+		<tr>
+			<th style="text-align:left"><span style="font-size:12px">Đ.Gi&aacute;</span></th>
+			<th style="text-align:center"><span style="font-size:12px">S.Lượng</span></th>
+			<th style="text-align:center"><span style="font-size:12px">ĐVT</span></th>
+			<th style="text-align:right"><span style="font-size:12px">Th&agrave;nh tiền</span></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td colspan="4" style="text-align:left">
+			<div>
+			<div style="border-top:0.5px dashed black"><span style="font-size:12px">{tenhanghoa}</span></div>
+			</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="text-align:left"><span style="font-size:12px">{dongia}</span></td>
+			<td style="text-align:center"><span style="font-size:12px">{soluong}</span></td>
+			<td style="text-align:center"><span style="font-size:12px">{donvitinh}</span></td>
+			<td style="text-align:right"><span style="font-size:12px">{thanhtien}</span></td>
+		</tr>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="4" style="white-space:nowrap">
+			<div style="border-top:0.5px dashed black; display:flex; justify-content:space-between; padding-top:5px; text-align:right">
+			<div style="text-align:left"><span style="font-size:12px">Tổng tiền</span></div>
+
+			<div><span style="font-size:12px">{tientruocthue}</span></div>
+			</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3"><span style="font-size:12px">Chiết khấu</span></td>
+			<td style="text-align:right"><span style="font-size:12px">{giamgia}</span></td>
+		</tr>
+		<tr>
+			<td colspan="3"><span style="font-size:12px">Tiền thuế:{thuesuat}%</span></td>
+			<td style="text-align:right"><span style="font-size:12px">{tienthue}</span></td>
+		</tr>
+		<tr>
+			<td colspan="3"><strong><span style="font-size:12px">Kh&aacute;ch cần trả</span></strong></td>
+			<td style="text-align:right"><strong><span style="font-size:12px">{khachcantra}</span></strong></td>
+		</tr>
+	</tfoot>
+</table>
+
+<table style="margin-top:0mm; width:100%">
+	<tbody>
+		<tr>
+			<td style="text-align:center"><span style="font-size:11px">Đơn vị cung cấp giải ph&aacute;p: SposViet, li&ecirc;n hệ:0949906004</span></td>
+		</tr>
+	</tbody>
+</table>

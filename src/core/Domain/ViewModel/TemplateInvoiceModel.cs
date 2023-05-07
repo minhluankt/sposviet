@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.Enums;
+using System;
 
 namespace Domain.ViewModel
 {
@@ -17,13 +18,18 @@ namespace Domain.ViewModel
         {
             this.ngaythangnamxuat = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
         }
+        public string giovao { get; set; }
         public string kyhieuhoadon { get; set; }
         public string sohoadon { get; set; }//số bên diện tử
         public string invoiceNo { get; set; }//số bên bán hàng nôi bộ
         public string comname { get; set; }
+        public string comphone { get; set; }
+        public string comemail { get; set; }
         public string comaddress { get; set; }
+
         public string buyer { get; set; }
         public string cusPhone { get; set; }
+        public string cuscode { get; set; }
         public string cusAddress { get; set; }
         public string casherName { get; set; }
         public string staffName { get; set; }
@@ -32,6 +38,7 @@ namespace Domain.ViewModel
         /// <summary>
         /// //
         /// </summary>
+        public bool isVAT { get; set; }
         public string tientruocthue { get; set; }
         public string tienthue { get; set; }
         public string thuesuat { get; set; }
@@ -42,11 +49,17 @@ namespace Domain.ViewModel
         public string tienthuatrakhach { get; set; }
         public string thongtinthue { get; set; }
         public string thongtintracuuhoadon { get; set; }
+      
         public string tongsoluong { get; set; }
         public string tenbanphong { get; set; }
 
         ////
-        public string lienhehotline { get; set; }
+        public string lienhehotline { get; set; }//là đơn vị cung cấp giả pháp sposviet
+        //
+        public string UrlDomain { get; set; }//thong tin tra cứu hóa đơn
+        public string Fkey { get; set; }//mã tra cứu
+        public string MCQT { get; set; }//mã cơ quan thuế
+        public EnumTypeTemplatePrint TypeTemplatePrint { get; set; }
 
     }
 }

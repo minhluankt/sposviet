@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Repositories;
+﻿using Application.Enums;
+using Application.Interfaces.Repositories;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -17,9 +18,9 @@ namespace Infrastructure.Infrastructure.Repositories
             _unitOfWorkrepository = unitOfWorkrepository;
             _repository = repository;
         }
-        public async Task<TemplateInvoice> GetTemPlate(int ComId)
+        public async Task<TemplateInvoice> GetTemPlate(int ComId, EnumTypeTemplatePrint enumTypeTemplatePrint = EnumTypeTemplatePrint.IN_BILL)
         {
-            return await _repository.Entities.Where(x => x.Active && x.ComId == ComId).SingleOrDefaultAsync();
+            return await _repository.Entities.AsNoTracking().Where(x => x.Active && x.ComId == ComId &&x.TypeTemplatePrint== enumTypeTemplatePrint).SingleOrDefaultAsync();
         }
         public IQueryable<TemplateInvoice> GetAllAsync(int ComId)
         {
@@ -39,7 +40,7 @@ namespace Infrastructure.Infrastructure.Repositories
         {
             if (model.Active)
             {
-                var getu = _repository.Entities.Where(x => x.Active && x.ComId == model.ComId).ToList();
+                var getu = await _repository.Entities.Where(x => x.Active && x.ComId == model.ComId && x.TypeTemplatePrint ==model.TypeTemplatePrint).ToListAsync();
                 getu.ForEach(x => x.Active = false);
                 await _repository.UpdateAsync(model);
 
@@ -55,12 +56,11 @@ namespace Infrastructure.Infrastructure.Repositories
                 var find = await _repository.Entities.Where(x => x.Id == model.Id && x.ComId == model.ComId).SingleOrDefaultAsync();
                 if (model.Active)
                 {
-                    var getu = await _repository.Entities.Where(x => x.Active && x.ComId == model.ComId && x.Id!=find.Id).ToListAsync();
+                    var getu = await _repository.Entities.Where(x => x.Active && x.ComId == model.ComId && x.Id!=find.Id && x.TypeTemplatePrint == model.TypeTemplatePrint).ToListAsync();
                     if (getu.Count()>0)
                     {
                         getu.ForEach(x => x.Active = false);
                         await _repository.UpdateAsync(model);
-                        //await _unitOfWorkrepository.SaveChangesAsync();
                     }
                 }
                 find.Name = model.Name;

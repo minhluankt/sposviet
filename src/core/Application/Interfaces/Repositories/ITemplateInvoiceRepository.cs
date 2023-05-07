@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Enums;
+using Domain.Entities;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace Application.Interfaces.Repositories
         Task AddAsync(TemplateInvoice model);
         Task Delete(int ComId, int id);
         Task<TemplateInvoice> GetByIdAsync(int ComId, int id);
-        Task<TemplateInvoice> GetTemPlate(int ComId);
+        Task<TemplateInvoice> GetTemPlate(int ComId, EnumTypeTemplatePrint enumTypeTemplatePrint=EnumTypeTemplatePrint.IN_BILL);
         Task UpdateAsync(TemplateInvoice model);
     }
 
