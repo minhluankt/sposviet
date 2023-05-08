@@ -212,8 +212,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 var secret = string.Empty;
                 try
                 {
-                    model.Pattern = model.Pattern.Replace(" ","");
-                    model.Serial = model.Serial.Replace(" ","");
+                    model.Pattern = model.Pattern?.Replace(" ","");
+                    model.Serial = model.Serial?.Replace(" ","");
                     var currentUser = User.Identity.GetUserClaimLogin();
                     model.ComId = currentUser.ComId;
 

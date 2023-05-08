@@ -1445,6 +1445,7 @@ namespace Infrastructure.Infrastructure.Repositories
             }
 
         }
+     
         private async void AddHistori(HistoryEInvoice entity)
         {
             await _HistoryEInvoicerepository.AddAsync(entity);

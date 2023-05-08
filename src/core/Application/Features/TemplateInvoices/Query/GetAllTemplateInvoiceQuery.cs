@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Repositories;
+﻿using Application.Enums;
+using Application.Interfaces.Repositories;
 using Application.Providers;
 using AspNetCoreHero.Results;
 using AutoMapper;
@@ -19,6 +20,7 @@ namespace Application.Features.TemplateInvoices.Query
 
     public class GetAllTemplateInvoiceQuery : DatatableModel, IRequest<Result<List<TemplateInvoiceModel>>>
     {
+        public EnumTypeTemplatePrint TypeTemplatePrint { get; set; }
         public string Name { get; set; }
         public string TextPhoneOrEmail { get; set; }
         public bool GetInvoice { get; set; }
@@ -53,6 +55,10 @@ namespace Application.Features.TemplateInvoices.Query
             if (!string.IsNullOrEmpty(request.Name))
             {
                 datalist = datalist.Where(m => m.Name.ToLower().Contains(request.Name.ToLower()));
+            }
+             if (request.TypeTemplatePrint !=EnumTypeTemplatePrint.NONE)
+            {
+                datalist = datalist.Where(m => m.TypeTemplatePrint== request.TypeTemplatePrint);
             }
 
             if (!(string.IsNullOrEmpty(request.sortColumn) && string.IsNullOrEmpty(request.sortColumnDirection)))

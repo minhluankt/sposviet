@@ -1581,11 +1581,17 @@ var validateForm = {
                     required: true,
                     minlength: 3
                 },
+                "TypeTemplatePrint": {
+                    required: true
+                },
                 "Template": {
                     required: true,
                 }
             },
             messages: {
+                "TypeTemplatePrint": {
+                    required: errrequired
+                },
                 "Name": {
                     required: errrequired,
                     minlength: errminlength3
@@ -1593,6 +1599,55 @@ var validateForm = {
                     required: errrequired,
                     minlength: errminlength3
                 }
+            },
+            errorElement: 'span',
+            errorPlacement: function errorPlacement(error, element) {
+                Ladda.stopAll();
+                // input.removeAttr('readonly').removeAttr('disabled');
+                error.addClass('invalid-feedback');
+
+                if (element.prop('type') === 'checkbox') {
+                    error.insertAfter(element.parent('label'));
+                    Ladda.stopAll();
+                    //input.removeAttr('readonly').removeAttr('disabled');
+                } else {
+                    var a = element.parent();
+                    a = a.children().last();
+
+                    error.insertAfter(a.last());
+                    Ladda.stopAll();
+                    //input.removeAttr('readonly').removeAttr('disabled');
+                }
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    // element = $("#select2-" + elem.attr("id") + "-container").parent();
+                    element = $("#select2-" + elem.attr("id") + "-container").parents(".form-group");
+                    //error.insertAfter(element);
+                    element.append(error);
+                }
+            },
+            // eslint-disable-next-line object-shorthand
+            highlight: function highlight(element) {
+                let errorClass = "is-invalid";
+                $(element).addClass('is-invalid').removeClass('is-valid');
+                Ladda.stopAll();
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    // $("#select2-" + elem.attr("id") + "-container").parent().addClass(errorClass).removeClass('is-valid');
+                    $("#select2-" + elem.attr("id") + "-container").parents(".form-group").find("span.select2-selection--single").addClass(errorClass).removeClass('is-valid');
+                }
+                //input.removeAttr('readonly').removeAttr('disabled');
+            },
+            // eslint-disable-next-line object-shorthand
+            unhighlight: function unhighlight(element) {
+                let errorClass = "is-invalid";
+                $(element).removeClass('is-invalid');
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    // $("#select2-" + elem.attr("id") + "-container").parent().removeClass(errorClass).addClass('is-valid');
+                    $("#select2-" + elem.attr("id") + "-container").parents(".form-group").find("span.select2-selection--single").removeClass(errorClass).addClass('is-valid');
+                }
+                //Ladda.stopAll();
             },
             submitHandler: function (form) {
             }
@@ -1849,6 +1904,17 @@ function loadEventIcheck() {
 function loadevent() {
     loadEventIcheck();
     $(".select2").select2({
+        placeholder: "Chọn giá trị",
+        allowClear: true,
+        language: {
+            noResults: function () {
+                return "Không tìm thấy dữ liệu";
+            }
+        },
+    });
+}
+function loadEventSelect2(id) {
+    $(id).select2({
         placeholder: "Chọn giá trị",
         allowClear: true,
         language: {
@@ -4106,8 +4172,24 @@ var eventCreate = {
                         // icon: 'success',
                         title: res.title,
                         html: res.html,
+                        position: 'center',
                         showClass: {
-                            popup: 'popup-formcreate'
+                            popup: `popup-formcreate`
+                        },
+                        customClass: {
+                            container: 'eventpublisinvoice90p',
+                            //popup: 'your-popup-class',
+                            //header: 'your-header-class',
+                            //title: 'your-title-class',
+                            //closeButton: 'your-close-button-class',
+                            //icon: 'your-icon-class',
+                            //image: 'your-image-class',
+                            //content: 'your-content-class',
+                            //input: 'your-input-class',
+                            //actions: 'your-actions-class',
+                            //confirmButton: 'your-confirm-button-class',
+                            //cancelButton: 'your-cancel-button-class',
+                            footer: 'footer-Swal'
                         },
 
                         footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
@@ -4120,7 +4202,56 @@ var eventCreate = {
                             $(".btn-continue").click(function () {
                                 Swal.close();
                             });
+                            CKEDITOR.replace('Template', {
+                                height: '500px',
+                            });
+                            // Trigger resize handler
+                            //tinymce.execCommand('mceRemoveControl', true, 'Template');
+                        
+                            //tinymce.init({
+                            //    height: 700,
+                            //      selector:'textarea#Template',
+                            //      inline: false,
+                            //    plugins: ['quickbars', 'image', 'table', 'preview', 'code', 'emoticons', 'searchreplace', 'autolink', 'link', 'media', 'wordcount', 'directionality',
+                            //        'advlist autolink lists link image charmap print preview anchor',
+                            //        'searchreplace visualblocks code fullscreen',
+                            //        'insertdatetime media table paste code help wordcount'],
+                            //        image_title: true,
+                            //        automatic_uploads: true,
+                            //      //   toolbar: 'table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+                            //        file_picker_types: 'image',
+                            //        file_picker_callback: function(cb, value, meta) {
+                            //            var input = document.createElement('input');
+                            //            input.setAttribute('type', 'file');
+                            //            input.setAttribute('accept', 'image/*');
+                            //            input.onchange = function () {
+                            //                var file = this.files[0];
+                            //                var reader = new FileReader();
+
+                            //                reader.onload = function () {
+                            //                    var id = 'blobid' + (new Date()).getTime();
+                            //                    var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                            //                    var base64 = reader.result.split(',')[1];
+                            //                    var blobInfo = blobCache.create(id, file, base64);
+                            //                    blobCache.add(blobInfo);
+                            //                    cb(blobInfo.blobUri(), {title: file.name});
+                            //                };
+                            //                reader.readAsDataURL(file);
+                            //            };
+                            //            input.click();
+                            //    }
+
+                            //});
+                            loadEventSelect2("#SelectListTypeTemplatePrint");
+                            $('#SelectListTypeTemplatePrint').on("change", function (e) {
+                                $(this).valid()
+                            });
                             $(".btn-save").click(function () {
+                                tinymce.triggerSave();
+                                //for (instance in CKEDITOR.instances) {
+                                //    CKEDITOR.instances[instance].updateElement();
+                                //    $('#' + instance).val(CKEDITOR.instances[instance].getData());
+                                //}
                                 if ($("form#create-form").valid()) {
                                     jQueryModalPost($("form#create-form")[0]);
                                 }
@@ -17341,7 +17472,8 @@ async function CheckExpired() {
             getCheckExpired();
         }
     } catch (e) {
-        getCheckExpired();
+        console.log(e);
+        //getCheckExpired();
     }
 } 
 async function getCheckExpired() {

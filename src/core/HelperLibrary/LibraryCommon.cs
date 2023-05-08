@@ -509,15 +509,19 @@ namespace HelperLibrary
             {
                 string invoiceNo = string.Empty;
 
+                string comemail = string.Empty;
                 string comname = string.Empty;
+                string comphone = string.Empty;
                 string comaddress = string.Empty;
 
                 string buyer = string.Empty;
                 string cusPhone = string.Empty;
+                string cuscode = string.Empty;
                 string cusAddress = string.Empty;
                 string casherName = string.Empty;
                 string staffName = string.Empty;
                 string ngaythangnamxuat = string.Empty;
+                string giovao = string.Empty;
 
                 string tableProduct = string.Empty;
 
@@ -528,11 +532,16 @@ namespace HelperLibrary
                 string khachthanhtoan = string.Empty;
                 string tienthuatrakhach = string.Empty;
                 string thongtintracuuhoadon = string.Empty;
-                string thongtinthue = string.Empty;
+                string thuesuat = string.Empty;
+                string tienthue = string.Empty;
                 string kyhieuhoadon = string.Empty;
                 string sohoadon = string.Empty;
                 string tongsoluong = string.Empty;
                 string tenbanphong = string.Empty;
+
+                string linktracuu = string.Empty;
+                string matracuu = string.Empty;
+                string macoquanthue = string.Empty;
 
                 string lienhehotline = string.Empty;
                 if (enumType == EnumTypeTemplate.PRINT_BEP)
@@ -575,6 +584,15 @@ namespace HelperLibrary
                         }
                         switch (propertyInfo.Name)
                         {
+                            case "macoquanthue":
+                                macoquanthue = value;
+                                break; 
+                            case "matracuu":
+                                matracuu = value;
+                                break; 
+                            case "linktracuu":
+                                linktracuu = value;
+                                break; 
                             case "lienhehotline":
                                 lienhehotline = value;
                                 break; 
@@ -586,6 +604,12 @@ namespace HelperLibrary
                                 break;
                             case "comname":
                                 comname = value;
+                                break;
+                            case "comphone":
+                                comphone = value;
+                                break;
+                            case "comemail":
+                                comemail = value;
                                 break;
                             case "comaddress":
                                 comaddress = value;
@@ -599,6 +623,9 @@ namespace HelperLibrary
                             case "cusAddress":
                                 cusAddress = value;
                                 break;
+                            case "cuscode":
+                                cuscode = value;
+                                break;
                             case "casherName":
                                 casherName = value;
                                 break;
@@ -607,6 +634,9 @@ namespace HelperLibrary
                                 break;
                             case "ngaythangnamxuat":
                                 ngaythangnamxuat = value;
+                                break; 
+                            case "giovao":
+                                giovao = value;
                                 break;
                             case "tongtien":
                                 tongtien = value;
@@ -629,8 +659,11 @@ namespace HelperLibrary
                             case "tableProduct":
                                 tableProduct = value;
                                 break;  
-                            case "thongtinthue":
-                                thongtinthue = value;
+                            case "thuesuat":
+                                thuesuat = value;
+                                break;  
+                            case "tienthue":
+                                tienthue = value;
                                 break;
                             case "kyhieuhoadon":
                                 kyhieuhoadon = value;
@@ -649,16 +682,23 @@ namespace HelperLibrary
                 var template = HttpUtility.HtmlDecode(content);
                 var arrtoken = new Dictionary<string, string>()
                 {
+                    { "{matracuu}",matracuu},
+                    { "{linktracuu}",linktracuu},
+                    { "{macoquanthue}",macoquanthue},
                     { "{lienhehotline}",lienhehotline},
                     { "{invoiceNo}",invoiceNo},
                     { "{casherName}",casherName},
+                    { "{comemail}",comemail},
+                    { "{comphone}",comphone},
                     { "{comname}",comname},
                     { "{comaddress}",comaddress},
                     { "{buyer}",buyer},
                     { "{cusPhone}",cusPhone},
+                    { "{cuscode}",cuscode},
                     { "{cusAddress}",cusAddress },
                     { "{tableProduct}",tableProduct },
                     { "{ngaythangnamxuat}",ngaythangnamxuat },
+                    { "{giovao}",giovao },
                     { "{tientruocthue}",tientruocthue },
                     { "{tongtien}",tongtien },
                     { "{giamgia}",giamgia },
@@ -666,7 +706,8 @@ namespace HelperLibrary
                     { "{khachthanhtoan}",khachthanhtoan },
                     { "{tienthuatrakhach}",tienthuatrakhach },
                     { "{thongtintracuuhoadon}",thongtintracuuhoadon },
-                    { "{thongtinthue}",thongtinthue },
+                    { "{thuesuat}",thuesuat },
+                    { "{tienthue}",tienthue },
                     { "{sohoadon}",sohoadon },
                     { "{kyhieuhoadon}",kyhieuhoadon },
                     { "{tongsoluong}",tongsoluong },
