@@ -14,11 +14,14 @@ using Joker.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Model;
 using NuGet.Packaging;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using SystemVariable;
 using Web.ManagerApplication.Abstractions;
 using Web.ManagerApplication.Extensions;
@@ -64,6 +67,40 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             ProductSearch productModelView = new ProductSearch();
             _logger.LogInformation(User.Identity.Name + "--> PriceBook index");
             return View(productModelView);
+        }
+        private string GetDisplayName(object value)
+        {
+            var type = value.GetType();
+            if (!type.IsEnum)
+            {
+                throw new ArgumentException(string.Format("Type {0} is not an enum", type));
+            }
+            var field = type.GetField(value.ToString());
+            if (field == null)
+            {
+                return value.ToString();
+            }
+
+            var attributes = field.GetCustomAttribute<DisplayAttribute>();
+            return attributes != null ? attributes.Name : value.ToString();
+        }
+        private List<SelectListItem> GetSelectListItem(LISTVAT type = LISTVAT.NOVAT)
+        {
+            var select = Enum.GetValues(typeof(LISTVAT)).Cast<LISTVAT>()
+                .OrderBy(x => (Convert.ToInt32(x)))
+                .Where(x => (Convert.ToInt32(x)) > 0)
+                .Select(x => new SelectListItem
+                {
+                    Text = GetDisplayName(x),
+                    Value = Convert.ToInt32(x).ToString(),
+                    Selected = x == type
+                }).ToList();
+            select.Insert(0, new SelectListItem()
+            {
+                Text = "",
+                Value = "",
+            });
+            return select;
         }
         [HttpPost]
         public async Task<IActionResult> LoadAll(ProductSearch model)
@@ -144,7 +181,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     var values = "id=" + id;
                     var secret = CryptoEngine.Encrypt(values, _config.Value.Key);
                     productModelView.UrlParameters = secret;
-                  
+                   
                     var data = await _mediator.Send(new GetByIdProductQuery() { Id = id ,Comid= currentUser.ComId,IncludeComboProduct=true});
                     if (data.Succeeded)
                     {
@@ -213,6 +250,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 }
                 // productModelView.CategoryProducts = await _repositoryCategory.GetAllAsync();
                 productModelView.DirectSales = true;
+                productModelView.VATRate = (int)NOVAT.NOVAT;
                 var html = await _viewRenderer.RenderViewToStringAsync("CreateOrEdit", productModelView);
                 return new JsonResult(new { isValid = true, html = html, idcategory =0, idUnit = 0, typeProductCategory = (int)TypeProductCategory });
             }
@@ -237,6 +275,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 productModelView.PromotionRuns = getevent.Data;
             }
             //productModelView.Code = Common.RandomString(SystemVariableHelper.LengthCodeProduct);
+            productModelView.VATRate = (int)NOVAT.NOVAT;
             productModelView.Active = true;
             productModelView.CategoryProducts = await _repositoryCategory.GetAllAsync();
 
@@ -313,6 +352,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var data = await _mediator.Send(new GetByIdProductQuery() { Id = id });
             if (data.Succeeded)
             {
+              
                 productModelView = _mapper.Map<ProductModelView>(data.Data);
                 if (getevent.Succeeded)
                 {

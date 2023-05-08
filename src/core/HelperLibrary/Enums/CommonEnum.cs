@@ -130,6 +130,14 @@ namespace Application.Enums
     public enum NOVAT
     {
         NOVAT = -3, // hóa đơn không có thuế, tức là k xuất hóa đơn k tính thuế, 
+    } 
+    public enum LISTVAT
+    {
+        NOVAT = -3, // hóa đơn không có thuế, tức là k xuất hóa đơn k tính thuế, 
+        VATRate0 = 0, // hóa đơn không có thuế, tức là k xuất hóa đơn k tính thuế, 
+        VATRate5 = 5, // hóa đơn không có thuế, tức là k xuất hóa đơn k tính thuế, 
+        VATRate8 = 8, // hóa đơn không có thuế, tức là k xuất hóa đơn k tính thuế, 
+        VATRate10 = 10, // hóa đơn không có thuế, tức là k xuất hóa đơn k tính thuế, 
     }
     public enum StatusStaffEventEInvoice
     {

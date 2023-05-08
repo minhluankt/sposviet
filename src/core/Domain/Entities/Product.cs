@@ -25,6 +25,7 @@ namespace Domain.Entities
         public bool Active { get; set; } // hiển thị khóa bài
         public bool IsPrintItem { get; set; } // in tem mặt hàng
         public bool IsBarcode { get; set; } // có thêm Barcode
+      
         public string? Barcode { get; set; } // tên mã vạch/Barcode
 
         public EnumSalesChannel SalesChannel { get; set; } = EnumSalesChannel.BAN_TAI_NHA_HANG; // Kênh bán hàng
@@ -41,6 +42,10 @@ namespace Domain.Entities
         public string Packing { get; set; } // quy cách
         public int idPrice { get; set; } // mức giá
         public decimal PricePromotion { get; set; } // giá khuyến mãi
+
+        public bool IsVAT { get; set; } // sản phẩm đơn giá có  thuế
+        public decimal VATRate { get; set; } // thuế sản phẩm
+        public decimal PriceNoVAT { get; set; } // giá trước thuế
 
         public decimal Quantity { get; set; } // số lượng nhập vào tồn kho
         public int IdCategory { get; set; } // danh  mục sp

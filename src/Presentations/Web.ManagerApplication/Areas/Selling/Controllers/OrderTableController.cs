@@ -50,7 +50,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
 
         //[Authorize(Policy = "pos.order")]
 
-        chỉnh bên mẫu bếp add vào template và add ghi chú cho mẫu
+       
         public async Task<IActionResult> LoadDataOrderStaff(string idtable,Guid? idOrder=null)
         {
             //sự kiện kích thêm oder trên bàn, sự kiện thêm khách hàng,

@@ -3160,6 +3160,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<bool>("IsServiceDate")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsVAT")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("KitchenId")
                         .HasColumnType("int");
 
@@ -3187,6 +3190,9 @@ namespace Infrastructure.Infrastructure.Migrations
                         .HasColumnType("decimal(18,3)");
 
                     b.Property<decimal>("PriceDiscountRun")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("PriceNoVAT")
                         .HasColumnType("decimal(18,3)");
 
                     b.Property<decimal>("PricePromotion")
@@ -3245,6 +3251,9 @@ namespace Infrastructure.Infrastructure.Migrations
 
                     b.Property<string>("Unit")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("VATRate")
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<int>("ViewNumber")
                         .HasColumnType("int");

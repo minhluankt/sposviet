@@ -348,7 +348,9 @@ namespace Model
                 //this.Price = value;
             }
         }
-
+        public bool IsVAT { get; set; } // sản phẩm đơn giá có  thuế
+        public decimal VATRate { get; set; } // thuế sản phẩm
+        public decimal PriceNoVAT { get; set; } // giá trước thuế
 
         public decimal RetailPrice
         {

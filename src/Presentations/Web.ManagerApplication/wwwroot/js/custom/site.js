@@ -2745,7 +2745,8 @@ var Product = {
                             loaddaterangepicker();
                             loadEventIcheck();
                             loadeventAddSell();
-                            Product.loadeEventCheckIsInventory();
+                            Product.loadeEventCheckIsInventory();//event check sản phẩm có tồn kho k
+                            Product.loadeEventCheckIsVATProduct();//event check giá sản phẩm có thuế hay k
                             //load tìm sản phẩm nếu là combo
                             if (res.typeProductCategory == EnumTypeProductCategory.COMBO) {
                                 Product.autocompleteproduct(res.typeProductCategory);
@@ -2840,6 +2841,17 @@ var Product = {
             $("#Quantity").parent(".form-group").removeClass("d-none");
         });
     },// evne check quản lý tồn kho hay k
+    loadeEventCheckIsVATProduct: function () {
+        $('#IsVAT').on('ifChecked', function (event) {
+            $(".elePriceProductNoVAT").toggleClass("d-none");
+            $("#VATRate").removeAttr("disabled", "disabled");
+        });
+
+        $('#IsVAT').on('ifUnchecked', function (event) {
+            $(".elePriceProductNoVAT").toggleClass("d-none");
+            $("#VATRate").attr("disabled", "disabled");
+        });
+    },// evne check giá sản phẩm có tính thuế hay k
     UpdatePriceProduct: function (sel) {
 
         let amount = $(sel).data("am");
