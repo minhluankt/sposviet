@@ -1,7 +1,7 @@
 Unicode True
 ; Custom defines
   !define NAME "SPOSVIET-PLUGIN"
-  !define APPFILE "SposVietPluginKySo.exe"
+  !define APPFILE "SposVietPlugin4.6.1.exe"
   !define VERSION "1.0.0"
   !define SLUG "${NAME} v${VERSION}"
   ;--------------------------------
@@ -46,7 +46,7 @@ Unicode True
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
-  !define MUI_FINISHPAGE_RUN "$INSTDIR\SposVietPluginKySo.exe"
+  !define MUI_FINISHPAGE_RUN "$INSTDIR\SposVietPlugin4.6.1.exe"
   !insertmacro MUI_PAGE_FINISH
 
   ; Uninstaller pages

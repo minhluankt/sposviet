@@ -560,7 +560,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         if (item.TypeProductCategory == EnumTypeProductCategory.COMBO)//nếu là combo nó sẽ có các thành phần cần lôi ra
                         {
                             //nếu là combo thì phải tìm ra các thành phần để update vào tồn kho
-                            var getlistprobycombo =  _comboproductrepository.Entities.AsNoTracking().Where(x=>x.IdProduct== item.IdProduct).ToList();
+                            var getlistprobycombo = await  _comboproductrepository.Entities.AsNoTracking().Where(x=>x.IdProduct== item.IdProduct).ToListAsync();
                             if (getlistprobycombo.Count()>0)
                             {
                                 var getlstid = getlistprobycombo.Select(x => x.IdPro).ToArray();
@@ -704,7 +704,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
 
                 }
-                lỗi trong việc ghép đơn từ A sang B và ngược lại hiện chưa ghi nhận lịch sử, xong làm lại cái mất luôn =))
+              
 
                 orderTables.ForEach(x => { x.IdOrderTable = 0; x.Id = 0; });
                 //update cái sp nào dg có Quantity và tiền

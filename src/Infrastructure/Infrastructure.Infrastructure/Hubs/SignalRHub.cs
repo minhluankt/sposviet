@@ -17,6 +17,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Infrastructure.Infrastructure.HubS
 {
+
     [AllowAnonymous]
     public class SignalRHub : Hub
     {

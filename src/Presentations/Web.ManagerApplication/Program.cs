@@ -373,7 +373,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
     endpoints.MapHub<SignalRHub>("/Signal", options =>
     {
-       
         options.Transports =
             HttpTransportType.WebSockets |
             HttpTransportType.LongPolling;

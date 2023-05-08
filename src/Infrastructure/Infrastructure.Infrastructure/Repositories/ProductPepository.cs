@@ -685,8 +685,10 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
                 }
             });
-
-           await _repository.UpdateRangeAsync(getProcude);
+            if (getProcude.Count()>0)
+            {
+                await _repository.UpdateRangeAsync(getProcude);
+            }
         }
 
         public async Task<Product> GetByIdAsync(int comid,int id,bool AsNoTracking = false)
