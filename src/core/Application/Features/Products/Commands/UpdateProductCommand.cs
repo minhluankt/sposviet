@@ -185,6 +185,11 @@ namespace Application.Features.Products.Commands
                     }
                     brand.Quantity = command.Quantity;
                     brand.Price = command.Price;
+                    //--đơn gia có thuế lưu trước thuế
+                    brand.VATRate = command.IsVAT? command.VATRate: (int)NOVAT.NOVAT;
+                    brand.IsVAT = command.IsVAT;
+                    brand.PriceNoVAT = command.IsVAT ? command.PriceNoVAT : 0;
+                    //
                     brand.RetailPrice = command.RetailPrice;
                     brand.idPrice = command.idPrice;
                     brand.IdBrand = command.IdBrand;

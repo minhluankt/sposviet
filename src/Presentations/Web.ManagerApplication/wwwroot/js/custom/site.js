@@ -2745,7 +2745,11 @@ var Product = {
                             loaddaterangepicker();
                             loadEventIcheck();
                             loadeventAddSell();
+                            Product.loadChangePrice();//event thay đổi đươn giá
+                            Product.loadChangedecimalPrice();//event thay đổi phần thập phân
+                            Product.loadChangeVATRate();//event thay đổi thuế suất
                             Product.loadeEventCheckIsInventory();//event check sản phẩm có tồn kho k
+                            Product.loadShowVATRate();//event load là có chọn thuế hay k
                             Product.loadeEventCheckIsVATProduct();//event check giá sản phẩm có thuế hay k
                             //load tìm sản phẩm nếu là combo
                             if (res.typeProductCategory == EnumTypeProductCategory.COMBO) {
@@ -2780,7 +2784,7 @@ var Product = {
                                     }
                                 }
                                 if ($("form#create-formProduct").valid()) {
-
+                                    eventUnFormatTextnumber3();
                                     jQueryModalPost($("form#create-formProduct")[0]);
 
                                 }
@@ -2798,6 +2802,55 @@ var Product = {
                 console.log(err)
             }
         });
+    },
+    loadChangePrice: function () {
+        $("#_Price").change(function () {
+            $("#VATRate").trigger("change");
+        })
+    },
+    loadChangeVATRate: function () {
+        $("#VATRate").change(function () {
+            Product.loadPriceNoVAT();
+        })
+    },
+    loadChangedecimalPrice: function () {
+        
+        $(".decimalPrice").change(function () {
+            let de = parseInt($(".decimalPrice").val());
+            if (de < 0) {
+                $(".decimalPrice").val(0);
+                toastrcus.error("Giá trị số lẻ của đơn giá không được nhỏ hơn 0");
+                return;
+            } else if (de > 3) {
+                toastrcus.error("Giá trị số lẻ của đơn giá không được lớn hơn 3");
+                $(".decimalPrice").val(3);
+                return;
+            }
+            Product.loadPriceNoVAT();
+        })
+    },
+    loadPriceNoVAT: function () {
+        if ($("#IsVAT").prop("checked") == false) {
+            $("#PriceNoVAT").val(0);
+        } else {
+            let _decimal = parseInt($(".decimalPrice").val());
+            let varRate = parseFloat($("#VATRate").val());
+            let _Price = parseFloat($("#_Price").val().replaceAll(",", ""));
+            if (varRate==-3) {
+                $("#PriceNoVAT").val(_Price.format0VND(3, 3));
+                return;
+            }
+            let pricenew = parseFloat((_Price / ((varRate / 100) + 1)).toFixed(_decimal));
+           // let pricenew = _Price - vat;
+            $("#PriceNoVAT").val(pricenew.format0VND(3,3));
+        }
+    },
+    loadShowVATRate: function () {
+        if ($("#IsVAT").prop("checked") == false) {
+            $("#VATRate option[value='-3']").prop("selected", "selected");
+            $("#VATRate").attr("disabled", "disabled");
+        }
+        $("#VATRate").trigger("change");
     },
     GetDataCombo: function () {
         let products = [];
@@ -2845,11 +2898,14 @@ var Product = {
         $('#IsVAT').on('ifChecked', function (event) {
             $(".elePriceProductNoVAT").toggleClass("d-none");
             $("#VATRate").removeAttr("disabled", "disabled");
+            Product.loadShowVATRate();
         });
 
         $('#IsVAT').on('ifUnchecked', function (event) {
+            Product.loadShowVATRate();
             $(".elePriceProductNoVAT").toggleClass("d-none");
             $("#VATRate").attr("disabled", "disabled");
+           
         });
     },// evne check giá sản phẩm có tính thuế hay k
     UpdatePriceProduct: function (sel) {
@@ -12002,7 +12058,7 @@ var eventBanle = {
         if (!isLoadevent) {
             $('.vatmtt-ele input.isCheckVAT').unbind();
             $('.vatmtt-ele input.isCheckVAT').on('ifChecked', function (event) {
-                debugger
+                
                 localStorage.setItem("VATMTT", true);
                 eventBanle.eventAddHtmlVAT();
                 eventBanle.loadEventChangeVATRateVATAmount();
@@ -12011,7 +12067,7 @@ var eventBanle = {
             });
 
             $('.vatmtt-ele input.isCheckVAT').on('ifUnchecked', function (event) {
-                debugger
+                
                 localStorage.setItem("VATMTT", false);
                 $(".showselectboxvat").remove();
                 eventBanle.eventLoadTFullAmount();
@@ -12189,7 +12245,7 @@ var eventBanle = {
             $(this).select();
         });
         $(".action-inv li.item-order").click(async function () {
-            debugger
+            
             if (!$(this).hasClass("active")) {// chỉ cho kích 1 lần trên 1 table
                 $(".action-inv").find("li.active").not($(this)).removeClass("active");
                 $(this).addClass("active");
@@ -16978,7 +17034,7 @@ function loaddataSelect2Tempalte(URL, id, idselectd, placeholder = "", iddata = 
             iscreateCategory: iscreateCategory
         },
         success: function (data) {
-            debugger
+            
             $(id).append("<opiton value=''></opiton>").select2({
                 data: data,
                 placeholder: placeholder != "" ? placeholder : "Chọn giá trị",

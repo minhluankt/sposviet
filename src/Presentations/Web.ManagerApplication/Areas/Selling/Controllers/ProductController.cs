@@ -254,7 +254,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 var html = await _viewRenderer.RenderViewToStringAsync("CreateOrEdit", productModelView);
                 return new JsonResult(new { isValid = true, html = html, idcategory =0, idUnit = 0, typeProductCategory = (int)TypeProductCategory });
             }
-            catch (Exception e) hàm này loadeEventCheckIsVATProduct test lại thôi
+            catch (Exception e) 
             {
                 _logger.LogError(e, e.Message);
                 _notify.Error(e.Message);

@@ -350,7 +350,14 @@ namespace Model
         }
         public bool IsVAT { get; set; } // sản phẩm đơn giá có  thuế
         public decimal VATRate { get; set; } // thuế sản phẩm
-        public decimal PriceNoVAT { get; set; } // giá trước thuế
+        public decimal PriceNoVAT {
+            get { return va };
+            set { chỉnh lại và lưu
+                if (value>0)
+                {
+                    value = decimal.Parse(value.ToString(), LibraryCommon.GetIFormatProvider());
+                }
+            } } // giá trước thuế
 
         public decimal RetailPrice
         {

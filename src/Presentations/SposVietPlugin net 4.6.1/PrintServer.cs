@@ -13,6 +13,8 @@ using System.Reflection;
 using ESC_POS_USB_NET.Printer;
 using System.Drawing;
 using System.IO;
+using SelectPdf;
+using System.Web;
 
 namespace SposVietPlugin_net_4._6._1
 {
@@ -105,17 +107,33 @@ namespace SposVietPlugin_net_4._6._1
 
         public static void PrintPageBaoBep(string html)
         {
+            //https://selectpdf.com/demo-mvc/ConvertHtmlCodeToImage
             try
             {
                 PrinterSettings settings = new PrinterSettings();
                 Printer printer = new Printer(settings.PrinterName);
-                //------------in hình
-                var converter = new HtmlConverter();
-                var bytes = converter.FromHtmlString(html);
+                //------------in hình cách 1
+                //var converter = new HtmlConverter();
+                //var bytes = converter.FromHtmlString(html);
                 //------------cách 1
-                Stream stream = new MemoryStream(bytes);
-                Bitmap image = new Bitmap(Bitmap.FromStream(stream));
-               // Bitmap image = new Bitmap(stream);
+                //cách 2
+                int webPageWidth = 1024;
+                HtmlToImage imgConverter = new HtmlToImage();
+
+                // set converter options
+                imgConverter.WebPageWidth = webPageWidth;
+
+                // imgConverter.WebPageHeight = webPageHeight;
+                System.Drawing.Image imageinhtml =
+               imgConverter.ConvertHtmlString(html);
+                System.Drawing.Imaging.ImageFormat imageFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
+                // get image bytes
+               // byte[] img = ImageToByteArray(imageinhtml, imageFormat);
+                //----------end cách 2
+                //Stream stream = new MemoryStream(bytes);
+                //Bitmap image = new Bitmap(Bitmap.FromStream(stream));
+
+                Bitmap image = new Bitmap(imageinhtml);
                 System.Text.EncodingProvider ppp = System.Text.CodePagesEncodingProvider.Instance;
                 Encoding.RegisterProvider(ppp);
 
@@ -131,6 +149,14 @@ namespace SposVietPlugin_net_4._6._1
             }
 
 
+        }
+        private static byte[] ImageToByteArray(
+            System.Drawing.Image imageIn,
+            System.Drawing.Imaging.ImageFormat imageFormat)
+        {
+            MemoryStream ms = new MemoryStream();
+            imageIn.Save(ms, imageFormat);
+            return ms.ToArray();
         }
         public static void PrintHmtl()
         {

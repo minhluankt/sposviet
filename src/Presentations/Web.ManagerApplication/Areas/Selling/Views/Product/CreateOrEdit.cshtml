@@ -13,7 +13,16 @@
     {
         textclasssell = false;
     }
-
+    var checkdecimalprice = 0;
+    string[] pricem = Model.PriceNoVAT.ToString().Replace(",", "").Split('.');
+    if (pricem.Count()>1)
+    {
+        var _price = int.Parse(pricem[1]);
+        if (_price>0)
+        {
+            checkdecimalprice = _price.ToString().Length;
+        }
+    }
 }
 <link href="@Url.Content("~/summernote/summernote-bs4.min.css")" rel="stylesheet">
 <link href="~/lib/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
@@ -314,21 +323,26 @@
                                                     <label for="" asp-for="IsVAT">Giá bán bao gồm thuế?</label>
                                                     <div class="input-group">
                                                       <div class="input-group-prepend">
-                                                            <span class="input-group-text" style="padding: 3px 10px;" id="basic-addon1"> <input asp-for="IsVAT" class="icheck" /></span>
+                                                            <span class="input-group-text" style="background-color: rgb(255 255 255 / 24%);padding: 3px 10px;" id="basic-addon1"> <input asp-for="IsVAT" class="icheck" /></span>
                                                       </div>
-                                                        <select class="form-control"  asp-for="VATRate">
-                                                            <option value="-3">Chọn thuế suất</option>
-                                                            <option value="0">0%</option>
-                                                            <option value="5">5%</option>
-                                                            <option value="8">8%</option>
-                                                            <option value="10">10%</option>
+                                                        <select class="form-control" asp-for="VATRate">
+                                                            <option value="-3" selected="@(Model.VATRate==-3)">Chọn thuế suất</option>
+                                                            <option value="0" selected="@(Model.VATRate==0)">0%</option>
+                                                            <option value="5" selected="@(Model.VATRate==5)">5%</option>
+                                                            <option value="8" selected="@(Model.VATRate==8)">8%</option>
+                                                            <option value="10" selected="@(Model.VATRate==10)">10%</option>
                                                         </select>
                                                         
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3 elePriceProductNoVAT @(Model.Id==0?"d-none":"")">
-                                                    <div class="form-group">
-                                                        <label for="" asp-for="PriceNoVAT">Đơn giá bán trước thuế</label>
+                                                <div class="col-md-3 elePriceProductNoVAT @(!Model.IsVAT?"d-none":"")">
+                                                    <label for="" asp-for="PriceNoVAT">Đơn giá bán trước thuế</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text" style="background-color: rgb(255 255 255 / 24%);padding: 0px;" id="basic-addon1">
+                                                                <input type="number" value="@checkdecimalprice" class="decimalPrice form-control" />
+                                                            </span>
+                                                        </div>
                                                         <input type="text" class="form-control number3 text-right" data-toggle="tooltip" data-placement="top"
                                                                title="Giá này sẽ hiển thị tùy chọn khi thanh toán" asp-for="PriceNoVAT" value='@Model.PriceNoVAT.ToString().Replace(",","")' placeholder="Nhập giá bán trước thuế" />
                                                     </div>

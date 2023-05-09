@@ -65,7 +65,13 @@ div#treeviewDriveC {
         width: 37px !important;
     }
 }
-
+.elePriceProductNoVAT {
+    .decimalPrice {
+        width: 55px;
+        border: none;
+        height: max-content;
+    }
+}
 .main-content-800 {
     max-width: 890px;
     margin: auto;
