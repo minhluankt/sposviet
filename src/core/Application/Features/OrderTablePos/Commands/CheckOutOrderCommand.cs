@@ -208,8 +208,16 @@ namespace Application.Features.OrderTablePos.Commands
                         //templateInvoiceParameter.thongtinthue = thongtinthue;
                         // templateInvoiceParameter.thongtintracuuhoadon = thongtintracuuhoadon;
                         // string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice.Template, EnumTypeTemplate.INVOICEPOS);
-                        string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, product.Data.Invoice.InvoiceItems.ToList(), templateInvoice.Template);
-                        return Result<string>.Success(content, HeperConstantss.SUS014);
+                        try
+                        {
+                            string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, product.Data.Invoice.InvoiceItems.ToList(), templateInvoice.Template);
+                            return Result<string>.Success(content, HeperConstantss.SUS014);
+                        }
+                        catch (Exception e)
+                        {
+                            return Result<string>.Success("Lỗi khi tìm mẫu in", HeperConstantss.SUS014);
+                        }
+                       
                     }
                     return Result<string>.Success("Công ty chưa cấu hình mẫu in", HeperConstantss.SUS014);
                 }

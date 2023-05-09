@@ -56,6 +56,7 @@ namespace Application.Hepers
         }
         public static string PrintInvoice(TemplateInvoiceParameter templateInvoiceParameter, List<InvoiceItem> InvoiceItems, string templateInvoice)
         {
+          
             // templateInvoice= templateInvoice.Replace("\n", "").Replace("\r", "");
             //-----xử lý dòng sản phẩm
             //string trproductregex = @"<tbody>(?<xValue>(.|\n)*)<\/tbody>";//lấy tbody *?\n.*\s(?<a>(.|\n)*){tenhanghoa}
@@ -86,9 +87,15 @@ namespace Application.Hepers
             string tienthue = string.Empty;
             if (templateInvoiceParameter.isVAT)
             {
-                tienthue = result.Replace("{thuesuat}", templateInvoiceParameter.thuesuat).Replace("{tienthue}", templateInvoiceParameter.tienthue);
+                if (!string.IsNullOrEmpty(result)) { 
+                    tienthue = result.Replace("{thuesuat}", templateInvoiceParameter.thuesuat).Replace("{tienthue}", templateInvoiceParameter.tienthue);
             }
-            templateInvoice = templateInvoice.Replace(result, tienthue);
+            }
+            if (!string.IsNullOrEmpty(result))
+            {
+                templateInvoice = templateInvoice.Replace(result, tienthue);
+            }
+            
             //----------end
            
             if (templateInvoiceParameter.TypeTemplatePrint == EnumTypeTemplatePrint.IN_BILL)

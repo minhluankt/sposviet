@@ -196,7 +196,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                 if (x.IsVAT)
                                 {
                                     x.Total = x.Quantity * x.PriceNoVAT;
-                                    x.VATAmount = x.Total * (x.VATRate / 100);
+                                    x.VATAmount = Math.Round(x.Total * (x.VATRate / 100), MidpointRounding.AwayFromZero); 
                                     x.Amount = x.Quantity * x.Price;
                                 }
                                 else
@@ -321,7 +321,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                 if (x.IsVAT)
                                 {
                                     x.Total = x.Quantity * x.PriceNoVAT;
-                                    x.VATAmount = x.Total * (x.VATRate / 100);
+                                    x.VATAmount = Math.Round(x.Total * (x.VATRate / 100), MidpointRounding.AwayFromZero);
                                     x.Amount = x.Quantity * x.Price;
                                 }
                                 else
@@ -415,7 +415,7 @@ namespace Infrastructure.Infrastructure.Repositories
             if (product.IsVAT)
             {
                 item.Total = product.PriceNoVAT;
-                item.VATAmount = item.Total * (product.VATRate / 100);
+                item.VATAmount = Math.Round(item.Total * (product.VATRate / 100), MidpointRounding.AwayFromZero);
                 item.Amount = product.Price;
             }
             else
@@ -527,7 +527,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             var thue = Vatrate.Value / 100.0m;
                             invitem.VATRate = Vatrate.Value;
-                            invitem.VATAmount = _item.Total * thue;
+                            invitem.VATAmount = Math.Round(_item.Total * thue, MidpointRounding.AwayFromZero);
                             invitem.Amonut = _item.Total + invitem.VATAmount;
                         }
                         else if (!_item.IsVAT)
@@ -548,7 +548,8 @@ namespace Infrastructure.Infrastructure.Repositories
                     inv.Status = EnumStatusInvoice.DA_THANH_TOAN;
                     inv.DiscountAmount = discountPayment;
                     inv.Discount = (float)discount;
-                    inv.Total = inv.Amonut;// tong tien chưa giam, gán amount bởi vì là giá trị gốc của hóa đơn ban đầu
+                    inv.Total = newlistitem.Sum(x=>x.Total);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+                    inv.VATAmount = newlistitem.Sum(x=>x.VATAmount);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
                     inv.Amonut = inv.Amonut - discountPayment;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
                     inv.AmountCusPayment = AmountCusPayment.HasValue ? AmountCusPayment.Value : 0;// tieefn khasch đưa
                     if (vat && Vatrate!=null && Vatrate>0)
