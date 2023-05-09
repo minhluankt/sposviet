@@ -125,14 +125,15 @@
                         <th>Mã sản phẩm</th>
                         <th>Tên sản phẩm</th>
                         <th>Số lượng</th>
-                        <@*th class="text-right">Đơn giá</th>*@
+                        @*<th class="text-right">Đơn giá</th>*@
                         <th class="text-right">Đơn giá bán</th>
                         <th class="text-right">Giảm giá</th>
                         <th class="text-right">Thành tiền</th>
                         @if (checkvatproduct > 0)
                         {
                             <th class="text-right">Thuế suất</th>
-                            <th class="text-right">Thành tiền sau thuế</th>
+                            <th class="text-right">Tiền thuế</th>
+                            <th class="text-right">Tổng tiền</th>
                         }
                     </tr>
                 </thead>
@@ -168,8 +169,13 @@
                                     {
                                         @item.VATRate
                                         
+                                    }else{
+                                       
+                                            @:--
+                                      
                                     }
                                     </td>
+                                <td class="text-right font-weight-bold number3">@item.VATAmount</td>
                                 <td class="text-right font-weight-bold number3">@item.Amonut</td>
                             }
                         </tr>
@@ -177,32 +183,39 @@
                     <tr>
                         <td colspan="2" class="text-right">Tổng</td>
                         <td class="text-center number3">@Model.InvoiceItems.Sum(x=>x.Quantity)</td>
-                        <td class="text-right" colspan="3">Tổng tiền hàng</td>
+                        <td class="text-right" colspan="@(checkvatproduct > 0?"5":"2")">Tổng tiền hàng</td>
                         <td class="text-right font-weight-bold text-success number3">@Model.Total</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="6" class="text-right">Giảm giá</td>
+                        <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Giảm giá</td>
                         <td class="text-right font-weight-bold number3">@Model.DiscountAmount</td>
                     </tr>
-                    @if (Model.VATRate != (int)Application.Enums.VATRateInv.KHONGVAT && Model.VATRate != (int)Application.Enums.NOVAT.NOVAT)
+                    @if (Model.VATRate != (int)Application.Enums.NOVAT.NOVAT)
                     {
                         <tr>
-                            <td colspan="6" class="text-right">Thuế GTGT: @(Model.VATRate)%</td>
+                            <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Thuế GTGT: @(Model.VATRate)%</td>
+                            <td class="text-right font-weight-bold number3">@Model.VATAmount</td>
+                        </tr>
+                    }
+                    else if (Model.VATAmount > 0)
+                    {
+                        <tr>
+                            <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Tổng tiền thuế: </td>
                             <td class="text-right font-weight-bold number3">@Model.VATAmount</td>
                         </tr>
                     }
                     <tr>
-                        <td colspan="6" class="text-right">Khách cần thanh toán</td>
+                        <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Khách cần thanh toán</td>
                         <td class="text-right font-weight-bold red number3">@Model.Amonut</td>
                     </tr>
                     <tr>
-                        <td colspan="6" class="text-right">Khách đưa</td>
+                        <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Khách đưa</td>
                         <td class="text-right font-weight-bold number3">@Model.AmountCusPayment</td>
                     </tr>
                     <tr>
-                        <td colspan="6" class="text-right">Tiền thừa trả khách</td>
+                        <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Tiền thừa trả khách</td>
                         <td class="text-right font-weight-bold number3">@Model.AmountChangeCus</td>
                     </tr>
                 </tfoot>

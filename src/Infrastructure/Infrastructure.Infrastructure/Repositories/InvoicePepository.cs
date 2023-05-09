@@ -536,10 +536,10 @@ namespace Infrastructure.Infrastructure.Repositories
                     ProName = item.Name,
                     Unit = item.Unit,
                     Quantity = item.Quantity,
-                    Price = item.Price,
+                    Price = item.VATRate.Value != (int)NOVAT.NOVAT ? item.PriceNoVAT : item.Price,
                     Total = item.Total,
                     VATAmount = item.VATAmount,
-                    VATRate = (item.VATRate.Value!= (int)NOVAT.NOVAT? item.VATRate.Value: (int)VATRateInv.KHONGVAT),
+                    VATRate = (item.VATRate.Value!= (int)NOVAT.NOVAT? item.VATRate.Value: (int)NOVAT.NOVAT),
                     Amount = item.Amonut
                 };
                 if (item.Total > 0)
@@ -559,7 +559,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     if (itemeinvoice.VATRate == (int)NOVAT.NOVAT && model.VATRate!= (int)NOVAT.NOVAT)//thèn sp k có thuế mà trư
                     {
                         itemeinvoice.VATRate = model.VATRate;
-                        itemeinvoice.VATAmount = itemeinvoice.Total * Convert.ToDecimal((model.VATRate < 0 ? 0 : model.VATRate) / 100);
+                        itemeinvoice.VATAmount = Math.Round(itemeinvoice.Total * Convert.ToDecimal((model.VATRate < 0 ? 0 : model.VATRate) / 100), MidpointRounding.AwayFromZero);
                         itemeinvoice.Amount = itemeinvoice.Total + itemeinvoice.VATAmount;
                     }
                     else if (itemeinvoice.VATRate != model.VATRate)
@@ -598,11 +598,33 @@ namespace Infrastructure.Infrastructure.Repositories
             }
             if (model.VATRate != invoice.VATRate.Value && model.VATRate > (int)NOVAT.NOVAT && invoice.VATRate.Value == (int)NOVAT.NOVAT)
             {
-                newmodel.VATRate = model.VATRate;
-                float vatr = (model.VATRate < 0 ? 0 : model.VATRate) / 100;
-                newmodel.VATAmount = invoice.Total * Convert.ToDecimal(vatr);
-                newmodel.Amount = newmodel.VATAmount + newmodel.Total;
-                newmodel.AmountInWords = LibraryCommon.So_chu(newmodel.Amount);
+                var checkprovat = invoice.InvoiceItems.Where(x=>x.VATRate!= (int)NOVAT.NOVAT).ToList();
+                if (checkprovat.Count()>0)//th các sản phẩm giá đã có thuế thfi phải tính lại total tiền trucosw thuế khác
+                {
+                    //decimal AmonutsPro = checkprovat.Sum(x=>x.Total);//tổng tiền các sản phẩm có thuế lấy tiền chưa tính có thuế;
+                    //decimal Amonuts = invoice.InvoiceItems.Where(x => x.VATRate == (int)NOVAT.NOVAT).ToList().Sum(x=>x.Total);//lấy ra tổng tiền k tính thuế để tính thuế
+                    newmodel.Total = invoice.InvoiceItems.ToList().Sum(x=>x.Total);
+                    newmodel.VATRate = model.VATRate;
+                    float vatr = (model.VATRate < 0 ? 0 : model.VATRate) / 100;
+                    newmodel.VATAmount = Math.Round(newmodel.Total * Convert.ToDecimal(vatr), MidpointRounding.AwayFromZero);
+                    if (checkprovat.Count()== eInvoiceItems.Count())//tức là nếu tất cả sản phẩm đã có thuế thì k cần tính lại lấy amout trong sản phẩm hết
+                    {
+                        newmodel.Amount = eInvoiceItems.Sum(x=>x.Amount);
+                    }
+                    else
+                    {
+                        newmodel.Amount = newmodel.VATAmount + newmodel.Total;
+                    }
+                    newmodel.AmountInWords = LibraryCommon.So_chu(newmodel.Amount);
+                }
+                else// th k có sp nào có thuế thì làm như bt lấy đúng với order
+                {
+                    newmodel.VATRate = model.VATRate;
+                    float vatr = (model.VATRate < 0 ? 0 : model.VATRate) / 100;
+                    newmodel.VATAmount = invoice.Total * Convert.ToDecimal(vatr);
+                    newmodel.Amount = newmodel.VATAmount + newmodel.Total;
+                    newmodel.AmountInWords = LibraryCommon.So_chu(newmodel.Amount);
+                }
             }
             else
             {
