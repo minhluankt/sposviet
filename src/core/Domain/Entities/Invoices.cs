@@ -113,6 +113,7 @@ namespace Domain.Entities
         public string Unit { get; set; }
         public decimal EntryPrice { get; set; }// giá vóno
         public decimal Price { get; set; }
+        public decimal PriceNoVAT { get; set; } // giá trước thuế
         public decimal Total { get; set; }
         public EnumTypeProductCategory TypeProductCategory { get; set; }
         public float Discount { get; set; } // % ck

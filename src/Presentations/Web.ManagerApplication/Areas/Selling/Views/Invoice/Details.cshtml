@@ -1,6 +1,8 @@
 ﻿@model Domain.Entities.Invoice
+@using Application.Enums
 @{
     Layout = null;
+    var checkvatproduct = Model.InvoiceItems.Count(x => x.VATRate>(int)NOVAT.NOVAT);
 }
 <div class="detail-invoice-pos">
     <div class="row">
@@ -123,10 +125,15 @@
                         <th>Mã sản phẩm</th>
                         <th>Tên sản phẩm</th>
                         <th>Số lượng</th>
-                        <th class="text-right">Đơn giá</th>
-                        <th class="text-right">Giảm giá</th>
+                        <@*th class="text-right">Đơn giá</th>*@
                         <th class="text-right">Đơn giá bán</th>
-                        <th class="text-right">Thành tiền</th>
+                        <th class="text-right">Giảm giá</th>
+                        <th class="text-right">Thành tiền</th>
+                        @if (checkvatproduct > 0)
+                        {
+                            <th class="text-right">Thuế suất</th>
+                            <th class="text-right">Thành tiền sau thuế</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -136,7 +143,16 @@
                             <td>@item.Code</td>
                             <td>@item.Name</td>
                             <td class="text-center number3">@item.Quantity</td>
-                            <td class="text-right number3">@item.EntryPrice</td>
+                         @*   <td class="text-right number3">@item.EntryPrice</td>*@
+                            <td class="text-right number3">
+                                @if (item.VATRate != (int)NOVAT.NOVAT)
+                                {
+                                    @item.PriceNoVAT
+                                }
+                                else{
+                                    @item.Price
+                                }
+                                </td>
                             <td class="text-right flex-colum-td">
                                 <span class="number3">@item.DiscountAmount</span>
                                 @if (item.Discount>0)
@@ -144,8 +160,18 @@
                                     <small class="required number3">@(item.Discount)%</small>
                                 }
                             </td>
-                            <td class="text-right number3">@item.Price</td>
                             <td class="text-right font-weight-bold number3">@item.Total</td>
+                            @if (checkvatproduct > 0)
+                            {
+                                <td class="text-right font-weight-bold number3">
+                                    @if (item.VATRate != (int)NOVAT.NOVAT)
+                                    {
+                                        @item.VATRate
+                                        
+                                    }
+                                    </td>
+                                <td class="text-right font-weight-bold number3">@item.Amonut</td>
+                            }
                         </tr>
                     }
                     <tr>

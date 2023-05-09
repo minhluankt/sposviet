@@ -13,16 +13,17 @@
     {
         textclasssell = false;
     }
-    var checkdecimalprice = 0;
-    string[] pricem = Model.PriceNoVAT.ToString().Replace(",", "").Split('.');
-    if (pricem.Count()>1)
-    {
-        var _price = int.Parse(pricem[1]);
-        if (_price>0)
-        {
-            checkdecimalprice = _price.ToString().Length;
-        }
-    }
+    //decimal checkdecimalprice = 0;
+    //var kilometro = Decimal.Parse(Model.PriceNoVAT.ToString());
+    //string[] pricem = Convert.ToDecimal(Model.PriceNoVAT).ToString(HelperLibrary.LibraryCommon.GetIFormatProvider()).Split('.');
+    //if (pricem.Count()>1)
+    //{
+    //    var _price = int.Parse(pricem[1]);
+    //    if (_price>0)
+    //    {
+    //        checkdecimalprice = pricem[1].Length;
+    //    }
+    //}
 }
 <link href="@Url.Content("~/summernote/summernote-bs4.min.css")" rel="stylesheet">
 <link href="~/lib/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
@@ -336,15 +337,15 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3 elePriceProductNoVAT @(!Model.IsVAT?"d-none":"")">
-                                                    <label for="" asp-for="PriceNoVAT">Đơn giá bán trước thuế</label>
+                                                    <label for="" asp-for="_PriceNoVAT">Đơn giá bán trước thuế</label>
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text" style="background-color: rgb(255 255 255 / 24%);padding: 0px;" id="basic-addon1">
-                                                                <input type="number" value="@checkdecimalprice" class="decimalPrice form-control" />
+                                                                <input type="number" value="0" class="decimalPrice form-control" />
                                                             </span>
                                                         </div>
-                                                        <input type="text" class="form-control number3 text-right" data-toggle="tooltip" data-placement="top"
-                                                               title="Giá này sẽ hiển thị tùy chọn khi thanh toán" asp-for="PriceNoVAT" value='@Model.PriceNoVAT.ToString().Replace(",","")' placeholder="Nhập giá bán trước thuế" />
+                                                        <input type="text" class="form-control convernumber number3 convernumber text-right" data-toggle="tooltip" data-placement="top"
+                                                               title="Giá này sẽ hiển thị tùy chọn khi thanh toán" asp-for="_PriceNoVAT" id="PriceNoVAT" value='@Model.PriceNoVAT.ToString().Replace(",",".")' placeholder="Nhập giá bán trước thuế" />
                                                     </div>
                                                 </div>
 

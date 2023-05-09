@@ -538,8 +538,10 @@ namespace Infrastructure.Infrastructure.Repositories
                     Quantity = item.Quantity,
                     Price = item.Price,
                     Total = item.Total,
+                    VATAmount = item.VATAmount,
+                    VATRate = (item.VATRate.Value!= (int)NOVAT.NOVAT? item.VATRate.Value: (int)VATRateInv.KHONGVAT),
+                    Amount = item.Amonut
                 };
-
                 if (item.Total > 0)
                 {
                     itemeinvoice.IsSum = TCHHDVuLoai.HHoa;
@@ -552,39 +554,63 @@ namespace Infrastructure.Infrastructure.Repositories
                 {
                     itemeinvoice.IsSum = TCHHDVuLoai.CKhau;
                 }
-
-                if (isGTGT && (ENumTypeEInvoice)typeinv == ENumTypeEInvoice.GTGT && itemeinvoice.VATRate != model.VATRate)
+                if (isGTGT && (ENumTypeEInvoice)typeinv == ENumTypeEInvoice.GTGT)
                 {
-                    itemeinvoice.VATRate = model.VATRate;
-                    itemeinvoice.VATAmount = itemeinvoice.Total * Convert.ToDecimal((model.VATRate < 0 ? 0 : model.VATRate) / 100);
-                    itemeinvoice.Amount = itemeinvoice.Total + itemeinvoice.VATAmount;
-                }
-                else
+                    if (itemeinvoice.VATRate == (int)NOVAT.NOVAT && model.VATRate!= (int)NOVAT.NOVAT)//thèn sp k có thuế mà trư
+                    {
+                        itemeinvoice.VATRate = model.VATRate;
+                        itemeinvoice.VATAmount = itemeinvoice.Total * Convert.ToDecimal((model.VATRate < 0 ? 0 : model.VATRate) / 100);
+                        itemeinvoice.Amount = itemeinvoice.Total + itemeinvoice.VATAmount;
+                    }
+                    else if (itemeinvoice.VATRate != model.VATRate)
+                    {
+                        throw new Exception($"Hàng hóa {itemeinvoice.ProName} có thuế suất là {itemeinvoice.VATRate}, nhưng bạn chọn thuế suất là {model.VATRate}, vui lòng điều chỉnh lại để đồng nhất thuế suất");
+                    }
+                } 
+                else if(!isGTGT)
                 {
                     itemeinvoice.VATRate = (int)VATRateInv.KHONGVAT;
                     itemeinvoice.VATAmount = 0;
-                    itemeinvoice.Amount = item.Total;
+                    itemeinvoice.Total = item.Amonut;
+                    itemeinvoice.Amount = item.Amonut;
                 }
+
+                //if (isGTGT && (ENumTypeEInvoice)typeinv == ENumTypeEInvoice.GTGT && itemeinvoice.VATRate != model.VATRate &&  itemeinvoice.VATRate >(int)NOVAT.NOVAT)
+                //{
+                //    itemeinvoice.VATRate = model.VATRate;
+                //    itemeinvoice.VATAmount = itemeinvoice.Total * Convert.ToDecimal((model.VATRate < 0 ? 0 : model.VATRate) / 100);
+                //    itemeinvoice.Amount = itemeinvoice.Total + itemeinvoice.VATAmount;
+                //}
+                //else if(!isGTGT)
+                //{
+                //    itemeinvoice.VATRate = (int)VATRateInv.KHONGVAT;
+                //    itemeinvoice.VATAmount = 0;
+                //    itemeinvoice.Amount = item.Amonut;
+                //}
+
                 eInvoiceItems.Add(itemeinvoice);
             }
             newmodel.EInvoiceItems = eInvoiceItems;
             //update tiền và thuế
-            if (model.VATRate != invoice.VATRate.Value)
+            if (model.VATRate != invoice.VATRate.Value && model.VATRate > (int)NOVAT.NOVAT && invoice.VATRate > (int)NOVAT.NOVAT)
+            {
+                throw new Exception($"Hóa đơn có thuế suất là {invoice.VATRate.Value}, không thế tính thuế suất {model.VATRate}");
+            }
+            if (model.VATRate != invoice.VATRate.Value && model.VATRate > (int)NOVAT.NOVAT && invoice.VATRate.Value == (int)NOVAT.NOVAT)
             {
                 newmodel.VATRate = model.VATRate;
                 float vatr = (model.VATRate < 0 ? 0 : model.VATRate) / 100;
                 newmodel.VATAmount = invoice.Total * Convert.ToDecimal(vatr);
                 newmodel.Amount = newmodel.VATAmount + newmodel.Total;
-                newmodel.AmountInWords = HelperLibrary.LibraryCommon.So_chu(newmodel.Amount);
+                newmodel.AmountInWords = LibraryCommon.So_chu(newmodel.Amount);
             }
             else
             {
                 newmodel.Amount = invoice.Amonut;
                 newmodel.VATRate = invoice.VATRate.Value;
                 newmodel.VATAmount = invoice.VATAmount;
-                newmodel.AmountInWords = HelperLibrary.LibraryCommon.So_chu(newmodel.Amount);
+                newmodel.AmountInWords = LibraryCommon.So_chu(newmodel.Amount);
             }
-
 
             lsteinvoice.Add(newmodel);
 

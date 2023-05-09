@@ -71,7 +71,7 @@
 <div class="bottomFix">
             <div class="leftcol">
         <span class="text-am">Tổng tiền (<b class="fullQuantity number3">@(Model.OrderTable != null ? Model.OrderTable.Quantity.ToString().Replace(",", ".") : 0)</b>)</span>
-        <span class="value-am priceFormat amountFull number3">@(Model.OrderTable != null ? Model.OrderTable.OrderTableItems.Sum(x => x.Total).ToString().Replace(",", ".") : "0")</span>
+        <span class="value-am priceFormat amountFull number3">@(Model.OrderTable != null ? Model.OrderTable.OrderTableItems.Sum(x => x.Amount).ToString().Replace(",", ".") : "0")</span>
             </div>
             <div class="rightcol">
         <button class="btn btn-danger btn-notif" disabled>

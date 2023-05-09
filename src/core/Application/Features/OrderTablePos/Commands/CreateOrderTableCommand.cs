@@ -88,7 +88,7 @@ namespace Application.Features.OrderTablePos.Commands
 
                     if (!string.IsNullOrEmpty(request.orderTableModel.CusCode))
                     {
-                        Customer customer = await _customerRepository.Entities.SingleOrDefaultAsync(x => x.Code == request.orderTableModel.CusCode && x.Comid == request.orderTableModel.ComId);
+                        Customer customer = await _customerRepository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Code == request.orderTableModel.CusCode && x.Comid == request.orderTableModel.ComId);
                         if (customer == null)
                         {
                             return await Result<OrderTableModel>.FailAsync("Không tìm thấy khách hàng đã chọn");
@@ -142,7 +142,7 @@ namespace Application.Features.OrderTablePos.Commands
                 orderTableModel.Amount = update.Data.Amonut;
                 orderTableModel.Buyer = update.Data.Buyer;
                 orderTableModel.Quantity = update.Data.OrderTableItems.Sum(x => x.Quantity);
-                orderTableModel.OrderTableItems.AddRange(update.Data.OrderTableItems.Select(x => new OrderTableItemModel() { Code = x.Code, Id = x.Id, IdGuid = x.IdGuid, IdProduct = x.IdProduct, Price = x.Price, Quantity = x.Quantity, QuantityNotifyKitchen = x.QuantityNotifyKitchen, IdOrderTable = x.IdOrderTable, Total = x.Total, Name = x.Name, Note = x.Note }));
+                orderTableModel.OrderTableItems.AddRange(update.Data.OrderTableItems.Select(x => new OrderTableItemModel() { Code = x.Code, Id = x.Id, IdGuid = x.IdGuid, IdProduct = x.IdProduct, Price = x.Price, Quantity = x.Quantity, QuantityNotifyKitchen = x.QuantityNotifyKitchen, IdOrderTable = x.IdOrderTable, Total = x.Amount, Name = x.Name, Note = x.Note }));
 
                 return Result<OrderTableModel>.Success(orderTableModel);
 

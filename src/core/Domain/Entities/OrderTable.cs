@@ -81,8 +81,15 @@ namespace Domain.Entities
         public decimal QuantityNotifyKitchen { get; set; }// số lượng món đã thông báo
         public decimal Quantity { get; set; }
         public string Unit { get; set; }
-        public decimal Price { get; set; }
+        public decimal Price { get; set; }//giá bán
         public decimal EntryPrice { get; set; }//giá nhập
+        //---------thuế
+        public bool IsVAT { get; set; } // sản phẩm đơn giá có  thuế
+        public decimal VATRate { get; set; } // thuế sản phẩm
+        public decimal PriceNoVAT { get; set; } // giá trước thuế
+        public decimal Amount { get; set; } // tổng tiền sau thuế
+        public decimal VATAmount { get; set; } // tổng tiền sau thuế
+        //---------thuế
         public decimal Total { get; set; }
         public float Discount { get; set; } // % ck
         public decimal DiscountAmount { get; set; } // ck

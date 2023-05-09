@@ -1889,6 +1889,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,3)");
 
+                    b.Property<decimal>("PriceNoVAT")
+                        .HasColumnType("decimal(18,3)");
+
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(18,3)");
 
@@ -2749,6 +2752,9 @@ namespace Infrastructure.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,3)");
+
                     b.Property<string>("Code")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -2777,6 +2783,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<bool>("IsServiceDate")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsVAT")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -2786,6 +2795,9 @@ namespace Infrastructure.Infrastructure.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("PriceNoVAT")
                         .HasColumnType("decimal(18,3)");
 
                     b.Property<decimal>("Quantity")
@@ -2802,6 +2814,12 @@ namespace Infrastructure.Infrastructure.Migrations
 
                     b.Property<string>("Unit")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("VATAmount")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("VATRate")
+                        .HasColumnType("decimal(18,3)");
 
                     b.HasKey("Id");
 

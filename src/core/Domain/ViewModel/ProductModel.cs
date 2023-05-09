@@ -328,11 +328,12 @@ namespace Model
 
         [Display(Name = "Đơn giá nhập vào")]
         public string _Quantity { get; set; }
+        
         public string _Price { get; set; }
         [Display(Name = "Đơn giá bán lẻ")]
         public string _RetailPrice { get; set; }
         [Display(Name = "Đơn giá")]
-
+        public string _PriceNoVAT { get; set; }
         public decimal Price
         {
             get
@@ -351,24 +352,22 @@ namespace Model
         public bool IsVAT { get; set; } // sản phẩm đơn giá có  thuế
         public decimal VATRate { get; set; } // thuế sản phẩm
         public decimal PriceNoVAT {
-            get { return va };
-            set { chỉnh lại và lưu
-                if (value>0)
+            get
+            {
+                return !string.IsNullOrEmpty(_PriceNoVAT) ? decimal.Parse(_PriceNoVAT.Replace(",", "."), LibraryCommon.GetIFormatProvider()) : 0;
+            }
+            set
+            {
+                if (!string.IsNullOrEmpty(_PriceNoVAT))
                 {
-                    value = decimal.Parse(value.ToString(), LibraryCommon.GetIFormatProvider());
+                    value = decimal.Parse(_PriceNoVAT.Replace(",", "."), LibraryCommon.GetIFormatProvider());
                 }
-            } } // giá trước thuế
+                //this.Price = value;
+            }
+        } // giá trước thuế
 
         public decimal RetailPrice
         {
-            //get
-            //{
-            //    return !string.IsNullOrEmpty(_RetailPrice) ? decimal.Parse(_RetailPrice.Replace(",", "")) > 0 ? decimal.Parse(_RetailPrice.Replace(",", "")) : 0 : 0;
-            //}
-            //set
-            //{
-            //    //Price = value;
-            //}
             get
             {
                 return !string.IsNullOrEmpty(_RetailPrice) ? decimal.Parse(_RetailPrice.Replace(",", "."), LibraryCommon.GetIFormatProvider()) : 0;

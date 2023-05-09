@@ -2745,12 +2745,9 @@ var Product = {
                             loaddaterangepicker();
                             loadEventIcheck();
                             loadeventAddSell();
-                            Product.loadChangePrice();//event thay đổi đươn giá
-                            Product.loadChangedecimalPrice();//event thay đổi phần thập phân
-                            Product.loadChangeVATRate();//event thay đổi thuế suất
-                            Product.loadeEventCheckIsInventory();//event check sản phẩm có tồn kho k
-                            Product.loadShowVATRate();//event load là có chọn thuế hay k
-                            Product.loadeEventCheckIsVATProduct();//event check giá sản phẩm có thuế hay k
+
+                            Product.loadCheckDecimal();//main
+
                             //load tìm sản phẩm nếu là combo
                             if (res.typeProductCategory == EnumTypeProductCategory.COMBO) {
                                 Product.autocompleteproduct(res.typeProductCategory);
@@ -2802,6 +2799,21 @@ var Product = {
                 console.log(err)
             }
         });
+    },
+    loadCheckDecimal: function () {//main
+        let _Price = parseFloat($("#PriceNoVAT").val().replaceAll(",", ""));
+        if (_Price.toString().indexOf(".") != -1) {
+            let split = _Price.toString().split('.');
+            $(".decimalPrice").val(split[1].length);
+        } else {
+            $(".decimalPrice").val(0);
+        }
+        Product.loadChangePrice();//event thay đổi đươn giá
+        Product.loadChangedecimalPrice();//event thay đổi phần thập phân
+        Product.loadChangeVATRate();//event thay đổi thuế suất
+        Product.loadeEventCheckIsInventory();//event check sản phẩm có tồn kho k
+        //Product.loadShowVATRate();//event load là có chọn thuế hay k  hàm main
+        Product.loadeEventCheckIsVATProduct();//event check giá sản phẩm có thuế hay k
     },
     loadChangePrice: function () {
         $("#_Price").change(function () {
@@ -17371,7 +17383,8 @@ function evetnFormatTextnumber3(def = false) {
             $(this).html(parseFloat(idtex).format0VND(0, 3, ""))
         }
     });
-} function eventUnFormatTextnumber3() {
+}
+function eventUnFormatTextnumber3() {
     $('.number3').each(function () {
         if ($(this).is('input:text')) {
             let idtex = $(this).val().replaceAll(",", "") || 0;

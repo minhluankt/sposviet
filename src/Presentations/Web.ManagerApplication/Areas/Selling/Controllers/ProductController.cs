@@ -21,6 +21,7 @@ using Microsoft.Extensions.Options;
 using Model;
 using NuGet.Packaging;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing.Drawing2D;
 using System.Reflection;
 using SystemVariable;
 using Web.ManagerApplication.Abstractions;
@@ -424,6 +425,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
 
                         var createProductCommand = _mapper.Map<CreateProductCommand>(collection);
                         collection.ComponentProducts = new List<ComponentProduct>();
+
                         if (collection.TypeProductCategory==EnumTypeProductCategory.COMBO)
                         {
                             if (collection.JsonListComboProducts.Count() > 0)
@@ -449,7 +451,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                                 createProductCommand.ComponentProducts.AddRange(getlist);
                             }
                         }
-
+                        createProductCommand.VATRate = createProductCommand.IsVAT ? createProductCommand.VATRate : (int)NOVAT.NOVAT;
                         var result = await _mediator.Send(createProductCommand);
                         if (result.Succeeded)
                         {

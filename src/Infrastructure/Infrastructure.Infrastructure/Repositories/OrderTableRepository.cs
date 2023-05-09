@@ -192,7 +192,20 @@ namespace Infrastructure.Infrastructure.Repositories
                             if (x.IdOrderTable == order.Id && x.IdGuid == idItem)
                             {
                                 x.Quantity = Math.Round(x.Quantity + (Quantity),3);
-                                x.Total = Convert.ToDecimal(x.Quantity) * x.Price;
+
+                                if (x.IsVAT)
+                                {
+                                    x.Total = x.Quantity * x.PriceNoVAT;
+                                    x.VATAmount = x.Total * (x.VATRate / 100);
+                                    x.Amount = x.Quantity * x.Price;
+                                }
+                                else
+                                {
+                                    x.Total = x.Quantity * x.Price;
+                                    x.Amount = x.Quantity * x.Price;
+                                }
+                                //x.Total = Convert.ToDecimal(x.Quantity) * x.Price;
+
                                 if (Quantity < 0 && IsCancelItem)
                                 {
                                     x.QuantityNotifyKitchen = x.Quantity;
@@ -221,7 +234,8 @@ namespace Infrastructure.Infrastructure.Repositories
                             order.Buyer = customer.Name;
                         }
 
-                        order.Amonut = Math.Round(order.OrderTableItems.Sum(x => x.Total), MidpointRounding.AwayFromZero);
+                        order.Amonut = Math.Round(order.OrderTableItems.Sum(x => x.Amount
+                        ), MidpointRounding.AwayFromZero);
                         order.Quantity = order.OrderTableItems.Sum(x => x.Quantity);
                         await _repository.UpdateAsync(order);
                     }
@@ -304,7 +318,17 @@ namespace Infrastructure.Infrastructure.Repositories
                             if (x.IdOrderTable == order.Id && x.Id == getItem.Id)
                             {
                                 x.Quantity = x.Quantity + 1;
-                                x.Total = Convert.ToDecimal(x.Quantity) * x.Price;
+                                if (x.IsVAT)
+                                {
+                                    x.Total = x.Quantity * x.PriceNoVAT;
+                                    x.VATAmount = x.Total * (x.VATRate / 100);
+                                    x.Amount = x.Quantity * x.Price;
+                                }
+                                else
+                                {
+                                    x.Total = x.Quantity * x.Price;
+                                    x.Amount = x.Quantity * x.Price;
+                                }
                                 x.TypeProductCategory = product.TypeProductCategory;
                             }
                         });
@@ -315,7 +339,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
                     // var amount = await UpdateItem(order.Id, product);
 
-                    order.Amonut = Math.Round(order.OrderTableItems.Sum(x => x.Total), MidpointRounding.AwayFromZero);
+                    order.Amonut = Math.Round(order.OrderTableItems.Sum(x => x.Amount), MidpointRounding.AwayFromZero);
                     order.Quantity = order.OrderTableItems.Sum(x => x.Quantity);
                     if (IsNewOrder)
                     {
@@ -384,8 +408,22 @@ namespace Infrastructure.Infrastructure.Repositories
             item.IdProduct = product.Id;
             item.Quantity = 1;
             item.Price = product.Price;
+            item.VATRate = product.VATRate;
+            item.IsVAT = product.IsVAT;
+            item.PriceNoVAT = product.PriceNoVAT;
             item.EntryPrice = product.RetailPrice;// giá nhập vào
-            item.Total = product.Price;
+            if (product.IsVAT)
+            {
+                item.Total = product.PriceNoVAT;
+                item.VATAmount = item.Total * (product.VATRate / 100);
+                item.Amount = product.Price;
+            }
+            else
+            {
+                item.VATRate = (int)NOVAT.NOVAT;
+                item.Total = product.Price;
+                item.Amount = product.Price;
+            }
             item.Name = product.Name;
             item.IsServiceDate = product.IsServiceDate;
             item.DateCreateService = DateCreateService;
@@ -470,19 +508,43 @@ namespace Infrastructure.Infrastructure.Repositories
                     inv.IdOrderTable = checkOrder.Id;
                     inv.CasherName = Cashername;
                     inv.IdCasher = IdCasher;
-                    var newlistitem = new List<OrderTableItem>();
+                    //check item order và map, vì có 1 sản phẩm nhiều dòng
+                    var newlistitem = new List<InvoiceItem>();
                     foreach (var item in checkOrder.OrderTableItems.GroupBy(x=>x.IdProduct))
                     {
                         var _item = item.First().CloneJson();
                         _item.Quantity = item.Sum(x => x.Quantity);
-                        _item.Total = item.Sum(x => x.Quantity) * _item.Price;
-                        newlistitem.Add(_item);
+                        var invitem = _map.Map<InvoiceItem>(_item);
+                        invitem.Amonut = _item.Amount; // do lỗi trường nên phải làm ri
+                        //-- nâng cấp sản phẩm đã có thuế
+                        //if (_item.IsVAT)//nếu sp có thuế thì lấy đúng sp
+                        //{
+                        //    invitem.Total = _item.Quantity * _item.PriceNoVAT;//tiền trước thuế thì nhân vs giá k thuế
+                        //    invitem.VATAmount = _item.Total * (_item.VATRate / 100);//tính thuế trên tiền chưa thuế
+                        //    invitem.Amonut = _item.Quantity * _item.Price;//tiền có thuế thì nhân vs giá có thuế để cho đúng tiền khách muốn
+                        //}
+                        if (vat && Vatrate != null && Vatrate != (int)NOVAT.NOVAT && !_item.IsVAT) //sp k có thuế mà có xuất hóa đơn hoặc có tính thuế
+                        {
+                            var thue = Vatrate.Value / 100.0m;
+                            invitem.VATRate = Vatrate.Value;
+                            invitem.VATAmount = _item.Total * thue;
+                            invitem.Amonut = _item.Total + invitem.VATAmount;
+                        }
+                        else if (!_item.IsVAT)
+                        {
+                            invitem.Amonut = _item.Total;
+                            invitem.VATRate = (int)NOVAT.NOVAT;
+                        }
+                        //----
+                        invitem.Id = 0;
+                        newlistitem.Add(invitem);
                     }
-                   
-                    var invitem = _map.Map<List<InvoiceItem>>(newlistitem);
-                    invitem.ForEach(x => x.Id = 0);
+                    //check item order và map
+                    //var invitem = _map.Map<List<InvoiceItem>>(newlistitem);
+                    //invitem.ForEach(x => x.Id = 0);
                     
-                    inv.InvoiceItems = invitem;
+
+                    inv.InvoiceItems = newlistitem;
                     inv.Status = EnumStatusInvoice.DA_THANH_TOAN;
                     inv.DiscountAmount = discountPayment;
                     inv.Discount = (float)discount;
@@ -497,7 +559,8 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
                     else
                     {
-                        inv.VATRate = (int)VATRateInv.KHONGVAT;
+                        inv.VATRate = (int)NOVAT.NOVAT;
+                       // inv.VATRate = (int)VATRateInv.KHONGVAT;
                     }
 
                     if (inv.Amonut < inv.AmountCusPayment)
@@ -1210,11 +1273,21 @@ namespace Infrastructure.Infrastructure.Repositories
                     if (x.IdGuid == idOrderItem)
                     {
                         x.Quantity = quantity;
-                        x.Total = Convert.ToDecimal(quantity) * x.Price;
+                        if (x.IsVAT)
+                        {
+                            x.Total = x.Quantity * x.PriceNoVAT;
+                            x.VATAmount = x.Total * (x.VATRate / 100);
+                            x.Amount = x.Quantity * x.Price;
+                        }
+                        else
+                        {
+                            x.Total = x.Quantity * x.Price;
+                            x.Amount = x.Quantity * x.Price;
+                        }
                     }
                 });
                 get.Quantity = get.OrderTableItems.Sum(x => x.Quantity);
-                get.Amonut = get.OrderTableItems.Sum(x => x.Total);
+                get.Amonut = get.OrderTableItems.Sum(x => x.Amount);
                 await _repository.UpdateAsync(get);
                 await _unitOfWork.SaveChangesAsync();
                 return await Result<OrderTable>.SuccessAsync(get);

@@ -82,7 +82,7 @@
                         <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="@item.Quantity.ToString("0.###").Replace(",",".")"> <i class="fas fa-plus"></i></div>
                         <div><input type="text" class="form-control priceFormat" readonly value="@item.Price.ToString("N0")" /></div>
                         <div class="amount">
-                            <b class="priceFormat">@item.Total.ToString("N0")</b>
+                            <b class="priceFormat">@item.Amount.ToString("N0")</b>
                             <button class="CloneItem"><i class="fas fa-plus"></i></button>
                         </div>
 
