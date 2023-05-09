@@ -50,6 +50,8 @@ namespace Application.Features.Invoices.Query
             public async Task<Result<string>> Handle(PrintInvoicePos query, CancellationToken cancellationToken)
             {
                 var Invoice = _repository.Entities.AsNoTracking().Where(m => m.IdGuid == query.Id && m.ComId == query.ComId);
+
+                chỉnh lại cách làm sao khi phát hành hóa đơn đừng update lại bill, chỉnh lại giấy in sai total
                 Invoice = Invoice.Include(x => x.InvoiceItems);
                 if (query.IncludeCustomer)
                 {

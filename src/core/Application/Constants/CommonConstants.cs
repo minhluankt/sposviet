@@ -13,6 +13,10 @@
     public class CommonOKEinvoice
     {
         public const string OK = "OK:";
+    }  
+    public class MidpointRoundingCommon
+    {
+        public const int Three = 3;
     } 
     public class CommonException
     {

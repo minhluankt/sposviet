@@ -66,6 +66,7 @@ namespace Domain.Entities
         public decimal ServiceChargeAmount { get; set; } // phí phục vụ
         public float ServiceRate { get; set; } //% phí phục vụ
         public decimal DiscountAmount { get; set; } // ck
+        public decimal DiscountOther { get; set; } // tổng giảm trừ khác giảm này sau thuế
         public decimal DeliveryCharges { get; set; } // phí gioa hàng
         public decimal Total { get; set; } // tổng tiền chưa giảm
         public decimal Amonut { get; set; } // tổng tiền khách trả dã giảm

@@ -139,7 +139,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                     if (pub.Equals("OK:"))
                                     {
                                         AddHistori(new HistoryEInvoice() { Carsher = Carsher, StatusEvent = StatusStaffEventEInvoice.HuyHoaDon, IdCarsher = IdCarsher, EInvoiceCode = item.EInvoiceCode, IdEInvoice = item.Id, Name = $"Hủy hóa đơn" });
-                                        await this.UpdateStatusPublishInvoice(item.IdInvoice, EnumStatusPublishInvoiceOrder.CANCEL);
+                                        await this.UpdateStatusPublishInvoice(item.ComId,item.IdInvoice,item.InvoiceCode, EnumStatusPublishInvoiceOrder.CANCEL);
                                         item.StatusEinvoice = StatusEinvoice.CanceledInv;
                                         update = true;
                                         ListDetailInvoice.Add(new DetailInvoice()
@@ -244,7 +244,7 @@ namespace Infrastructure.Infrastructure.Repositories
         {
             switch (einvoice.TypeSupplierEInvoice)
             {
-                case Application.Enums.ENumSupplierEInvoice.VNPT:
+                case ENumSupplierEInvoice.VNPT:
 
                     try
                     {
@@ -489,39 +489,39 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
 
                     XmlNode prodQuantity = xmlDoc.CreateElement("SLuong");
-                    prodQuantity.InnerText = el.Quantity.ToString("F0", _cultureInfo);
+                    prodQuantity.InnerText = el.Quantity.ToString(_cultureInfo);
                     product.AppendChild(prodQuantity);
 
                     XmlNode prodPrice = xmlDoc.CreateElement("DGia");
-                    prodPrice.InnerText = el.Price.ToString("F0", _cultureInfo);
+                    prodPrice.InnerText = el.Price.ToString(_cultureInfo);
                     product.AppendChild(prodPrice);
                     if (el.Discount != null)
                     {
                         XmlNode prodTlcKhau = xmlDoc.CreateElement("TLCKhau");
-                        prodTlcKhau.InnerText = el.Discount.Value.ToString("F0", _cultureInfo);
+                        prodTlcKhau.InnerText = el.Discount.Value.ToString(_cultureInfo);
                         product.AppendChild(prodTlcKhau);
                     }
                     if (el.DiscountAmount != null)
                     {
                         XmlNode prodTlcKhau = xmlDoc.CreateElement("STCKhau");
-                        prodTlcKhau.InnerText = el.DiscountAmount.Value.ToString("F0", _cultureInfo);
+                        prodTlcKhau.InnerText = el.DiscountAmount.Value.ToString(_cultureInfo);
                         product.AppendChild(prodTlcKhau);
                     }
 
                     XmlNode xmlProdVatRate = xmlDoc.CreateElement("TSuat");
-                    xmlProdVatRate.InnerText = el.VATRate.ToString("F0", _cultureInfo);
+                    xmlProdVatRate.InnerText = el.VATRate.ToString(_cultureInfo);
                     product.AppendChild(xmlProdVatRate);
 
                     XmlNode xmlProdTotal = xmlDoc.CreateElement("ThTien");
-                    xmlProdTotal.InnerText = el.Total.ToString("F0", _cultureInfo);
+                    xmlProdTotal.InnerText = el.Total.ToString(_cultureInfo);
                     product.AppendChild(xmlProdTotal);
 
                     XmlNode xmlProdVatAmount = xmlDoc.CreateElement("TThue");
-                    xmlProdVatAmount.InnerText = el.VATAmount.ToString("F0", _cultureInfo);
+                    xmlProdVatAmount.InnerText = el.VATAmount.ToString(_cultureInfo);
                     product.AppendChild(xmlProdVatAmount);
 
                     XmlNode xmlProdAmount = xmlDoc.CreateElement("TSThue");
-                    xmlProdAmount.InnerText = el.Amount.ToString("F0", _cultureInfo);
+                    xmlProdAmount.InnerText = el.Amount.ToString(_cultureInfo);
                     product.AppendChild(xmlProdAmount);
 
 
@@ -541,7 +541,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     //    prodTtKhacTtinAmount.AppendChild(kdLieuAmount);
 
                     //    XmlNode dLieuAmount = xmlDoc.CreateElement("DLieu");
-                    //    dLieuAmount.InnerText = el.Amount.ToString("F0", _cultureInfo);
+                    //    dLieuAmount.InnerText = el.Amount.ToString(_cultureInfo);
                     //    prodTtKhacTtinAmount.AppendChild(dLieuAmount);
                     //}
                     ////if (el.VATAmount > 0)
@@ -559,7 +559,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     //    prodTtKhacTtinVatAmount.AppendChild(kdLieuVatAmount);
 
                     //    XmlNode dLieuVatAmount = xmlDoc.CreateElement("DLieu");
-                    //    dLieuVatAmount.InnerText = el.VATAmount.ToString("F0", _cultureInfo);
+                    //    dLieuVatAmount.InnerText = el.VATAmount.ToString(_cultureInfo);
                     //    prodTtKhacTtinVatAmount.AppendChild(dLieuVatAmount);
                     //}
 
@@ -591,15 +591,15 @@ namespace Infrastructure.Infrastructure.Repositories
                         thttltSuat.AppendChild(ltSuat);
 
                         XmlNode tsuat = xmlDoc.CreateElement("TSuat");
-                        tsuat.InnerText = itemVatrate.ToString("F0", _cultureInfo);
+                        tsuat.InnerText = itemVatrate.ToString(_cultureInfo);
                         ltSuat.AppendChild(tsuat);
 
                         XmlNode tthue = xmlDoc.CreateElement("TThue");
-                        tthue.InnerText = vatamount0.ToString("F0", _cultureInfo);
+                        tthue.InnerText = vatamount0.ToString(_cultureInfo);
                         ltSuat.AppendChild(tthue);
 
                         XmlNode thTien = xmlDoc.CreateElement("ThTien");
-                        thTien.InnerText = GrossValue0.ToString("F0", _cultureInfo);
+                        thTien.InnerText = GrossValue0.ToString(_cultureInfo);
                         ltSuat.AppendChild(thTien);
                     }
 
@@ -616,11 +616,11 @@ namespace Infrastructure.Infrastructure.Repositories
                         ltSuat.AppendChild(tsuat);
 
                         XmlNode tThue = xmlDoc.CreateElement("TThue");
-                        tThue.InnerText = VatAmount5.ToString("F0", _cultureInfo);
+                        tThue.InnerText = VatAmount5.ToString(_cultureInfo);
                         ltSuat.AppendChild(tThue);
 
                         XmlNode thTien = xmlDoc.CreateElement("ThTien");
-                        thTien.InnerText = GrossValue5.ToString("F0", _cultureInfo);
+                        thTien.InnerText = GrossValue5.ToString(_cultureInfo);
                         ltSuat.AppendChild(thTien);
                     }
                     else if (itemVatrate == 8)
@@ -636,11 +636,11 @@ namespace Infrastructure.Infrastructure.Repositories
                         ltSuat.AppendChild(tsuat);
 
                         XmlNode tThue = xmlDoc.CreateElement("TThue");
-                        tThue.InnerText = VatAmount8.ToString("F0", _cultureInfo);
+                        tThue.InnerText = VatAmount8.ToString(_cultureInfo);
                         ltSuat.AppendChild(tThue);
 
                         XmlNode thTien = xmlDoc.CreateElement("ThTien");
-                        thTien.InnerText = GrossValue8.ToString("F0", _cultureInfo);
+                        thTien.InnerText = GrossValue8.ToString(_cultureInfo);
                         ltSuat.AppendChild(thTien);
                     }
 
@@ -657,11 +657,11 @@ namespace Infrastructure.Infrastructure.Repositories
 
 
                         XmlNode tThue = xmlDoc.CreateElement("TThue");
-                        tThue.InnerText = VatAmount10.ToString("F0", _cultureInfo);
+                        tThue.InnerText = VatAmount10.ToString(_cultureInfo);
                         ltSuat.AppendChild(tThue);
 
                         XmlNode thTien = xmlDoc.CreateElement("ThTien");
-                        thTien.InnerText = GrossValue10.ToString("F0", _cultureInfo);
+                        thTien.InnerText = GrossValue10.ToString(_cultureInfo);
                         ltSuat.AppendChild(thTien);
                     }
 
@@ -681,7 +681,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         ltSuat.AppendChild(tThue);
 
                         XmlNode thTien = xmlDoc.CreateElement("ThTien");
-                        thTien.InnerText = GrossValueKCT.ToString("F0", _cultureInfo);
+                        thTien.InnerText = GrossValueKCT.ToString(_cultureInfo);
                         ltSuat.AppendChild(thTien);
                     }
 
@@ -701,7 +701,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         ltSuat.AppendChild(tThue);
 
                         XmlNode thTien = xmlDoc.CreateElement("ThTien");
-                        thTien.InnerText = GrossValueKKKNT.ToString("F0", _cultureInfo);
+                        thTien.InnerText = GrossValueKKKNT.ToString(_cultureInfo);
                         ltSuat.AppendChild(thTien);
                     }
                     else
@@ -734,6 +734,12 @@ namespace Infrastructure.Infrastructure.Repositories
                 {
                     XmlNode TTCKTMai = xmlDoc.CreateElement("TTCKTMai");
                     TTCKTMai.InnerText = model.DiscountAmount.Value.ToString(CultureInfo.InvariantCulture);
+                    thanhToan.AppendChild(TTCKTMai);
+                }
+                 if (model.DiscountOther != 0)
+                {
+                    XmlNode TTCKTMai = xmlDoc.CreateElement("TGTKhac");
+                    TTCKTMai.InnerText = model.DiscountOther.ToString(CultureInfo.InvariantCulture);
                     thanhToan.AppendChild(TTCKTMai);
                 }
 
@@ -1044,7 +1050,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                     item.InvoiceNo = int.Parse(invoiceno);
                                     item.StatusEinvoice = StatusEinvoice.SignedInv;
                                     item.PublishDate = DateTime.Now;
-                                    await this.UpdateStatusPublishInvoice(item.IdInvoice);
+                                    await this.UpdateStatusPublishInvoice(item.ComId,item.IdInvoice, item.InvoiceCode);
 
                                     await _unitOfWork.SaveChangesAsync();
 
@@ -1097,13 +1103,27 @@ namespace Infrastructure.Infrastructure.Repositories
                 return await Result<PublishInvoiceModelView>.FailAsync("Phát hành lỗi: " + e.ToString());
             }
         }
-        private async Task UpdateStatusPublishInvoice(int idInvoice, EnumStatusPublishInvoiceOrder staus = EnumStatusPublishInvoiceOrder.PUBLISH)
+        private async Task UpdateStatusPublishInvoice(int Comid,int idInvoice, string invoicecode = null, EnumStatusPublishInvoiceOrder staus = EnumStatusPublishInvoiceOrder.PUBLISH)
         {
             var get = await _Invoicerepository.GetByIdAsync(idInvoice);
             if (get != null)
             {
                 get.StatusPublishInvoiceOrder = staus;
                 await _Invoicerepository.UpdateAsync(get);
+            }
+            else if (!string.IsNullOrEmpty(invoicecode))
+            {
+                var getcodeeinvoice = await _repository.Entities.SingleOrDefaultAsync(x => x.ComId == Comid && x.IdInvoice == idInvoice &&!x.IsDelete&& x.StatusEinvoice!=StatusEinvoice.CanceledInv);
+                var getcode = await _Invoicerepository.Entities.SingleOrDefaultAsync(x => x.ComId == Comid && x.InvoiceCode == invoicecode);
+                if (getcode != null)
+                {
+                    if (getcodeeinvoice!=null && getcode.IdEInvoice!=null)
+                    {
+                        getcode.IdEInvoice = getcodeeinvoice.Id;
+                    }
+                    getcode.StatusPublishInvoiceOrder = staus;
+                    await _Invoicerepository.UpdateAsync(get);
+                }
             }
         }
 
@@ -1227,7 +1247,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                                 {
                                                     item.PublishDate = Common.ConvertStringToDateTime(model.Item[0].PublishDate.Split(" ")[0], "M/d/yyyy").Value;
                                                 }
-                                                await this.UpdateStatusPublishInvoice(item.IdInvoice);
+                                                await this.UpdateStatusPublishInvoice(item.ComId,item.IdInvoice, item.InvoiceCode);
                                                 AddHistori(new HistoryEInvoice() { Carsher = Carsher, StatusEvent = StatusStaffEventEInvoice.DongBoHoaDon, IdCarsher = IdCarsher, EInvoiceCode = item.EInvoiceCode, IdEInvoice = item.Id, Name = $"Đồng bộ hóa đơn" });
                                                 update = true;
                                                 ListDetailInvoice.Add(new DetailInvoice()
@@ -1484,10 +1504,10 @@ namespace Infrastructure.Infrastructure.Repositories
                                 }
                                 if (company == null)
                                 {
+                                    await UpdateStatusPublishInvoice(item.ComId, item.IdInvoice, item.InvoiceCode, EnumStatusPublishInvoiceOrder.NONE);
                                     item.IsDelete = true;
                                     item.InvoiceCode = item.InvoiceCode + "-D";
-
-                                    await UpdateStatusPublishInvoice(item.IdInvoice, EnumStatusPublishInvoiceOrder.NONE);
+                                    
                                     update = true;
                                     ListDetailInvoice.Add(new DetailInvoice()
                                     {
@@ -1502,9 +1522,9 @@ namespace Infrastructure.Infrastructure.Repositories
                                     var pub = await _vnptportalrepository.getInvViewFkeyNoPayAsync(item.FkeyEInvoice, company.UserNameService, company.PassWordService, company.DomainName);
                                     if (pub.Equals("ERR:6"))
                                     {
+                                        await UpdateStatusPublishInvoice(item.ComId, item.IdInvoice, item.InvoiceCode, EnumStatusPublishInvoiceOrder.NONE);
                                         item.IsDelete = true;
                                         item.InvoiceCode = item.InvoiceCode + "-D";
-                                        await UpdateStatusPublishInvoice(item.IdInvoice, EnumStatusPublishInvoiceOrder.NONE);
                                         update = true;
                                         ListDetailInvoice.Add(new DetailInvoice()
                                         {
@@ -1530,9 +1550,9 @@ namespace Infrastructure.Infrastructure.Repositories
                                     //-----------------xem hóa đơn theo API HKD
                                     if (item.IdHoaDonHKD==null)
                                     {
+                                        await UpdateStatusPublishInvoice(item.ComId, item.IdInvoice, item.InvoiceCode, EnumStatusPublishInvoiceOrder.NONE);
                                         item.IsDelete = true;
                                         item.InvoiceCode = item.InvoiceCode + "-D";
-                                        await UpdateStatusPublishInvoice(item.IdInvoice, EnumStatusPublishInvoiceOrder.NONE);
                                         update = true;
                                     }
                                     else
@@ -1573,9 +1593,9 @@ namespace Infrastructure.Infrastructure.Repositories
                         }
                         else
                         {
+                            await UpdateStatusPublishInvoice(item.ComId, item.IdInvoice, item.InvoiceCode, EnumStatusPublishInvoiceOrder.NONE);
                             item.IsDelete = true;
                             item.InvoiceCode = item.InvoiceCode + "-D";
-                            await UpdateStatusPublishInvoice(item.IdInvoice, EnumStatusPublishInvoiceOrder.NONE);
                             update = true;
                             ListDetailInvoice.Add(new DetailInvoice()
                             {

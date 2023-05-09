@@ -90,7 +90,7 @@
                     <th>Khu vực</th>
                     <th>Tổng tiền</th>
                     <th>Giảm giá</th>
-                    <th>Khách trả</th>
+                    <th>Tổng cộng</th>
                     <th>Trạng thái</th>
                     <th>Công cụ</th>
                 </tr>
@@ -275,11 +275,18 @@
                 },
                 {
                     "data": "total", "name": "Total", "autoWidth": true,
-                    render: $.fn.dataTable.render.number('.', ',', 0)
+                    //render: $.fn.dataTable.render.number('.', ',', 0) 
+                    "render": function (data, type, full, meta) {
+
+                        return $.fn.dataTable.render.number(',', '.', 0).display(full.total + full.vatAmount);
+                    }
                 },
                 {
                     "data": "discountAmount", "name": "DiscountAmount", "autoWidth": true,
-                    render: $.fn.dataTable.render.number('.', ',', 0)
+                    "render": function (data, type, full, meta) {
+
+                        return $.fn.dataTable.render.number(',', '.', 0).display(full.discountOther + full.discountAmount);
+                    }
                 },
                 {
                     "data": "amonut", "name": "Amonut", "autoWidth": true,

@@ -246,6 +246,9 @@ namespace Application.Hepers
             switch (code)
             {
 
+                case HeperConstantss.ERR050:
+                    txt = " Chi tiết hàng hóa trên hóa đơn có nhiều thuế suất không thể xuất hóa đơn!";
+                    break; 
                 case HeperConstantss.ERR048:
                     txt = " Công ty chưa cấu hình mẫu in!";
                     break;

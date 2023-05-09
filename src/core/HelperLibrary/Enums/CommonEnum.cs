@@ -127,6 +127,7 @@ namespace Application.Enums
     {
         KHONGVAT = -1, // Hàng hóa, dịch vụ không chịu thuế là  hóa đơn bán hàng
     }
+
     public enum NOVAT
     {
         NOVAT = -3, // hóa đơn không có thuế, tức là k xuất hóa đơn k tính thuế, 

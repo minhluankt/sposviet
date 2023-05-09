@@ -146,7 +146,7 @@
                             <td class="text-center number3">@item.Quantity</td>
                          @*   <td class="text-right number3">@item.EntryPrice</td>*@
                             <td class="text-right number3">
-                                @if (item.VATRate != (int)NOVAT.NOVAT)
+                                @if (item.VATRate != (int)NOVAT.NOVAT && item.PriceNoVAT>0)
                                 {
                                     @item.PriceNoVAT
                                 }
@@ -188,10 +188,14 @@
                     </tr>
                 </tbody>
                 <tfoot>
-                    <tr>
-                        <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Giảm giá</td>
-                        <td class="text-right font-weight-bold number3">@Model.DiscountAmount</td>
-                    </tr>
+                    @if (Model.DiscountAmount > 0)
+                    {
+                        <tr>
+                            <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Giảm giá</td>
+                            <td class="text-right font-weight-bold number3">@Model.DiscountAmount</td>
+                        </tr>
+                    }
+                    
                     @if (Model.VATRate != (int)Application.Enums.NOVAT.NOVAT)
                     {
                         <tr>
@@ -206,6 +210,14 @@
                             <td class="text-right font-weight-bold number3">@Model.VATAmount</td>
                         </tr>
                     }
+                    @if (Model.DiscountOther > 0)
+                    {
+                        <tr>
+                            <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Giảm giá khác:</td>
+                            <td class="text-right font-weight-bold number3">@Model.DiscountOther</td>
+                        </tr>
+                    }
+
                     <tr>
                         <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Khách cần thanh toán</td>
                         <td class="text-right font-weight-bold red number3">@Model.Amonut</td>

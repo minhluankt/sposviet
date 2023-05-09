@@ -31,7 +31,7 @@ namespace Application.Hepers
                     tableProduct += result.Replace("{tenhanghoa}", item.Name)
                         .Replace("{donvitinh}", item.Unit)
                         .Replace("{dongia}", item.Price.ToString("N0"))
-                        .Replace("{thanhtien}", item.Total.ToString("N0"))
+                        .Replace("{thanhtien}", item.Amount.ToString("N0"))
                         .Replace("{soluong}", item.Quantity.ToString("N0"));
                 }
                 templateInvoice = templateInvoice.Replace(result, tableProduct);
@@ -73,7 +73,7 @@ namespace Application.Hepers
                     tableProduct += result.Replace("{tenhanghoa}", item.Name)
                         .Replace("{donvitinh}", item.Unit)
                         .Replace("{dongia}", item.Price.ToString("N0"))
-                        .Replace("{thanhtien}", item.Total.ToString("N0"))
+                        .Replace("{thanhtien}", item.Amonut.ToString("N0"))
                         .Replace("{soluong}", item.Quantity.ToString("N0"));
                 }
                 templateInvoice = templateInvoice.Replace(result, tableProduct);

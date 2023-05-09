@@ -63,6 +63,7 @@
         public const string ERR047 = "ValidDeletechitken"; // không thể xóa món khi số lượng còn > 0
         public const string ERR048 = "CompanyNoTemplateInvoice"; // Công ty chưa cấu hình mẫu
         public const string ERR049 = "NOSETINGPATTERN"; // Công ty chưa cấu hình mẫu số ký hiệu
+        public const string ERR050 = "NotSupportMutiVATRateOrder"; // Không hỗ trợ nhiều thues trên 1 đơn
         // 
         /// <summary>
         /// / login

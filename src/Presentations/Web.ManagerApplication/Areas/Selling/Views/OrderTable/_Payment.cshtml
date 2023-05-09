@@ -16,7 +16,7 @@
         var selected = Model.SupplierEInvoiceModel.ManagerPatternEInvoices.Where(x => x.Selected).SingleOrDefault();
         selectList = new SelectList(
                 Model.SupplierEInvoiceModel.ManagerPatternEInvoices.Select(c => new SelectListItem() { Text = $"{c.Pattern} - {c.Serial}", Value = c.Id.ToString(), Selected = c.Selected }), "Value", "Text", selected?.Id);
-       
+
         if (selected!=null)
         {
             int type;
@@ -25,11 +25,18 @@
             {
                 isVAT = true;
             }
-         }
-    } 
-    var checkvatproduct = Model.OrderTable.OrderTableItems.Count(x => x.IsVAT);
+        }
+    }
+    var VATRateDef = 10.0m;
+    var getVATrate = Model.OrderTable.OrderTableItems.Where(x => x.IsVAT).Select(x => x.VATRate).Distinct().ToArray();
+    if (getVATrate.Count()>0)
+    {
+        VATRateDef = getVATrate[0];
+    }
+    
+    var checkvatproduct = getVATrate.Count();
 }
-
+<input type="hidden" id="errVATrate" data-vatrate="@VATRateDef" value="@getVATrate.Count()" />
 <div class="payment-view">
     <div class="row">
         <div class="col-md-8">
@@ -70,41 +77,45 @@
                             <td class="text-center">@string.Format("{0:0.##}",item.Sum(x=>x.Quantity)).Replace(",",".")</td>
                             @if (item.First().IsVAT)
                             {
-                                <td class="priceFormat text-right">@item.Sum(x=>x.PriceNoVAT).ToString("0.###").Replace(",",".")</td>
+                                <td class="number3 text-right">@item.Sum(x=>x.PriceNoVAT).ToString("0.###").Replace(",",".")</td>
                             }
                             else
                             {
-                                <td class="priceFormat text-right">@item.Sum(x=>x.Price).ToString("0.###").Replace(",",".")</td>
+                                <td class="number3 text-right">@item.Sum(x=>x.Price).ToString("0.###").Replace(",",".")</td>
                             }
-                            <td class="priceFormat text-right">@item.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
+                            <td class="number3 text-right totalpro">@item.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
                             @if (checkvatproduct>0)
                             {
                                 <td class="text-right">
                                     @if (item.First().IsVAT)
                                     {
-                                        <span class="priceFormat">@item.First().VATRate.ToString("0.###").Replace(",",".")</span>
+                                        <span class="number3 vatratepro" data-vatamount="@item.Sum(x=>x.VATAmount).ToString("0.###").Replace(",",".")">@item.First().VATRate.ToString("0.###").Replace(",",".")</span>
+                                        <small>(<span class="number3">@item.First().VATAmount.ToString("0.###").Replace(",",".")</span>)</small>
                                     }
                                     else
                                     {
-                                        @:--
+                                        <span class="">--</span>
                                     }
                                     </td>
-                                <td class="priceFormat text-right">@item.Sum(x=>x.Amount).ToString("0.###").Replace(",",".")</td>
+                                <td class="number3 text-right">@item.Sum(x=>x.Amount).ToString("0.###").Replace(",",".")</td>
                             }
                         </tr>
                     }
-                    <tr>
+                  
+                </tbody>
+                <tfoot>
+                      <tr>
                         <td colspan="2" class="text-right font-weight-bold">Tổng</td>
                         <td class="text-center font-weight-bold">@string.Format("{0:0.###}",Model.OrderTable.OrderTableItems.Sum(x=>x.Quantity)).Replace(",",".")</td>
                         <td class="text-center"></td>
-                        <td class="text-right font-weight-bold priceFormat">@Model.OrderTable.OrderTableItems.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
+                        <td class="text-right font-weight-bold number3">@Math.Round(Model.OrderTable.OrderTableItems.Sum(x=>x.Total), MidpointRounding.AwayFromZero).ToString("0.###").Replace(",",".")</td>
                           @if (checkvatproduct>0)
                             { 
-                                <td class="priceFormat text-right"></td>
-                                <td class="priceFormat text-right">@Model.OrderTable.OrderTableItems.Sum(x=>x.Amount).ToString("0.###").Replace(",",".")</td>
+                                <td class="number3 text-right"></td>
+                                <td class="number3 text-right">@Model.OrderTable.OrderTableItems.Sum(x=>x.Amount).ToString("0.###").Replace(",",".")</td>
                             }
                     </tr>
-                </tbody>
+                </tfoot>
             </table>
         </div>
         <div class="col-md-4">
@@ -112,7 +123,16 @@
                
                 <tr>
                     <th>Tổng tiền (@Model.OrderTable.Quantity.ToString("0.###").Replace(",","."))</th>
-                    <td class="priceFormat totalPayment">@Model.OrderTable.Amonut.ToString("0.###").Replace(",",".")</td>
+                    <td class="number3 totalPayment">
+                        @if (checkvatproduct>0 && Model.VatMTT)
+                        {
+                            @Math.Round(Model.OrderTable.OrderTableItems.Sum(x=>x.Total),MidpointRounding.AwayFromZero).ToString("0.###").Replace(",",".")
+                        }
+                        else
+                        {
+                            @Model.OrderTable.Amonut.ToString("0.###").Replace(",",".")
+                        }
+                    </td>
                 </tr>
                 
                 <tr>
@@ -142,10 +162,10 @@
                                 <label class="mb-0">Thuế GTGT</label>
                                 <div class="selectvat ml-2">
                                     <select id="Vatrate" name="Vatrate" class="form-control Vatrate">
-                                        <option value="0">0%</option>
-                                        <option value="5">5%</option>
-                                        <option value="8">8%</option>
-                                        <option value="10" selected>10%</option>
+                                        <option value="0" selected="@(VATRateDef==0?true:false)">0%</option>
+                                        <option value="5" selected="@(VATRateDef==5?true:false)">5%</option>
+                                        <option value="8" selected="@(VATRateDef==8?true:false)">8%</option>
+                                        <option value="10" selected="@(VATRateDef==10?true:false)">10%</option>
                                     </select>
                                 </div>
                             </th>
@@ -162,7 +182,7 @@
                 </tr>
                 <tr>
                     <th>Khách thanh toán</th>
-                    <td class=""><input type="text" value="@Model.OrderTable.Amonut.ToString("0.###").Replace(",",".")" class="form-control cuspay priceFormat text-right" /></td>
+                    <td class=""><input type="text" value="@Model.OrderTable.Amonut.ToString("0.###").Replace(",",".")" class="form-control cuspay number3 text-right" /></td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -176,7 +196,7 @@
                 </tr>
                 <tr>
                     <th>Tiền thừa</th>
-                    <td class=""><span class="amoutchange priceFormat">0</span></td>
+                    <td class=""><span class="amoutchange number3">0</span></td>
                 </tr>
                 <tr>
                     <td colspan="2" class="paymentMethod">

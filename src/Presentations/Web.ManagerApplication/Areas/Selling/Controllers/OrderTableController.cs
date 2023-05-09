@@ -739,6 +739,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR043));
                         return Json(new { isValid = false });
                     }
+                    if (paymentModelView.OrderTable.OrderTableItems.Where(x=>x.IsVAT).Select(x=>x.VATRate).Distinct().Count()>1)
+                    {
+                        _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR050));
+                    }
                     var html = await _viewRenderer.RenderViewToStringAsync("_Payment", paymentModelView);
                     return new JsonResult(new
                     {
@@ -930,6 +934,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 {
                     enumType = EnumTypeProduct.BAN_LE;
                 }
+             
                 var update = await _mediator.Send(new CheckOutOrderCommand()
                 {
                     Cashername = currentUser.FullName,

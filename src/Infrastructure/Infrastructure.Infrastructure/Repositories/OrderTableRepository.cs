@@ -196,7 +196,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                 if (x.IsVAT)
                                 {
                                     x.Total = x.Quantity * x.PriceNoVAT;
-                                    x.VATAmount = Math.Round(x.Total * (x.VATRate / 100), MidpointRounding.AwayFromZero); 
+                                    x.VATAmount = Math.Round(x.Total * (x.VATRate / 100),  Application.Constants.MidpointRoundingCommon.Three); 
                                     x.Amount = x.Quantity * x.Price;
                                 }
                                 else
@@ -321,7 +321,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                 if (x.IsVAT)
                                 {
                                     x.Total = x.Quantity * x.PriceNoVAT;
-                                    x.VATAmount = Math.Round(x.Total * (x.VATRate / 100), MidpointRounding.AwayFromZero);
+                                    x.VATAmount = Math.Round(x.Total * (x.VATRate / 100), Application.Constants.MidpointRoundingCommon.Three);
                                     x.Amount = x.Quantity * x.Price;
                                 }
                                 else
@@ -415,7 +415,7 @@ namespace Infrastructure.Infrastructure.Repositories
             if (product.IsVAT)
             {
                 item.Total = product.PriceNoVAT;
-                item.VATAmount = Math.Round(item.Total * (product.VATRate / 100), MidpointRounding.AwayFromZero);
+                item.VATAmount = Math.Round(item.Total * (product.VATRate / 100), Application.Constants.MidpointRoundingCommon.Three);
                 item.Amount = product.Price;
             }
             else
@@ -527,7 +527,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             var thue = Vatrate.Value / 100.0m;
                             invitem.VATRate = Vatrate.Value;
-                            invitem.VATAmount = Math.Round(_item.Total * thue, MidpointRounding.AwayFromZero);
+                            invitem.VATAmount = Math.Round(_item.Total * thue, MidpointRoundingCommon.Three);
                             invitem.Amonut = _item.Total + invitem.VATAmount;
                         }
                         else if (!_item.IsVAT)
@@ -546,11 +546,22 @@ namespace Infrastructure.Infrastructure.Repositories
 
                     inv.InvoiceItems = newlistitem;
                     inv.Status = EnumStatusInvoice.DA_THANH_TOAN;
-                    inv.DiscountAmount = discountPayment;
+                  
+                    if (checkOrder.OrderTableItems.Where(x=>x.IsVAT).Count()>0)
+                    {
+                        inv.DiscountOther = discountPayment;//nếu là sản phẩm đã có thuế thì phải giảm giá sau thuế
+                    }
+                    else
+                    {
+                        inv.DiscountAmount = discountPayment;//ngược lại là giá sau thuế
+                    }
                     inv.Discount = (float)discount;
-                    inv.Total = newlistitem.Sum(x=>x.Total);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
-                    inv.VATAmount = newlistitem.Sum(x=>x.VATAmount);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
-                    inv.Amonut = inv.Amonut - discountPayment;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
+                    inv.Total = Math.Round(newlistitem.Sum(x=>x.Total), MidpointRounding.AwayFromZero);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+                    inv.VATAmount = Math.Round(newlistitem.Sum(x=>x.VATAmount), MidpointRounding.AwayFromZero);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+                                                                                                               // lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+
+                    inv.Amonut = Amount;//inv.Amonut - discountPayment;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
+                  
                     inv.AmountCusPayment = AmountCusPayment.HasValue ? AmountCusPayment.Value : 0;// tieefn khasch đưa
                     if (vat && Vatrate!=null && Vatrate>0)
                     {

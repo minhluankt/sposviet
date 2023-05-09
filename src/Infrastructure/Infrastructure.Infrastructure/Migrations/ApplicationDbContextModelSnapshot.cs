@@ -1329,6 +1329,12 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<decimal?>("DiscountAmount")
                         .HasColumnType("decimal(18,3)");
 
+                    b.Property<decimal>("DiscountNonTax")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("DiscountOther")
+                        .HasColumnType("decimal(18,3)");
+
                     b.Property<string>("EInvoiceCode")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -1397,12 +1403,6 @@ namespace Infrastructure.Infrastructure.Migrations
 
                     b.Property<int>("StatusEinvoice")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("TGTKCKhac")
-                        .HasColumnType("decimal(18,3)");
-
-                    b.Property<decimal>("TGTKCThue")
-                        .HasColumnType("decimal(18,3)");
 
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,3)");
@@ -1717,6 +1717,9 @@ namespace Infrastructure.Infrastructure.Migrations
                         .HasColumnType("real");
 
                     b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("DiscountOther")
                         .HasColumnType("decimal(18,3)");
 
                     b.Property<string>("Email")

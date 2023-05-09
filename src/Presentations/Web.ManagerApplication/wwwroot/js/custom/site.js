@@ -2806,7 +2806,7 @@ var Product = {
             let split = _Price.toString().split('.');
             $(".decimalPrice").val(split[1].length);
         } else {
-            $(".decimalPrice").val(0);
+            $(".decimalPrice").val(3);
         }
         Product.loadChangePrice();//event thay đổi đươn giá
         Product.loadChangedecimalPrice();//event thay đổi phần thập phân
@@ -14311,15 +14311,41 @@ var loadeventPos = {
         let vatamount = 0;
         if (!$(".ele-vatrate").hasClass("d-none")) {
 
-            vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
+            if (parseInt($("#errVATrate").val()) > 0) {//tức là hàng hóa có thuế
+                var totals = 0;
+                $("table#dataTablePayment tbody tr").map(function () {
+                    let total = parseFloat($(this).find(".totalpro").html().replaceAll(",","")) || 0;
+                    totals += total;
+                    if ($(this).find(".vatratepro").length > 0) {
+                        let vatrate = parseFloat($(this).find(".vatratepro").html().replaceAll(",", ""))||0;
+                        let _vatamount = parseFloat($(this).find(".vatratepro").data("vatamount"))||0;
+                        vatamount += _vatamount;
+                    } else {//th có dòng k có thuế
+                        let vatrate = parseFloat($("#Vatrate").val()) || 0;
+                        let _vatamount = total * parseFloat(vatrate / 100);
+                        vatamount += _vatamount;
+                    }
+                });
+                totalsaudiscount = totals;
+                //vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
+                $(".VATAmount").html(Math.round(vatamount).format0VND(0, 3, ""));
+                $("#dataTablePayment").data("isVat", 1);
 
-            $(".VATAmount").html(vatamount.format0VND(0, 3, ""));
-            $("#dataTablePayment").data("isVat", 1);
+            } else {
+                vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
+                $(".VATAmount").html(vatamount.format0VND(0, 3, ""));
+                $("#dataTablePayment").data("isVat", 1);
+            }
+
         } else {
             $("#dataTablePayment").data("isVat", 0);
 
         }
         let khachtra = totalsaudiscount + vatamount;
+        if (parseInt($("#errVATrate").val()) > 0) {//tức là hàng hóa có thuế
+            khachtra = khachtra - discountPayment;
+        }
+        khachtra = Math.round(khachtra);
         $(".amountPayment").html(khachtra.format0VND(0, 3, ""));
         let cuspay = $(".cuspay").val().replaceAll(",", "");
         if ($(".cuspay").data("select") == 1) {
@@ -14502,7 +14528,13 @@ var loadeventPos = {
                                 });
 
                                 $('select#Vatrate').on('change', function () {
-                                    loadeventPos.eventLoadCongThucTien();//load lại công thức
+                                    if (parseInt($("#errVATrate").val()) > 0 && parseFloat($(this).val()) != parseFloat($("#errVATrate").data("vatrate"))) {
+                                        toastrcus.error("Giá trị thuế suất bạn chọn không phù hợp với thuế suất trong chi tiết đơn");
+                                        $("#Vatrate option[value='" + parseFloat($("#errVATrate").data("vatrate")) +"']").prop("selected", "selected");
+                                        return;
+                                    } else {
+                                        loadeventPos.eventLoadCongThucTien();//load lại công thức
+                                    }
                                 });
                                 $('input.icheckpayment').iCheck({
                                     checkboxClass: 'icheckbox_square-green',
@@ -14576,12 +14608,17 @@ var loadeventPos = {
                                     //    $(".amoutchange").html(0);
                                     //}
                                 });
-                                loadeventPos.eventLoadCongThucTien();//load lại công thức
+                                loadeventPos.eventLoadCongThucTien();//load lại công thức hàm main
                                 $(".btn-continue").click(function () {
                                     Swal.close();
                                 });
                                 $(".btn-save").click(function () {
-                                    loadeventPos.CheckOutOrder();
+                                    if (parseInt($("#errVATrate").val()) > 1) {
+                                        toastrcus.error("Hàng hóa trên đơn này có nhiều hơn một thuế suất, không thế thanh toán xuất hóa đơn!");
+                                    } else {
+                                        loadeventPos.CheckOutOrder();
+                                    }
+                                   
                                 }); // thanh toán hóa đơn
 
 
