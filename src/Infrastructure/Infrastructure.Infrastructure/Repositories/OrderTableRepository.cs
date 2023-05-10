@@ -494,7 +494,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     checkOrder.Status = EnumStatusOrderTable.DA_THANH_TOAN;
                     checkOrder.CasherName = Cashername;
                     checkOrder.IdCasher = IdCasher;
-                    checkOrder.PurchaseDate = DateTime.Now;
+                    checkOrder.PurchaseDate = DateTime.Now; //phát hành mà có xuất hóa đơn thì phải update lại tiền thuế và tiền sau thuế
                     await _repository.UpdateAsync(checkOrder);
 
                     var inv = _map.Map<Invoice>(checkOrder);

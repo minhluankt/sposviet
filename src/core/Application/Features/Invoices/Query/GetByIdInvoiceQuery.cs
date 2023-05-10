@@ -45,7 +45,8 @@ namespace Application.Features.Invoices.Query
                 {
                     Invoice = Invoice.Include(x => x.Customer);
                 }
-                var InvoiceData = await Invoice.SingleOrDefaultAsync();
+                var InvoiceData = Invoice.Join;
+               // var InvoiceData = await Invoice.SingleOrDefaultAsync();
 
                 if (InvoiceData == null)
                 {
