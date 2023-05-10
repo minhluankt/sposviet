@@ -1,5 +1,6 @@
 ﻿using Application.Enums;
 using AspNetCoreHero.Abstractions.Domain;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -101,6 +102,9 @@ namespace Domain.Entities
         public string Secret { get; set; } // mõa hóa url 
         [NotMapped]
         public string secretEinvoice { get; set; } // mõa hóa id hóa đơn điện tử
+        [NotMapped]
+        [JsonIgnore]
+        public  EInvoice EInvoice { get; set; } // hddt 
     }
 
     public class InvoiceItem

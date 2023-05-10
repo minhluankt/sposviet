@@ -1639,8 +1639,12 @@ namespace Infrastructure.Infrastructure.Repositories
             }
         }
 
-        public async Task<EInvoice> FindByIdAsync(int id)
+        public async Task<EInvoice> FindByIdAsync(int id, bool asNotracking = false)
         {
+            if (asNotracking)
+            {
+                var getall = _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+            }
             return await _repository.GetByIdAsync(id);
         }
         public async Task<IResult<string>> GetHashTokenVNPTAsync(int[] lstid, int Comid)

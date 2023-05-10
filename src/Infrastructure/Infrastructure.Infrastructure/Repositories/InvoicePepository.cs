@@ -283,11 +283,12 @@ namespace Infrastructure.Infrastructure.Repositories
 
                         await _einvoiceRepository.CreateAsync(item, model.CasherName, model.IdCarsher);
                         getupđateinvoice.IdEInvoice = item.Id;
-                        if (item.VATRate != getupđateinvoice.VATRate)
+                        if (item.VATRate != getupđateinvoice.VATRate)//nếu bên gốc invoice mà khác thì update lại
                         {
-                            getupđateinvoice.VATRate = item.VATRate;
-                            getupđateinvoice.VATAmount = item.VATAmount;
-                            getupđateinvoice.Amonut = item.Amount;
+                            //tạm đóng lại đã
+                            //getupđateinvoice.VATRate = item.VATRate;
+                            //getupđateinvoice.VATAmount = item.VATAmount;
+                            //getupđateinvoice.Amonut = item.Amount;
                         }
 
 

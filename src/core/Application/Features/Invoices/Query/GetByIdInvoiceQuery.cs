@@ -25,8 +25,11 @@ namespace Application.Features.Invoices.Query
         {
             private readonly IRepositoryAsync<Invoice> _repository;
             private readonly IInvoicePepository<Invoice> _Invoicerepository;
-            public GetInvoiceByIdQueryHandler(IRepositoryAsync<Invoice> repository, IInvoicePepository<Invoice> Invoicerepository)
+            private readonly IEInvoiceRepository<EInvoice> _einvoicerepository;
+            public GetInvoiceByIdQueryHandler(IRepositoryAsync<Invoice> repository, IEInvoiceRepository<EInvoice> einvoicerepository,
+                IInvoicePepository<Invoice> Invoicerepository)
             {
+                _einvoicerepository = einvoicerepository;
                 _Invoicerepository = Invoicerepository;
                 _repository = repository;
             }
@@ -47,6 +50,12 @@ namespace Application.Features.Invoices.Query
                 if (InvoiceData == null)
                 {
                     return await Result<Invoice>.FailAsync(HeperConstantss.ERR012);
+                }
+                
+                if (InvoiceData.IdEInvoice!=null)
+                {
+                    var einv = await _einvoicerepository.FindByIdAsync(InvoiceData.IdEInvoice.Value,true);
+                    InvoiceData.EInvoice = einv;
                 }
 
                 return await Result<Invoice>.SuccessAsync(InvoiceData);

@@ -280,7 +280,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             if (response.Succeeded)
             {
                 ViewBag.ListInvoice = null;
-                if (response.Data.IsMerge && string.IsNullOrEmpty(response.Data.InvoiceCodePatern))//là thèn cha mới có
+                if (response.Data.IsMerge && string.IsNullOrEmpty(response.Data.InvoiceCodePatern))//là thèn cha mới có, hóa đơn cho gộp
                 {
                     var getisgop = await _mediator.Send(new GetInvoiceByCodeQuery() { ComId = currentUser.ComId, InvoiceCodePatern = response.Data.InvoiceCode });
                     if (getisgop.Succeeded)

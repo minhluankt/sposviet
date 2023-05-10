@@ -51,7 +51,7 @@ namespace Application.Features.Invoices.Query
             {
                 var Invoice = _repository.Entities.AsNoTracking().Where(m => m.IdGuid == query.Id && m.ComId == query.ComId);
 
-                chỉnh lại cách làm sao khi phát hành hóa đơn đừng update lại bill, chỉnh lại giấy in sai total
+                
                 Invoice = Invoice.Include(x => x.InvoiceItems);
                 if (query.IncludeCustomer)
                 {
@@ -116,7 +116,7 @@ namespace Application.Features.Invoices.Query
                     if (InvoiceData.IdEInvoice!=null)
                     {
                    
-                        var inv = await _eInvoicerepository.FindByIdAsync(InvoiceData.IdEInvoice.Value);
+                        var inv = await _eInvoicerepository.FindByIdAsync(InvoiceData.IdEInvoice.Value,true);
                         if (inv!=null)
                         {
                             templateInvoiceParameter.kyhieuhoadon = GetEInvoiceNoFormat.get_kyhieu(inv.Pattern,inv.Serial);

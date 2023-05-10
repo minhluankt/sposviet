@@ -230,6 +230,33 @@
                         <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Tiền thừa trả khách</td>
                         <td class="text-right font-weight-bold number3">@Model.AmountChangeCus</td>
                     </tr>
+                    @if (Model.EInvoice != null)
+                    {
+                        <tr>
+                            <td colspan="@(checkvatproduct > 0?"9":"6")" class="text-right">Thông tin xuất hóa đơn điện tử</td>
+                        </tr>
+                        <tr>
+                            <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Tiền trước thuế</td>
+                            <td class="text-right font-weight-bold number3">@Model.EInvoice.Total</td>
+                        </tr>
+                       
+                        @if (Model.EInvoice.DiscountAmount > 0)
+                        {
+                            <tr>
+                                <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Giảm giá: @(Model.EInvoice.Discount != 0 ? Model.EInvoice.Discount+"%":"")</td>
+                                <td class="text-right font-weight-bold number3">@Model.EInvoice.VATAmount</td>
+                            </tr>
+                        }
+                       <tr>
+                            <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Thuế GTGT: @(Model.EInvoice.VATRate) %</td>
+                            <td class="text-right font-weight-bold number3">@Model.EInvoice.VATAmount</td>
+                        </tr>
+                        <tr>
+                            <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Tổng tiền</td>
+                            <td class="text-right font-weight-bold number3">@Model.EInvoice.Amount</td>
+                        </tr>
+                    }
+                   
                 </tfoot>
             </table>
         </div>
