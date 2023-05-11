@@ -73,15 +73,15 @@
                     {
                         <tr>
                             <td class="text-rcenter">@(i++)</td>
-                            <td>@item.First().Name</td>
+                            <td>@item.First().Name @(item.First().IsVAT ? Html.Raw("<i class='fas fa-percent productpercent'></i>") : "")</td>
                             <td class="text-center">@string.Format("{0:0.##}",item.Sum(x=>x.Quantity)).Replace(",",".")</td>
                             @if (item.First().IsVAT)
                             {
-                                <td class="number3 text-right">@item.Sum(x=>x.PriceNoVAT).ToString("0.###").Replace(",",".")</td>
+                                <td class="number3 text-right">@item.First().PriceNoVAT.ToString("0.###").Replace(",",".")</td>
                             }
                             else
                             {
-                                <td class="number3 text-right">@item.Sum(x=>x.Price).ToString("0.###").Replace(",",".")</td>
+                                <td class="number3 text-right">@item.First().Price.ToString("0.###").Replace(",",".")</td>
                             }
                             <td class="number3 text-right totalpro">@item.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
                             @if (checkvatproduct>0)
@@ -111,7 +111,7 @@
                         <td class="text-right font-weight-bold number3">@Model.OrderTable.OrderTableItems.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
                           @if (checkvatproduct>0)
                             { 
-                                <td class="number3 text-right elevatamounts font-weight-bold"></td>
+                                <td class="number3 text-right elevatamounts font-weight-bold">@Model.OrderTable.OrderTableItems.Sum(x=>x.VATAmount).ToString("0.###").Replace(",",".")</td>
                                 <td class="number3 text-right font-weight-bold eleamounts">@Model.OrderTable.OrderTableItems.Sum(x=>x.Amount).ToString("0.###").Replace(",",".")</td>
                             }
                     </tr>

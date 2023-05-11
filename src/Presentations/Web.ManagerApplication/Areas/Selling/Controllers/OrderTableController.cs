@@ -201,7 +201,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 var _cultureInfo = new CultureInfo(cn);
                 model.Quantity = decimal.Parse(model.QuantityFloat, _cultureInfo);
             }
-            else checked lại view heiern thị lúc order có dấu % k, test lại
+            else 
             {
                 _notify.Error("Số lượng không hợp lệ");
                 return Json(new { isValid = false });

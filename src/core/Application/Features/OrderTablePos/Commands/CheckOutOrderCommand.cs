@@ -87,6 +87,7 @@ namespace Application.Features.OrderTablePos.Commands
                     {
                         TemplateInvoiceParameter templateInvoiceParameter = new TemplateInvoiceParameter()
                         {
+                            check lại mẫu in nhé
                             giovao = product.Data.Invoice.ArrivalDate.Value.ToString("dd/MM/yyyy HH:mm:ss"),
                             ngaythangnamxuat = product.Data.Invoice.PurchaseDate.Value.ToString("dd/MM/yyyy HH:mm:ss"),
                             TypeTemplatePrint = EnumTypeTemplatePrint.IN_BILL,

@@ -7919,10 +7919,10 @@ var posStaff = {
     loadEventNoitfyStaff: function () {
 
         $(".btn-notif").unbind();
-        $(".btn-notif").click(function () {
+        $(".btn-notif").click(function (event) {
             posStaff.NotifyChitken();
             //connection.invoke('sendNotifyPos', EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.KITCHENTOPOS);
-            event.preventDefault();
+            //event.preventDefault();
         });
     },
     loadeventadditemorder: function () {
@@ -12944,6 +12944,7 @@ var loadeventPos = {
                         let html = `<ul id="item-mon"> `;
                         res.data.orderTableItems
                             .forEach(function (item, index) {
+                                htmlvat = "";
                                 if (item.isVAT) {
                                     htmlvat = " <i class='fas fa-percent'></i>";
                                 }
@@ -13100,17 +13101,16 @@ var loadeventPos = {
         });
     },//thê, ghi chú, thêm món thêm
     loadactiveClickItemMon: function (IdOrderItem, IdProduct) {
+        let isOk = false;//biến để xác định đã add animatino
         $("ul#item-mon").children("li").map(function () {
-            //if ($(this).data("id") == IdOrderItem || $(this).data("idpro") == IdProduct) {
-            if ($(this).data("id") == IdOrderItem) {
+            if (!isOk && ($(this).data("id") == IdOrderItem || $(this).data("idpro") == IdProduct)) {//IdProduct mục đích cho bên kích vào item thực đơn
                 $(this).addClass("animatino");
                 $(this).addClass("active");
                 sel = $(this);
                 setTimeout(function () {
                     $(sel).removeClass("animatino");
                 }, 300);
-
-                // $(sel).parents("ul#item-mon").find("li").not($(sel).parents("li")).removeClass("active");
+                isOk = true;//đã add dc thì đặt false
             }
         });
     },
@@ -14310,7 +14310,7 @@ var loadeventPos = {
         }
     },
     eventLoadCongThucTien: function () {
-
+        
         let totalPayment = $(".totalPayment").text().replaceAll(",", "") || 0;
         let discountPayment = $("#discountPayment").val().replaceAll(",", "") || 0;
         let totalsaudiscount = (parseFloat(totalPayment) - parseFloat(discountPayment)) || 0;
@@ -14348,7 +14348,7 @@ var loadeventPos = {
                     amountpros += amount;
                 });
 
-                totalsaudiscount = totals;
+                totalsaudiscount = totals - discountPayment;
                 //vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
                 $(".VATAmount").html(Math.round(vatamount).format0VND(0, 3, ""));
                 $("#dataTablePayment").find(".elevatamounts").html(vatamount.format0VND(3, 3, ""));
@@ -14369,7 +14369,7 @@ var loadeventPos = {
        // let khachtra = totalsaudiscount + vatamount;
    
         if (parseInt($("#errVATrate").val()) > 0) {//tức là hàng hóa có thuế
-            khachtra = khachtra - discountPayment;
+           // khachtra = khachtra - discountPayment;
         }
         khachtra = Math.round(khachtra);
         $(".amountPayment").html(khachtra.format0VND(0, 3, ""));
@@ -14575,10 +14575,6 @@ var loadeventPos = {
                                 });
                                 $("#dataTablePayment").data("id", res.idOrder);
                                 var amoutn = 0;
-                                //$("#discountPayment").keyup(function () {
-                                //    loadeventPos.eventLoadCongThucTien();
-                                //});
-
                                 $("#discountPayment").click(function () {
 
                                     let html = `<div id="popupselectDiscount">
@@ -14597,14 +14593,15 @@ var loadeventPos = {
                                                               </label>
                                                             </div>
                                                             <div class="text">
-                                                                <input class="data-value form-control number3" id="discounttypevalue" placeholder="Nhập số tiền" />
+                                                                <input class="data-value form-control number3" type="text" id="discounttypevalue" placeholder="Nhập số tiền" />
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>`;
                                     $("#discountPayment").after(html);
-                                    evetnFormatnumber3();
+                                 
                                     loadeventPos.showPopupSelectDiscount();
+                                    evetnFormatnumber3(false);
                                 });
 
                                 $(".overlazy").click();
@@ -14696,10 +14693,9 @@ var loadeventPos = {
                 $("#discounttypevalue").select();
             }, 150);
         });
-        $("#discounttypevalue").keyup(function () {
-            loadCongthuc();
-        });
+       
         function loadCongthuc() {
+           
             if (typeSelectDiscount == TypeSelectDiscount.Cash) {
                 let discountPayment = parseFloat($("#discounttypevalue").val().replaceAll(",", ""));
                 Cashkeup = discountPayment;//lưu để update lại số cũ
@@ -14718,7 +14714,14 @@ var loadeventPos = {
             $("#discountPayment").data("type", typeSelectDiscount);
             loadeventPos.eventLoadCongThucTien();
         }
-
+        document.getElementById("discounttypevalue").onkeyup = function () {
+            loadCongthuc();
+        }
+        $("#discounttypevalue").unbind();
+        $("#discounttypevalue").keyup(function () {//lỗi keyup do bật tính năng copy chrome
+              loadCongthuc();
+         });
+      
         $(".overlazy").on('click', function (e) {
             if ($(e.target).closest("#ousSizeOutPopup").length === 0) {
                 $("#popupselectDiscount").remove();
@@ -17561,7 +17564,8 @@ function checkautido() {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             Swal.close();
-            startbtn.click();
+            audio.play().then(() => {
+            });
         }
     })
 }

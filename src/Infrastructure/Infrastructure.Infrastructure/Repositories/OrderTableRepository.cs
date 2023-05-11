@@ -515,15 +515,12 @@ namespace Infrastructure.Infrastructure.Repositories
                         var _item = item.First().CloneJson();
                         _item.Quantity = item.Sum(x => x.Quantity);
                         var invitem = _map.Map<InvoiceItem>(_item);
-                        invitem.Amonut = _item.Amount; // do lỗi trường nên phải làm ri
-                        //-- nâng cấp sản phẩm đã có thuế
-                        //if (_item.IsVAT)//nếu sp có thuế thì lấy đúng sp
-                        //{
-                        //    invitem.Total = _item.Quantity * _item.PriceNoVAT;//tiền trước thuế thì nhân vs giá k thuế
-                        //    invitem.VATAmount = _item.Total * (_item.VATRate / 100);//tính thuế trên tiền chưa thuế
-                        //    invitem.Amonut = _item.Quantity * _item.Price;//tiền có thuế thì nhân vs giá có thuế để cho đúng tiền khách muốn
-                        //}
-                        if (vat && Vatrate != null && Vatrate != (int)NOVAT.NOVAT && !_item.IsVAT) //sp k có thuế mà có xuất hóa đơn hoặc có tính thuế
+                        invitem.Total = item.Sum(x => x.Total); // phải làm vậy mới lấy cùng các sp
+                        invitem.Amonut = item.Sum(x => x.Amount); // do lỗi trường nên phải làm ri
+                        invitem.VATAmount = item.Sum(x => x.VATAmount); // do lỗi trường nên phải làm ri
+                        invitem.DiscountAmount = item.Sum(x => x.DiscountAmount); // do lỗi trường nên phải làm ri
+
+                        if (vat && Vatrate != null && Vatrate != (int)NOVAT.NOVAT && !_item.IsVAT) //sp k có thuế, mà có xuất hóa đơn hoặc có tính thuế
                         {
                             var thue = Vatrate.Value / 100.0m;
                             invitem.VATRate = Vatrate.Value;
@@ -532,7 +529,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         }
                         else if (!_item.IsVAT)
                         {
-                            invitem.Amonut = _item.Total;
+                            //invitem.Amonut = _item.Total;
                             invitem.VATRate = (int)NOVAT.NOVAT;
                         }
                         //----
@@ -1688,6 +1685,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         newitem.Quantity = 1;
                         newitem.QuantityNotifyKitchen = 0;
                         newitem.Total = 1 * newitem.Price;
+                        newitem.Amount = 1 * newitem.Price;
                         newitem.Discount = 0;
                         newitem.Note = string.Empty;
                         newitem.DiscountAmount = 0;
