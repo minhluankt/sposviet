@@ -47,6 +47,9 @@ namespace Infrastructure.Infrastructure.Repositories
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private IUnitOfWork _unitOfWork { get; set; }
+
+        
+
         private readonly IManagerInvNoRepository _managerInvNoRepository;
         private UserManager<ApplicationUser> _userManager;
         private IOptions<CryptoEngine.Secrets> _config;
@@ -86,6 +89,7 @@ namespace Infrastructure.Infrastructure.Repositories
             _vnptrepository = vnptrepository;
             _repository = repository;
         }
+        public IQueryable<EInvoice> Entities => _repository.Entities;
         public async Task CreateAsync(EInvoice Entity, string Carsher, string IdCarsher)
         {
             await _repository.AddAsync(Entity);

@@ -12680,7 +12680,10 @@ var loadeventPos = {
                     res.jsonPro.forEach(function (item, index) {
                         //console.log(item.img);
                         htmlimg = '<img src="../' + item.img + '">';
-
+                        htmlvat = "";
+                        if (item.isVAT) {
+                            htmlvat = " <b class='productpercent'><i class='fas fa-percent'></i></b>";
+                        }
                         if (item.img == "" || item.img == null) {
                             //htmlimg = '<i class="fas fa-utensils"></i>'; 
                             htmlimg = '<img class="ristorante" src="../images/ristorante_old.png">';
@@ -12690,7 +12693,7 @@ var loadeventPos = {
                                                     `+ htmlimg + `
                                                 </div>
                                              <div class="footer_pro">
-                                                 <span>`+ item.name + `</span>
+                                                 <span>`+ item.name + htmlvat+`</span>
                                                  <b class="required priceFormat">`+ item.retailPrice + `</b>
                                           </div>
                                       </li>`;
@@ -12941,10 +12944,13 @@ var loadeventPos = {
                         let html = `<ul id="item-mon"> `;
                         res.data.orderTableItems
                             .forEach(function (item, index) {
+                                if (item.isVAT) {
+                                    htmlvat = " <i class='fas fa-percent'></i>";
+                                }
                                 index = index + 1;
                                 html += ` <li data-id="` + item.idGuid + `" data-idpro ="` + item.idProduct + `" data-slNotify=` + item.quantityNotifyKitchen + ` data-sl=` + item.quantity + ` >
                                             <div  class="btn-remove" data-idquan="`+ item.quantity + `"><i data-idquan="` + item.quantity + `" class="fas fa-trash-alt"></i></div>
-                                            <div class="name"><b>` + index + ". " + item.name + `</b>
+                                            <div class="name"><b>` + index + ". " + item.name + htmlvat+`</b>
                                             <button class="note`+ (item.note != null && item.note != "" ? " active" : "") + `" data-note="` + (item.note != null ? item.note : "") + `"><i class="far fa-sticky-note"></i> <span class="text">` + ((item.note != "" && item.note != null) ? item.note : "Thêm ghi chú") + `</span></button>
                                             </div>
                                             <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="`+ item.quantity + `"> <i class="fas fa-plus"></i></div>
@@ -14309,39 +14315,59 @@ var loadeventPos = {
         let discountPayment = $("#discountPayment").val().replaceAll(",", "") || 0;
         let totalsaudiscount = (parseFloat(totalPayment) - parseFloat(discountPayment)) || 0;
         let vatamount = 0;
-        if (!$(".ele-vatrate").hasClass("d-none")) {
+        let khachtra = 0;
+        if ($(".ele-vatrate").length>0) {
 
-            if (parseInt($("#errVATrate").val()) > 0) {//tức là hàng hóa có thuế
+            if (parseInt($("#errVATrate").val()) > 0) {//tức là hàng hóa có thuế thì phải tách riêng là lấy thuế của hàng hóa này+ với thuế hàng hóa chưa có thuế (thuế này dc tính bên dưới)
                 var totals = 0;
+                var amountpros = 0;
                 $("table#dataTablePayment tbody tr").map(function () {
                     let total = parseFloat($(this).find(".totalpro").html().replaceAll(",","")) || 0;
                     totals += total;
                     if ($(this).find(".vatratepro").length > 0) {
                         let vatrate = parseFloat($(this).find(".vatratepro").html().replaceAll(",", ""))||0;
-                        let _vatamount = parseFloat($(this).find(".vatratepro").data("vatamount"))||0;
+                        let _vatamount = parseFloat($(this).find(".vatratepro").data("vatamount")) || 0;
+                       
                         vatamount += _vatamount;
-                    } else {//th có dòng k có thuế
+                    } else {//th có dòng k có thuế tính ở đây
                         let vatrate = parseFloat($("#Vatrate").val()) || 0;
                         let _vatamount = total * parseFloat(vatrate / 100);
+                        //----gán thuế cho dòng sản phẩm
+                        htmlvatamount = `<span class="number3 vatratepro" data-vatamount="` + _vatamount + `">` + vatrate + `</span>
+                                        <small>(<span class="number3 red">`+ _vatamount.format0VND(3, 3) + `</span>)</small>`;
+                        if ($(this).find(".elevarate").length > 0) {
+                            $(this).find(".elevarate").html(htmlvatamount);
+                        }
+                        let amount = total + _vatamount;
+                        $(this).find("td:last-child").html(amount.format0VND(0,3));
+                        //-----
                         vatamount += _vatamount;
                     }
+                    //---check sau vì dongfchuaw thuế mới dc update
+                    let amount = parseFloat($(this).find("td:last-child").html().replaceAll(",", "")) || 0;
+                    amountpros += amount;
                 });
+
                 totalsaudiscount = totals;
                 //vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
                 $(".VATAmount").html(Math.round(vatamount).format0VND(0, 3, ""));
+                $("#dataTablePayment").find(".elevatamounts").html(vatamount.format0VND(3, 3, ""));
+                $("#dataTablePayment").find(".eleamounts").html(amountpros.format0VND(3, 3, ""));
                 $("#dataTablePayment").data("isVat", 1);
-
+             
             } else {
                 vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
                 $(".VATAmount").html(vatamount.format0VND(0, 3, ""));
                 $("#dataTablePayment").data("isVat", 1);
+                
             }
-
+            khachtra = totalsaudiscount + vatamount;
         } else {
             $("#dataTablePayment").data("isVat", 0);
-
+            khachtra = totalsaudiscount + vatamount;
         }
-        let khachtra = totalsaudiscount + vatamount;
+       // let khachtra = totalsaudiscount + vatamount;
+   
         if (parseInt($("#errVATrate").val()) > 0) {//tức là hàng hóa có thuế
             khachtra = khachtra - discountPayment;
         }

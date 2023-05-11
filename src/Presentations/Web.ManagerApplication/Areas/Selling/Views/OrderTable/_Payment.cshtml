@@ -86,11 +86,11 @@
                             <td class="number3 text-right totalpro">@item.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
                             @if (checkvatproduct>0)
                             {
-                                <td class="text-right">
+                                <td class="text-right elevarate">
                                     @if (item.First().IsVAT)
                                     {
                                         <span class="number3 vatratepro" data-vatamount="@item.Sum(x=>x.VATAmount).ToString("0.###").Replace(",",".")">@item.First().VATRate.ToString("0.###").Replace(",",".")</span>
-                                        <small>(<span class="number3">@item.First().VATAmount.ToString("0.###").Replace(",",".")</span>)</small>
+                                        <small>(<span class="number3 red">@item.First().VATAmount.ToString("0.###").Replace(",",".")</span>)</small>
                                     }
                                     else
                                     {
@@ -107,12 +107,12 @@
                       <tr>
                         <td colspan="2" class="text-right font-weight-bold">Tổng</td>
                         <td class="text-center font-weight-bold">@string.Format("{0:0.###}",Model.OrderTable.OrderTableItems.Sum(x=>x.Quantity)).Replace(",",".")</td>
-                        <td class="text-center"></td>
-                        <td class="text-right font-weight-bold number3">@Math.Round(Model.OrderTable.OrderTableItems.Sum(x=>x.Total), MidpointRounding.AwayFromZero).ToString("0.###").Replace(",",".")</td>
+                        <td class="text-center "></td>
+                        <td class="text-right font-weight-bold number3">@Model.OrderTable.OrderTableItems.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
                           @if (checkvatproduct>0)
                             { 
-                                <td class="number3 text-right"></td>
-                                <td class="number3 text-right">@Model.OrderTable.OrderTableItems.Sum(x=>x.Amount).ToString("0.###").Replace(",",".")</td>
+                                <td class="number3 text-right elevatamounts font-weight-bold"></td>
+                                <td class="number3 text-right font-weight-bold eleamounts">@Model.OrderTable.OrderTableItems.Sum(x=>x.Amount).ToString("0.###").Replace(",",".")</td>
                             }
                     </tr>
                 </tfoot>

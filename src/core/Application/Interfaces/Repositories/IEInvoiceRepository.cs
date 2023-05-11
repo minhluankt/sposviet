@@ -13,6 +13,7 @@ namespace Application.Interfaces.Repositories
 {
     public interface IEInvoiceRepository<T> where T : class
     {
+        IQueryable<T> Entities { get; }
         Task<IResult<string>> DownloadInvFkeyNoPayAsync(int IdEInvoice, int Comid, string Carsher, string IdCarsher);
         Task<IResult<string>> ConvertForStoreFkeyMutiInvoiceAsync(int[] lstid, int Comid, ENumTypePrint typePrint, string Carsher, string IdCarsher);
         Task<IResult<string>> ConvertForStoreFkeyAsync(int IdEInvoice, int Comid, string Carsher, string IdCarsher);

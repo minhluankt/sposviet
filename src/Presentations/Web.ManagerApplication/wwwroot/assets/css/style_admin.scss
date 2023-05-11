@@ -1522,7 +1522,13 @@ div#parentautocomplete {
         }
     }
 }
-
+.productpercent {
+    color: red;
+    font-size: 10px;
+    background-color: #fff;
+    padding: 2px 5px;
+    border-radius: 8px;
+}
 #item-mon {
     padding-left: 0px;
 
@@ -1545,8 +1551,6 @@ div#parentautocomplete {
             border: #1c6f9a solid thin;
             border-radius: 5px;
             cursor: pointer;
-
-            
         }
 
         &.active {
@@ -1646,13 +1650,17 @@ div#parentautocomplete {
             b {
                 font-size: 18px;
             }
-
-            
         }
 
         div.name {
             flex: 1;
             position: relative;
+
+            i.fa-percent {
+                background-color: transparent !important;
+                color: red;
+                font-size: 11px;
+            }
 
             b {
                 font-size: 16px;
@@ -6028,8 +6036,8 @@ img#Imgdata {
 }
 // Large devices (desktops, less than 1200px)
 @media (max-width: 1199.98px) {
-    .swal2-popup.popupform-payment{
-        width:100%;
+    .swal2-popup.popupform-payment {
+        width: 100%;
     }
     .swal2-container.eventpublisinvoice90p .swal2-popup.popup-formcreate {
 
@@ -6162,9 +6170,14 @@ img#Imgdata {
 }
 
 @media (min-width: 1200px) and (max-width: 1399.8px) {
+    .swal2-popup.popupform-payment {
+        width: 100%;
+    }
+
+
     .swal2-container.eventpublisinvoice90p .swal2-popup.popup-formcreate {
 
-
+      
         .card.formeinvoice {
 
 

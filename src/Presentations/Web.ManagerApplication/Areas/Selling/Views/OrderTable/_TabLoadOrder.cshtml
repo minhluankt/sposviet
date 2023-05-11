@@ -65,7 +65,7 @@
                     <li data-id="@item.IdGuid" data-idpro="@item.IdProduct" data-slNotify="@item.QuantityNotifyKitchen.ToString("0.###").Replace(",",".")" data-sl="@item.Quantity.ToString("0.###").Replace(",",".")">
                         <div data-idquan="@item.Quantity.ToString().Replace(",",".")" class="btn-remove"><i data-idquan="@item.Quantity.ToString("0.###").Replace(",",".")" class="fas fa-trash-alt"></i></div>
                         <div class="name">
-                            <b>@(i++). @item.Name</b>
+                            <b>@(i++). @item.Name @(item.IsVAT ? Html.Raw("<i class='fas fa-percent'></i>") : "")</b>
                             <button class="note @(!string.IsNullOrEmpty(item.Note)?"active":"")" data-note="@item.Note">
                                 <i class="far fa-sticky-note"></i>
 

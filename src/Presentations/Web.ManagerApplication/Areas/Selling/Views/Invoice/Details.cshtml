@@ -191,7 +191,7 @@
                     @if (Model.DiscountAmount > 0)
                     {
                         <tr>
-                            <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Giảm giá</td>
+                            <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Giảm giá: @(Model.Discount > 0 ? Model.Discount+"%":"")</td>
                             <td class="text-right font-weight-bold number3">@Model.DiscountAmount</td>
                         </tr>
                     }
@@ -244,7 +244,7 @@
                         {
                             <tr>
                                 <td colspan="@(checkvatproduct > 0?"8":"5")" class="text-right">Giảm giá: @(Model.EInvoice.Discount != 0 ? Model.EInvoice.Discount+"%":"")</td>
-                                <td class="text-right font-weight-bold number3">@Model.EInvoice.VATAmount</td>
+                                <td class="text-right font-weight-bold number3">@Model.EInvoice.DiscountAmount</td>
                             </tr>
                         }
                        <tr>

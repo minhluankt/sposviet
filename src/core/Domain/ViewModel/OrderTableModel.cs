@@ -53,6 +53,7 @@ namespace Domain.ViewModel
     {
         public Guid IdGuid { get; set; }
         public int Id { get; set; }
+        public bool IsVAT { get; set; }
         public int IdOrderTable { get; set; }
         public int? IdProduct { get; set; }
         public string Name { get; set; }

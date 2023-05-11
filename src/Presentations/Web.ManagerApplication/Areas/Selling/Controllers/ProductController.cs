@@ -296,6 +296,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     Img = x.Img,
                     Name = x.Name,
                     Id = x.Id,
+                    IsVAT = x.IsVAT,
                     RetailPrice = x.Price,
                     idString = CryptoEngine.Encrypt("id=" + x.Id, _config.Value.Key),
                     Quantity = x.Quantity,

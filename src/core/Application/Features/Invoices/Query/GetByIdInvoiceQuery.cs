@@ -45,8 +45,12 @@ namespace Application.Features.Invoices.Query
                 {
                     Invoice = Invoice.Include(x => x.Customer);
                 }
-                var InvoiceData = Invoice.Join;
-               // var InvoiceData = await Invoice.SingleOrDefaultAsync();
+                //var InvoiceData = Invoice.Join(_einvoicerepository.Entities, inv=> inv.IdEInvoice,einv=> einv.Id,(invoice, einv) =>new 
+                //{
+                //    invoice,
+                //    einv
+                //}).Select(x=>x.invoice);
+               var InvoiceData = await Invoice.SingleOrDefaultAsync();
 
                 if (InvoiceData == null)
                 {
@@ -55,7 +59,7 @@ namespace Application.Features.Invoices.Query
                 
                 if (InvoiceData.IdEInvoice!=null)
                 {
-                    var einv = await _einvoicerepository.FindByIdAsync(InvoiceData.IdEInvoice.Value,true);
+                    var einv = await _einvoicerepository.Entities.AsNoTracking().Where(x => x.Id == InvoiceData.IdEInvoice.Value).SingleOrDefaultAsync();
                     InvoiceData.EInvoice = einv;
                 }
 

@@ -142,7 +142,7 @@ namespace Application.Features.OrderTablePos.Commands
                 orderTableModel.Amount = update.Data.Amonut;
                 orderTableModel.Buyer = update.Data.Buyer;
                 orderTableModel.Quantity = update.Data.OrderTableItems.Sum(x => x.Quantity);
-                orderTableModel.OrderTableItems.AddRange(update.Data.OrderTableItems.Select(x => new OrderTableItemModel() { Code = x.Code, Id = x.Id, IdGuid = x.IdGuid, IdProduct = x.IdProduct, Price = x.Price, Quantity = x.Quantity, QuantityNotifyKitchen = x.QuantityNotifyKitchen, IdOrderTable = x.IdOrderTable, Total = x.Amount, Name = x.Name, Note = x.Note }));
+                orderTableModel.OrderTableItems.AddRange(update.Data.OrderTableItems.Select(x => new OrderTableItemModel() { Code = x.Code, Id = x.Id, IdGuid = x.IdGuid, IdProduct = x.IdProduct, Price = x.Price, Quantity = x.Quantity, QuantityNotifyKitchen = x.QuantityNotifyKitchen, IdOrderTable = x.IdOrderTable, Total = x.Amount, Name = x.Name, Note = x.Note, IsVAT = x.IsVAT }));
 
                 return Result<OrderTableModel>.Success(orderTableModel);
 

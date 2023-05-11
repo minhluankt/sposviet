@@ -22,6 +22,7 @@ namespace Domain.ViewModel
     }
     public class ProductPosModel
     {
+        public bool IsVAT { get; set; }
         public string Name { get; set; }
         public string Img { get; set; } //mã sản phẩm
         public string Code { get; set; } //mã sản phẩm
