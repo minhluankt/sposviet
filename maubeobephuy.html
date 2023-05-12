@@ -1,110 +1,55 @@
-<!DOCTYPE html>
-<html lang='vi'>
-<head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <meta http-equiv='X-UA-Compatible' content='ie=edge'>
-    <title>Vé điện tử</title>
-    <script type="text/javascript" charset="UTF-8"></script>
-	
-	<style>
-        body {
-           
-            font-family: Arial;
-        }
-
-        hr {
-            margin: 0px;
-            border-top: 1px solit #000;
-        }
-
-        .ticket {
-          
-            padding: 0mm;
-            margin: 0 auto;
-            height: auto;
-   width: 300mm;
-            background: #FFF;
-            transform-origin: left;
-        }
-table { 
-    border-collapse: collapse; 
-}
-table td,table th{
-padding:2px 2px 2px 0px;
-}
-        img {
-            max-width: inherit;
-            width: inherit;
-        }
-
-        @media print {
-
-            .hidden-print,
-            .hidden-print * {
-                display: none !important;
-            }
-
-            .ticket {
-                page-break-after: always;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div class='ticket'>
-	
-        <table style='width:100%;'>
-            <tr>
-                <td style='text-align: center;'>
-					<span style='font-weight: bold;font-size: 50pt;'>{comname}</span>
-					<span style='font-size: 40pt; display: block; text-align: center;margin-bottom:10px'>----------***----------</span>
-					
-				</td>
-            </tr>
-            <tr>
-                <td style='font-size: 18px; text-align: center; padding-top: 7px; padding-bottom: 7px;'>
-					<span style='display: block; font-size: 45pt; font-weight: bold;'>THÔNG BÁO HỦY MÓN</span>
-					<span style='font-size: 40pt; display: block;'>Thời gian: {ngaythangnamxuat}</span>
-					<span style='font-size: 40pt; display: block;'>Nhân viên phục vụ: {staffName}</span>
-					<span style='font-size: 40pt; display: block;'>Bàn: {tenbanphong}</span>
-                </td>
-            </tr>
-        </table>
-	
-        
-		<hr style="font-size:40pt" />
-	<table style='width:100%;margin-top:20pt;margin-bottom:10px'>			
-	    <thead>
-		<tr  style="border-botom-style: dotted;border-width: 1pt">
-		<th style='font-size: 35pt; text-align: left;    PADDING-BOTTOM: 12PT;'>Tên hàng hóa</th>
-		<th style='font-size: 35pt; text-align: right;    PADDING-BOTTOM: 12PT;'>Số lượng</th>
-		</tr>
-		</thead>
-		<tbody>
+<table align="center" style="width:100%">
+	<tbody>
 		<tr>
-		<td style=" padding-top: 10pt;padding-bottom: 10pt;"colspan="2">
-			<span style='border-top: dotted #000 4px;display: block;'></span>
-		</td>
+			<td style="text-align:center"><span style="font-size:36px"><strong>{comname}</strong></span><br />
+			<span style="font-size:40pt">----------***----------</span></td>
 		</tr>
-			<tr  style="border-botom-style: dotted;border-width: 1pt">
-				<td style='font-size: 40pt; text-align: left'>{tenhanghoa}</td>
-				<td style='font-size: 40pt; text-align: right'>{soluong}</td>
-			</tr>
+		<tr>
+			<td style="text-align:center"><span style="font-size:45pt"><strong>TH&Ocirc;NG B&Aacute;O HỦY&nbsp;CHẾ BIẾN</strong></span><br />
+			<span style="font-size:40pt">Thời gian: {ngaythangnamxuat}</span><br />
+			<span style="font-size:40pt">Nh&acirc;n vi&ecirc;n phục vụ: {staffName}</span><br />
+			<span style="font-size:40pt">B&agrave;n: {tenbanphong}</span></td>
+		</tr>
+	</tbody>
+</table>
 
-		</tbody>
-		<tfoot>
-		<tr><td style=" padding-top: 10pt;padding-bottom: 10pt;"colspan="2">
-			<span style='border-top: dotted #000 4px;display: block;'></span>
-		</td></tr>
-		<tr style='font-size: 35pt;text-align: left;margin-top:4px;border-top-style: dotted;border-width: 0.1px;'>
-			<td style='font-size: 50pt; text-align: left'>Tổng</td>
-			<td style="text-align: right;font-size: 50pt;">{tongsoluong}</td>
+<div class="ticket">
+<hr />
+<table id="tablehanghoa" style="margin-bottom:10px; margin-top:20pt; width:100%">
+	<thead>
+		<tr>
+			<th style="text-align:left"><span style="font-size:48px">T&ecirc;n h&agrave;ng h&oacute;a</span></th>
+			<th style="text-align:right"><span style="font-size:48px">Số lượng</span></th>
 		</tr>
-		
-		</tfoot>
-	</table>
-	
-</body>
-</html>
+	</thead>
+	<tbody>
+		<tr>
+			<td style="text-align:left">
+			<div style="border-top:0.5px dashed black"><span style="font-size:48px">{tenhanghoa}<br />
+			{ghichu}</span></div>
+			</td>
+			<td style="text-align:right; vertical-align:top">
+			<div style="border-top:0.5px dashed black"><span style="font-size:48px">{soluong}</span></div>
+			</td>
+		</tr>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td style="text-align:left">
+			<div>
+			<div>
+			<div style="border-top:0.5px dashed black; padding-top:5px">
+			<div id="aa"><strong><span style="font-size:48px">Tổng</span></strong></div>
+			</div>
+			</div>
+			</div>
+			</td>
+			<td style="text-align:right">
+			<div style="border-top:0.5px dashed black; padding-top:5px">
+			<div id="adđ"><strong><span style="font-size:48px">{tongsoluong}</span></strong></div>
+			</div>
+			</td>
+		</tr>
+	</tfoot>
+</table>
+</div>

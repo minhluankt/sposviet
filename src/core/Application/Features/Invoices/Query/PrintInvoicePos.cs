@@ -68,6 +68,7 @@ namespace Application.Features.Invoices.Query
                 TemplateInvoice templateInvoice = await _templateInvoicerepository.GetTemPlate(query.ComId);
                 if (templateInvoice != null)
                 {
+                    bool IsProductVAT = InvoiceData.InvoiceItems.Where(x => x.PriceNoVAT > 0).Any();
                     TemplateInvoiceParameter templateInvoiceParameter = new TemplateInvoiceParameter()
                     {
                         giovao = InvoiceData.ArrivalDate.Value.ToString("dd/MM/yyyy HH:mm:ss"),
@@ -88,7 +89,7 @@ namespace Application.Features.Invoices.Query
                         comemail = company?.Email,
 
                         tongtien = InvoiceData.Amonut.ToString("N0"),
-                        tientruocthue = InvoiceData.Total.ToString("N0"),
+                        tientruocthue = IsProductVAT ? (InvoiceData.VATAmount + InvoiceData.Total).ToString("N0") : InvoiceData.Total.ToString("N0"),
                         tienthue = InvoiceData.VATAmount.ToString("N0"),
                         thuesuat = InvoiceData.VATRate?.ToString("N0"),
                         giamgia = InvoiceData.DiscountAmount.ToString("N0"),
@@ -97,22 +98,42 @@ namespace Application.Features.Invoices.Query
                         tienthuatrakhach = InvoiceData.AmountChangeCus?.ToString("N0"),
                        
 
-                    };
-                    //string tableProduct = string.Empty;
-                    //foreach (var item in InvoiceData.InvoiceItems)
-                    //{
-                    //    tableProduct += $"<tr>" +
-                    //                        $"<td colspan=\"4\"><span style=\"display: block;font-size: 11px\">{item.Name}</span></td>" +
-                    //                    "</tr>" +
-                    //                    "<tr>" +
-                    //                        $"<td><span style=\"display: block;  text-align: left;font-size: 11px\">{item.Price.ToString("N0")}</span></td>" +
-                    //                        $"<td style='text-align: center'><span style=\"display: block;font-size: 11px\">{item.Quantity.ToString("N0")}</span></td>" +
-                    //                        $"<td><span style=\"display: block; text-align: center;font-size: 11px\">{item.Unit}</span></td>" +
-                    //                        $"<td><span style=\"display: block; text-align: right;font-size: 11px\">{item.Total.ToString("N0")}</span></td>" +
-                    //                    "</tr>";
+                    }; 
+                    var listitemnew = InvoiceData.InvoiceItems;
+                    if (IsProductVAT)//check trường hợp nếu sản phẩm có dòng đơn giá đã gồm thuế
+                    {
+                        if (InvoiceData.VATRate != (float)VATRateInv.KHONGVAT)//nếu hóa đơn có thuế thì hiển thị tiền trước thuế phải là tiền trước thuế của sản phẩm có và k có thuế
+                        {
+                            templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("N0");//update lại tiền trước thuế cho đúng
+                        }
+                        else//hóa đơn k có thuế mà sp có thuế thì hiển 
+                        {
 
-                    //}
-                    //templateInvoiceParameter.tableProduct = tableProduct;
+                            //foreach (var item in listitemnew)
+                            //{
+                            //    if (item.PriceNoVAT == 0)//là sp đơn giá không có thuế
+                            //    {
+                            //        item.Amonut = item.Total;//update lại amount để hiển thị lên bill cho đúng là tiền trước thuế của sp đó
+                            //    }
+                            //}
+                            templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Amonut).ToString("N0");//update lại tiền trước thuế cho đúng
+                        }
+
+                    }
+                    else
+                    {
+                        if (InvoiceData.VATRate != (float)NOVAT.NOVAT)//nếu hóa đơn có thuế
+                        {
+                            foreach (var item in listitemnew)
+                            {
+                                if (item.PriceNoVAT == 0)//là sp đơn giá không có thuế
+                                {
+                                    item.Amonut = item.Total;//update lại amount để hiển thị lên bill cho đúng là tiền trước thuế của sp đó
+                                }
+                            }
+                        }
+                    }
+
                     if (InvoiceData.IdEInvoice!=null)
                     {
                    
@@ -179,7 +200,7 @@ namespace Application.Features.Invoices.Query
                         }
                     }
                     //string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice.Template, EnumTypeTemplate.INVOICEPOS);
-                    string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, InvoiceData.InvoiceItems.ToList(), templateInvoice.Template);
+                    string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, listitemnew.ToList(), templateInvoice.Template);
                     return Result<string>.Success(content, HeperConstantss.SUS014);
                 }
                 return await Result<string>.FailAsync("Không tìm thấy mẫu hóa đơn");

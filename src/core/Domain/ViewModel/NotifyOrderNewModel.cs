@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,6 @@ namespace Domain.ViewModel
         public decimal Quantity { get; set; }
         public decimal Price { get; set; }
         public string Note { get; set; }
+        public EnumTypeTemplatePrint TypeNotifyOrder { get; set; }
     }
 }

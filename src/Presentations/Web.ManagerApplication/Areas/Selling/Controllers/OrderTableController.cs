@@ -685,6 +685,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var send = await _mediator.Send(createNotifyChitkenCommand);
             if (send.Succeeded)
             {
+                if (send.Data=="ERR")
+                {
+                    _notify.Error(send.Message);
+                    return Json(new { isValid = true, isNotPrint = true });
+                }
                 _notify.Success("Thông báo bếp thành công!");
 
                 //await dashboardHub.PrintbaobepSposViet(currentUser.ComId, send.Data);

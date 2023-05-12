@@ -484,6 +484,7 @@ namespace Infrastructure.Infrastructure.Repositories
             await _unitOfWork.CreateTransactionAsync();
             try
             {
+                bool IsProductVAT = false;//đánh dấu sản phẩm có thuế
                 var checkOrder = await _repository.Entities.Include(x => x.OrderTableItems)
                     .Include(x => x.Customer)
                     .Include(x => x.RoomAndTable)
@@ -524,13 +525,17 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             var thue = Vatrate.Value / 100.0m;
                             invitem.VATRate = Vatrate.Value;
-                            invitem.VATAmount = Math.Round(_item.Total * thue, MidpointRoundingCommon.Three);
-                            invitem.Amonut = _item.Total + invitem.VATAmount;
+                            invitem.VATAmount = Math.Round(invitem.Total * thue, MidpointRoundingCommon.Three);
+                            invitem.Amonut = invitem.Total + invitem.VATAmount;
                         }
                         else if (!_item.IsVAT)
                         {
                             //invitem.Amonut = _item.Total;
                             invitem.VATRate = (int)NOVAT.NOVAT;
+                        }
+                        else
+                        {
+                            IsProductVAT = true;
                         }
                         //----
                         invitem.Id = 0;
@@ -710,8 +715,10 @@ namespace Infrastructure.Infrastructure.Repositories
                         }
                     }
                     publishInvoiceResponse.Invoice = inv;
+                    publishInvoiceResponse.IsProductVAT = IsProductVAT;
                     return await Result<PublishInvoiceResponse>.SuccessAsync(publishInvoiceResponse);
                 }
+                await _unitOfWork.RollbackAsync();
                 return await Result<PublishInvoiceResponse>.FailAsync(HeperConstantss.ERR043);
 
             }

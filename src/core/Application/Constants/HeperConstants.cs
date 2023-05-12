@@ -64,6 +64,7 @@
         public const string ERR048 = "CompanyNoTemplateInvoice"; // Công ty chưa cấu hình mẫu
         public const string ERR049 = "NOSETINGPATTERN"; // Công ty chưa cấu hình mẫu số ký hiệu
         public const string ERR050 = "NotSupportMutiVATRateOrder"; // Không hỗ trợ nhiều thues trên 1 đơn
+        public const string ERR051 = "VATrateProNotSupportInvoice"; // Hóa đơn có sản phẩm thuế suất không khớp với
         // 
         /// <summary>
         /// / login

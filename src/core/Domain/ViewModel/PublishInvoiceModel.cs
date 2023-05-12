@@ -32,6 +32,7 @@ namespace Domain.ViewModel
         public string MCQT{ get; set; }
         public string Message { get; set; }
         public bool IsSuccess{ get; set; }
+        public bool IsProductVAT { get; set; }//sản phẩm có thuế
     }
     public class PublishInvoiceModel
     {

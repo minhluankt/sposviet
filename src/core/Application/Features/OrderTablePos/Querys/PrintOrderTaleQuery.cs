@@ -47,6 +47,19 @@ namespace Application.Features.OrderTablePos.Querys
                 TemplateInvoice templateInvoice = await _templateInvoicerepository.GetTemPlate(query.Comid,EnumTypeTemplatePrint.IN_TAM_TINH);
                 if (templateInvoice!=null)
                 {
+                    var checkvatrate = product.OrderTableItems.Where(x => x.IsVAT).Select(x => x.VATRate).Distinct().ToArray();
+                    if (checkvatrate.Count() > 1)
+                    {
+                        return await Result<string>.FailAsync(GeneralMess.ConvertStatusToString(HeperConstantss.ERR050));
+                    }
+                    else if (checkvatrate != null && checkvatrate.Count() > 0 && query.vat)
+                    {
+                        if (checkvatrate[0] != query.VATRate)
+                        {
+                            return await Result<string>.FailAsync($"Chi tiết hàng hóa có thuế suất là {checkvatrate[0].ToString("N0")}%, không khớp thuế suất {query.VATRate}% bạn chọn, vui lòng chọn lại!");
+                        }
+                    }
+
                     TemplateInvoiceParameter templateInvoiceParameter = new TemplateInvoiceParameter()
                     {
                         giovao = product.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"),
@@ -71,23 +84,74 @@ namespace Application.Features.OrderTablePos.Querys
                         //khachthanhtoan = product.AmountCusPayment?.ToString("N0"),
                         //tienthuatrakhach = product.AmountChangeCus?.ToString("N0"),
                     };
-                    if (query.vat)
-                    {
-                        var vatrate = (query.VATRate / 100.0M);
-                        var tienthue = vatrate * product.Amonut;
-                        templateInvoiceParameter.isVAT = query.vat;
-                        templateInvoiceParameter.tienthue = tienthue.ToString("N0");
-                        templateInvoiceParameter.thuesuat = query.VATRate.ToString();
-                        templateInvoiceParameter.khachcantra = (tienthue + product.Amonut).ToString("N0");
-                    }
+                    bool IsProductVAT = false;
+                   
                     var neworderitem = new List<OrderTableItem>();
                     foreach (var item in product.OrderTableItems.GroupBy(x=>x.IdProduct))
                     {
                         var _item = item.First().CloneJson();
                         _item.Quantity = item.Sum(x => x.Quantity);
-                        _item.Total = _item.Quantity * _item.Price;
+                        _item.Total = item.Sum(x => x.Total);
+                        _item.VATAmount = item.Sum(x => x.VATAmount);//_item.Total* (_item.VATRate/100.0M);
+                        _item.Amount = item.Sum(x => x.Amount);
+                        if (!_item.IsVAT && query.vat)//nếu hàng hóa k có thuế mà hóa đơn có thuế thì xử lý thêm thuế cho hàng hóa đó
+                        {
+                            _item.VATAmount = _item.Total* (query.VATRate / 100.0M);
+                            _item.Amount =  _item.Total + _item.VATAmount;
+                        }
+                        else if (_item.IsVAT)//nếu sp có thuế thì đánh dấu
+                        {
+                            IsProductVAT = true;
+                        }
                         neworderitem.Add(_item);
                     }
+                    if (query.vat)
+                    {
+                        templateInvoiceParameter.thuesuat = query.VATRate.ToString();
+                        templateInvoiceParameter.isVAT = query.vat;
+                        if (IsProductVAT)
+                        {
+                            var tienthue = neworderitem.Sum(x=>x.VATAmount);
+                            templateInvoiceParameter.tienthue = tienthue.ToString("N0");
+                            templateInvoiceParameter.khachcantra = Math.Round(neworderitem.Sum(x => x.Amount),MidpointRounding.AwayFromZero).ToString("N0");
+                        }
+                        else
+                        {
+                            var vatrate = (query.VATRate / 100.0M);
+                            var tienthue = vatrate * product.Amonut;
+                            templateInvoiceParameter.tienthue = tienthue.ToString("N0");
+                            templateInvoiceParameter.khachcantra = (tienthue + product.Amonut).ToString("N0");
+                        }
+                    }
+                    
+                    if (IsProductVAT)//check trường hợp nếu sản phẩm có dòng đơn giá đã gồm thuế
+                    {
+                        if (query.vat)//nếu hóa đơn có thuế thì hiển thị tiền trước thuế phải là tiền trước thuế của sản phẩm có và k có thuế
+                        {
+                            templateInvoiceParameter.tientruocthue = neworderitem.Sum(x => x.Total).ToString("N0");//update lại tiền trước thuế cho đúng
+                        }
+                        else//hóa đơn k có thuế mà sp có thuế thì hiển tiền sau thuế
+                        {
+                            templateInvoiceParameter.tientruocthue = neworderitem.Sum(x => x.Amount).ToString("N0");//update lại tiền trước thuế cho đúng
+                        }
+
+                    }
+                    else
+                    {
+                        if (query.vat)//nếu hóa đơn có thuế
+                        {
+                            foreach (var item in neworderitem)
+                            {
+                                if (!item.IsVAT)//là sp đơn giá không có thuế
+                                {
+                                    item.Amount = item.Total;//update lại amount để hiển thị lên bill cho đúng là tiền trước thuế của sp đó
+                                }
+                            }
+                        }
+                    }
+
+
+
                     string content = PrintTemplate.PrintOrder(templateInvoiceParameter, neworderitem, templateInvoice.Template);
 
                     //string tableProduct = string.Empty;

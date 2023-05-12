@@ -167,7 +167,7 @@
                                                     <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                                               <a class="dropdown-item" href="javascript:void(0)" onclick="jQueryModalGetRightToLeft('/Selling/TemplateInvoice/Detailt?secret=` + full.screct + `','Thông tin sản phẩm',false)"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
+                                                                               <a class="dropdown-item" href="javascript:void(0)" onclick="jQueryModalGetRightToLeft('/Selling/TemplateInvoice/Detailt?secret=` + full.screct + `','Mẫu in bill thanh toán',false)"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
                                                                                        <a class="dropdown-item" href="javascript:0;" onclick="eventCreate.addOrEditTemplateInvoice('/Selling/TemplateInvoice/edit?secret=` + full.screct + `')"><i class="fas fa-edit mr-2"></i> Sửa</a>
                                                                        <form id="form_delete_`+ full.id + `" action="/Selling/TemplateInvoice/Delete?secret=` + full.screct + `"  asp-controller="TemplateInvoice" asp-area="Selling" method="post" asp-action="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
                                                           <a  class="dropdown-item"  href="javascript:$('#form_delete_`+ full.id + `').submit();">

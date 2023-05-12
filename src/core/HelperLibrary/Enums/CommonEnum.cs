@@ -9,6 +9,10 @@ namespace Application.Enums
     {
         User = 0,
         Company = 1
+    } public enum EnumTypeNotifyOrder
+    {
+        CHE_BIEN = 0,
+        HUY_CHE_BINE = 1
     }
     public enum EnumTypeVATEinvoice
     {

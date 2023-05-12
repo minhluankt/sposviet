@@ -11,6 +11,7 @@ using HelperLibrary;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -87,7 +88,7 @@ namespace Application.Features.OrderTablePos.Commands
                     {
                         TemplateInvoiceParameter templateInvoiceParameter = new TemplateInvoiceParameter()
                         {
-                            check lại mẫu in nhé
+                          
                             giovao = product.Data.Invoice.ArrivalDate.Value.ToString("dd/MM/yyyy HH:mm:ss"),
                             ngaythangnamxuat = product.Data.Invoice.PurchaseDate.Value.ToString("dd/MM/yyyy HH:mm:ss"),
                             TypeTemplatePrint = EnumTypeTemplatePrint.IN_BILL,
@@ -107,15 +108,50 @@ namespace Application.Features.OrderTablePos.Commands
 
                             isVAT = command.vat,
                             tongtien = product.Data.Invoice.Amonut.ToString("N0"),
-                            tientruocthue = product.Data.Invoice.Total.ToString("N0"),
+                            tientruocthue = (product.Data.IsProductVAT) ? (product.Data.Invoice.VATAmount+ product.Data.Invoice.Total).ToString("N0"): product.Data.Invoice.Total.ToString("N0"),
                             tienthue = product.Data.Invoice.VATAmount.ToString("N0"),
                             thuesuat = product.Data.Invoice.VATRate?.ToString("N0"),
-                            giamgia = product.Data.Invoice.DiscountAmount.ToString("N0"),
+                            giamgia = (product.Data.Invoice.DiscountAmount+ product.Data.Invoice.DiscountOther).ToString("N0"),
                             khachcantra = (product.Data.Invoice.Amonut).ToString("N0"),
                             khachthanhtoan = product.Data.Invoice.AmountCusPayment?.ToString("N0"),
                             tienthuatrakhach = product.Data.Invoice.AmountChangeCus?.ToString("N0"),
                           
                         };
+                        var listitemnew = product.Data.Invoice.InvoiceItems;
+                        if (product.Data.IsProductVAT)//check trường hợp nếu sản phẩm có dòng đơn giá đã gồm thuế
+                        {
+                            if (product.Data.Invoice.VATRate != (float)NOVAT.NOVAT)//nếu hóa đơn có thuế thì hiển thị tiền trước thuế phải là tiền trước thuế của sản phẩm có và k có thuế
+                            {
+                                //foreach (var item in listitemnew)
+                                //{
+                                //    if (item.PriceNoVAT == 0)//là sp đơn giá không có thuế
+                                //    {
+                                //        item.Amonut = item.Total;//update lại amount để hiển thị lên bill cho đúng là tiền trước thuế của sp đó
+                                //    }
+                                //}
+                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("N0");//update lại tiền trước thuế cho đúng
+                            }
+                            else
+                            {
+                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Amonut).ToString("N0");//update lại tiền trước thuế cho đúng
+                            }
+
+                        }
+                        else
+                        {
+                            if (product.Data.Invoice.VATRate != (float)NOVAT.NOVAT)//nếu hóa đơn có thuế
+                            {
+                                foreach (var item in listitemnew)
+                                {
+                                    if (item.PriceNoVAT == 0)//là sp đơn giá không có thuế
+                                    {
+                                        item.Amonut = item.Total;//update lại amount để hiển thị lên bill cho đúng là tiền trước thuế của sp đó
+                                    }
+                                }
+                            }
+                        }
+                        
+
                         if (product.Data.IsSuccess)
                         {
                             templateInvoiceParameter.kyhieuhoadon = GetEInvoiceNoFormat.get_kyhieu(product.Data.Pattern, product.Data.Serial);
@@ -211,7 +247,7 @@ namespace Application.Features.OrderTablePos.Commands
                         // string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice.Template, EnumTypeTemplate.INVOICEPOS);
                         try
                         {
-                            string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, product.Data.Invoice.InvoiceItems.ToList(), templateInvoice.Template);
+                            string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, listitemnew.ToList(), templateInvoice.Template);
                             return Result<string>.Success(content, HeperConstantss.SUS014);
                         }
                         catch (Exception e)

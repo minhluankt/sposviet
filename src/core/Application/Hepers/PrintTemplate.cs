@@ -140,5 +140,23 @@ namespace Application.Hepers
             string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice, EnumTypeTemplate.INVOICEPOS);
             return content;
         }
+        public static string PrintBaoBep(TemplateInvoiceParameter templateInvoiceParameter, List<NotifyOrderNewModel> notifylist, string templateInvoice)
+        {
+            string trproductregex = @"<table.*id=""tablehanghoa""((.|\n)*)<tbody>(?<xValue>(.|\n)*)<\/tbody>";
+            string tableProduct = string.Empty;
+            Regex rg = new Regex(trproductregex);
+            var match = rg.Match(templateInvoice);
+            string result = match.Groups["xValue"].Value;
+            if (!string.IsNullOrEmpty(result))
+            {
+                foreach (var item in notifylist)
+                {
+                    tableProduct += result.Replace("{tenhanghoa}", item.Name).Replace("{ghichu}", item.Note).Replace("{soluong}", item.Quantity.ToString("N0"));
+                }
+            }
+            templateInvoice = templateInvoice.Replace(result, tableProduct);
+            string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice, EnumTypeTemplate.PRINT_BEP);
+            return content;
+        }
     }
 }

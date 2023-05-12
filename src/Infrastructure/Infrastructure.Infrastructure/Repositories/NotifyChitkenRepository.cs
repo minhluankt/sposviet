@@ -66,14 +66,15 @@ namespace Infrastructure.Infrastructure.Repositories
                             //-----------adđ vào để in báo bếp
                             notify.Add(new NotifyOrderNewModel()
                             {
-                                Code= item.Code,
+                                Code = item.Code,
                                 Name = item.Name,
-                                Note = (item.QuantityNotifyKitchen==0? item.Note:string.Empty),
-                                RoomTableName = getorder.IsBringBack ? "Mang về": getorder.RoomAndTable?.Name,
+                                Note = (item.QuantityNotifyKitchen == 0 ? item.Note : string.Empty),
+                                RoomTableName = getorder.IsBringBack ? "Mang về" : getorder.RoomAndTable?.Name,
                                 StaffName = Cashername,
-                                Quantity= item.Quantity - item.QuantityNotifyKitchen,
-                                Price= item.Price,//giá bán
-                            });
+                                Quantity = item.Quantity - item.QuantityNotifyKitchen,
+                                Price = item.Price,//giá bán
+                                TypeNotifyOrder = EnumTypeTemplatePrint.IN_BA0_CHE_BIEN
+                            }); 
                             //-----------
 
                             var his = new HistoryOrder()
@@ -127,7 +128,7 @@ namespace Infrastructure.Infrastructure.Repositories
                             {
                                 getitem.Quantity = getitem.Quantity - quantityold;
                                 List<OrderTableItem> OrderTableItems = new List<OrderTableItem>();
-                                if (getitem.QuantityNotifyKitchen>0)//tức là món mới chưa báo bếp lần nào mới cho add ghi chú
+                                if (getitem.QuantityNotifyKitchen>0)//tức là món mới chưa báo bếp lần nào mới cho add ghi chú, báo rồi thì set null
                                 {
                                     getitem.Note = string.Empty;
                                 }

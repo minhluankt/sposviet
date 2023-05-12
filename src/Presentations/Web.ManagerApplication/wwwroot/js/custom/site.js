@@ -4288,50 +4288,16 @@ var eventCreate = {
                             // Trigger resize handler
                             //tinymce.execCommand('mceRemoveControl', true, 'Template');
                         
-                            //tinymce.init({
-                            //    height: 700,
-                            //      selector:'textarea#Template',
-                            //      inline: false,
-                            //    plugins: ['quickbars', 'image', 'table', 'preview', 'code', 'emoticons', 'searchreplace', 'autolink', 'link', 'media', 'wordcount', 'directionality',
-                            //        'advlist autolink lists link image charmap print preview anchor',
-                            //        'searchreplace visualblocks code fullscreen',
-                            //        'insertdatetime media table paste code help wordcount'],
-                            //        image_title: true,
-                            //        automatic_uploads: true,
-                            //      //   toolbar: 'table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
-                            //        file_picker_types: 'image',
-                            //        file_picker_callback: function(cb, value, meta) {
-                            //            var input = document.createElement('input');
-                            //            input.setAttribute('type', 'file');
-                            //            input.setAttribute('accept', 'image/*');
-                            //            input.onchange = function () {
-                            //                var file = this.files[0];
-                            //                var reader = new FileReader();
-
-                            //                reader.onload = function () {
-                            //                    var id = 'blobid' + (new Date()).getTime();
-                            //                    var blobCache = tinymce.activeEditor.editorUpload.blobCache;
-                            //                    var base64 = reader.result.split(',')[1];
-                            //                    var blobInfo = blobCache.create(id, file, base64);
-                            //                    blobCache.add(blobInfo);
-                            //                    cb(blobInfo.blobUri(), {title: file.name});
-                            //                };
-                            //                reader.readAsDataURL(file);
-                            //            };
-                            //            input.click();
-                            //    }
-
-                            //});
                             loadEventSelect2("#SelectListTypeTemplatePrint");
                             $('#SelectListTypeTemplatePrint').on("change", function (e) {
                                 $(this).valid()
                             });
                             $(".btn-save").click(function () {
-                                tinymce.triggerSave();
-                                //for (instance in CKEDITOR.instances) {
-                                //    CKEDITOR.instances[instance].updateElement();
-                                //    $('#' + instance).val(CKEDITOR.instances[instance].getData());
-                                //}
+                                //tinymce.triggerSave();
+                                for (instance in CKEDITOR.instances) {
+                                    CKEDITOR.instances[instance].updateElement();
+                                    $('#' + instance).val(CKEDITOR.instances[instance].getData());
+                                }
                                 if ($("form#create-form").valid()) {
                                     jQueryModalPost($("form#create-form")[0]);
                                 }
