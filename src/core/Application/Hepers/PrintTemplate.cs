@@ -52,7 +52,7 @@ namespace Application.Hepers
            
             //-----------mẫu số ký hiệu hóa đơn
             string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice, EnumTypeTemplate.INVOICEPOS);
-            return content;
+            return System.Net.WebUtility.HtmlDecode(content);
         }
         public static string PrintInvoice(TemplateInvoiceParameter templateInvoiceParameter, List<InvoiceItem> InvoiceItems, string templateInvoice)
         {
@@ -138,7 +138,7 @@ namespace Application.Hepers
             
 
             string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice, EnumTypeTemplate.INVOICEPOS);
-            return content;
+            return System.Net.WebUtility.HtmlDecode(content);
         }
         public static string PrintBaoBep(TemplateInvoiceParameter templateInvoiceParameter, List<NotifyOrderNewModel> notifylist, string templateInvoice)
         {
@@ -151,12 +151,12 @@ namespace Application.Hepers
             {
                 foreach (var item in notifylist)
                 {
-                    tableProduct += result.Replace("{tenhanghoa}", item.Name).Replace("{ghichu}", item.Note).Replace("{soluong}", item.Quantity.ToString("N0"));
+                    tableProduct += result.Replace("{tenhanghoa}", item.Name).Replace("{donvitinh}", item.Unit).Replace("{dongia}", item.Price.ToString("N0")).Replace("{ghichu}", item.Note).Replace("{soluong}", item.Quantity.ToString("N0"));
                 }
             }
             templateInvoice = templateInvoice.Replace(result, tableProduct);
             string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice, EnumTypeTemplate.PRINT_BEP);
-            return content;
+            return System.Net.WebUtility.HtmlDecode(content);
         }
     }
 }

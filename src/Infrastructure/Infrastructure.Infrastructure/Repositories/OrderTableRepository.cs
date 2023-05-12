@@ -1,5 +1,6 @@
 ﻿using Application.Constants;
 using Application.Enums;
+using Application.Hepers;
 using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
 using AutoMapper;
@@ -25,6 +26,7 @@ namespace Infrastructure.Infrastructure.Repositories
 {
     public class OrderTableRepository : IOrderTableRepository
     {
+        private readonly ITemplateInvoiceRepository<TemplateInvoice> _templateInvoicerepository;
         private readonly IMapper _map;
         private readonly ICompanyAdminInfoRepository _companyProductRepository;
         private readonly IRevenueExpenditureRepository<RevenueExpenditure> _revenueExpenditureRepository;
@@ -54,13 +56,15 @@ namespace Infrastructure.Infrastructure.Repositories
             IRepositoryAsync<RoomAndTable> roomadntableRepository,
             IRepositoryAsync<Customer> customerRepository,
             IMapper map,
-            IRepositoryAsync<HistoryInvoice> historyInvoiceRepository,
+            IRepositoryAsync<HistoryInvoice> historyInvoiceRepository, 
+            ITemplateInvoiceRepository<TemplateInvoice> templateInvoicerepository,
             IInvoicePepository<Invoice> InvoiceRepository,
             IDetailtKitchenRepository<DetailtKitchen> detailtKitchenRepository,
             IManagerInvNoRepository managerInvNorepository, IRepositoryAsync<OrderTableItem> OrderTableItemrepository,
             IUnitOfWork unitOfWork, IRepositoryAsync<OrderTable> repository)
         {
             _log = log;
+            _templateInvoicerepository = templateInvoicerepository;
             _companyProductRepository = companyProductRepository;
             _comboproductrepository = comboproductrepository;
             _paymentMethodRepository = paymentMethodRepository;
@@ -164,6 +168,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             Code= getItem.Code,
                             Name= getItem.Name,
+                            Unit = getItem.Unit,
                             Price= getItem.Price,
                             Quantity= _newquantity<0?_newquantity*-1:_newquantity,
                             RoomTableName = order.IsBringBack ? "Mang về" : order.RoomAndTable?.Name,
@@ -445,7 +450,7 @@ namespace Infrastructure.Infrastructure.Repositories
         public async Task<Result<OrderTableModel>> RemoveOrder(int comid, Guid idOrder,string CasherName, string IdCashername, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC)
         {
             OrderTableModel orderTableModel = new OrderTableModel();
-            var checkOrder = await _repository.Entities.SingleOrDefaultAsync(x => x.ComId == comid && x.IdGuid == idOrder && x.TypeProduct == enumTypeProduct);
+            var checkOrder = await _repository.Entities.Include(x=>x.OrderTableItems).SingleOrDefaultAsync(x => x.ComId == comid && x.IdGuid == idOrder && x.TypeProduct == enumTypeProduct);
             if (checkOrder != null)
             {
                 await _repository.DeleteAsync(checkOrder);
@@ -460,6 +465,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     if (update.Count() > 0)
                     {
                         orderTableModel.NotifyOrderNewModels = update;
+
                     }
                 }
                
@@ -469,8 +475,17 @@ namespace Infrastructure.Infrastructure.Repositories
                 orderTableModel.IdGuid = checkOrder.IdGuid;
                 orderTableModel.IdRoomAndTableGuid = checkOrder.IdRoomAndTableGuid;
                 orderTableModel.IsBringBack = checkOrder.IsBringBack;
-               
-              
+                //update lại list notify
+                orderTableModel.NotifyOrderNewModels.ForEach(x =>
+                {
+                    var getorder = orderTableModel.OrderTableItems.FirstOrDefault(z => z.Code == x.Code);
+                    if (getorder != null)
+                    {
+                        x.Price = getorder.Price;
+                        x.Unit = getorder.Unit;
+                    }
+                });
+
                 return await Result<OrderTableModel>.SuccessAsync(orderTableModel, HeperConstantss.SUS007);
             }
             return await Result<OrderTableModel>.FailAsync();
@@ -1601,7 +1616,7 @@ namespace Infrastructure.Infrastructure.Repositories
             }
         }
 
-        public async Task<Result<string>> GenHtmlPrintBep(List<NotifyOrderNewModel> model,int ComId)
+        public async Task<Result<string>> GenHtmlPrintBep(List<NotifyOrderNewModel> model,int ComId)//hủy chế biến
         {
             if (model==null || model.Count==0)
             {
@@ -1611,10 +1626,10 @@ namespace Infrastructure.Infrastructure.Repositories
             }
             try
             {
-                string html = "<!DOCTYPE html>\r\n<html lang='vi'>\r\n<head>\r\n    <meta charset='UTF-8'>\r\n    <meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n    <meta http-equiv='X-UA-Compatible' content='ie=edge'>\r\n    <title>Vé điện tử</title>\r\n    <script type=\"text/javascript\" charset=\"UTF-8\"></script>\r\n\t\r\n\t<style>\r\n        body {\r\n           \r\n            font-family: Arial;\r\n        }\r\n\r\n        hr {\r\n            margin: 0px;\r\n            border-top: 1px solit #000;\r\n        }\r\n\r\n        .ticket {\r\n          \r\n            padding: 0mm;\r\n            margin: 0 auto;\r\n            height: auto;\r\n   width: 300mm;\r\n            background: #FFF;\r\n            transform-origin: left;\r\n        }\r\ntable { \r\n    border-collapse: collapse; \r\n}\r\ntable td,table th{\r\npadding:2px 2px 2px 0px;\r\n}\r\n        img {\r\n            max-width: inherit;\r\n            width: inherit;\r\n        }\r\n\r\n        @media print {\r\n\r\n            .hidden-print,\r\n            .hidden-print * {\r\n                display: none !important;\r\n            }\r\n\r\n            .ticket {\r\n                page-break-after: always;\r\n            }\r\n        }\r\n    </style>\r\n</head>\r\n\r\n<body>\r\n    <div class='ticket'>\r\n\t\r\n        <table style='width:100%;'>\r\n            <tr>\r\n                <td style='text-align: center;'>\r\n\t\t\t\t\t<span style='font-weight: bold;font-size: 50pt;'>{comname}</span>\r\n\t\t\t\t\t<span style='font-size: 40pt; display: block; text-align: center;margin-bottom:10px'>----------***----------</span>\r\n\t\t\t\t\t\r\n\t\t\t\t</td>\r\n            </tr>\r\n            <tr>\r\n                <td style='font-size: 18px; text-align: center; padding-top: 7px; padding-bottom: 7px;'>\r\n\t\t\t\t\t<span style='display: block; font-size: 45pt; font-weight: bold;'>THÔNG BÁO HỦY MÓN</span>\r\n\t\t\t\t\t<span style='font-size: 40pt; display: block;'>Thời gian: {ngaythangnamxuat}</span>\r\n\t\t\t\t\t<span style='font-size: 40pt; display: block;'>Nhân viên phục vụ: {staffName}</span>\r\n\t\t\t\t\t<span style='font-size: 40pt; display: block;'>Bàn: {tenbanphong}</span>\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\t\r\n        \r\n\t\t<hr style=\"font-size:40pt\" />\r\n\t<table style='width:100%;margin-top:20pt;margin-bottom:10px'>\t\t\t\r\n\t    <thead>\r\n\t\t<tr  style=\"border-botom-style: dotted;border-width: 1pt\">\r\n\t\t<th style='font-size: 35pt; text-align: left;    PADDING-BOTTOM: 12PT;'>Tên hàng hóa</th>\r\n\t\t<th style='font-size: 35pt; text-align: right;    PADDING-BOTTOM: 12PT;'>Số lượng</th>\r\n\t\t</tr>\r\n\t\t</thead>\r\n\t\t<tbody>\r\n\t\t<tr>\r\n\t\t<td style=\" padding-top: 10pt;padding-bottom: 10pt;\"colspan=\"2\">\r\n\t\t\t<span style='border-top: dotted #000 4px;display: block;'></span>\r\n\t\t</td>\r\n\t\t</tr>\r\n\t\t\t<tr  style=\"border-botom-style: dotted;border-width: 1pt\">\r\n\t\t\t\t<td style='font-size: 40pt; text-align: left'>{tenhanghoa}</td>\r\n\t\t\t\t<td style='font-size: 40pt; text-align: right'>{soluong}</td>\r\n\t\t\t</tr>\r\n\r\n\t\t</tbody>\r\n\t\t<tfoot>\r\n\t\t<tr><td style=\" padding-top: 10pt;padding-bottom: 10pt;\"colspan=\"2\">\r\n\t\t\t<span style='border-top: dotted #000 4px;display: block;'></span>\r\n\t\t</td></tr>\r\n\t\t<tr style='font-size: 35pt;text-align: left;margin-top:4px;border-top-style: dotted;border-width: 0.1px;'>\r\n\t\t\t<td style='font-size: 50pt; text-align: left'>Tổng</td>\r\n\t\t\t<td style=\"text-align: right;font-size: 50pt;\">{tongsoluong}</td>\r\n\t\t</tr>\r\n\t\t\r\n\t\t</tfoot>\r\n\t</table>\r\n\t\r\n</body>\r\n</html>";
-                string trproductregex = @"<tbody>(?<xValue>(.|\n)*)<\/tbody>";
+                //string html = "<!DOCTYPE html>\r\n<html lang='vi'>\r\n<head>\r\n    <meta charset='UTF-8'>\r\n    <meta name='viewport' content='width=device-width, initial-scale=1.0'>\r\n    <meta http-equiv='X-UA-Compatible' content='ie=edge'>\r\n    <title>Vé điện tử</title>\r\n    <script type=\"text/javascript\" charset=\"UTF-8\"></script>\r\n\t\r\n\t<style>\r\n        body {\r\n           \r\n            font-family: Arial;\r\n        }\r\n\r\n        hr {\r\n            margin: 0px;\r\n            border-top: 1px solit #000;\r\n        }\r\n\r\n        .ticket {\r\n          \r\n            padding: 0mm;\r\n            margin: 0 auto;\r\n            height: auto;\r\n   width: 300mm;\r\n            background: #FFF;\r\n            transform-origin: left;\r\n        }\r\ntable { \r\n    border-collapse: collapse; \r\n}\r\ntable td,table th{\r\npadding:2px 2px 2px 0px;\r\n}\r\n        img {\r\n            max-width: inherit;\r\n            width: inherit;\r\n        }\r\n\r\n        @media print {\r\n\r\n            .hidden-print,\r\n            .hidden-print * {\r\n                display: none !important;\r\n            }\r\n\r\n            .ticket {\r\n                page-break-after: always;\r\n            }\r\n        }\r\n    </style>\r\n</head>\r\n\r\n<body>\r\n    <div class='ticket'>\r\n\t\r\n        <table style='width:100%;'>\r\n            <tr>\r\n                <td style='text-align: center;'>\r\n\t\t\t\t\t<span style='font-weight: bold;font-size: 50pt;'>{comname}</span>\r\n\t\t\t\t\t<span style='font-size: 40pt; display: block; text-align: center;margin-bottom:10px'>----------***----------</span>\r\n\t\t\t\t\t\r\n\t\t\t\t</td>\r\n            </tr>\r\n            <tr>\r\n                <td style='font-size: 18px; text-align: center; padding-top: 7px; padding-bottom: 7px;'>\r\n\t\t\t\t\t<span style='display: block; font-size: 45pt; font-weight: bold;'>THÔNG BÁO HỦY MÓN</span>\r\n\t\t\t\t\t<span style='font-size: 40pt; display: block;'>Thời gian: {ngaythangnamxuat}</span>\r\n\t\t\t\t\t<span style='font-size: 40pt; display: block;'>Nhân viên phục vụ: {staffName}</span>\r\n\t\t\t\t\t<span style='font-size: 40pt; display: block;'>Bàn: {tenbanphong}</span>\r\n                </td>\r\n            </tr>\r\n        </table>\r\n\t\r\n        \r\n\t\t<hr style=\"font-size:40pt\" />\r\n\t<table style='width:100%;margin-top:20pt;margin-bottom:10px'>\t\t\t\r\n\t    <thead>\r\n\t\t<tr  style=\"border-botom-style: dotted;border-width: 1pt\">\r\n\t\t<th style='font-size: 35pt; text-align: left;    PADDING-BOTTOM: 12PT;'>Tên hàng hóa</th>\r\n\t\t<th style='font-size: 35pt; text-align: right;    PADDING-BOTTOM: 12PT;'>Số lượng</th>\r\n\t\t</tr>\r\n\t\t</thead>\r\n\t\t<tbody>\r\n\t\t<tr>\r\n\t\t<td style=\" padding-top: 10pt;padding-bottom: 10pt;\"colspan=\"2\">\r\n\t\t\t<span style='border-top: dotted #000 4px;display: block;'></span>\r\n\t\t</td>\r\n\t\t</tr>\r\n\t\t\t<tr  style=\"border-botom-style: dotted;border-width: 1pt\">\r\n\t\t\t\t<td style='font-size: 40pt; text-align: left'>{tenhanghoa}</td>\r\n\t\t\t\t<td style='font-size: 40pt; text-align: right'>{soluong}</td>\r\n\t\t\t</tr>\r\n\r\n\t\t</tbody>\r\n\t\t<tfoot>\r\n\t\t<tr><td style=\" padding-top: 10pt;padding-bottom: 10pt;\"colspan=\"2\">\r\n\t\t\t<span style='border-top: dotted #000 4px;display: block;'></span>\r\n\t\t</td></tr>\r\n\t\t<tr style='font-size: 35pt;text-align: left;margin-top:4px;border-top-style: dotted;border-width: 0.1px;'>\r\n\t\t\t<td style='font-size: 50pt; text-align: left'>Tổng</td>\r\n\t\t\t<td style=\"text-align: right;font-size: 50pt;\">{tongsoluong}</td>\r\n\t\t</tr>\r\n\t\t\r\n\t\t</tfoot>\r\n\t</table>\r\n\t\r\n</body>\r\n</html>";
+                //string trproductregex = @"<tbody>(?<xValue>(.|\n)*)<\/tbody>";
                 CompanyAdminInfo company = _companyProductRepository.GetCompany(ComId);
-                // TemplateInvoice templateInvoice = await _templateInvoicerepository.GetTemPlate(command.ComId);
+                TemplateInvoice templateInvoice = await _templateInvoicerepository.GetTemPlate(ComId,EnumTypeTemplatePrint.IN_BA0_HUY_CHE_BIEN);
                 //if (templateInvoice != null)
                 //{
                 TemplateInvoiceParameter templateInvoiceParameter = new TemplateInvoiceParameter()
@@ -1626,19 +1641,25 @@ namespace Infrastructure.Infrastructure.Repositories
                     staffName = model.FirstOrDefault()?.StaffName,
                 };
 
-                string tableProduct = string.Empty;
-                Regex rg = new Regex(trproductregex);
-                var match = rg.Match(html);
-                String result = match.Groups["xValue"].Value;
-                if (!string.IsNullOrEmpty(result))
-                {
-                    foreach (var item in model)
-                    {
-                        tableProduct += result.Replace("{tenhanghoa}", item.Name).Replace("{soluong}", item.Quantity.ToString("N0"));
-                    }
-                }
-                html = html.Replace(result, tableProduct);
-                string content = LibraryCommon.GetTemplate(templateInvoiceParameter, html, EnumTypeTemplate.PRINT_BEP);
+                var newlist = new List<NotifyOrderNewModel>();
+                //foreach (var item in model.GroupBy(x))
+                //{
+
+                //}
+                //string tableProduct = string.Empty;
+                //Regex rg = new Regex(trproductregex);
+                //var match = rg.Match(html);
+                //String result = match.Groups["xValue"].Value;
+                //if (!string.IsNullOrEmpty(result))
+                //{
+                //    foreach (var item in model)
+                //    {
+                //        tableProduct += result.Replace("{tenhanghoa}", item.Name).Replace("{soluong}", item.Quantity.ToString("N0"));
+                //    }
+                //}
+                //html = html.Replace(result, tableProduct);
+                //string content = LibraryCommon.GetTemplate(templateInvoiceParameter, html, EnumTypeTemplate.PRINT_BEP);
+                string content = PrintTemplate.PrintBaoBep(templateInvoiceParameter, model, templateInvoice.Template);
                 return await Result<string>.SuccessAsync(content, "");
             }
             catch (Exception e)
@@ -1691,8 +1712,20 @@ namespace Infrastructure.Infrastructure.Repositories
                         newitem.IdGuid = Guid.NewGuid();
                         newitem.Quantity = 1;
                         newitem.QuantityNotifyKitchen = 0;
-                        newitem.Total = 1 * newitem.Price;
-                        newitem.Amount = 1 * newitem.Price;
+                        if (getitem.IsVAT)
+                        {
+                            newitem.Total = 1 * newitem.PriceNoVAT;
+                            newitem.VATAmount = Math.Round(newitem.Total * (newitem.VATRate/100.0M), MidpointRoundingCommon.Three);
+                            newitem.Amount = 1 * newitem.Price;
+                        }
+                        else
+                        {
+                            newitem.VATAmount =0;
+                            newitem.Total = 1 * newitem.Price;
+                            newitem.Amount = 1 * newitem.Price;
+                        }
+                        
+
                         newitem.Discount = 0;
                         newitem.Note = string.Empty;
                         newitem.DiscountAmount = 0;
@@ -1705,7 +1738,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         return await Result<OrderTable>.FailAsync("Món không tồn tại hoặc đã bị xóa, không thể sao chép");
                     }
                     getorder.Quantity = getorder.OrderTableItems.Sum(x => x.Quantity);
-                    getorder.Amonut = getorder.OrderTableItems.Sum(x => x.Total);
+                    getorder.Amonut = getorder.OrderTableItems.Sum(x => x.Amount);
                     await _repository.UpdateAsync(getorder);
                     await _unitOfWork.SaveChangesAsync();
                     return await Result<OrderTable>.SuccessAsync(getorder);

@@ -1,8 +1,13 @@
 ﻿@using Domain.Entities
 @model TemplateInvoice
 @Html.AntiForgeryToken()
+@{
+    if (Model.Id==0)
+    {
+        Model.TypeTemplatePrint = Application.Enums.EnumTypeTemplatePrint.IN_BILL;
+    }
+}
 @Html.HiddenFor(m => m.Id)
-
 <div class="card-bodysweetalert2">
     <div class="row">
         <div class="col-md-3">
@@ -43,7 +48,7 @@
         </div>
         <div class="col-lg-12 col-xl-3">
             <h5>Tham số để điều chỉnh mẫu</h5>
-            <table class="table table-striped table-bordered table-supportTemplateInvoice">
+            <table class="table table-striped table-bordered table-supportTemplateInvoice table-printorderinvoice @(Model.TypeTemplatePrint==Application.Enums.EnumTypeTemplatePrint.IN_BA0_HUY_CHE_BIEN || Model.TypeTemplatePrint==Application.Enums.EnumTypeTemplatePrint.IN_BA0_CHE_BIEN?"d-none":"")">
                 <thead>
                     <tr>
                         <th>Mô tả</th>
@@ -174,6 +179,51 @@
                     <tr>
                         <td>Tiền thừa trả khách</td>
                         <td>{tienthuatrakhach}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-striped table-bordered table-supportTemplateInvoice table-printbep @(Model.TypeTemplatePrint==Application.Enums.EnumTypeTemplatePrint.IN_BILL || Model.TypeTemplatePrint==Application.Enums.EnumTypeTemplatePrint.IN_TAM_TINH?"d-none":"")">
+                <thead>
+                    <tr>
+                        <th>Mô tả</th>
+                        <th>Tham số</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2" style="width:100%" class="font-weight-bold">Thông tin đơn vị bán</td>
+                    </tr>
+                    <tr>
+                        <td>Tên đơn vị</td>
+                        <td>{comname}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="width:100%" class="font-weight-bold">Thông tin hàng hóa</td>
+                    </tr>
+                    <tr>
+                        <td>Tên hàng hóa</td>
+                        <td>{tenhanghoa}</td>
+                    </tr>
+                    <tr>
+                        <td>Ghi chú hàng hóa<br/>
+                            <small>Ví dụ: cafe ít đường</small></td>
+                        <td>{ghichu}</td>
+                    </tr>
+                    <tr>
+                        <td>Đơn vị tính</td>
+                        <td>{donvitinh}</td>
+                    </tr> 
+                    <tr>
+                        <td>Đơn giá hàng hóa</td>
+                        <td>{dongia}</td>
+                    </tr>
+                    <tr>
+                        <td>Số lượng hàng hóa</td>
+                        <td>{soluong}</td>
+                    </tr>
+                    <tr>
+                        <td>Tổng cộng số lượng món</td>
+                        <td>{tongsoluong}</td>
                     </tr>
                 </tbody>
             </table>

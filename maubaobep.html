@@ -1,35 +1,49 @@
-<table align="center" style="width:100%">
+<!DOCTYPE html>
+<?xml version="1.0" encoding="utf-8"?>
+<html lang="vi" xml:lang="vi" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title></title>
+	<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+</head>
+<body>
+<table align="center" border="0" style="width:100%;">
 	<tbody>
 		<tr>
-			<td style="text-align:center"><span style="font-size:36px"><strong>{comname}</strong></span><br />
-			<span style="font-size:40pt">----------***----------</span></td>
+			<td style="text-align:center"><span style="font-family:Arial,Helvetica,sans-serif;"><span style="font-size:42pt"><strong>{comname}</strong></span><br />
+			<span style="font-size:40pt">----------***----------</span></span></td>
 		</tr>
 		<tr>
-			<td style="text-align:center"><span style="font-size:45pt"><strong>TH&Ocirc;NG B&Aacute;O CHẾ BIẾN</strong></span><br />
+			<td style="text-align:center"><span style="font-family:Arial,Helvetica,sans-serif;"><span style="font-size:45pt"><strong>TH&Ocirc;NG B&Aacute;O CHẾ BIẾN</strong></span><br />
 			<span style="font-size:40pt">Thời gian: {ngaythangnamxuat}</span><br />
 			<span style="font-size:40pt">Nh&acirc;n vi&ecirc;n phục vụ: {staffName}</span><br />
-			<span style="font-size:40pt">B&agrave;n: {tenbanphong}</span></td>
+			<span style="font-size:40pt">B&agrave;n: {tenbanphong}</span></span></td>
 		</tr>
 	</tbody>
 </table>
 
-<div class="ticket">
+<div>
 <hr />
 <table id="tablehanghoa" style="margin-bottom:10px; margin-top:20pt; width:100%">
 	<thead>
 		<tr>
-			<th style="text-align:left"><span style="font-size:48px">T&ecirc;n h&agrave;ng h&oacute;a</span></th>
-			<th style="text-align:right"><span style="font-size:48px">Số lượng</span></th>
+			<th style="text-align:left"><span style="font-family:Arial,Helvetica,sans-serif;"><span style="font-size:48px">T&ecirc;n h&agrave;ng h&oacute;a</span></span></th>
+			<th style="text-align:right"><span style="font-family:Arial,Helvetica,sans-serif;"><span style="font-size:48px">Số lượng</span></span></th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
 			<td style="text-align:left">
-			<div style="border-top:0.5px dashed black"><span style="font-size:48px">{tenhanghoa}<br />
-			{ghichu}</span></div>
+			<div id="addd">
+			<div id="add" style="border-top:3px dashed black; padding-top:5px">
+			<div style=""><span style="font-family:Arial,Helvetica,sans-serif;"><span style="font-size:48px">{tenhanghoa}</span><br />
+			<span style="font-size:40px;"><em>{ghichu}</em></span></span></div>
+			</div>
+			</div>
 			</td>
 			<td style="text-align:right; vertical-align:top">
-			<div style="border-top:0.5px dashed black"><span style="font-size:48px">{soluong}</span></div>
+			<div id="â" style="border-top:3px dashed black; padding-top:5px">
+			<div id="nnn"><span style="font-family:Arial,Helvetica,sans-serif;"><span style="font-size:48px">{soluong}</span></span></div>
+			</div>
 			</td>
 		</tr>
 	</tbody>
@@ -38,18 +52,78 @@
 			<td style="text-align:left">
 			<div>
 			<div>
-			<div style="border-top:0.5px dashed black; padding-top:5px">
-			<div id="aa"><strong><span style="font-size:48px">Tổng</span></strong></div>
+			<div style="border-top:3px dashed black; padding-top:5px">
+			<div id="aa"><span style="font-family:Arial,Helvetica,sans-serif;"><span style="line-height:2;"><strong><span style="font-size:48px">Tổng</span></strong></span></span></div>
 			</div>
 			</div>
 			</div>
 			</td>
 			<td style="text-align:right">
-			<div style="border-top:0.5px dashed black; padding-top:5px">
-			<div id="adđ"><strong><span style="font-size:48px">{tongsoluong}</span></strong></div>
+			<div style="border-top:3px dashed black; padding-top:5px">
+			<div id="adđ"><span style="font-family:Arial,Helvetica,sans-serif;"><span style="line-height:2;"><strong><span style="font-size:48px">{tongsoluong}</span></strong></span></span></div>
 			</div>
 			</td>
 		</tr>
 	</tfoot>
 </table>
 </div>
+</body>
+<script id="allow-copy_script">(function agent() {
+    let unlock = false
+    document.addEventListener('allow_copy', (event) => {
+      unlock = event.detail.unlock
+    })
+
+    const copyEvents = [
+      'copy',
+      'cut',
+      'contextmenu',
+      'selectstart',
+      'mousedown',
+      'mouseup',
+      'mousemove',
+      'keydown',
+      'keypress',
+      'keyup',
+    ]
+    const rejectOtherHandlers = (e) => {
+      if (unlock) {
+        e.stopPropagation()
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation()
+      }
+    }
+    copyEvents.forEach((evt) => {
+      document.documentElement.addEventListener(evt, rejectOtherHandlers, {
+        capture: true,
+      })
+    })
+  })()</script><script id="allow-copy_script">(function agent() {
+    let unlock = false
+    document.addEventListener('allow_copy', (event) => {
+      unlock = event.detail.unlock
+    })
+
+    const copyEvents = [
+      'copy',
+      'cut',
+      'contextmenu',
+      'selectstart',
+      'mousedown',
+      'mouseup',
+      'mousemove',
+      'keydown',
+      'keypress',
+      'keyup',
+    ]
+    const rejectOtherHandlers = (e) => {
+      if (unlock) {
+        e.stopPropagation()
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation()
+      }
+    }
+    copyEvents.forEach((evt) => {
+      document.documentElement.addEventListener(evt, rejectOtherHandlers, {
+        capture: true,
+      })
+    })
+  })()</script></html>

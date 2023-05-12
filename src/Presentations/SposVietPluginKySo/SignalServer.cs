@@ -74,7 +74,7 @@ namespace SposVietPluginKySo
                 {
                     domain = "https://fnb.sposviet.vn";
                 }
-                //domain = "https://localhost:7269";
+                domain = "https://localhost:7269";//loca
                 var url = $"{domain}/Signal";
                 List<TimeSpan> timeSpans = new List<TimeSpan>(0);
                 timeSpans.Add(TimeSpan.FromSeconds(1));

@@ -4,8 +4,10 @@
     @{
         var listhis = Model != null ? Model.HistoryOrders.GroupBy(x => x.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")):null;
     }
-    @if (listhis!=null)
+    @if (listhis!=null && listhis.Count()>0)
     {
+          <div class="sposvietbackgroud">
+            <span class="bgnen"></span>
         @foreach (var item in listhis)
         {
             <div class="header-po">
@@ -64,11 +66,15 @@
                 }
             </ul>
         }
-
+        </div>
     }
     else
     {
-        <p>Bàn chưa có lịch sử nào</p>
+        <div class="sposvietbackgroud">
+            <span class="bgnen"></span>
+            <p>Bàn chưa có món nào đã báo bếp</p>
+        </div>
+       
     }
 
 </div>

@@ -28,7 +28,41 @@ table.dataTable > tbody > tr.child ul.dtr-details {
         text-align: left !important;
     }
 }
+.hidermenu {
+    display: none;
+}
+.showrmenu {
+    z-index: 1000;
+    position: absolute;
+    padding: 2px;
+    display: block;
+    margin: 0;
+    list-style-type: none;
+    list-style: none;
+    z-index:1038;
+}
+#rmenu {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 8px;
 
+    ul {
+        padding-left: 0px;
+        margin-bottom: 0;
+    }
+
+    li {
+        list-style: none;
+
+        button {
+            padding: 10px 30px;
+            background-color: #fff;
+            border: none;
+        }
+    }
+}
+.table-dataStaff {
+    margin-bottom: 100px;
+}
 .selectSupplerInoice {
 }
 
@@ -724,7 +758,7 @@ a:hover {
             grid-template-columns: 1fr auto;
             text-align: left;
             text-transform: capitalize;
-            border-top: #ccc solid thin;
+            border-top: #ccc dashed thin;
             padding-top: 10px;
 
             &:first-child {
@@ -1162,7 +1196,28 @@ input.select2-search__field {
         font-size: 15px;
     }
 }
+.sposvietbackgroud {
+    position: relative;
+    padding: 30px 0px;
 
+    span.bgnen {
+        background-image: url(/images/logo1.png);
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        background-position:center;
+        z-index: 0;
+        opacity: 0.07;
+    }
+
+    p {
+        position: relative;
+    }
+}
 .list-action-card {
     display: flex;
     flex-direction: row;
@@ -4095,6 +4150,12 @@ span.discountAmountItemPro {
                         align-items: center;
                         gap: 5px;
 
+                        &:not(.active) {
+                            span {
+                                opacity: 0.6;
+                            }
+                        }
+
                         &.active {
                             color: #1284e3;
                         }
@@ -5789,10 +5850,16 @@ img#Imgdata {
 }
 // Small devices (landscape phones, less than 768px)
 @media (max-width: 767.98px) {
+    .jq-toast-wrap.top-right {
+        top: 0 !important;
+        right: 0 !important;
+    }
     .dataCategoryleft {
 
         ul {
             padding-bottom: 122px;
+            max-height: calc(100vh - 202px);
+            overflow: auto;
         }
     }
 
@@ -5887,6 +5954,7 @@ img#Imgdata {
 
     #orderstaff .topbuton #dataListFood #lstfood {
         grid-template-columns: 48% 48%;
+        padding-bottom: 122px;
     }
 
     .jq-toast-wrap.top-right {

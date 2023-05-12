@@ -88,6 +88,13 @@ var TypeEInvoice = {
     BANHANG: 2,
     KHAC: 5
 }
+var TypeTemplatePrint = {
+    NONE : 0,
+        IN_BILL : 1,
+        IN_TAM_TINH : 2,
+        IN_BA0_CHE_BIEN : 3,
+        IN_BA0_HUY_CHE_BIEN : 4,
+}
 var TypePurchaseOrder = {
     NHAP_HANG: 0,
     TRA_HANG_NHAP: 1, //phiếu trả hàng nhập của nhà cung cấp
@@ -4284,13 +4291,32 @@ var eventCreate = {
                             });
                             CKEDITOR.replace('Template', {
                                 height: '500px',
+                               // contentsCss: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
+                                 on: {
+                                    //instanceReady: loadBootstrap,
+                                   // mode: loadBootstrap
+                                }
                             });
                             // Trigger resize handler
                             //tinymce.execCommand('mceRemoveControl', true, 'Template');
                         
                             loadEventSelect2("#SelectListTypeTemplatePrint");
                             $('#SelectListTypeTemplatePrint').on("change", function (e) {
-                                $(this).valid()
+                                $(this).valid();
+                                if ($(this).val()!="") {
+                                    let value = parseInt($(this).val());
+                                    if (value == TypeTemplatePrint.IN_BILL || value == TypeTemplatePrint.IN_TAM_TINH) {
+                                        if ($(".table-printorderinvoice").hasClass("d-none")) {
+                                            $(".table-printorderinvoice").toggleClass("d-none")
+                                            $(".table-printbep").toggleClass("d-none")
+                                        }
+                                    } else {
+                                        if ($(".table-printbep").hasClass("d-none")) {
+                                            $(".table-printorderinvoice").toggleClass("d-none")
+                                            $(".table-printbep").toggleClass("d-none")
+                                        }
+                                    }
+                                }
                             });
                             $(".btn-save").click(function () {
                                 //tinymce.triggerSave();
@@ -7715,12 +7741,12 @@ var posStaff = {
                         $(".bodybill table .itemorderbody").html(html);
                         $(".bodybill table .ordercode").html("Mã đơn:" + res.data.orderCode);
                         $("#id-order").data("id", res.data.idGuid);
-
+                        posStaff.loadEventRightMoues();//sự kiện chuột phải vào item
                         posStaff.loadeventAddNote();//sự kienj thêm ghi chú
                         posStaff.loadeventUpdatedataidtable();//update data tr
                         posStaff.loadAmoutAndQuantity(res.data.amount, res.data.quantity);
                         posStaff.loadeventadditemorder();
-                        posStaff.eventCheckBtnNotifyOrder();
+                        posStaff.eventCheckBtnNotifyOrder();//check button thông báo bếp ẩn hiện
                         posStaff.eventCheckActivetable();
                         evetnFormatTextnumber3();
                         // loadeventPos.loadEventClickIconAddAndMinus();
@@ -7813,6 +7839,7 @@ var posStaff = {
                             success: function (res) {
                                 if (res.isValid) {
                                     sel.data("note", $(".addnoteitem").val().trim());
+                                    sel.addClass("active");
                                     sel.find("span.text").html($(".addnoteitem").val().trim());
                                     Swal.close();
                                 }
@@ -7907,7 +7934,7 @@ var posStaff = {
             //bấm giảm thì phải hỏi
 
             if (parseFloat(slnotify) > (parseFloat(slgoc) - 1)) {
-                let namepro = $(this).parents("li").find(".name").find("b").html();
+                let namepro = $(this).parents("tr").find(".name").html();
                 let html = `
                             <div class="form-confirmremoveitem">
                                 <span>Bạn có chắc chắn muốn hủy món <b>`+ namepro + `</b> không?</span>
@@ -8075,7 +8102,7 @@ var posStaff = {
             if (parseFloat(slnotify) > parseFloat(slnew)) {
                 let slcanuychuabao = parseFloat((parseFloat(slgoc) - parseFloat(slnew)).toFixed(3));//sl góc bao gồm cả thông bsao và chưa báo
 
-                let namepro = $(this).parents("li").find(".name").find("b").html();
+                let namepro = $(this).parents("tr").find(".name").html();
                 let html = `
                             <div class="form-confirmremoveitem">
                                 <span>Bạn có chắc chắn muốn hủy món <b>`+ namepro + `</b> không?</span>
@@ -8360,9 +8387,12 @@ var posStaff = {
                                             </tr>
                                         </tbody>
                                     </table>`;
-                                $(".bodybill").html(html);
+                                // $(".bodybill").html(html);
+                                $("#id-order").data("id", "");//xóa đơn thì update id order = null
+                                $(".bodybill").find(".table-dataStaff").html(html);
                                 $(".actionstaff").find(".btn-addNeworderStaff").remove();
                                 $(".actionstaff").find(".btn-removerOrder").remove();
+                                $(".actionstaff").find(".btn-historyOrder").remove();
                             }
                         },
                         error: function (err) {
@@ -8447,12 +8477,45 @@ var posStaff = {
                 IdProduct: $(this).data("id")
             };
             posStaff.orderTable(dataObject);//lưu đơn
+            if ($(".btn-removerOrder").length==0) {//nếu k tìm thấy mới thêm
+                posStaff.loadShowBtnRemoveAndHistoryorder();//show các button xóa đơn hay xem lịch sử món
+            }
         });
-    },
+    },//sự kiên tích vào món trên thực đơn
     updateDataAttr: function () {
         let idorder = $("#id-order").data("id");
         $("#id-order").removeAttr("data-id");
         $("#id-order").data("id", idorder);
+    },
+    loadEventRightMoues: function () {
+        $(document).ready(function () {
+            //if ($("#test").addEventListener) {
+            //    $("#test").addEventListener('contextmenu', function (e) {
+            //        alert("You've tried to open context menu"); //here you draw your own menu
+            //        e.preventDefault();
+            //    }, false);
+            //} else {
+
+            $('body').on('contextmenu', 'tbody.itemorderbody tr', function (event) {
+
+                    //alert($(this).data("id"));
+                    $("#rmenu").data("id", $(this).data("id"));
+                    document.getElementById("rmenu").className = "showrmenu";
+                    document.getElementById("rmenu").style.top = mouseY(event) + 'px';
+                    document.getElementById("rmenu").style.left = mouseX(event) + 'px';
+                    window.event.returnValue = false;
+                });
+            // }
+            $("#rmenu .item-menu").click(function () {
+                alert($(this).parents("#rmenu").data("id"));
+                viết sự kiện clone ở đây đã lấy dc id
+            });
+        });
+        // this is from another SO post...  
+        $(document).bind("click", function (event) {
+            document.getElementById("rmenu").className = "hidermenu";
+        });
+
     },
     getdatataorderbytable: async function (idTable) {
         var loadOrder = await axios.get("/Selling/OrderTable/LoadDataOrderStaff?idtable=" + idTable);
@@ -8463,6 +8526,7 @@ var posStaff = {
             posStaff.loadEventNoitfyStaff();
             posStaff.loadeventAddNote();//sự kienj thêm ghi chú
             posStaff.loadeventadditemorder();
+            posStaff.loadEventRightMoues();//sự kiện chuột phải vào item
             //if (loadOrder.data.dataNote.length > 0) {
             //    ListNoteOrder = loadOrder.data.dataNote;
             //}
@@ -8470,11 +8534,7 @@ var posStaff = {
             $(".actionstaff").find(".btn-removerOrder").remove();
             $(".actionstaff").find(".btn-historyOrder").remove();
             if (loadOrder.data.active) {
-                $(".actionstaff").append('<button type="button" class="btn-addNeworderStaff btn btn-primary"><i class="fas fa-plus"></i></button>')
-                $(".actionstaff").append('<button type="button" class="btn-removerOrder btn btn-danger ml-2"><i class="fas fa-trash"></i></button>');
-                $(".actionstaff").append('<button type="button" class="btn-historyOrder btn btn-info ml-2"><i class="fas fa-history"></i></button>');
-                posStaff.loadeventremoveOrder();
-                posStaff.loadShowHistoryOrder();//sự kện xem lịch sử gọi món
+                posStaff.loadShowBtnRemoveAndHistoryorder();//show các button xóa đơn hay xem lịch sử món
                 $("#lst-roomandtable li.active").addClass("active");
                 $(".topbuton button:first").trigger("click");
             } else {
@@ -8487,6 +8547,16 @@ var posStaff = {
             return false;
         }
     },
+    loadShowBtnRemoveAndHistoryorder: function () {
+        $(".actionstaff").find(".btn-addNeworderStaff").remove();
+        $(".actionstaff").find(".btn-removerOrder").remove();
+        $(".actionstaff").find(".btn-historyOrder").remove();
+        $(".actionstaff").append('<button type="button" class="btn-addNeworderStaff btn btn-primary"><i class="fas fa-plus"></i></button>')
+        $(".actionstaff").append('<button type="button" class="btn-removerOrder btn btn-danger ml-2"><i class="fas fa-trash"></i></button>');
+        $(".actionstaff").append('<button type="button" class="btn-historyOrder btn btn-info ml-2"><i class="fas fa-history"></i></button>');
+        posStaff.loadeventremoveOrder();
+        posStaff.loadShowHistoryOrder();//sự kện xem lịch sử gọi món
+    },//show button xóa đơn xem lịch sử món
     loadShowHistoryOrder: function () {
         $("button.btn-historyOrder").click(async function () {
             let idOrder = $("#id-order").data("id");
@@ -17616,4 +17686,52 @@ function parseDecimal(equation, precision = 9) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
+}
+function loadBootstrap(event) {
+    if (event.name == 'mode' && event.editor.mode == 'source')
+        return; // Skip loading jQuery and Bootstrap when switching to source mode.
+
+    var csstag = document.createElement('link');
+    csstag.setAttribute('rel', 'stylesheet');
+    csstag.setAttribute('type', 'text/css');
+
+    var jQueryScriptTag = document.createElement('script');
+    var bootstrapScriptTag = document.createElement('script');
+
+    jQueryScriptTag.src = 'https://code.jquery.com/jquery-1.11.3.min.js';
+    bootstrapScriptTag.src = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js';
+    csstag.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css';
+
+    var editorHead = event.editor.document.$.head;
+
+    editorHead.appendChild(jQueryScriptTag);
+    
+    jQueryScriptTag.onload = function () {
+        editorHead.appendChild(csstag);
+        editorHead.appendChild(bootstrapScriptTag);
+    };
+}
+
+function mouseX(evt) {
+    if (evt.pageX) {
+        return evt.pageX;
+    } else if (evt.clientX) {
+        return evt.clientX + (document.documentElement.scrollLeft ?
+            document.documentElement.scrollLeft :
+            document.body.scrollLeft);
+    } else {
+        return null;
+    }
+}
+
+function mouseY(evt) {
+    if (evt.pageY) {
+        return evt.pageY;
+    } else if (evt.clientY) {
+        return evt.clientY + (document.documentElement.scrollTop ?
+            document.documentElement.scrollTop :
+            document.body.scrollTop);
+    } else {
+        return null;
+    }
 }

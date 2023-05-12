@@ -766,7 +766,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [HttpGet]
         public async Task<IActionResult> GetHistoryOrder(Guid IdOrder)
         {
-          
+          viết sự kiện clone loadEventRightMoues
             var update = await _mediator.Send(new GetHistoryQuery() { IdOrder = IdOrder });
             if (update.Succeeded)
             {

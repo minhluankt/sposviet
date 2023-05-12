@@ -68,6 +68,7 @@ namespace Infrastructure.Infrastructure.Repositories
                             {
                                 Code = item.Code,
                                 Name = item.Name,
+                                Unit = item.Unit,
                                 Note = (item.QuantityNotifyKitchen == 0 ? item.Note : string.Empty),
                                 RoomTableName = getorder.IsBringBack ? "Mang về" : getorder.RoomAndTable?.Name,
                                 StaffName = Cashername,
@@ -654,6 +655,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 /////-------------------add vào để báo bếp
                 NotifyOrderNewModels.Add(new NotifyOrderNewModel()
                 {
+                    Note=item.Note,
                     Code=item.ProCode,
                     Name= item.ProName,
                     Quantity= item.Quantity,

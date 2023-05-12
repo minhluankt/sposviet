@@ -49,17 +49,17 @@ namespace SposVietPluginKySo
                     var modelcompany = JsonConvert.DeserializeObject<ApiResponse<CompanyModel>>(getcompany);
                     if (!modelcompany.IsError)
                     {
-                        Properties.Settings.Default.ComId = modelcompany.result.Id;
-                        Properties.Settings.Default.Company = modelcompany.result.Name;
-                        Properties.Settings.Default.Address = modelcompany.result.Address;
-                        Properties.Settings.Default.MST = modelcompany.result.Taxcode;
-                        Properties.Settings.Default.Domain = modelcompany.result.Domain;
+                        //Properties.Settings.Default.ComId = modelcompany.result.Id;
+                        //Properties.Settings.Default.Company = modelcompany.result.Name;
+                        //Properties.Settings.Default.Address = modelcompany.result.Address;
+                        //Properties.Settings.Default.MST = modelcompany.result.Taxcode;
+                        //Properties.Settings.Default.Domain = modelcompany.result.Domain;
 
-                        //Properties.Settings.Default.ComId = 1;
-                        //Properties.Settings.Default.Company = "Cafe 1995";
-                        //Properties.Settings.Default.Address = "Cafe 1995";
-                        //Properties.Settings.Default.MST = "Cafe 1995";
-                        //Properties.Settings.Default.Domain = "https://fnb.sposviet.vn";
+                        Properties.Settings.Default.ComId = 1;
+                        Properties.Settings.Default.Company = "Cafe 1995";
+                        Properties.Settings.Default.Address = "Cafe 1995";
+                        Properties.Settings.Default.MST = "Cafe 1995";
+                        Properties.Settings.Default.Domain = "https://fnb.sposviet.vn";
 
 
                         Properties.Settings.Default.Save();
