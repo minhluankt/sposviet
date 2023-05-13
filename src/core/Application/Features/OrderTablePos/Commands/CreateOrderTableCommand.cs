@@ -135,6 +135,7 @@ namespace Application.Features.OrderTablePos.Commands
                 // xử lý sau khi đã cập nhật
                 OrderTableModel orderTableModel = new OrderTableModel();
                 orderTableModel = request.orderTableModel;
+                orderTableModel.CreateDate = update.Data.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss");
                 orderTableModel.IsBringBack = update.Data.IsBringBack;
                 orderTableModel.IdGuid = update.Data.IdGuid;
                 orderTableModel.IdOrder = update.Data.Id;

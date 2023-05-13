@@ -20,6 +20,7 @@ namespace Domain.ViewModel
         public Guid? IdOrderItem { get; set; }// 
         public int ComId { get; set; }// 
         public int IdProduct { get; set; }// id của sản phẩm
+        public string CreateDate { get; set; }// thời gian tạo
         public string ProductCode { get; set; }// id của sản phẩm
         public string TableName { get; set; }// tên bàn/phòng
         public bool IsBringBack { get; set; }// mag về

@@ -6,8 +6,13 @@
 <table class="table">
     <thead>
         <tr>
-            <th class="ordercode">Mã đơn: @(Model.OrderTable?.OrderTableCode)</th>
-            <th style="width: 123px;" class="text-center">@(Model.OrderTable?.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"))</th>
+                <th colspan="2">
+                    <div class="heade-toporder-staff">
+                        <span class="ordercode">Mã đơn: @(Model.OrderTable?.OrderTableCode)</span> <span class="createdate">
+                            @(Model.OrderTable?.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"))
+                        </span>
+                    </div>
+                </th>
         </tr>
     </thead>
     <tbody class="itemorderbody">
@@ -21,7 +26,7 @@
                 <tr data-id="@item.IdGuid" data-idpro="@item.IdProduct" data-slNotify="@item.QuantityNotifyKitchen.ToString().Replace(",",".")" data-sl="@item.Quantity.ToString().Replace(",",".")">
                     <td>
                         <div class="leftfood">
-                            <i class="fas fa-trash-alt"></i>
+                                <button class="removerow"><i class="fas fa-trash-alt"></i></button>
                             <div class="content">
                                 <span class="name">@(i++). @item.Name</span>
                                 <div class="eventaddnote">
@@ -85,7 +90,7 @@
 <div class="hidermenu" id="rmenu">
     <ul>
         <li>
-            <button class="item-menu">Sao chép món</button>
+            <button class="item-menu"><i class="far fa-clone"></i> Sao chép món</button>
         </li>
        
     </ul>

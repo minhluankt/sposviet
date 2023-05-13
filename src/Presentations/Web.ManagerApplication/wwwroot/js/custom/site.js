@@ -7717,12 +7717,12 @@ var posStaff = {
                                 html += `<tr data-id="` + item.idGuid + `" data-idpro="` + item.idProduct + `" data-slNotify="` + item.quantityNotifyKitchen.toString().replaceAll(",", ".") + `" data-sl="` + item.quantity.toString().replaceAll(",", ".") + `">
                                             <td>
                                                 <div class="leftfood">
-                                                    <i class="fas fa-trash-alt"></i>
+                                                    <button class="removerow"><i class="fas fa-trash-alt"></i></button>
                                                     <div class="content">
                                                         <span class="name">` + index + ". " + item.name + `</span>
                                                          <div class="eventaddnote">
                                                            <i class="number3">`+ (item.price.toString().replaceAll(",", ".")) + `</i> 
-                                                           <button class="note `+ (item.note != null ? "active" : "") +`" data-note="`+ (item.note != null ? item.note : "") +`"><i class="far fa-sticky-note"></i> <span class="text">`+ ((item.note != "" && item.note!=null)? item.note:"Thêm ghi chú")+`</span></button>
+                                                           <button class="note `+ (item.note != null && item.note != "" ? "active" : "") +`" data-note="`+ (item.note != null ? item.note : "") +`"><i class="far fa-sticky-note"></i> <span class="text">`+ ((item.note != "" && item.note!=null)? item.note:"Thêm ghi chú")+`</span></button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -7740,12 +7740,13 @@ var posStaff = {
 
                         $(".bodybill table .itemorderbody").html(html);
                         $(".bodybill table .ordercode").html("Mã đơn:" + res.data.orderCode);
+                        $(".bodybill table .createdate").html(res.data.createDate);
                         $("#id-order").data("id", res.data.idGuid);
                         posStaff.loadEventRightMoues();//sự kiện chuột phải vào item
                         posStaff.loadeventAddNote();//sự kienj thêm ghi chú
                         posStaff.loadeventUpdatedataidtable();//update data tr
                         posStaff.loadAmoutAndQuantity(res.data.amount, res.data.quantity);
-                        posStaff.loadeventadditemorder();
+                        posStaff.loadeventadditemorder();//sự kiện tăng giảm số lượng, xóa nguyên dòng
                         posStaff.eventCheckBtnNotifyOrder();//check button thông báo bếp ẩn hiện
                         posStaff.eventCheckActivetable();
                         evetnFormatTextnumber3();
@@ -7771,7 +7772,7 @@ var posStaff = {
                         //}
                        
                     }
-                    if (parseFloat(dataObject.QuantityFloat) > 0) {
+                    if (parseFloat(dataObject.QuantityFloat) > 0 && (dataObject.TypeUpdate == _TypeUpdatePos.UpdateQuantity || dataObject.TypeUpdate == _TypeUpdatePos.CloneItemOrder || dataObject.TypeUpdate == _TypeUpdatePos.AddProduct)) {
                         toastrcus.success("Thêm món thành công");
                     } else {
                         toastrcus.warning("Hủy món thành công");
@@ -7800,7 +7801,7 @@ var posStaff = {
             let idItemOrder = $(this).parents("tr").data("id");
             let idOrder = $("#id-order").data("id");
             let notedata = $(this).data("note");
-            htmlcontent = ' <textarea class="form-control addnoteitem"  placeholder="Nhập ghi chú">' + notedata +'</textarea>';
+            htmlcontent = ' <textarea class="form-control addnoteitem"  placeholder="Nhập ghi chú, ví dụ: cafe ít đường, ít đá....vv.. ">' + notedata +'</textarea>';
             Swal.fire({
                 title: 'Nhập ghi chú cho sản phẩm: <b class="red">' + $(this).parents("tr").find(".name").html()+"</b>",
                 customClass: {
@@ -8222,7 +8223,7 @@ var posStaff = {
 
         });
         //sự kiện xóa dòng đó luôn
-        $(".bodybill table tbody tr .leftfood i").click(function () {
+        $(".bodybill table tbody tr .leftfood .removerow").click(function () {
             let IdOrderItem = $(this).parents("tr").data("id");
             let idTable = $(".topbuton button:first").data("idtable");
             let Quantity = parseFloat($(this).parents("tr").data("sl")) || 0;
@@ -8371,8 +8372,12 @@ var posStaff = {
                                 html = `<table class="table">
                                         <thead>
                                             <tr>
-                                                <th class="ordercode">Mã đơn: </th>
-                                                <th style="    width: 123px;" class="text-center"></th>
+                                               <th colspan="2">
+                                                    <div class="heade-toporder-staff">
+                                                        <span class="ordercode">Mã đơn: </span> 
+                                                        <span class="createdate"></span>
+                                                    </div>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody class="itemorderbody">
@@ -8506,9 +8511,21 @@ var posStaff = {
                     window.event.returnValue = false;
                 });
             // }
+            $("#rmenu .item-menu").unbind();
             $("#rmenu .item-menu").click(function () {
-                alert($(this).parents("#rmenu").data("id"));
-                viết sự kiện clone ở đây đã lấy dc id
+                let idItemOrder = $(this).parents("#rmenu").data("id");
+                let idTable = $(".topbuton button:first").data("idtable");
+                let IdGuid = $("#id-order").data("id");
+                var dataObject = {
+                    QuantityFloat: 1,
+                    TypeUpdate: _TypeUpdatePos.CloneItemOrder,
+                    IdRoomAndTableGuid: idTable != "-1" ? idTable : "",
+                    IsBringBack: idTable == "-1" ? true : false,
+                    IdGuid: IdGuid,
+                    IdOrderItem: idItemOrder
+                };
+                posStaff.orderTable(dataObject);//lưu đơn
+               
             });
         });
         // this is from another SO post...  

@@ -220,6 +220,7 @@ namespace Application.Features.OrderTables.Commands
                 
                 orderTableModel = request;
                 orderTableModel.IdGuid = updatequantity.Data.IdGuid;
+                orderTableModel.CreateDate = updatequantity.Data.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss");
                 orderTableModel.IdRoomAndTableGuid = request.IdRoomAndTableGuid;
                 orderTableModel.OrderCode = updatequantity.Data.OrderTableCode;
                 orderTableModel.IsBringBack = updatequantity.Data.IsBringBack;
