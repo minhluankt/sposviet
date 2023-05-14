@@ -41,6 +41,7 @@ namespace Domain.Entities
         public bool IsBingBack { get; set; }//mang về
         public bool IsCancelAll { get; set; }
         public decimal Quantity { get; set; }
+        public DateTime? DateProcessing { get; set; }//giờ nhận làm món
         public DateTime? DateReady { get; set; }
         public DateTime? DateDone { get; set; }
         public EnumStatusKitchenOrder Status { get; set; }
@@ -48,6 +49,21 @@ namespace Domain.Entities
         public virtual ICollection<Product> Products { get; set; }
         [JsonIgnore]
         public virtual ICollection<DetailtKitchen> DetailtKitchens { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<HistoryKitchen> HistoryKitchens { get; set; }
+    }
+    public class HistoryKitchen
+    {
+        [Required]
+        public int Id { get; set; }
+        public int IdKitchen { get; set; }
+        [StringLength(150)]
+        public string StaffName { get; set; }
+        [StringLength(200)]
+        public string Note { get; set; }
+        public DateTime CreateDate { get; set; }
+        [ForeignKey("IdKitchen")]
+        public virtual Kitchen Kitchen { get; set; }
     }
     public class DetailtKitchen//dùng để hủy
     {

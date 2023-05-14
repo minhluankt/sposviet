@@ -251,6 +251,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     //------------------báo cho các clinet khác cập nhật dataoder realtime
                     try
                     {
+                        if (model.IsCancel)//nếu xd có hủy món khi đã báo bếp rồi thì sẽ update màn hình bếp
+                        {
+                            await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.CHITKEN);//update
+                        }
+                       
                         await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder, JsonConvert.SerializeObject(UpdateQuantity.Data));
                     }
                     catch (Exception e)
@@ -311,6 +316,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             {
                 try
                 {
+
+                    //await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.CHITKEN);//báo cho màn hình bếp update lại
                     //------------------báo cho các clinet khác cập nhật dataoder realtime
                     await dashboardHub.LoadOrdertable(EnumTypePrint.RealtimeOrder, JsonConvert.SerializeObject(update.Data));
                 }
@@ -448,8 +455,9 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
 
                 if (!string.IsNullOrEmpty(UpdateQuantity.Data.HtmlPrint))
                 {
-
+                    await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.CHITKEN);//báo cho màn hình bếp update lại
                     //---------------------------báo bếp--------------------------------
+
                     try
                     {
                         var _send = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.PRINT_BAO_BEP.ToString()) { ComId = currentUser.ComId });
@@ -657,6 +665,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     var send = await _mediator.Send(map);
                     if (send.Succeeded)
                     {
+                        await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.CHITKEN);//tách bàn tách đơn đều báo
                         _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS015));
                         return Json(new { isValid = true });
                     }
@@ -689,8 +698,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     _notify.Error(send.Message);
                     return Json(new { isValid = true, isNotPrint = true });
                 }
-                _notify.Success("Thông báo bếp thành công!");
-
+            
+                await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.CHITKEN);//thông báo màn hình bếp
                 //await dashboardHub.PrintbaobepSposViet(currentUser.ComId, send.Data);
                 // return Json(new { isValid = true, isNotPrint=true });
                 var _send = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.PRINT_BAO_BEP.ToString()) { ComId = currentUser.ComId });
@@ -704,10 +713,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         {
                             if (Convert.ToBoolean(checkconfig.Value))
                             {
-                                 await dashboardHub.PrintbaobepSposViet(currentUser.ComId, send.Data);
+                                _notify.Success("Thông báo bếp thành công!");
+                                await dashboardHub.PrintbaobepSposViet(currentUser.ComId, send.Data);
                                  return Json(new { isValid = true, isNotPrint=true });
                             }
                         }
+                        _notify.Success("Thông báo bếp thành công!");
                         return Json(new { isValid = true, html = send.Data, isNotPrint = false });
                     }
                     else

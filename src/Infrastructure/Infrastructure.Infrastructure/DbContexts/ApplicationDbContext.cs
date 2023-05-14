@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Contexts;
 using Application.Interfaces.Shared;
+using Ardalis.Specification;
 using AspNetCoreHero.Abstractions.Domain;
 
 using Domain.Entities;
@@ -199,12 +200,18 @@ namespace Infrastructure.Infrastructure.DbContexts
                 // Tạo Index Unique trên 1 cột
                 entity.HasIndex(p => new { p.Slug, p.ComId }).IsUnique();
             }); 
+            builder.Entity<HistoryKitchen>(entity =>
+            {
+                // Tạo Index Unique trên 1 cột
+                entity.HasOne(x => x.Kitchen).WithMany(x => x.HistoryKitchens).HasForeignKey(x => x.IdKitchen).OnDelete(deleteBehavior: DeleteBehavior.NoAction);
+            }); 
         
             builder.Entity<Kitchen>(entity =>
             {
                 // Tạo Index Unique trên 1 cột
                 entity.HasIndex(p => new { p.IdKitchen, p.ComId }).IsUnique();
                 entity.HasMany(x => x.DetailtKitchens).WithOne(x => x.Kitchen).HasForeignKey(x => x.IdKitchen).OnDelete(deleteBehavior: DeleteBehavior.Cascade);
+                entity.HasMany(x => x.HistoryKitchens).WithOne(x => x.Kitchen).HasForeignKey(x => x.IdKitchen).OnDelete(deleteBehavior: DeleteBehavior.Cascade);
             });
             builder.Entity<DetailtKitchen>(entity =>
             {

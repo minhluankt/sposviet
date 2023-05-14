@@ -175,6 +175,8 @@ var _TypeNotifyKitchenOrder = {
     UPDATEBYFOOD: 2,//theo món all
     UPDATEBYTABLE: 3,// theo bàn
     DELETE: 4,// XÓA KITCHEN LÀ xóa món đó khi sl = 0
+    Processing : 5,
+
 }
 var StatusKitchenOrder = {
     MOI: 0,
@@ -7138,7 +7140,75 @@ var loadcentChitkent = {
                 if (seconds < 10)
                     seconds = "0" + seconds;
                 $(item).html(hour + ":" + minute + ":" + seconds);
+                //---check nếu hơn 10 phút là vàng hơn 15 phút là đỏ
+                if (minute >= 10 && minute < 15 && hour == 0) {
+                    
+                    if (!$(item).parents("b.header-li").hasClass("tableWraing")) {
+                        $(item).parents("b.header-li").addClass("tableWraing");
+                    }
+                } else if (minute >= 15 || hour > 0) {
+                    if (!$(item).parents("b.header-li").hasClass("tableError")) {
+                        $(item).parents("b.header-li").addClass("tableError");
+                    }
+                }
             }
+        });
+    },
+    loadEventClickItemFood: function () {
+        $(".list-order-food button.btn").click(function () {
+            let sel = $(this);
+            let idproduct = $(this).data("idproduct");
+            let quantity = parseFloat($(this).data("quantity").replaceAll(",","."));
+            $.ajax({
+                type: 'POST',
+                url: "/Selling/PosKitchen/UpdateProcessingFood",
+                data: {
+                    TypeNotifyKitchenOrder: _TypeNotifyKitchenOrder.UPDATEBYFOOD,
+                    IdProduct: idproduct,
+                    Quantity: quantity,
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.isValid) {
+                        
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+        });
+        $(".list-item-food li").click(function () {
+            //let lstid = [];
+            //$("#dataOrderReady .tab-pane.active .tab-Priorities li").map(function () {
+            //    lstid.push($(this).data("id"));
+            //});
+            let sel = $(this);
+            let idChitken = $(this).data("id");
+            let isProgress = $(this).hasClass("Processing");
+            $.ajax({
+                type: 'POST',
+                url: "/Selling/PosKitchen/UpdateProcessingFood",
+                data: {
+                    TypeNotifyKitchenOrder: _TypeNotifyKitchenOrder.Processing,
+                    Id: idChitken,
+                    IsProgress: isProgress,
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.isValid) {
+                        if (isProgress) {
+                            sel.removeClass("Processing");
+                        } else {
+                            sel.addClass("Processing");
+                        }
+                        
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
         });
     },
     loadDataByRoomSkin1: async function (onload = true) {
@@ -7151,6 +7221,8 @@ var loadcentChitkent = {
                 if (res.isValid) {
                     $("#datafoodbyroom").html(res.data);
                     loadcentChitkent.loadeventCoutUpTime();
+                    loadcentChitkent.loadEventClickItemFood();
+                    evetnFormatTextnumber3decimal();
                     if (onload) {
                        
                     }
@@ -7270,15 +7342,20 @@ var loadcentChitkent = {
             }
             $(this).removeAttr("disabled");
         });
-        $(sel).find(".tab-pane").find(".lst-action").find("button.btn-delete").click(function () {
+        $(sel).find(".tab-pane").find(".lst-action").find("button.btn-delete").click(async function () {
             $(this).attr("disabled", "disabled");
+            let sel = $(this);
             let idchitken = $(this).parent().parent().data("id");
-            loadcentChitkent.eventDeleteKitchen(idchitken, _TypeNotifyKitchenOrder.DELETE);
+            await loadcentChitkent.eventDeleteKitchen(idchitken, _TypeNotifyKitchenOrder.DELETE).then(function (data) {//để thực hiện then thì hàm bên kia phải có async
+                if (data) {
+                    $(sel).parents("li.item-data").remove();
+                }
+            });
             $(this).removeAttr("disabled");
         });
-
     },
-    eventDeleteKitchen: function (idkitchen, type) {
+    eventDeleteKitchen: async function (idkitchen, type) {
+        var isValid = false;
         $.ajax({
             type: 'POST',
             url: "/Selling/PosKitchen/DeleteKitchen",
@@ -7291,14 +7368,15 @@ var loadcentChitkent = {
             },
             success: function (res) {
                 if (res.isValid) {
-
+                    isValid = res.isValid;
                 }
             },
             error: function (err) {
                 console.log(err)
+                isValid = false;
             }
         })
-
+        return isValid;
     },//đã chế biến
     eventNotifyOrderOrocessed: function (idkitchen, upone, idorder, idPrduct, Type, Status) {
         $.ajax({

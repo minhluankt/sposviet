@@ -1,38 +1,54 @@
 ﻿@model Domain.ViewModel.KitChenTableModel
-<div class="row body-dataContent">
-    <div class="col-md-9">
+<div class="body-dataContent">
 
+    @if (Model.KitChenTableListModels.Count() > 0)
+    {
         <ul class="list-item-table-food">
-
             @foreach (var item in Model.KitChenTableListModels)
             {
                 <li>
-                    <b class="header-li">@item.tableName (@item.quantity) <span class="creareDatetable">@item.TimeSpan</span></b>
+                    <b class="header-li">@item.tableName (<span class="number3">@item.quantity</span>) <time class="creareDatetable">@item.TimeSpan</time></b>
                     <div class="body-item">
                         <ul class="list-item-food">
                             @foreach (var food in item.OrderDetailByOrders)
                             {
-                                <li>@food.proName <span class="red">(@food.quantity)</span></li>
+                                <li data-id="@food.IdIntChitKen" data-idguid="@food.IdChitKen" class="@(food.Status==Application.Enums.EnumStatusKitchenOrder.Processing?"Processing":"")">
+                                    @food.proName <span class="red">(<b class="number3">@food.quantity</b>)</span><br />
+                                    <i class="note">
+                                        @food.Note
+                                    </i>
+                                </li>
                             }
                         </ul>
                     </div>
                 </li>
             }
         </ul>
+    }
+    else
+    {
+        <div class="sposvietbackgroud">
+            <span class="bgnen"></span>
+            <p>Chưa có món cần chế biến</p>
+        </div>
+    }
 
-    </div>
-    <div class="col-md-3">
-        <ul class="list-order-food">
-            <li class="header-right">Thống kê món</li>
-            @foreach (var item in Model.OrderByFoodModels)
-            {
-                <li class="">
-                    @item.proName (@item.quantity)<br />
-                    <span>
+    <ul class="list-order-food">
+        <li class="header-right">Thống kê món</li>
+        @foreach (var item in Model.OrderByFoodModels)
+        {
+            <li class="">
+                <div class="body-food">
+                    @item.proName (<span class="number3">@item.quantity</span>)<br />
+                    <i class="note">
                         @item.note
-                    </span>
-                </li>
-            }
-        </ul>
-    </div>
+                    </i>
+                </div>
+                <button class="btn" data-idproduct="@item.idProduct" data-quantity="@item.quantity">
+                    <i class="fas fa-check-circle"></i>
+                </button>
+            </li>
+        }
+    </ul>
+
 </div>

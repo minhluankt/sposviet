@@ -6,6 +6,7 @@ using AutoMapper;
 using Domain.ViewModel;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -66,12 +67,47 @@ namespace Application.Features.Kitchens.Commands
                             return await Result<NotifyKitChenModel>.FailAsync("Không tìm thấy món");
                         }
 
-                        break;
-
+                        break; 
+                    case EnumTypeNotifyKitchenOrder.Processing:
+                        if (request.Id == null)
+                        {
+                            return await Result<NotifyKitChenModel>.FailAsync("Không tìm thấy món");
+                        }
+                        if (!request.IsProgress)//nếu là món nhận làm
+                        {
+                            request.Status = EnumStatusKitchenOrder.Processing;
+                        }
+                        else
+                        {
+                            request.Status = EnumStatusKitchenOrder.MOI;
+                        }
+                        var updateProcessing = await _NotifyChitkenRepository.UpdateNotifyProcessingFood(request.ComId,  request.Id.Value, request.Cashername, request.Status);
+                        if (updateProcessing!=null)
+                        {
+                            NotifyKitChenModel notifyKitChenModel = new NotifyKitChenModel();
+                            notifyKitChenModel.IdProduct = updateProcessing.IdProduct;
+                            notifyKitChenModel.Id = updateProcessing.Id;
+                            notifyKitChenModel.idChitken = updateProcessing.IdKitchen;
+                            return await Result<NotifyKitChenModel>.SuccessAsync(notifyKitChenModel,HeperConstantss.SUS006);
+                        }
+                        return await Result<NotifyKitChenModel>.FailAsync(HeperConstantss.ERR012);
+                      
                     case EnumTypeNotifyKitchenOrder.UPDATEBYFOOD:
                         if (request.IdProduct == null)
                         {
                             return await Result<NotifyKitChenModel>.FailAsync("Không tìm thấy món");
+                        }
+                        if (request.TypeNotifyKitChen==EnumTypeNotifyKitChen.NHA_BEP_2)
+                        {
+                            var updatebupro = await _NotifyChitkenRepository.UpdateNotifyDoneByProduct(request.ComId, request.IdProduct.Value, request.Quantity);
+                            if (updatebupro.Succeeded)
+                            {
+                                NotifyKitChenModel notifyKitChenModel = new NotifyKitChenModel();
+                                notifyKitChenModel.IdProduct = request.IdProduct;
+                                notifyKitChenModel.ListIdChitken = updatebupro.Data.Select(x => x.IdKitchen).ToArray();
+                                return await Result<NotifyKitChenModel>.SuccessAsync(notifyKitChenModel, HeperConstantss.SUS006);
+                            }
+                            return await Result<NotifyKitChenModel>.FailAsync(updatebupro.Message);
                         }
                         break;
                     case EnumTypeNotifyKitchenOrder.UPDATEBYTABLE:

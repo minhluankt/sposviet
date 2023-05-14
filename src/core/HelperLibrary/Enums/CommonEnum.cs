@@ -350,6 +350,7 @@ namespace Application.Enums
         READY = 1,
         DONE = 2,
         CANCEL = 3,
+        Processing = 4,//đang thực hiện
     }
     public enum EnumTypeKitchenOrder // trạng thái chi tiết lịch sử bếp thông báo món
     {
@@ -363,6 +364,12 @@ namespace Application.Enums
 
         THU = 1,
         CHI = 2
+    }
+    public enum EnumTypeNotifyKitChen// loại nhà bếp
+    {
+
+        NHA_BEP_1 = 1,
+        NHA_BEP_2 = 2
     }
     public enum EnumTypeCategoryThuChi// là danh mục thu chi mặc định của hệ thống khi thu bán hàng và chi nhập hàng
     {
@@ -402,6 +409,7 @@ namespace Application.Enums
         UPDATEBYFOOD = 2,//theo món all
         UPDATEBYTABLE = 3,// theo bàn
         DELETEKITCHEN = 4,// theo bàn
+        Processing = 5,// update món dg nhận chế biến
     }
 
     public enum EnumTypePurchaseOrder // kiểu

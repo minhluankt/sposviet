@@ -142,7 +142,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         checkupdatequantity = true;
                     }
-                    if (IsCancelItem)//nếu hủy món mà đã thông báo bép thì luuw lịch sử lại
+                    if (IsCancelItem)//nếu hủy món mà đã thông báo bép thì luuw lịch sử lại IsCancelItem là đã check ở view nếu sl đã báo bếp lớn hơn sl sau khi đã hủy thì update true IsCancelItem
                     {
                         decimal _newquantity = Quantity;
                         if (checkupdatequantity)
@@ -1632,6 +1632,10 @@ namespace Infrastructure.Infrastructure.Repositories
                 TemplateInvoice templateInvoice = await _templateInvoicerepository.GetTemPlate(ComId,EnumTypeTemplatePrint.IN_BA0_HUY_CHE_BIEN);
                 //if (templateInvoice != null)
                 //{
+                if (templateInvoice == null)
+                {
+                    return await Result<string>.FailAsync("Hệ thống chưa cấu hình mẫu in chê biến bếp");
+                }
                 TemplateInvoiceParameter templateInvoiceParameter = new TemplateInvoiceParameter()
                 {
                     comname = !string.IsNullOrEmpty(company.Title) ? company.Title.Trim() : company.Name,

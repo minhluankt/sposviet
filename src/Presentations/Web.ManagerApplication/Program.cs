@@ -398,6 +398,6 @@ app.UseEndpoints(endpoints =>
 
 });
 
-app.UseSqlTableDependency<SubscribeProductTableDependency>(builder.Configuration);
+// app.UseSqlTableDependency<SubscribeProductTableDependency>(builder.Configuration);sử dụng realtime DB
 RoutingConfig.Include(app);
 app.Run();

@@ -9,13 +9,17 @@ namespace Domain.ViewModel
         public string Cashername { get; set; }
         public Guid? IdOrder { get; set; }
         public Guid? idChitken { get; set; }
+        public int? Id { get; set; }//id int chitken
         public string orderCode { get; set; }
         public int? IdProduct { get; set; }
         public EnumTypeNotifyKitchenOrder TypeNotifyKitchenOrder { get; set; } = EnumTypeNotifyKitchenOrder.NOTIFYCHITKEN;
         public EnumStatusKitchenOrder Status { get; set; } = EnumStatusKitchenOrder.READY;
+        public EnumTypeNotifyKitChen TypeNotifyKitChen { get; set; } = EnumTypeNotifyKitChen.NHA_BEP_1;//LOẠI MÀN HÌNH NHÀ BẾP
         public int ComId { get; set; }
+        public int Quantity { get; set; }
         public bool UpdateOne { get; set; }
         public bool UpdateFull { get; set; }
+        public bool IsProgress { get; set; }//dg nhận món
         public Guid[] ListIdChitken { get; set; }//list này để thông báo
     }
     public class KitChenModel
@@ -92,6 +96,7 @@ namespace Domain.ViewModel
     }
     public class OrderDetailByOrder//chi tiết của bảng order và chitken join bảng
     {
+        public EnumStatusKitchenOrder Status { get; set; }
         public string Note { get; set; }
         public string proCode { get; set; }
         public string proName { get; set; }
@@ -104,6 +109,8 @@ namespace Domain.ViewModel
         public string orderCode { get; set; }
         public string createDateFood { get; set; }
         public Guid? idOrder { get; set; }
+        public Guid? IdChitKen { get; set; }
+        public int? IdIntChitKen { get; set; }
         public int IdItemOrder { get; set; }
         public decimal quantity { get; set; }
     }

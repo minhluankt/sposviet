@@ -37,7 +37,6 @@ namespace Application.Features.Kitchens.Querys
                 {
                     return await Result<KitChenTableModel>.FailAsync(e.Message);
                 }
-
             }
         }
     }

@@ -42,13 +42,13 @@ namespace Infrastructure.Infrastructure.Repositories
                     _logger.LogError("OnChanged realtime ChangeType None");
                     break;
                 case ChangeType.Delete:
-                    await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.DELETECHITKEN);
+                    //await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.DELETECHITKEN);
                     break;
                 case ChangeType.Insert:
-                    await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.CHITKEN);
+                    //await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.CHITKEN);
                     break;
                 case ChangeType.Update:
-                    await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.UPDATECHITKEN);
+                   // await dashboardHub.sendNotifyPos(EnumTypeSignalRHub.CHITKEN, EnumTypeSignalRHub.UPDATECHITKEN);
                     break;
                 default:
                     break;

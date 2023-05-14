@@ -180,22 +180,18 @@ namespace Infrastructure.Infrastructure.HubS
        // thực hiện chỉnh sadmin công ty hiển thị cột comid, lưu ở tool cho phép gọi api lấy dữ liệu, sau đó test nhé
         public async Task sendNotifyPos(EnumTypeSignalRHub STATUS, EnumTypeSignalRHub type, string note = "")
         {
-            using (var scope = _serviceProvider.CreateScope())
+            //using (var scope = _serviceProvider.CreateScope())
             {
-                var _userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetService(typeof(UserManager<ApplicationUser>));
-        
-                var currentUser = Context.User.Identity.GetUserClaimLogin();
+                // var _userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetService(typeof(UserManager<ApplicationUser>));
+
+                var currentUser = _httpcontext.HttpContext.User.Identity.GetUserClaimLogin();
                 if (currentUser!=null)
                 {
                     if (STATUS == EnumTypeSignalRHub.POS && type == EnumTypeSignalRHub.POS)
                     {
                         string _Group = $"{currentUser.ComId}_POS";
-                        if (!Ids.Where(x => x.Key == Context.ConnectionId && x.Value == _Group).Any())
-                        {
-                            Ids.Add(new KeyValuePair<string, string>(Context.ConnectionId, _Group));
-                        }
-
-                        await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
+                       
+                        checkExitRoomChitchen(Context.ConnectionId, _Group);
 
                         bool isValid = true;
                         await Clients.OthersInGroup(_Group).SendAsync("addMessagePOS", isValid); // OthersInGroup là báo cho các người trong nhóm trừ thèn dg gọi,GroupExcept là trừ chỉ định
@@ -204,11 +200,7 @@ namespace Infrastructure.Infrastructure.HubS
                         if (type == EnumTypeSignalRHub.POS)
                         {
                             string _Groupbep = $"{currentUser.ComId}_CHITCHEN";
-                            if (!Ids.Where(x => x.Key == Context.ConnectionId && x.Value == _Groupbep).Any())
-                            {
-                                Ids.Add(new KeyValuePair<string, string>(Context.ConnectionId, _Groupbep));
-                            }
-                            await Groups.AddToGroupAsync(Context.ConnectionId, _Groupbep);
+                            checkExitRoomChitchen(Context.ConnectionId, _Groupbep); 
                             await Clients.OthersInGroup(_Group).SendAsync("addMessageCHITKEN", isValid);
                         }
 

@@ -1567,6 +1567,35 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.ToTable("HistoryInvoice");
                 });
 
+            modelBuilder.Entity("Domain.Entities.HistoryKitchen", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdKitchen")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("StaffName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdKitchen");
+
+                    b.ToTable("HistoryKitchen");
+                });
+
             modelBuilder.Entity("Domain.Entities.HistoryOrder", b =>
                 {
                     b.Property<int>("Id")
@@ -1988,6 +2017,9 @@ namespace Infrastructure.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateDone")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateProcessing")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateReady")
@@ -4492,6 +4524,17 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Navigation("Invoice");
                 });
 
+            modelBuilder.Entity("Domain.Entities.HistoryKitchen", b =>
+                {
+                    b.HasOne("Domain.Entities.Kitchen", "Kitchen")
+                        .WithMany("HistoryKitchens")
+                        .HasForeignKey("IdKitchen")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Kitchen");
+                });
+
             modelBuilder.Entity("Domain.Entities.HistoryOrder", b =>
                 {
                     b.HasOne("Domain.Entities.OrderTable", "OrderTable")
@@ -4948,6 +4991,8 @@ namespace Infrastructure.Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Kitchen", b =>
                 {
                     b.Navigation("DetailtKitchens");
+
+                    b.Navigation("HistoryKitchens");
 
                     b.Navigation("Products");
                 });
