@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using Hangfire.Storage;
 using Infrastructure.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -22,12 +23,14 @@ namespace Infrastructure.Infrastructure.HubS
     public class SignalRHub : Hub
     {
         private bool isreconncet = false;
+        private readonly IHttpContextAccessor _httpcontext;
         private readonly ILogger<SignalRHub> _log;
         private readonly IServiceProvider _serviceProvider;
-        public SignalRHub(IServiceProvider serviceProvider, ILogger<SignalRHub> log)
+        public SignalRHub(IServiceProvider serviceProvider, ILogger<SignalRHub> log, IHttpContextAccessor httpcontext)
         {
             _log = log;
             _serviceProvider = serviceProvider;
+            _httpcontext = httpcontext;
         }
         public static List<KeyValuePair<string, string>> Ids = new List<KeyValuePair<string, string>>();
         public override async Task OnConnectedAsync()
@@ -131,21 +134,33 @@ namespace Infrastructure.Infrastructure.HubS
         }
         public async Task LoadOrdertable(EnumTypePrint Type,string JsonData)
         {
-            var currentUser = Context.User.Identity.GetUserClaimLogin();
-            string _Group = $"{currentUser.ComId}_LoadOrdertable";
-            var data = new
+            
+            var currentUser = _httpcontext.HttpContext.User.Identity.GetUserClaimLogin();
+            if (currentUser!=null)
             {
-                type = Type,
-                data = JsonData
-            }; string datajson = Common.ConverModelToJson(data);
-            checkExitRoomChitchen(Context.ConnectionId, _Group);
-            if (isreconncet)
-            {
+                string _Group = $"{currentUser.ComId}_LoadOrdertable";
+                var data = new
+                {
+                    user = currentUser.UserName,
+                    type = Type,
+                    data = JsonData
+                }; string datajson = Common.ConverModelToJson(data);
+                checkExitRoomChitchen(this.Context.ConnectionId, _Group);
+                // checkExitRoomChitchen(currentUser.Id, _Group);
                 await Clients.Group(_Group).SendAsync("LoadOrdertable", datajson);
+                //if (isreconncet)
+                //{
+                //    await Clients.Group(_Group).SendAsync("LoadOrdertable", datajson);
+                //}
+                //else
+                //{
+                //    await Clients.Group(_Group).SendAsync("LoadOrdertable", datajson);//trừ thèn dg nhấn
+                //}
             }
             else
             {
-                await Clients.OthersInGroup(_Group).SendAsync("LoadOrdertable", datajson);//trừ thèn dg nhấn
+
+                _log.LogError("Không tìm thấy user để load");
             }
             
         }
@@ -168,8 +183,7 @@ namespace Infrastructure.Infrastructure.HubS
             using (var scope = _serviceProvider.CreateScope())
             {
                 var _userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetService(typeof(UserManager<ApplicationUser>));
-                //var currentUser = await _userManager.GetUserAsync(Context.User);
-                // var currentUser = await _userManager.GetUserAsync(Context.User);
+        
                 var currentUser = Context.User.Identity.GetUserClaimLogin();
                 if (currentUser!=null)
                 {
@@ -233,14 +247,14 @@ namespace Infrastructure.Infrastructure.HubS
             {
                 if (!Ids.Where(x => x.Key == ConnectionId && x.Value == _Group).Any())
                 {
-                    Ids.Add(new KeyValuePair<string, string>(Context.ConnectionId, _Group));
-                    await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
+                    Ids.Add(new KeyValuePair<string, string>(ConnectionId, _Group));
+                    await Groups.AddToGroupAsync(ConnectionId, _Group);
                 }
             }
             else
             {
-                Ids.Add(new KeyValuePair<string, string>(Context.ConnectionId, _Group));
-                await Groups.AddToGroupAsync(Context.ConnectionId, _Group);
+                Ids.Add(new KeyValuePair<string, string>(ConnectionId, _Group));
+                await Groups.AddToGroupAsync(ConnectionId, _Group);
             }
         }
 

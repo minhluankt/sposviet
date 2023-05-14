@@ -262,6 +262,7 @@
                 connection.start()
                     .then(function () {
                         console.assert(connection.state === signalR.HubConnectionState.Connected);
+                        connection.invoke('LoadOrdertable', EnumTypePrint.TEST, "connect dữ liệu nhân viên");
                         console.log("SignalR Connected.");
                         clearInterval(interval);
                     })
@@ -299,7 +300,7 @@
         // Transport fallback functionality is now built into start.
         connection.start()
             .then(function () {
-
+                connection.invoke('LoadOrdertable', EnumTypePrint.TEST, "connect dữ liệu nhân viên");
                 console.log('connection started');
                 //$(".btn-notif").click(function () {
                 //    posStaff.NotifyChitken();

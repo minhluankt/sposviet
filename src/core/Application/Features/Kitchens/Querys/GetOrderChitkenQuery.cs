@@ -43,6 +43,7 @@ namespace Application.Features.Kitchens.Querys
                 }
 
                 KitChenModel kitChenModel = new KitChenModel();
+
                 // sự ưu tiên
                 kitChenModel.OrderByPrioritiesModels = product.Select(x => new OrderByPrioritiesModel
                 {
@@ -69,12 +70,13 @@ namespace Application.Features.Kitchens.Querys
                 }).ToList();
 
 
+
                 /// thực đơn theo bàn
-                kitChenModel.OrderByRoomModels = product.GroupBy(y => y.IdOrder).Select(x => new OrderByRoomModel
+                kitChenModel.OrderByRoomModels = product.OrderBy(x => x.Id).GroupBy(y => y.IdRoomTable).Select(x => new OrderByRoomModel//theo IdRoomTable hoặc idorder
                 {
                     tableName = x.FirstOrDefault()?.RoomTableName,
                     idRoomTable = x.FirstOrDefault()?.IdRoomTable,
-                    idOrder = x.Key,
+                    idOrder = x.FirstOrDefault().IdOrder,
                     orderCode = x.FirstOrDefault()?.OrderCode,
                     quantity = x.Sum(x => x.Quantity),
                     OrderByRoomDetailtModels = x.Select(z => new OrderByRoomDetailtModel()
@@ -87,6 +89,7 @@ namespace Application.Features.Kitchens.Querys
                         quantity = z.Quantity,
                         idKitchen = z.IdKitchen,
                         tableName = z.RoomTableName,
+                        Note = z.Note,
                         detailtKitchenModels = z.DetailtKitchens.Select(c => new DetailtKitchenModel()
                         {
                             IsRemove = c.IsRemove,
@@ -101,14 +104,19 @@ namespace Application.Features.Kitchens.Querys
                 }).ToList();
 
 
+
+
                 //thực đơn theo món
                 kitChenModel.OrderByFoodModels = product.Where(x => x.Quantity > 0).GroupBy(y => y.IdProduct).Select(x => new OrderByFoodModel
                 {
                     proName = x.FirstOrDefault()?.ProName,
                     proCode = x.FirstOrDefault()?.ProCode,
+                    note = string.Join(",", x.Select(x => x.Note).ToArray()),
                     idProduct = x.FirstOrDefault()?.IdProduct,
                     quantity = x.Sum(x => x.Quantity),
                 }).ToList();
+
+
 
                 return await Result<KitChenModel>.SuccessAsync(kitChenModel);
             }

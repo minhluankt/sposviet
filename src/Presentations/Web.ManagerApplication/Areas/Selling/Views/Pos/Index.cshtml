@@ -51,6 +51,12 @@
         :focus-visible {
             outline: -webkit-focus-ring-color auto 0px;
         }
+
+        .sposvietbackgroud {
+            position: relative;
+            padding: 30px 0px;
+            height: calc(100vh - 108px);
+        }
     </style>
 </head>
 <body id="sellting-pos" class="skill-pos">
@@ -59,9 +65,10 @@
         <div class="info-login">
             @if (login)
             {
-
+                <input type="hidden" id="UserIdentity" value="@User.Identity.Name"/>
                 <div class="user-name">
-                    @User.Identity.Name  <i class="fas fa-bars"></i>
+                    @User.Identity.Name  
+                    <i class="fas fa-bars"></i>
                     <ul class="">
                         <li><a href="/Selling/PosKitchen"><i class="fas fa-concierge-bell"></i> Nhà bếp</a></li>
                         <li><a href="/Selling/Dashboard"><i class="fas fa-address-card"></i> Quản trị</a></li>
@@ -402,11 +409,15 @@
             });
             connection.on('LoadOrdertable', function (res) {//load các đơn
                 json = JSON.parse(res);
-                if (json.type == EnumTypePrint.RealtimeOrder) {
+                let getuser = $("#UserIdentity").val();
+                if (json.type == EnumTypePrint.RealtimeOrder && json.user != getuser) {
+                    
                     loadeventPos.eventRealtimeOrdertable(json.data);
                 }
                 else{
-                    console.log(json.data);
+                    if (json.type != EnumTypePrint.RealtimeOrder){
+                        console.log(json.data);
+                    }
                 }
 
             });

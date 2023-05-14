@@ -222,7 +222,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var data = await _mediator.Send(new GetAllAreaQuery(currentUser.ComId) { ComId = currentUser.ComId, Paging = false,IncludeOrdertable=true });
             if (data.Succeeded)
             {
-                var getlst = data.Data.SelectMany(x => x.RoomAndTables);
+                //var getlst = data.Data.SelectMany(x => x.RoomAndTables);
                 var jspm = data.Data.SelectMany(x=>x.RoomAndTables).Select(x => new //RoomAndTableViewModel()
                 {
                     tableName = x.Name,
@@ -241,7 +241,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             return new JsonResult(new { isValid = false });
         }
-
+        
         // POST: RoomAndTablesController/Delete/5
         [Authorize(Policy = "roomtable.delete")]
         [HttpPost]

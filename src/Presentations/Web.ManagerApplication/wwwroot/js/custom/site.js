@@ -7122,6 +7122,45 @@ var loadcentChitkent = {
         });
         $("time.timeago").timeago();
     },
+    loadeventCoutUpTime: function () {
+        $("time.creareDatetable").each(function (i, item) {
+            setInterval(countTimer, 1000);
+            var totalSeconds = parseInt($(item).html());
+            function countTimer() {
+                ++totalSeconds;
+                var hour = Math.floor(totalSeconds / 3600);
+                var minute = Math.floor((totalSeconds - hour * 3600) / 60);
+                var seconds = totalSeconds - (hour * 3600 + minute * 60);
+                if (hour < 10)
+                    hour = "0" + hour;
+                if (minute < 10)
+                    minute = "0" + minute;
+                if (seconds < 10)
+                    seconds = "0" + seconds;
+                $(item).html(hour + ":" + minute + ":" + seconds);
+            }
+        });
+    },
+    loadDataByRoomSkin1: async function (onload = true) {
+        $.ajax({
+            type: 'GET',
+            global: false,
+            url: "/Selling/PosKitchen/GetFoodDataByRoom",
+            dataType: 'json',
+            success: function (res) {
+                if (res.isValid) {
+                    $("#datafoodbyroom").html(res.data);
+                    loadcentChitkent.loadeventCoutUpTime();
+                    if (onload) {
+                       
+                    }
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    },
     loadDataFoodReady: async function (onload = true) {
         var loadOrder = await axios.get("/Selling/PosKitchen/DataFoodReady");
         if (loadOrder.data.isValid) {
@@ -7168,8 +7207,6 @@ var loadcentChitkent = {
                 console.log(err)
             }
         })
-
-
 
     },//danh sách món bếp đã làm xong chờ cung 
     loadeventhideshoworderrooom: function (sel) {
@@ -7699,30 +7736,30 @@ var posStaff = {
             // traditional: true,
             success: async function (res) {
                 //console.log(res.data);
-
+                res.data = JSON.parse(res.data);
                 if (res.isValid) {
                     if (res.isbaobep) {
                         posStaff.eventKitchenNotice(res.dataHtml);
                     }
-                    if (res.data.orderTableItems.length == 0) {
-                        if (res.data.isBringBack) {
-                            res.data.idRoomAndTableGuid = "-1";
+                    if (res.data.OrderTableItems.length == 0) {
+                        if (res.data.IsBringBack) {
+                            res.data.IdRoomAndTableGuid = "-1";
                         }
-                        await posStaff.getdatataorderbytable(res.data.idRoomAndTableGuid);
+                        await posStaff.getdatataorderbytable(res.data.IdRoomAndTableGuid);
                     } else {
                         let html = ` `;
-                        res.data.orderTableItems
+                        res.data.OrderTableItems
                             .forEach(function (item, index) {
                                 index = index + 1;
-                                html += `<tr data-id="` + item.idGuid + `" data-idpro="` + item.idProduct + `" data-slNotify="` + item.quantityNotifyKitchen.toString().replaceAll(",", ".") + `" data-sl="` + item.quantity.toString().replaceAll(",", ".") + `">
+                                html += `<tr data-id="` + item.IdGuid + `" data-idpro="` + item.IdProduct + `" data-slNotify="` + item.QuantityNotifyKitchen.toString().replaceAll(",", ".") + `" data-sl="` + item.Quantity.toString().replaceAll(",", ".") + `">
                                             <td>
                                                 <div class="leftfood">
                                                     <button class="removerow"><i class="fas fa-trash-alt"></i></button>
                                                     <div class="content">
-                                                        <span class="name">` + index + ". " + item.name + `</span>
+                                                        <span class="name">` + index + ". " + item.Name + `</span>
                                                          <div class="eventaddnote">
-                                                           <i class="number3">`+ (item.price.toString().replaceAll(",", ".")) + `</i> 
-                                                           <button class="note `+ (item.note != null && item.note != "" ? "active" : "") +`" data-note="`+ (item.note != null ? item.note : "") +`"><i class="far fa-sticky-note"></i> <span class="text">`+ ((item.note != "" && item.note!=null)? item.note:"Thêm ghi chú")+`</span></button>
+                                                           <i class="number3">`+ (item.Price.toString().replaceAll(",", ".")) + `</i> 
+                                                           <button class="note `+ (item.Note != null && item.Note != "" ? "active" : "") +`" data-note="`+ (item.Note != null ? item.Note : "") +`"><i class="far fa-sticky-note"></i> <span class="text">`+ ((item.Note != "" && item.Note!=null)? item.Note:"Thêm ghi chú")+`</span></button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -7730,7 +7767,7 @@ var posStaff = {
                                             <td>
                                                 <div class="actionaddfood">
                                                     <i class="fas fa-minus"></i>
-                                                    <input type="text" class="quantitynew number3" value="`+ (parseFloat(item.quantity.toString().replaceAll(",", "."))) + `" />
+                                                    <input type="text" class="quantitynew number3" value="`+ (parseFloat(item.Quantity.toString().replaceAll(",", "."))) + `" />
                                                     <i class="fas fa-plus"></i>
                                                 </div>
                                             </td>
@@ -7739,13 +7776,13 @@ var posStaff = {
                             });
 
                         $(".bodybill table .itemorderbody").html(html);
-                        $(".bodybill table .ordercode").html("Mã đơn:" + res.data.orderCode);
-                        $(".bodybill table .createdate").html(res.data.createDate);
-                        $("#id-order").data("id", res.data.idGuid);
+                        $(".bodybill table .ordercode").html("Mã đơn: " + res.data.OrderCode);
+                        $(".bodybill table .createdate").html(res.data.CreateDate);
+                        $("#id-order").data("id", res.data.IdGuid);
                         posStaff.loadEventRightMoues();//sự kiện chuột phải vào item
                         posStaff.loadeventAddNote();//sự kienj thêm ghi chú
                         posStaff.loadeventUpdatedataidtable();//update data tr
-                        posStaff.loadAmoutAndQuantity(res.data.amount, res.data.quantity);
+                        posStaff.loadAmoutAndQuantity(res.data.Amount, res.data.Quantity);
                         posStaff.loadeventadditemorder();//sự kiện tăng giảm số lượng, xóa nguyên dòng
                         posStaff.eventCheckBtnNotifyOrder();//check button thông báo bếp ẩn hiện
                         posStaff.eventCheckActivetable();
@@ -8550,6 +8587,7 @@ var posStaff = {
             $(".actionstaff").find(".btn-addNeworderStaff").remove();
             $(".actionstaff").find(".btn-removerOrder").remove();
             $(".actionstaff").find(".btn-historyOrder").remove();
+            $(".actionstaff").find(".btn-changeTable").remove();
             if (loadOrder.data.active) {
                 posStaff.loadShowBtnRemoveAndHistoryorder();//show các button xóa đơn hay xem lịch sử món
                 $("#lst-roomandtable li.active").addClass("active");
@@ -8571,9 +8609,168 @@ var posStaff = {
         $(".actionstaff").append('<button type="button" class="btn-addNeworderStaff btn btn-primary"><i class="fas fa-plus"></i></button>')
         $(".actionstaff").append('<button type="button" class="btn-removerOrder btn btn-danger ml-2"><i class="fas fa-trash"></i></button>');
         $(".actionstaff").append('<button type="button" class="btn-historyOrder btn btn-info ml-2"><i class="fas fa-history"></i></button>');
+        $(".actionstaff").append('<button type="button" class="btn-changeTable btn btn-primary ml-2"><i class="fas fa-table"></i></button>'); 
+        posStaff.loadeventChangeTableOrder();
         posStaff.loadeventremoveOrder();
         posStaff.loadShowHistoryOrder();//sự kện xem lịch sử gọi món
     },//show button xóa đơn xem lịch sử món
+    loadeventChangeTableOrder: function () {
+        $(".btn-changeTable").click(function () {
+            $.ajax({
+                type: 'GET',
+                async: false,
+                url: '/Selling/RoomTable/GetTableJson',
+                data: {
+
+                },
+                success: function (res) {
+                    if (res.isValid) {
+                        let htmlcontent = `<div class="changetablestaff"><div class="infoTable"></div>`;
+                            htmlcontent += `<div class="position-relative form-group">
+                                            <label for="" class="col-form-label" asp-for="Name">Chọn khu vực</label>
+                                            <select style="width:100%"  class="form-control" id="areadata"></select>
+                                            </div>
+                                            <div class="position-relative form-group">
+                                                <label for="" class="col-form-label" asp-for="Name">Chọn phòng/bàn cần chuyển đến</label>
+                                                <select style="width:100%" class="form-control" id="tableAndRoomdata"></select>
+                                            </div>
+                                            
+                                        </div>
+                                    `;
+                        Swal.fire({
+                            title: 'Thay đổi bàn/phòng',
+                            customClass: {
+                                container: 'Swalcontainer-small SwalcontainerchangeTablestaff',
+                                title: 'title-swal-small'
+                            },
+                            allowOutsideClick: true,
+                            showConfirmButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: 'Lưu',
+                            html: htmlcontent,
+                            cancelButtonText: 'Hủy bỏ',
+                            footer: "<button class='swal2-cancel swal2-styled btn-cancel mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='swal2-styled btn btn-success btn-save'><i class='icon-cd icon-doneAll icon'></i>Xác nhận thay đổi</button>",
+                            showLoaderOnConfirm: true,
+                            didRender: () => {
+                                let idTable = $(".topbuton button:first").data("idtable");//id của bàn hiện tại
+                                var idArea = 0;//mặc định id của khu vực
+                                var nameArea = "";//mặc định id của khu vực
+                                let  tableNameCurent = "";
+                                lstArrayTable = [];
+                                res.jsonPro.map(function (index, ele) {//lọc danh sách bàn
+                                    table = {};
+                                    table.id = index.idtable;
+                                    table.text = index.tableName;
+                                    table.idArea = index.idArea;
+                                    table.selected = (idTable == index.idtable);
+                                    if (idTable == index.idtable) {
+                                        table.numberProduct = 0;//=0 để khỏi bị loại
+                                        idArea = index.idArea;
+                                        nameArea = index.nameArea;
+                                        tableNameCurent = index.tableName;
+                                    } else {
+                                        table.numberProduct = parseInt(index.numberProduct);
+                                    }
+                                    if (table.numberProduct==0) {
+                                        lstArrayTable.push(table);
+                                    }
+                                });
+                                debugger
+                                var newArrfilterTable = lstArrayTable.filter(x => x.idArea == idArea);
+                                lstArrayArea = [];
+                                res.jsoncate.map(function (index, ele) {
+                                    area = {};
+                                    area.id = index.id;
+                                    area.text = index.name;
+                                    area.selected = (index.id == idArea);
+                                    lstArrayArea.push(area);
+                                });
+                                htmlinfotable = "Thông tin bàn hiện tại: <b>" + nameArea + ", " + tableNameCurent+"</b>";
+                                $(".infoTable").html(htmlinfotable);
+                                $("#areadata").select2({
+                                    theme: "default select2ChangeTableStaff",
+                                    data: lstArrayArea
+                                }).on("change", function (e) {
+                                    var newArrfilterTable = lstArrayTable.filter(x => x.idArea == parseInt($(this).val()));
+                                    $("#tableAndRoomdata").empty().select2({
+                                        theme: "default select2ChangeTableStaff",
+                                        data: newArrfilterTable
+                                    })
+                                })
+                                $("#tableAndRoomdata").select2({
+                                    theme: "default select2ChangeTableStaff",
+                                    data: newArrfilterTable
+                                })
+                                $(".btn-cancel").click(function () {
+                                    Swal.close();
+                                });
+                                $(".btn-save").click(function () {
+                                    
+                                    if ($("#tableAndRoomdata").val() == "") {
+                                        toastrcus.error("Vui lòng chọn bàn cần chuyển");
+                                        return;
+                                    }
+                                    if ($("#tableAndRoomdata").val() == idTable) {
+                                        toastrcus.error("Vui lòng chọn bàn khác với bàn hiện tại!");
+                                        return;
+                                    }
+                                    let idOrder = $("#id-order").data("id");
+                                    let idtableNew = $("#tableAndRoomdata").val();
+                                    dataObject = {
+                                        IdOrder: idOrder,
+                                        TypeSelectTable: 1,//1 là chọn bàn 0 là mang về
+                                        IdTable: idtableNew,
+                                        OldIdTable: idTable,
+                                        TypeUpdate: _TypeUpdatePos.UpdateRoomOrTableInOrder
+                                    };
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '/Selling/OrderTable/ChangeTableInOrder',
+                                        dataType: 'json',
+                                        data: dataObject,
+                                        success: function (res) {
+                                            if (res.isValid) {
+                                                $(".topbuton button:first").data("idtable", res.idTable);
+                                                $(".topbuton button:first").children(".tablename").html(res.tableName);
+                                                $(".topbuton button:first").children(".tablename").removeClass("required");
+                                                //----hủy bỏ active của bàn cũ và gán lên bàn mới
+                                                htmlMac = "";
+                                                if (res.quantity > 0) {
+                                                    htmlMac = `<div class="ribbon-two ribbon-two-primary"><span>1</span>`;//+res.quantity+
+                                                }
+                                                $("#lst-roomandtable li").map(function (ind, ele) {
+                                                    if ($(ele).data("id") == idtableNew) {//nếu là bàn mới thì add active vào
+                                                        $(ele).addClass("active").addClass("CurentOrder");
+                                                        $(ele).prepend(htmlMac);//thêm neo mac prepend là them vào trong thành phần mà thêm trước
+                                                    }
+                                                    else if ($(ele).data("id") == idTable) {//nếu là bàn cũ thì xóa active đi
+                                                        $(ele).find(".ribbon-two").remove();
+                                                        $(ele).removeClass("active").removeClass("CurentOrder");
+                                                    }
+                                                });
+                                                //--------
+                                                Swal.close();
+                                            }
+                                        },
+                                        error: function (err) {
+                                            console.log(err)
+                                        }
+                                    });
+
+                                });
+                            },
+                            preConfirm: (note) => {
+                                console.log(note);
+
+                            },
+                            allowOutsideClick: () => !Swal.isLoading()
+                        })
+                    
+                    }
+                }
+            });
+        });
+    },
     loadShowHistoryOrder: function () {
         $("button.btn-historyOrder").click(async function () {
             let idOrder = $("#id-order").data("id");
@@ -12673,11 +12870,11 @@ var eventBanle = {
 }
 var loadeventPos = {
     eventRealtimeOrdertable: function (data) {
-        json = JSON.parse(data);
+       json = JSON.parse(data);
         $("#lst-roomandtable li").filter(async function () {
             let iddata = $(this).data("id");
             if (json.IdRoomAndTableGuid == iddata) {
-                if (json.OrderTableItems.length == 0 || json.TypeProduct == _TypeUpdatePos.RemoveOrder) {
+                if (json.OrderTableItems.length == 0 || json.TypeUpdate == _TypeUpdatePos.RemoveOrder) {
                     $(this).removeClass("CurentOrder");
                 } else if (!$(this).hasClass("CurentOrder")) {
                     $(this).addClass("CurentOrder");
@@ -12686,17 +12883,69 @@ var loadeventPos = {
                     let GetTable = $(this).find("b").html();
 
                     if (json.IsBringBack) {
-                        await loadeventPos.loadOrderByTable("-1");
+                        //await loadeventPos.loadOrderByTable("-1");
                     } else {
-                        await loadeventPos.loadOrderByTable(json.IdRoomAndTableGuid);
+                       // await loadeventPos.loadOrderByTable(json.IdRoomAndTableGuid);
                     }
+                    loadeventPos.loadDataOfTable(json);
                     $(".btn-showttable").data("id", iddata);
                     $(".btn-showttable").find(".showTableOrder").html(GetTable);
 
                 }
             }
         });
+    },
+    loadDataOfTable: async function (data) {
+        if (data.OrderTableItems.length == 0) {
+            if (data.IsBringBack) {
+                data.IdRoomAndTableGuid = "-1";
+            }
+            await loadeventPos.loadOrderByTable(data.IdRoomAndTableGuid);
+            loadeventPos.checkHighlightTableInOrder();// check highlight
+            // sau khi load lại gán order mới thì update bàn active qua tab order
+            let GetTable = $("#lst-roomandtable").find("li.active");
+            //$(".btn-showttable").attr("data-id", GetTable.data("id"));
+            $(".btn-showttable").data("id", GetTable.data("id"));
+            $(".btn-showttable").find(".showTableOrder").html(GetTable.find("b").html());
+        } else {
+            let html = `<ul id="item-mon"> `;
+            data.OrderTableItems
+                .forEach(function (item, index) {
+                    htmlvat = "";
+                    if (item.IsVAT) {
+                        htmlvat = " <i class='fas fa-percent'></i>";
+                    }
+                    index = index + 1;
+                    html += ` <li data-id="` + item.IdGuid + `" data-idpro ="` + item.IdProduct + `" data-slNotify=` + item.QuantityNotifyKitchen + ` data-sl=` + item.Quantity + ` >
+                                            <div  class="btn-remove" data-idquan="`+ item.Quantity + `"><i data-idquan="` + item.Quantity + `" class="fas fa-trash-alt"></i></div>
+                                            <div class="name"><b>` + index + ". " + item.Name + htmlvat + `</b>
+                                            <button class="note`+ (item.Note != null && item.Note != "" ? " active" : "") + `" data-note="` + (item.Note != null ? item.Note : "") + `"><i class="far fa-sticky-note"></i> <span class="text">` + ((item.note != "" && item.note != null) ? item.note : "Thêm ghi chú") + `</span></button>
+                                            </div>
+                                            <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="`+ item.Quantity + `"> <i class="fas fa-plus"></i></div>
+                                            <div><input type="text" class="form-control priceFormat" readonly value="`+ (item.Price) + `" /></div>
+                                            <div class="amount"><b class="priceFormat">`+ (item.Total) + `</b><button class="CloneItem"><i class="fas fa-plus"></i></button></div>
+                                        </li>`;
+                    // <div class="item_action"><i class="fas fa-minus"></i><span class="quantity">`+ item.quantity + `</span> <i class="fas fa-plus"></i></div>
+                });
+            html += `</ul>`;
 
+            $("#ul-tab-order").find("a.active").data("id", data.IdGuid);
+            $("#ul-tab-order").find("a.active").parent("li").data("title", "");// phải gán  = "" mới có hiệu lực chỉ xóa đi thì k dc
+            $("#ul-tab-order").find("a.active").find("span.orderCode").html(data.OrderCode);
+            $(".tab-content-order").find(".tab-pane.active").html(html);
+            loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
+            loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
+            loadeventPos.eventUpdatedataItemMonOrder();//update các data-id...
+
+
+            $(".tab-content-order").find(".tab-pane.active").attr("data-id", data.IdGuid);
+            loadeventPos.loadAmoutAndQuantity(data.Amount, data.Quantity);
+            loadeventPos.loadEventClickIconAddAndMinus();//sự kiện kích vào icon
+            loadeventPos.loadAddOrRemoveCurentClassTable(true);// xem có sản phẩm thì add class curen table
+        // console.log(dataObject.IdOrderItem);
+        }
+       
+        
 
     },
     eventShowTabProductByCategory: function () {
@@ -12975,17 +13224,17 @@ var loadeventPos = {
             // traditional: true,
             success: async function (res) {
                 //console.log(res.data);
-
+                res.data = JSON.parse(res.data);
                 if (res.isValid) {
                     if (res.isbaobep) {
                         loadeventPos.eventinbaobep(res.dataHtml);
                     }
 
-                    if (res.data.orderTableItems.length == 0) {
-                        if (res.data.isBringBack) {
-                            res.data.idRoomAndTableGuid = "-1";
+                    if (res.data.OrderTableItems.length == 0) {
+                        if (res.data.IsBringBack) {
+                            res.data.IdRoomAndTableGuid = "-1";
                         }
-                        await loadeventPos.loadOrderByTable(res.data.idRoomAndTableGuid);
+                        await loadeventPos.loadOrderByTable(res.data.IdRoomAndTableGuid);
 
                         loadeventPos.checkHighlightTableInOrder();// check highlight
                         // sau khi load lại gán order mới thì update bàn active qua tab order
@@ -12994,65 +13243,31 @@ var loadeventPos = {
                         $(".btn-showttable").data("id", GetTable.data("id"));
                         $(".btn-showttable").find(".showTableOrder").html(GetTable.find("b").html());
                     } else {
-                        let html = `<ul id="item-mon"> `;
-                        res.data.orderTableItems
-                            .forEach(function (item, index) {
-                                htmlvat = "";
-                                if (item.isVAT) {
-                                    htmlvat = " <i class='fas fa-percent'></i>";
-                                }
-                                index = index + 1;
-                                html += ` <li data-id="` + item.idGuid + `" data-idpro ="` + item.idProduct + `" data-slNotify=` + item.quantityNotifyKitchen + ` data-sl=` + item.quantity + ` >
-                                            <div  class="btn-remove" data-idquan="`+ item.quantity + `"><i data-idquan="` + item.quantity + `" class="fas fa-trash-alt"></i></div>
-                                            <div class="name"><b>` + index + ". " + item.name + htmlvat+`</b>
-                                            <button class="note`+ (item.note != null && item.note != "" ? " active" : "") + `" data-note="` + (item.note != null ? item.note : "") + `"><i class="far fa-sticky-note"></i> <span class="text">` + ((item.note != "" && item.note != null) ? item.note : "Thêm ghi chú") + `</span></button>
-                                            </div>
-                                            <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="`+ item.quantity + `"> <i class="fas fa-plus"></i></div>
-                                            <div><input type="text" class="form-control priceFormat" readonly value="`+ (item.price) + `" /></div>
-                                            <div class="amount"><b class="priceFormat">`+ (item.total) + `</b><button class="CloneItem"><i class="fas fa-plus"></i></button></div>
-                                        </li>`;
-                                // <div class="item_action"><i class="fas fa-minus"></i><span class="quantity">`+ item.quantity + `</span> <i class="fas fa-plus"></i></div>
-                            });
-                        html += `</ul>`;
 
-                        $("#ul-tab-order").find("a.active").data("id", res.data.idGuid);
-                        $("#ul-tab-order").find("a.active").parent("li").data("title", "");// phải gán  = "" mới có hiệu lực chỉ xóa đi thì k dc
-                        // $("#ul-tab-order").find("a.active").parent("li").removeAttr("data-title");
-                        $("#ul-tab-order").find("a.active").find("span.orderCode").html(res.data.orderCode);
-                        $(".tab-content-order").find(".tab-pane.active").html(html);
+                        //---load dữ liệu vào đơn hiện tại
+                        loadeventPos.loadDataOfTable(res.data);
+                        //
 
-
-                        loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
-                        loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
-                        loadeventPos.eventUpdatedataItemMonOrder();
-
-
-                        $(".tab-content-order").find(".tab-pane.active").attr("data-id", res.data.idGuid);
-                        loadeventPos.loadAmoutAndQuantity(res.data.amount, res.data.quantity);
-                        loadeventPos.loadEventClickIconAddAndMinus();
-                        loadeventPos.loadAddOrRemoveCurentClassTable(true);// xem có sản phẩm thì add class curen table
-                        // console.log(dataObject.IdOrderItem);
                         if (dataObject.TypeUpdate == _TypeUpdatePos.CloneItemOrder) {
-                            const ids = res.data.orderTableItems.map(object => {
+                            const ids = res.data.OrderTableItems.map(object => {
                                 return object.id;
                             }); //lọc lấy ra danh sách id
                             const max = Math.max(...ids);//lấy id lớn nhất
-                            var getIdorderItemClone = res.data.orderTableItems.find(x => x.idProduct == dataObject.IdProduct && x.id == max);
+                            var getIdorderItemClone = res.data.OrderTableItems.find(x => x.idProduct == dataObject.IdProduct && x.id == max);
                             loadeventPos.loadactiveClickItemMon(getIdorderItemClone.idGuid, dataObject.IdProduct);// sự kiện animaiton cho dòng vừa dc thêm
                         } else {
                             loadeventPos.loadactiveClickItemMon(dataObject.IdOrderItem, dataObject.IdProduct);// sự kiện animaiton cho dòng vừa dc thêm
                         }
-                       
                         // xử lý giữ lại khách hàng khi có nhiều tab dg mở nhưng kích vào tab active xong kích qua lại bị mất khách k hiển thị
                         if (dataObject.TypeUpdate == _TypeUpdatePos.AddProduct && typeof dataObject.IdGuid == "undefined") {//xử lý với cái thêm mới
 
-                            let findId = ListCusByOrderPos.find(x => x.idOrder == res.data.idGuid);
+                            let findId = ListCusByOrderPos.find(x => x.idOrder == res.data.IdGuid);
                             let cus = $(".search-customer").val();
                             if (typeof findId == "undefined" && cus != "") {
                                 let arrCus = {};
-                                arrCus.idOrder = res.data.idGuid;
+                                arrCus.idOrder = res.data.IdGuid;
                                 arrCus.customerCode = cus.split(" ")[0];
-                                arrCus.customerName = res.data.buyer;
+                                arrCus.customerName = res.data.Buyer;
                                 ListCusByOrderPos.push(arrCus);
                             }
                         }

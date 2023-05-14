@@ -9,16 +9,9 @@ namespace Application.Enums
     {
         User = 0,
         Company = 1
-    } public enum EnumTypeNotifyOrder
-    {
-        CHE_BIEN = 0,
-        HUY_CHE_BINE = 1
-    }
-    public enum EnumTypeVATEinvoice
-    {
-        VAT = 1,
-        VAT_MTT = 2
-    }
+    } 
+ 
+
     public enum EnumTypeSyncEInvoice
     {
         TRANG_THAI_HOA_DON = 0,
@@ -32,10 +25,7 @@ namespace Application.Enums
         BUYER = 3,
         TAXCODE = 4,
     }
-    public enum EnumTypePrintBarCode
-    {
-        XPRINTER_2TEM = 1
-    }
+
     public enum EnumTypeValue
     {
         BOOL = 1,

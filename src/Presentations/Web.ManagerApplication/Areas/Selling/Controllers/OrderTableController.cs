@@ -278,19 +278,19 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                                             _notify.Success("Báo bếp thành công");
                                             await dashboardHub.PrintbaobepSposViet(currentUser.ComId, UpdateQuantity.Data.HtmlPrint);
                                           
-                                            return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = false });
+                                            return Json(new { isValid = true, data = JsonConvert.SerializeObject(UpdateQuantity.Data), isbaobep = false });
                                         }
                                     }
-                                    return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = true, dataHtml = UpdateQuantity.Data.HtmlPrint });
+                                    return Json(new { isValid = true, data = JsonConvert.SerializeObject(UpdateQuantity.Data), isbaobep = true, dataHtml = UpdateQuantity.Data.HtmlPrint });
                                 }
                                 else
                                 {
-                                    return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = false });
+                                    return Json(new { isValid = true, data = JsonConvert.SerializeObject(UpdateQuantity.Data), isbaobep = false });
                                 }
                             }
                             else
                             {
-                                return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = false });
+                                return Json(new { isValid = true, data = JsonConvert.SerializeObject(UpdateQuantity.Data), isbaobep = false });
                             }
                         }
                         catch (Exception e)
@@ -301,7 +301,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         //----------------------------
                         
                     }
-                    return Json(new { isValid = true, data = UpdateQuantity.Data, isbaobep = false });
+                    return Json(new { isValid = true, data = JsonConvert.SerializeObject(UpdateQuantity.Data), isbaobep = false });
                 }
                 _notify.Error(UpdateQuantity.Message);
                 return Json(new { isValid = false, mess = UpdateQuantity.Message, isbaobep = false });
@@ -319,12 +319,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     _logger.LogError(e.ToString());
                 }
                
-                return Json(new { isValid = true, data = update.Data });
+                return Json(new { isValid = true, data = JsonConvert.SerializeObject(update.Data) });
             }
             _notify.Error(update.Message);
             return Json(new { isValid = false, mess = update.Message });
         }
-
 
         [HttpPost]
         public async Task<IActionResult> AddOrderInvoiceAsync(OrderTableModel model)
@@ -840,7 +839,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             {
                
                 _notify.Success(GeneralMess.ConvertStatusToString(UpdateQuantity.Message));
-                return Json(new { isValid = true, tableName = UpdateQuantity.Data.TableName,idTable = (UpdateQuantity.Data.IsBringBack?"-1": UpdateQuantity.Data.IdRoomAndTableGuid.ToString()),IsBringback = UpdateQuantity.Data.IsBringBack });
+                return Json(new { isValid = true, 
+                    tableName = UpdateQuantity.Data.TableName,
+                    quantity = UpdateQuantity.Data.Quantity,
+                    idTable = (UpdateQuantity.Data.IsBringBack?"-1": UpdateQuantity.Data.IdRoomAndTableGuid.ToString()),
+                    IsBringback = UpdateQuantity.Data.IsBringBack });
             }
             _notify.Error(GeneralMess.ConvertStatusToString(UpdateQuantity.Message));
             return new JsonResult(new

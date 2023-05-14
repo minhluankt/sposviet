@@ -32,7 +32,27 @@ namespace Domain.ViewModel
 
 
     }
-    public class OrderByPrioritiesModel
+    public class KitChenTableListModel//dùng cho gộp theo bàn 
+    {
+        public KitChenTableListModel()
+        {
+            this.OrderDetailByOrders = new List<OrderDetailByOrder>();
+        }
+        public string createDateTable { get; set; }
+        public double TimeSpan { get; set; }//giây đã trôi qua so với thời gian tạo đươn và thời gian heinej tại
+        public decimal quantity { get; set; }
+        public string tableName { get; set; }
+        public Guid? idRoomTable { get; set; }
+        public List<OrderDetailByOrder> OrderDetailByOrders { get; set; }
+        
+    }
+    public class KitChenTableModel
+    {
+        public List<KitChenTableListModel> KitChenTableListModels { get; set; }
+        public List<OrderByFoodModel> OrderByFoodModels { get; set; }
+    }
+
+    public class OrderByPrioritiesModel//chi tiết
     {
         public OrderByPrioritiesModel()
         {
@@ -70,16 +90,36 @@ namespace Domain.ViewModel
         public EnumTypeKitchenOrder TypeKitchenOrder { get; set; }
         public EnumStatusKitchenOrder Status { get; set; }
     }
-
-    public class OrderByRoomModel//theo phòng
+    public class OrderDetailByOrder//chi tiết của bảng order và chitken join bảng
     {
+        public string Note { get; set; }
+        public string proCode { get; set; }
+        public string proName { get; set; }
+        public DateTime createDate { get; set; }
+        public string createDateTable { get; set; }
+        public string orderStaff { get; set; }
+        public int? idProduct { get; set; }
         public Guid? idRoomTable { get; set; }
         public string tableName { get; set; }
         public string orderCode { get; set; }
+        public string createDateFood { get; set; }
         public Guid? idOrder { get; set; }
+        public int IdItemOrder { get; set; }
+        public decimal quantity { get; set; }
+    }
+    public class OrderByRoomModel//theo phòng
+    {
+        public int? idProduct { get; set; }
+        public Guid? idRoomTable { get; set; }
+        public string tableName { get; set; }
+        public string orderCode { get; set; }
+        public string createDateFood { get; set; }
+        public Guid? idOrder { get; set; }
+        public int IdItemOrder { get; set; }
         public decimal quantity { get; set; }
         public List<OrderByRoomDetailtModel> OrderByRoomDetailtModels { get; set; }
     }
+
     public class OrderByRoomDetailtModel//theo phòng
     {
         public Guid idKitchen { get; set; }
@@ -90,13 +130,20 @@ namespace Domain.ViewModel
         public string orderStaff { get; set; }
         public decimal quantity { get; set; }
         public string tableName { get; set; }
+        public string Note { get; set; }
         public List<DetailtKitchenModel> detailtKitchenModels { get; set; }
     }
     public class OrderByFoodModel//theo món ăn
     {
+        public OrderByFoodModel()
+        {
+            this.OrderDetailByOrders = new List<OrderDetailByOrder>();
+        }
         public string proName { get; set; }
         public string proCode { get; set; }
+        public string note { get; set; }
         public int? idProduct { get; set; }
         public decimal quantity { get; set; }
+        public List<OrderDetailByOrder> OrderDetailByOrders { get; set; }//trường hợp cho loại nhà bếp 2
     }
 }

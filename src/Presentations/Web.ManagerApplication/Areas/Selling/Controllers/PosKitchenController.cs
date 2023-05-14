@@ -39,9 +39,41 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             //}
             //_notify.Error(GeneralMess.ConvertStatusToString(getAll.Message));
             return View(new KitChenModel());
+        } 
+        [Authorize(Policy = "posKitchen.order")]
+        public IActionResult KitchenIndexAsync()
+        {
+            //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            //var getAll = await _mediator.Send(new GetOrderChitkenQuery() { Comid = currentUser.ComId, Status = EnumStatusKitchenOrder.MOI });
+            //if (getAll.Succeeded)
+            //{
+            //    return View(getAll.Data);
+            //}
+            //_notify.Error(GeneralMess.ConvertStatusToString(getAll.Message));
+            return View(new KitChenModel());
         }
         [HttpGet]
-        //[Authorize(Policy = "posKitchen.order")]
+        public async Task<IActionResult> GetFoodDataByRoomAsync()
+        {
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var getAll = await _mediator.Send(new GetOrderChitkenTableQuery() { Comid = currentUser.ComId, Status = EnumStatusKitchenOrder.MOI });
+            if (getAll.Succeeded)
+            {
+                var html = await _viewRenderer.RenderViewToStringAsync("ChitkenByRoom", getAll.Data);
+                return new JsonResult(new
+                {
+                    isValid = true,
+                    data = html
+                });
+            }
+            _notify.Error(GeneralMess.ConvertStatusToString(getAll.Message));
+            return new JsonResult(new
+            {
+                isValid = false
+            });
+
+        }
+        [HttpGet]
         public async Task<IActionResult> DataFoodNewAsync()
         {
             var currentUser = User.Identity.GetUserClaimLogin(); 

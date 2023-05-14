@@ -106,6 +106,7 @@
     <Compile Include="Features\Invoices\Query\PrintInvoicePos.cs" />
     <Compile Include="Features\Kitchens\Commands\UpdateNotifyChitkenCommand.cs" />
     <Compile Include="Features\Kitchens\Querys\GetOrderChitkenQuery.cs" />
+    <Compile Include="Features\Kitchens\Querys\GetOrderChitkenTableQuery.cs" />
     <Compile Include="Features\Logs\Commands\AddActivityLog\AddActivityLogCommand.cs" />
     <Compile Include="Features\Logs\QueriesDapper\GetAllQuery.cs" />
     <Compile Include="Features\Logs\Queries\GetAllLogsQuery.cs" />

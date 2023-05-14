@@ -112,6 +112,7 @@ namespace Application.Features.OrderTables.Commands
                             TableName = updatetable.Data.IsBringBack ? "Mang về" : updatetable.Data.RoomAndTable.Name,
                             IdRoomAndTableGuid = updatetable.Data.RoomAndTable?.IdGuid,
                             IsBringBack = updatetable.Data.IsBringBack,
+                            Quantity = updatetable.Data.Quantity,
                         };
                         return await Result<OrderTableModel>.SuccessAsync(OrderTableModel, HeperConstantss.SUS006);
                     case EnumTypeUpdatePos.ConvertInvoice:

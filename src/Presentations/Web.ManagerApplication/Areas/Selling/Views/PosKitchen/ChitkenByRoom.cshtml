@@ -1,0 +1,38 @@
+﻿@model Domain.ViewModel.KitChenTableModel
+<div class="row body-dataContent">
+    <div class="col-md-9">
+
+        <ul class="list-item-table-food">
+
+            @foreach (var item in Model.KitChenTableListModels)
+            {
+                <li>
+                    <b class="header-li">@item.tableName (@item.quantity) <span class="creareDatetable">@item.TimeSpan</span></b>
+                    <div class="body-item">
+                        <ul class="list-item-food">
+                            @foreach (var food in item.OrderDetailByOrders)
+                            {
+                                <li>@food.proName <span class="red">(@food.quantity)</span></li>
+                            }
+                        </ul>
+                    </div>
+                </li>
+            }
+        </ul>
+
+    </div>
+    <div class="col-md-3">
+        <ul class="list-order-food">
+            <li class="header-right">Thống kê món</li>
+            @foreach (var item in Model.OrderByFoodModels)
+            {
+                <li class="">
+                    @item.proName (@item.quantity)<br />
+                    <span>
+                        @item.note
+                    </span>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

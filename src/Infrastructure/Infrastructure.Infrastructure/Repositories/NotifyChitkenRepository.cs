@@ -8,6 +8,7 @@ using Domain.XmlDataModel;
 using HelperLibrary;
 using Joker.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Spire.Pdf.Exporting.XPS.Schema;
 using System;
@@ -2135,6 +2136,95 @@ namespace Infrastructure.Infrastructure.Repositories
                 getDonCu.ForEach(x => { x.IdRoomTable = order.IdRoomAndTableGuid; x.IsBingBack = order.IsBringBack; x.RoomTableName = order.RoomAndTable?.Name; });
             }
             await _kitchenRepository.UpdateRangeAsync(getDonCu);
+        }
+
+        public async Task<KitChenTableModel> GetAllNotifyOrderByTable(int Comid)
+        {
+            chưa lấy dc dữ liệu
+            //lấy dữ liệu
+            var query = await _ordertableRepository.Entities.Where(x=>x.ComId==Comid&&x.Status==EnumStatusOrderTable.DANG_DAT).Join(_kitchenRepository.Entities.Where(x=>x.ComId== Comid),
+                        ordertable => ordertable.IdGuid,
+                        kitchen => kitchen.IdRoomTable,
+                        (ordertable, kitchen) => new OrderDetailByOrder
+                        {
+                            orderCode = kitchen.OrderCode,
+                            quantity = kitchen.Quantity,
+                            Note = kitchen.Note,
+                            orderStaff = kitchen.Cashername,
+                            idRoomTable = kitchen.IdRoomTable,
+                            idOrder = kitchen.IdOrder,
+                            IdItemOrder = kitchen.IdItemOrder,
+                            idProduct = kitchen.IdProduct,
+                            tableName =kitchen.RoomTableName,
+                            proName = kitchen.ProName,
+                            proCode = kitchen.ProCode,
+                            createDate = ordertable.CreatedOn,
+                            createDateTable = ordertable.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"),
+                            createDateFood = kitchen.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"),
+                        }).Where(x=>x.quantity>0).ToListAsync();
+            List< KitChenTableListModel> kitChenlistbyTableModel = new List<KitChenTableListModel>();
+            //------xử lý gr theo bàn
+            var grbytable = query.GroupBy(x => x.idRoomTable);
+            foreach (var item in grbytable)
+            {
+                TimeSpan usedTime = DateTime.Now.Subtract(item.First().createDate);
+                kitChenlistbyTableModel.Add(new KitChenTableListModel()
+                {
+                    idRoomTable = item.Key,
+                    tableName = item.First().tableName,
+                    createDateTable = item.First().createDateTable,
+                    TimeSpan = usedTime.TotalSeconds,
+                    quantity = item.Sum(x => x.quantity),
+                    OrderDetailByOrders = item.Select(x => new OrderDetailByOrder()
+                    {
+                        quantity = x.quantity,
+                        proName = x.proName,
+                        IdItemOrder = x.IdItemOrder,
+                        idRoomTable = item.Key,
+                        idProduct = x.idProduct,
+                        idOrder = x.idOrder,
+                        Note = x.Note,
+                        createDateFood = x.createDateFood,
+                        tableName = x.tableName,
+                        orderStaff = x.orderStaff,
+                    }).ToList()
+            });
+              
+
+            }
+            //------nhóm theo bàn end
+            //--nhóm theo sản phẩm
+            List<OrderByFoodModel> orderByFoodModels = new List<OrderByFoodModel>();    
+            var grbyfood= query.GroupBy(x => x.idProduct);
+            foreach (var item in grbyfood)
+            {
+                orderByFoodModels.Add(new OrderByFoodModel()
+                {
+                    idProduct = item.Key,
+                    proName = item.First().proName,
+                    quantity = item.Sum(x=>x.quantity),
+                    note = string.Join(",", item.Select(x => x.Note).ToArray()),
+                    OrderDetailByOrders = item.Select(x=>new OrderDetailByOrder()
+                    {
+                        quantity = x.quantity,
+                        proName = x.proName,
+                        idOrder = x.idOrder,
+                        IdItemOrder = x.IdItemOrder,
+                        Note = x.Note,
+                        tableName = x.tableName,
+                        orderStaff = x.orderStaff,
+                        createDateFood = x.createDateFood,
+                        createDateTable = x.createDateTable,
+                        orderCode = x.orderCode,
+
+                    }).ToList()
+                });
+            }
+            //--
+            KitChenTableModel kitChenTableModel = new KitChenTableModel();
+            kitChenTableModel.KitChenTableListModels = kitChenlistbyTableModel;
+            kitChenTableModel.OrderByFoodModels = orderByFoodModels;
+            return kitChenTableModel;
         }
 
         //public Task UpdateNotifyKitchenSpitOrderIsCreateOrderAsync(Guid IdOrder, List<OrderTableItem> lstorderold, int ComId, OrderTable newOrder)

@@ -108,6 +108,10 @@ builder.Services.AddSignalR(hubOptions =>
     hubOptions.ClientTimeoutInterval = TimeSpan.FromHours(15);
     hubOptions.KeepAliveInterval = TimeSpan.FromMilliseconds(5);
 
+}).AddJsonProtocol(options =>
+{
+    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+    //  options.
 });
 //builder.Services.AddBreadcrumbs(GetType().Assembly, options =>
 //{
@@ -355,7 +359,6 @@ app.Use(async (ctx, next) =>
 
 
 
-
 app.UseNotyf();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -372,6 +375,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapRazorPages();// có cái này mới trỏ đúng view
     endpoints.MapControllers();
+
     endpoints.MapHub<SignalRHub>("/Signal", options =>
     {
         options.Transports =
