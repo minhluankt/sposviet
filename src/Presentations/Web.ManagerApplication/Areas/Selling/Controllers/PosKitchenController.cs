@@ -111,10 +111,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             try
             {
-                - Xử lý nhà bếp khi khi nhấn bàn realtime k cho hủy món ở nhân viên, 
-                    - xem lịch sử ... nhiều lăm
-                    - cho app nhân viên
-
+               
                 var currentUser = User.Identity.GetUserClaimLogin();
                 model.ComId = currentUser.ComId;
                 model.Cashername = currentUser.FullName;

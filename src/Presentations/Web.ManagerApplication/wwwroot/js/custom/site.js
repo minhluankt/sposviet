@@ -4293,9 +4293,9 @@ var eventCreate = {
                             });
                             CKEDITOR.replace('Template', {
                                 height: '500px',
-                               // contentsCss: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
+                                contentsCss: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
                                  on: {
-                                    //instanceReady: loadBootstrap,
+                                    instanceReady: loadBootstrap,
                                    // mode: loadBootstrap
                                 }
                             });
