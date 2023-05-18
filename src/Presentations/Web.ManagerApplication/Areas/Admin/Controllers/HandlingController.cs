@@ -200,6 +200,7 @@ namespace Web.ManagerApplication.Areas.Admin.Controllers
             var response = await _mediator.Send(new GetAllSupplierEInvoiceQuery() { Comid= user.ComId });
             if (response.Succeeded)
             {
+                //response.Data.Insert(0, new CategoryProduct() { Id = 0, Name = "" });
                 var allUsersExceptCurrentUser = from d in response.Data select new { id = d.Id, text = d.CompanyName,type = d.TypeSeri, selected = (idselectd!=null?d.Id == idselectd:d.Selected) };
                 var json = allUsersExceptCurrentUser.ToArray();
                 var data = JsonConvert.SerializeObject(allUsersExceptCurrentUser);

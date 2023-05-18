@@ -73,6 +73,7 @@ namespace Infrastructure.Infrastructure.Extensions
             services.AddTransient<ISuppliersRepository, SuppliersRepository>();
             services.AddTransient<IAreaRepository, AreaRepository>();
             services.AddTransient<IRevenueExpenditureRepository<RevenueExpenditure>, RevenueExpenditureRepository>();
+            services.AddTransient<IAutoSendTimerRepository<AutoSendTimer>, AutoSendTimerRepository>();
 
             // web service VNPT
             services.AddTransient<IVNPTPortalServiceRepository, VNPTPortalServiceRepository>();

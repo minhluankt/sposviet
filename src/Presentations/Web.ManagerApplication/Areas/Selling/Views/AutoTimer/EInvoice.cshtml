@@ -1,0 +1,244 @@
+﻿@using Application.Enums
+@using Application.Constants
+@model Domain.ViewModel.SupplierEInvoiceModel
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/selling/restaurantsetting">< Trở lại thiết lập nhà hàng</a></li>
+        <li class="breadcrumb-item"><a href="/selling/SupplierEInvoice">< cấu hình hóa đơn điện tử</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Quản lý cấu hình gửi hóa đơn tự động</li>
+    </ol>
+</nav>
+
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+
+        <h3 class="mb-3">Bạn đang thao tác cấu hình gửi hóa đơn tự động cho nhà cung cấp</h3>
+        @switch (Model.TypeSupplierEInvoice)
+        {
+            case ENumSupplierEInvoice.VNPT:
+                <img class="mb-3" src="~/images/VNPT_Logo.png" style="width:100px">
+                <h4>VNPT - Tập đoàn Bưu chính Viễn thông Việt Nam</h4>
+                break;
+            default:
+                break;
+        }
+
+    </div>
+    <div class="col-md-8">
+        <div class="card mb-2">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="">
+                            <label>Nhà cung cấp</label>
+                            <select id="supplereinvoice" class="form-control" data-toggle="tooltip" data-placement="top" title="Nhà cung cấp">
+                            </select>
+                        </div>
+                    </div>
+                    @*<div class="col-md-3">
+                    <div class="">
+                    <label>Thời gian</label>
+                    <input type="text" id="rangesDate" name="rangesDate" class="form-control" />
+                    </div>
+                    </div>*@
+                </div>
+            </div>
+            <div class="card-footer text-center" style=" display: block;">
+                <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+                    <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+                    <span class="ladda-spinner"></span>
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h5>
+                    Danh sách cấu hình tự động
+                    @switch (Model.TypeSupplierEInvoice)
+                    {
+                        case ENumSupplierEInvoice.VNPT:
+                            <b>VNPT</b>
+                            break;
+                        default:
+                            break;
+                    }
+                </h5>
+            </div>
+            <div id="viewAll" class="card-body">
+                <div class="mb-3">
+                    <a onclick="AutoTimer.addOreditEInvoice('/Selling/AutoTimer/CreateEInvoice?TypeSupplierEInvoice=@(Model.TypeSupplierEInvoice)')" class="btn bg-success text-white">
+
+                        <i class="fas fa-plus-circle"> </i> Thêm mới
+                    </a>
+                    <button class="ladda-button mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                        <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Reload</span>
+
+                        <span class="ladda-spinner"></span>
+                    </button>
+                </div>
+                <table class="table table-bordered dataTable" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center d-none">STT</th>
+                            <th class="text-center">Jobid</th>
+                            <th class="text-center">Tên</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="text-center">Người tạo</th>
+                            <th class="text-center">Ngày tạo</th>
+                            <th class="text-center" width="100px">Công cụ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script>
+        $(document).ready(function () {
+            laodEventAutoSendTimer.loadSupllerEinvoice()
+            dataTableOut = $('#dataTable').DataTable({
+                "responsive": true,
+                "processing": true,
+                stateSave: true,
+                "pagingType": "full_numbers",
+                "serverSide": true,
+                "filter": true,
+                "rowId": "id",
+                "orderMulti": false,
+                "ordering": true,
+                // "order": [[0, "desc"]],
+                "language": {
+                    "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                    "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                    "zeroRecords": "Không tìm thấy dữ liệu nào",
+                    "emptyTable": "Không có dữ liệu",
+                    "search": "Tìm kiếm:",
+                    "processing": "Đang xử lý...",
+                    "lengthMenu": "Hiển thị _MENU_ dòng",
+                    "loadingRecords": "Vui lòng chờ...",
+                    "paginate": {
+                        "first": "Đầu tiên",
+                        "last": "Cuối cùng",
+                        "next": "Tiếp theo",
+                        "previous": "Về trước"
+                    },
+                },
+                "pageLength": 10,
+                "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+                "buttons": [
+                    {
+                        text: 'Reload',
+                        action: function (e, dt, node, config) {
+                            dataTableOut.ajax.reload();
+                        }
+                    }
+                ],
+                "columnDefs": [
+
+                    {
+                        target: 0,
+                        visible: false,
+                    }, {
+                        "targets": [0, 1, 2, 3, 4, -1], // your case first column
+                        "className": "text-center"
+                    },
+                    { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+
+                    {
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": [-1, 0]
+                    },
+                    { "width": "100px", "targets": -1 }
+
+                ],
+                ajax: {
+                    url: "/Selling/SupplierEInvoice/LoadAll",
+                    type: "POST",
+                    datatype: "json",
+                    data: {
+                        TypeSupplierEInvoice: function () { return "@(Model.TypeSupplierEInvoice)" }
+                    }
+                },
+                "columns": [
+                    {
+                        "data": "name", "Name": "Pattern", "autoWidth": true
+
+                    },
+                    {
+                        "data": "jobId", "name": "JobId", "autoWidth": true
+
+                    }, {
+                        "data": "active", "name": "Active",
+                        "render": function (data, type, full, meta) {
+                            if (full.active == true) {
+                                return '<span class="badge badge-success">Đang hoạt động</span>';
+                            }
+                            return '<span class="badge badge-danger">Ngưng hoạt động</span>';
+                        }
+                    },
+                    {
+                        "data": "createdBy", "name": "CreatedBy", "autoWidth": true
+
+                    },
+
+                    {
+                        "data": "createdOn", "name": "CreatedOn",
+                        "render": function (data, type, full, meta) {
+                            // console.log(full.id);
+                            if (full.createdOn != null) {
+                                data = moment(full.createdOn).format('DD/MM/YYYY');
+                                return data;
+                            }
+                            return "";
+                        }
+                    },
+                    {
+                        "data": null, "name": "",
+                        "render": function (data, type, full, meta) {
+
+                            let html = `<div class="btn-group dropleft">
+                                                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                  </button>
+                                                                      <div class="dropdown-menu">
+                                                                                <a class="dropdown-item" href="javascript:0;" onclick="ManagerPatternEInvoice.addOredit('/Selling/ManagerPatternEInvoice/edit?secret=` + full.secret + `&TypeSupplierEInvoice=@(Model.TypeSupplierEInvoice)')"><i class="fas fa-edit mr-2"></i> Sửa</a>
+                                                                               <form id="form_delete_`+ full.id + `" action="/Selling/ManagerPatternEInvoice/Remove?secret=` + full.secret + `&TypeSupplierEInvoice=@(Model.TypeSupplierEInvoice)"  asp-controller="ManagerPatternEInvoice" asp-area="Selling" method="post" asp-action="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+                                                                                  <a  class="dropdown-item"  href="javascript:$('#form_delete_`+ full.id + `').submit();">
+                                                                                     <i class="fas fa-trash-alt mr-2"></i> Xóa
+                                                                                    </a>
+                                                                                   </form>
+                                                                                   </div>
+                                                         </div>`;
+                            return html;
+                        }
+                    },
+                ]
+
+            });
+            $('#reload').on('click', function () {
+                dataTableOut.ajax.reload(null, false);
+
+            });
+            $('input').keyup(function (e) {
+                if (e.keyCode == 13) {
+                    dataTableOut.ajax.reload(null, false);
+                }
+            });
+        });
+    </script>
+    }

@@ -23,6 +23,8 @@
     <Compile Include="Features\Areas\Query\GetAllAreaQuery.cs" />
     <Compile Include="Features\Areas\Query\GetByIdAreaQuery.cs" />
     <Compile Include="Features\Areas\Query\GetPageListQuery.cs" />
+    <Compile Include="Features\AutoSendTimers\Querys\GetAutoSendTimerQuery.cs" />
+    <Compile Include="Features\AutoSendTimers\Querys\GetByIdAutoSendTimerQuery.cs" />
     <Compile Include="Features\Banners\Commands\CreateBannerCommand.cs" />
     <Compile Include="Features\Banners\Commands\DeleteBannerCommand.cs" />
     <Compile Include="Features\Banners\Commands\UpdateBannerCommand.cs" />

@@ -49,7 +49,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             SupplierEInvoiceModel SupplierEInvoice = null;
             if (TypeSupplierEInvoice == ENumSupplierEInvoice.NONE)
             {
-                SupplierEInvoice = _send.Data.SingleOrDefault(x => x.TypeSupplierEInvoice == TypeSupplierEInvoice);
+                SupplierEInvoice = _send.Data.FirstOrDefault();
             }
             else
             {
@@ -60,17 +60,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR012));
                 return RedirectToAction("Index", "SupplierEInvoice");
             }
-            //var supp = SupplierEInvoice.ManagerPatternEInvoices;
-            //if (supp==null)
-            //{
-            //    supp = new List<ManagerPatternEInvoice>();
-            //}
-            //supp.ForEach(x =>
-            //{
-            //    var values = "id=" + x.Id;
-            //    var secret = CryptoEngine.Encrypt(values, _config.Value.Key); 
-            //    x.screct = secret;
-            //});
             return View(SupplierEInvoice);
         }
         [EncryptedParameters("secret")]

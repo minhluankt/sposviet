@@ -4959,6 +4959,54 @@ function Base64ToBytes(base64) {
     }
     return bytes;
 };
+var laodEventAutoSendTimer = {
+    loadSupllerEinvoice: function (idselectd) {
+        $.ajax({
+            global: true,
+            type: "GET",
+            url: "/API/Handling/GetAllSupplierEInvoice",
+            // async: true,
+            data: {
+                idselectd: idselectd
+            },
+            success: function (data) {
+                var arr = JSON.parse(data);
+                //arr.push("");
+                $("#supplereinvoice").select2({
+                    data: JSON.parse(data),
+                    placeholder: "Chọn nhà cung cấp",
+                    allowClear: true,
+                    language: {
+                        noResults: function () {
+                            return "Không tìm thấy dữ liệu";
+                        }
+                    },
+                }).on('select2:select', function (e) {
+
+                    // console.log(data.type);
+                }).on('select2:clear', function (e) {
+                   
+                });
+                let datas = null;
+                arr.map(function (ele, ind) {
+                    if (ind == 0) {
+                        datas = ele;
+                    }
+                    if (ele.selected) {
+                        datas = ele;
+                    }
+                })
+                $('#supplereinvoice').trigger({
+                    type: 'select2:select',
+                    params: {
+                        data: datas
+                    }
+                });
+
+            }
+        });
+    },
+}
 var loadeventEinvoice = {
 
     exportXML: function (url) {
@@ -17136,6 +17184,70 @@ var supplierEInvoice = {
             });
         }
     },
+}
+
+var AutoTimer = {
+    addOreditEInvoice: function (url) {
+        $.ajax({
+            type: 'GET',
+            //global: false,
+            url: url,
+            // data: fomrdata,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                if (res.isValid) {
+                    Swal.fire({
+                        // icon: 'success',
+                        position: 'top-end',
+                        showClass: {
+                            popup: `
+                              popup-formcreate
+                               animate__animated
+                              animate__fadeInRight
+                              animate__faster
+                            `
+                        },
+                        hideClass: {
+                            popup: "popup-formcreate animate__animated animate__fadeOutRight animate__faster"
+
+                        },
+                        showCloseButton: true,
+
+                        title: res.title,
+                        html: res.html,
+                        //showClass: {
+                        //    popup: 'popup-formcreate'
+                        //},
+
+                        footer: "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-cancel'></i>Hủy bỏ</button><button class='mr-3 btn btn-save btn-success'><i class='fas fa-check mr-2'></i>Lưu</button>",
+                        allowOutsideClick: true,
+                        showConfirmButton: false,
+                        showCancelButton: false,
+                        cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                        didRender: () => {
+                            validateForm.addOrEditMangerPatternEInvoice();
+
+                            $(".btn-continue").click(function () {
+                                Swal.close();
+                            });
+
+                            $(".btn-save").click(function () {
+                                if ($("form#create-form").valid()) {
+                                    jQueryModalPost($("form#create-form")[0]);
+                                }
+
+                            });
+
+                        }
+                    });
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+    }
 }
 var ManagerPatternEInvoice = {
     addOredit: function (url) {

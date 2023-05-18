@@ -41,14 +41,14 @@
                         {
                             <span><b>Tài khoản webservice:</b> @getVNPT.UserNameService/******</span>
                         }
-                        <a href="/Selling/ManagerPatternEInvoice?secret=@(getVNPT.screcttype)" class="btn btn-success btn-sm">Quản lý mẫu số ký hiệu hóa đơn VNPT</a>
+                        <a href="/Selling/ManagerPatternEInvoice?@(CommonParametersSecretUrl.secret)=@(getVNPT.screcttype)" class="btn btn-success btn-sm">Quản lý mẫu số ký hiệu hóa đơn VNPT</a>
                     </div>
                     <div class="col-md-12 text-center">
                           <div class="sltbtn">
                             <button class="btn btn-danger btn-removeSupplierEInvoice" data-id="@(getVNPT.screct)"><i class="fas fa-trash mr-2"></i>Gỡ bỏ</button>
                             <button class="btn btn-primary btn-editeinvoice" data-id="@(getVNPT.screct)"><i class="fas fa-edit mr-2"></i>Chỉnh sửa</button>
                             <button class="btn btn-info btn-checkconncetinview" data-id="@(getVNPT.screct)"><i class="fas fa-wifi mr-2"></i>Kiểm tra kết nối</button>
-                            <button class="btn btn-warning btn-settingSendEinCQT" data-id="@(getVNPT.screct)"><i class="fas fa-mail-bulk mr-2"></i>Cấu hình gửi hóa đơn</button>
+                            <a href="/Selling/AutoTimer/EInvoice?secret=@(getVNPT.screcttype)" class="btn btn-warning btn-settingSendEinCQT" data-id="@(getVNPT.screct)"><i class="fas fa-mail-bulk mr-2"></i>Cấu hình gửi hóa đơn</a>
                         </div>
                     </div>
                 </div>
