@@ -2015,5 +2015,10 @@ namespace Infrastructure.Infrastructure.Repositories
             };
             return model;
         }
+
+        public async Task<List<EInvoice>> GetReportMonth(DateTime todate, DateTime enddate, int ComId)
+        {
+           return await _repository.Entities.Where(x=>x.ComId==ComId && x.CreatedOn >= todate && x.CreatedOn<enddate && x.InvoiceNo>0).ToListAsync();
+        }
     }
 }

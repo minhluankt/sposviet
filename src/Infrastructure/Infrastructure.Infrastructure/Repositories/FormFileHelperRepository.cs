@@ -158,7 +158,7 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public string GetFileTemplate(string nameFile, string path = "", string folder = SystemVariableHelper.TemplateWord)
         {
-            string filename = Path.Combine(_hostingEnvironment.WebRootPath, SystemVariableHelper.TemplateWord + path + nameFile);
+            string filename = Path.Combine(_hostingEnvironment.WebRootPath, SystemVariableHelper.TemplateWord + path +"/"+ nameFile);
             if (File.Exists(filename))
             {
                 return filename;

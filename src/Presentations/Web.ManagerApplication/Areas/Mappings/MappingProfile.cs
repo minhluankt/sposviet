@@ -134,6 +134,7 @@ namespace Web.ManagerApplication.Areas.Mappings
 
 
             CreateMap<GetReportDashboardQuery, SearchReportPosModel>().ReverseMap();
+            CreateMap<GetRepostEInvoiceQuery, SearchReportPosModel>().ReverseMap();
 
             CreateMap<PublishEInvoiceMergeCommand, PublishInvoiceMergeModel>().ReverseMap();
 

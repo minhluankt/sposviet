@@ -228,6 +228,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         var result = await _mediator.Send(createProductCommand);
                         if (result.Succeeded)
                         {
+                            check chỗ tự động gửi hóa đơn
                             var values = "id=" + result.Data.Id;
                              secret = CryptoEngine.Encrypt(values, _config.Value.Key);
                             var valuestype = "type=" + (int)result.Data.TypeSupplierEInvoice;

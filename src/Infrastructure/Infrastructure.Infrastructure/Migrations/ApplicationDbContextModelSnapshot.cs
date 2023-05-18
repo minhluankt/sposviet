@@ -3204,6 +3204,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<bool>("IsInventory")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsKitchen")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsOutstock")
                         .HasColumnType("bit");
 

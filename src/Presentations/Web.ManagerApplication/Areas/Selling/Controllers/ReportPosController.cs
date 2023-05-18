@@ -7,6 +7,7 @@ using Application.Hepers;
 using Application.Interfaces.Repositories;
 using Application.Providers;
 using Domain.ViewModel;
+using Hangfire.MemoryStorage.Database;
 using HelperLibrary;
 using Infrastructure.Infrastructure.Identity.Models;
 
@@ -16,9 +17,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
 using Model;
+using OfficeOpenXml;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing.Drawing2D;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Web.Helpers;
+using Telegram.Bot.Types;
 using Web.ManagerApplication.Abstractions;
 using Web.ManagerApplication.Extensions;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
@@ -267,6 +272,67 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         public IActionResult Products()// báo cáo mặt hàng
         {
             LoadViewbagProduct();
+            return View();
+        }
+        [Authorize(Policy = "reportPos.EInvoice")]
+        [HttpGet]
+        public virtual ActionResult DownloadEInvoiceMonth(string fileGuid, string fileName)
+        {
+            if (TempData[fileGuid] != null)
+            {
+                byte[] data = TempData[fileGuid] as byte[];
+                return File(data, "application/vnd.ms-excel", fileName);
+            }
+            else
+            {
+                // Problem - Log the error, generate a blank file,
+                //           redirect to another controller action - whatever fits with your application
+                return new EmptyResult();
+            }
+        }
+        [Authorize(Policy = "reportPos.EInvoice")]
+        [HttpPost]
+        public async Task<IActionResult> PostReportEInvoiceMonthAsync(SearchReportPosModel model)
+        {
+            try
+            {
+                var currentUser = User.Identity.GetUserClaimLogin();
+                model.Comid = currentUser.ComId;
+                var _map = _mapper.Map<GetRepostEInvoiceQuery>(model);
+                var _send = await _mediator.Send(_map);
+
+                if (_send.Succeeded)
+                {
+                    //ExcelPackage workbook = new ExcelPackage();
+                    // Do something to populate your workbook
+
+                    // Generate a new unique identifier against which the file can be stored
+                    //string handle = Guid.NewGuid().ToString();
+                    //using (MemoryStream memoryStream = new MemoryStream(_send.Data.dataExcel))
+                    //{
+                    //    //workbook.SaveAs(memoryStream);
+                    //    memoryStream.Position = 0;
+                    //    TempData[handle] = memoryStream.ToArray();
+                    //}
+                    //return Json(new { FileGuid = handle, FileName = "TestReportOutput.xlsx", isValid = true });
+                    return File(_send.Data.dataExcel, "application/vnd.ms-excel", "TestReportOutput.xlsx");
+                }
+
+                return  Json(new { isValid = false });
+                // Note we are returning a filename as well as the handle
+
+            }
+            catch (Exception e)
+            {
+                _notify.Error(e.ToString());    
+                return  Json(new { isValid = false });
+            }
+            
+
+        }
+        [Authorize(Policy = "reportPos.EInvoice")]
+        public IActionResult EInvoice()// báo cáo hóa đơn điện tử
+        {
             return View();
         }
         public async Task<IActionResult> GetReportRevenueAsync(SearchReportPosModel model)// báo cáo doanh thu

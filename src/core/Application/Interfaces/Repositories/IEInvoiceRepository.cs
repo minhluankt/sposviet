@@ -3,6 +3,7 @@ using Application.Hepers;
 using AspNetCoreHero.Results;
 using Domain.Entities;
 using Domain.ViewModel;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,5 +36,8 @@ namespace Application.Interfaces.Repositories
         Task<IResult<PublishInvoiceModelView>> CancelEInvoiceAsync(int[] lst, int ComId, string Carsher, string IdCarsher);
         Task<IResult<PublishInvoiceModelView>> RemoveEInvoiceAsync(int[] lst, int ComId, string Carsher, string IdCarsher);
         Task<PaginatedList<T>> GetAllDatatableAsync(int? Comid, InvoiceModel textSearch, string sortColumn, string sortColumnDirection, int pageSize, int skip,EnumTypeProduct enumTypeProduct = EnumTypeProduct.THOITRANG);
+        //report
+        Task<List<EInvoice>> GetReportMonth(DateTime todate, DateTime enddate, int ComId);
+      
     }
 }

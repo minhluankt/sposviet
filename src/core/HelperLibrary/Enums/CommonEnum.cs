@@ -312,6 +312,11 @@ namespace Application.Enums
     public enum EnumTypeReportDashboard
     {
         DOANHTHU = 0,// 
+    } 
+    public enum EnumTypeReportEInvoice
+    {
+        DOANHtHU_HOADON = 0,// 
+        DOANHtHU_SANPHAM_HOADON = 1,// 
     }
     public enum EnumTypeReportPos // loại báo cáo doanh thu
     {

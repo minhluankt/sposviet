@@ -1,0 +1,129 @@
+﻿@model Model.ProductSearch
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+    ViewBag.title = "Báo cáo tồn kho";
+}
+
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="card mb-2">
+    <form asp-controller="ReportPos" method="post" asp-action="PostReportEInvoiceMonth">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="">
+                    <label>Loại báo cáo</label>
+                    <select name="typereportEinvoice" id="typereportEinvoice" class="form-control">
+                        <option value="0">Báo cáo doanh thu hóa đơn hàng tháng</option>
+                        <option value="1">Báo cáo danh thu hóa đơn theo hàng hóa</option>
+                    </select>
+                  
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label>Ngày</label>
+                <div class="input-group">
+                    <div class="input-group-prepend datepicker-trigger">
+                        <div class="input-group-text">
+                            <i class="fa fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                    <input type="text" id="rangesDate" name="rangesDate" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-center" style=" display: block;">
+        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearchEinvoice" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Báo cáo</span>
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+    </form>
+</div>
+
+@section Scripts
+    {
+        <script>
+        $("#btnSearchEinvoice").click(function(){
+            $(this).parents("form").submit();
+            //$.ajax({
+            //    type: "GET",
+            //    contentType: 'application/json',
+            //    //processData: false,
+            //    dataType: "json",
+            //    url: '/Selling/ReportPos/PostReportEInvoiceMonth?TypeReportEInvoice=' + $("#typereportEinvoice").val() + "&rangesDate=" + $("#rangesDate").val(),
+            //    //data: {
+            //    //    TypeReportEInvoice: $("#typereportEinvoice").val(),
+            //    //    rangesDate: $("#rangesDate").val(),
+
+            //    //},
+            //    success: function (data) {
+            //        debugger
+            //        var response = JSON.parse(data);
+            //        window.location = '/Selling/ReportPos/DownloadEInvoiceMonth?fileGuid=' + response.FileGuid
+            //            + '&filename=' + response.FileName;
+            //    }    ,   
+            //    error: function (jqXHR, textStatus, errorThrown) {
+            //        alert('Error: ' + textStatus + ' ' + errorThrown);
+            //    }
+            //})
+        })
+        $('#rangesDate').daterangepicker({
+            ranges: {
+                'Hôm nay': [moment(), moment()],
+                'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                '7 Ngày trước': [moment().subtract(6, 'days'), moment()],
+                '30 ngày trước': [moment().subtract(29, 'days'), moment()],
+                'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            // startDate: moment(date).add(1, 'days'),
+            // endDate: moment(date).add(2, 'days'),
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": " - ",
+                "applyLabel": "Chọn",
+                "cancelLabel": "Hủy bỏ",
+                "fromLabel": "From",
+                "toLabel": "To",
+                "customRangeLabel": "Custom",
+                "weekLabel": "W",
+                "daysOfWeek": [
+                    "CN",
+                    "T2",
+                    "T3",
+                    "T4",
+                    "T5",
+                    "T6",
+                    "T7"
+                ],
+                "monthNames": [
+                    "Tháng 1",
+                    "Tháng 2",
+                    "Tháng 3",
+                    "Tháng 4",
+                    "Tháng 5",
+                    "Tháng 6",
+                    "Tháng 7",
+                    "Tháng 8",
+                    "Tháng 9",
+                    "Tháng 10",
+                    "Tháng 11",
+                    "Tháng 12"
+                ],
+                "firstDay": 1
+            },
+            "linkedCalendars": false,
+            "alwaysShowCalendars": true,
+
+        }, function (start, end, label) {
+            console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+        });
+
+        </script>
+    }
+

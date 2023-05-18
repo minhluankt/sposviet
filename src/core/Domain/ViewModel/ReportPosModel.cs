@@ -41,6 +41,7 @@ namespace Domain.ViewModel
         public EnumTypeReportPos typeReportPos { get; set; }
         public EnumTypeReportProduct typeReportProduct { get; set; }
         public EnumTypeReportDashboard TypeReportDashboard { get; set; }
+        public EnumTypeReportEInvoice TypeReportEInvoice { get; set; }
     }
     public class InvoiceDetail
     {
@@ -83,6 +84,7 @@ namespace Domain.ViewModel
         public List<ReportXuatNhapTonKho> ReportXuatNhapTonKhos { get; set;}
         public ReportHinhThucPhucVu ReportHinhThucPhucVu { get; set;}
         public bool isShowChart { get; set;}
+        public byte[] dataExcel { get; set;}
     }
     public class ReportPosModel{
         public int InvoiceAll { get; set; }//tổng hóa đơn

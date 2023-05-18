@@ -65,6 +65,7 @@ namespace Domain.Entities
         /// <summary>
         /// ///
         /// </summary>
+        public bool IsKitchen { get; set; } // Hàng hóa không cần báo chế biến
         public bool IsInventory { get; set; } // cho phép không quản lý tồn kho
         public bool IsServiceDate { get; set; } // sản phẩm tính tiền giờ
         public bool DirectSales { get; set; } // là sản phẩm bán trực tiếp tại quầy
