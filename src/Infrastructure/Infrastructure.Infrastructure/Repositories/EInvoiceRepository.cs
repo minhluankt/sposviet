@@ -40,6 +40,8 @@ using HelperLibrary;
 using Org.BouncyCastle.Utilities;
 using Application.CacheKeys;
 using X.PagedList;
+using Spire.Doc;
+using static System.Data.Entity.Infrastructure.Design.Executor;
 
 namespace Infrastructure.Infrastructure.Repositories
 {
@@ -1473,6 +1475,10 @@ namespace Infrastructure.Infrastructure.Repositories
         private async void AddHistori(HistoryEInvoice entity)
         {
             await _HistoryEInvoicerepository.AddAsync(entity);
+        } 
+        private async void AddHistori(List<HistoryEInvoice> entity)
+        {
+            await _HistoryEInvoicerepository.AddRangeAsync(entity);
         }
         public async Task<IResult<PublishInvoiceModelView>> RemoveEInvoiceAsync(int[] lst, int ComId, string Carsher, string IdCarsher)
         {
@@ -1799,6 +1805,11 @@ namespace Infrastructure.Infrastructure.Repositories
                     return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR012);
                 }
                 PublishInvoiceModelView.TypeSeri = company.TypeSeri;//gán loại ký số
+                if (item.Select(x=>x.IdManagerPatternEInvoice).Distinct().Count()>1)
+                {
+                    _log.LogError($"Vui lòng chọn mẫu số ký hiệu");
+                    return await Result<PublishInvoiceModelView>.FailAsync($"Vui lòng chọn mẫu số ký hiệu");
+                }
 
                 var getlstfkey = item.Select(x => x.FkeyEInvoice).ToArray();
                 string fkeys = string.Join("_", getlstfkey);
@@ -2019,6 +2030,82 @@ namespace Infrastructure.Infrastructure.Repositories
         public async Task<List<EInvoice>> GetReportMonth(DateTime todate, DateTime enddate, int ComId)
         {
            return await _repository.Entities.Where(x=>x.ComId==ComId && x.CreatedOn >= todate && x.CreatedOn<enddate && x.InvoiceNo>0).ToListAsync();
+        }
+
+        public async Task SendCQTAutoAsync(List<HistoryAutoSendTimer> history,int[] lstPattern, int Comid, ENumSupplierEInvoice SupplierEInvoice)
+        {
+            await _unitOfWork.CreateTransactionAsync();
+            try
+            {
+                var getdata = await _repository.Entities.Where(x => x.ComId == Comid && x.TypeSupplierEInvoice == SupplierEInvoice && lstPattern.Contains(x.IdManagerPatternEInvoice) && x.InvoiceNo > 0 && (x.StatusEinvoice == StatusEinvoice.SignedInv || x.StatusEinvoice == StatusEinvoice.ReplacedInv || x.StatusEinvoice == StatusEinvoice.AdjustedInv)).ToListAsync();
+                SupplierEInvoice company = await _supplierEInvoicerepository.GetByIdAsync(Comid, SupplierEInvoice);
+                if (company == null)
+                {
+                    _log.LogError($"Công ty chưa cấu hình kết nối hóa đơn điện tử");
+                }
+                else
+                {
+
+                    if (company.TypeSeri != ENumTypeSeri.HSM)
+                    {
+                        _log.LogError($"Chữ ký số công ty không phải là HSM , không thể gửi hóa đơn lên CQT");
+                    }
+                    else
+                    {
+                        bool update = false;
+                        var groupByPattern = await getdata.GroupBy(x => x.IdManagerPatternEInvoice).ToListAsync();
+                        List<HistoryEInvoice> HistoryEInvoice = new List<HistoryEInvoice>();
+                        foreach (var item in groupByPattern)
+                        {
+                            var getlstfkey = item.Select(x => x.FkeyEInvoice).ToArray();
+                            string fkeys = string.Join("_", getlstfkey);
+                            try
+                            {
+                                string getVNPT = await _vnptbusinessrepository.SendInvMTTFkeyAsync(company.UserNameAdmin, company.PassWordAdmin, fkeys, company.UserNameService, company.PassWordService, item.First().Pattern, item.First().Serial, company.SerialCert, company.DomainName);
+                                if (getVNPT.Contains(CommonOKEinvoice.OK))
+                                {
+                                    item.ForEach(x => x.StatusEinvoice = StatusEinvoice.SentInv);
+                                    update = true;
+                                    foreach (var inv in item)
+                                    {
+                                        HistoryEInvoice.Add(new HistoryEInvoice()
+                                        {
+                                            Carsher = "Tự động",
+                                            StatusEvent = StatusStaffEventEInvoice.SendCQT,
+                                            IdCarsher = "",
+                                            EInvoiceCode = inv.EInvoiceCode,
+                                            IdEInvoice = inv.Id,
+                                            Name = $"Gửi hóa đơn lên cơ quan thuế thành công mã giao dịch: {getVNPT.Split(':')[1]}"
+                                        });
+                                    }
+                                    history.Add(new HistoryAutoSendTimer() { Name = $"Gửi hóa đơn cơ quan thuế thành công mẫu số ký hiệu: {item.First().Pattern}-{item.First().Serial}, tổng {item.Count()} hóa đơn" });
+                                }
+                                else
+                                {
+                                    _log.LogError($"Gửi hóa đơn lên CQT thất bại, lỗi nhà cung cấp: {getVNPT}");
+                                    history.Add(new HistoryAutoSendTimer() { Name = $"Gửi hóa đơn cơ quan thuế thất bại mẫu số ký hiệu: {item.First().Pattern}-{item.First().Serial}, tổng {item.Count()} hóa đơn", Error = getVNPT });
+                                }
+                                if (update)
+                                {
+                                    await _repository.UpdateRangeAsync(item);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                _log.LogError($"Gửi hóa đơn lên CQT thất bại, lỗi Exception" + e.ToString());
+                            }
+
+                        }
+                        await _unitOfWork.SaveChangesAsync();
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                await _unitOfWork.RollbackAsync();
+                _log.LogError($"Lỗi trong quá trình lưu",e.ToString());
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.Constants;
 using Application.EInvoices.Interfaces.VNPT;
 using Application.Enums;
+using Application.Features.AutoSendTimers.Commands;
 using Application.Features.AutoSendTimers.Query;
 using Application.Features.ManagerPatternEInvoices.Query;
 using Application.Features.SupplierEInvoices.Commands;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
@@ -66,6 +68,52 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return RedirectToAction("Index", "SupplierEInvoice");
             }
             return View(SupplierEInvoice);
+        }
+        [EncryptedParameters("secret")]
+        [Authorize(Policy = "AutoTimer.StartJob")]
+        [HttpPost]
+        public async Task<IActionResult> StartJob(int id, ENumSupplierEInvoice TypeSupplierEInvoice)
+        {
+            if (id == 0 || TypeSupplierEInvoice == ENumSupplierEInvoice.NONE)
+            {
+                _notify.Error("Lỗi dữ liệu không hợp lệ");
+                return new JsonResult(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var data = await _mediator.Send(new UpdateEventAutoTimerCommand() { IsStart = true, Id = id, ComId = currentUser.ComId, TypeSupplierEInvoice = TypeSupplierEInvoice }); ;
+            if (data.Succeeded)
+            {
+                _notify.Success(data.Message);
+                return new JsonResult(new { isValid = true});
+            }
+            else
+            {
+                _notify.Error(data.Message);
+                return new JsonResult(new { isValid = false });
+            }
+        }
+        [EncryptedParameters("secret")]
+        [Authorize(Policy = "AutoTimer.StartJob")]
+        [HttpPost]
+        public async Task<IActionResult> StopJob(int id, ENumSupplierEInvoice TypeSupplierEInvoice)
+        {
+            if (id==0 || TypeSupplierEInvoice==ENumSupplierEInvoice.NONE)
+            {
+                _notify.Error("Lỗi dữ liệu không hợp lệ");
+                return new JsonResult(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var data = await _mediator.Send(new UpdateEventAutoTimerCommand() { IsStart = false, Id = id, ComId = currentUser.ComId,TypeSupplierEInvoice= TypeSupplierEInvoice });
+            if (data.Succeeded)
+            {
+                _notify.Success(data.Message);
+                return new JsonResult(new { isValid = true});
+            }
+            else
+            {
+                _notify.Error(data.Message);
+                return new JsonResult(new { isValid = false });
+            }
         }
         public async Task<IActionResult> LoadAll(ENumSupplierEInvoice TypeSupplierEInvoice)
         {
@@ -124,13 +172,35 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
 
         [Authorize(Policy = "AutoTimer.create")]
-        public async Task<ActionResult> CreateAsync(ENumSupplierEInvoice TypeSupplierEInvoice)
+        public async Task<ActionResult> CreateEInvoiceAsync(ENumSupplierEInvoice TypeSupplierEInvoice)
         {
             try
             {
+                var currentUser = User.Identity.GetUserClaimLogin();
                 _logger.LogInformation(User.Identity.Name + "--> SupplierEInvoice create");
-                var html = await _viewRenderer.RenderViewToStringAsync("_CreateOrEdit", new AutoSendTimer() { TypeSupplierEInvoice = TypeSupplierEInvoice});
-                return new JsonResult(new { isValid = true, html = html });
+                var _send = await _mediator.Send(new GetAllSupplierEInvoiceQuery() { Comid = currentUser.ComId, TypeSupplierEInvoice = TypeSupplierEInvoice });
+                if (_send.Succeeded)
+                {
+                    var supler = _send.Data.FirstOrDefault();
+                    if (supler.TypeSeri!=ENumTypeSeri.HSM)
+                    {
+                        _notify.Error("Cấu hình tự động chỉ hỗ trợ hệ thống ký số HSM");
+                        return new JsonResult(new { isValid = false });
+                    }
+                    else if (supler.ManagerPatternEInvoices.Count()==0)
+                    {
+                        _notify.Error("Vui lòng cấu hình mẫu số hóa đơn trước khi cấu hình gửi hóa đơn tự động");
+                        return new JsonResult(new { isValid = false });
+                    }
+                    var html = await _viewRenderer.RenderViewToStringAsync("_CreateOrEdit", new AutoSendTimer() { TypeSupplierEInvoice = TypeSupplierEInvoice, ManagerPatternEInvoices = supler.ManagerPatternEInvoices });
+                    return new JsonResult(new { isValid = true, html = html });
+                }
+                else
+                {
+                    _notify.Error("Vui lòng cấu hình hóa đơn điện tử");
+                    return new JsonResult(new { isValid = false });
+                }
+              
             }
             catch (Exception e)
             {
@@ -147,11 +217,30 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             var currentUser = User.Identity.GetUserClaimLogin();
             _logger.LogInformation(User.Identity.Name + "--> edit detailt");
-            var data = await _mediator.Send(new GetByIdSupplierEInvoiceQuery() { Id = id, ComId = currentUser.ComId });
+            var data = await _mediator.Send(new GetByIdAutoSendTimerQuery() { Id = id, ComId = currentUser.ComId });
             if (data.Succeeded)
             {
-              
-                var html = await _viewRenderer.RenderViewToStringAsync("_Edit", data.Data);
+                var _send = await _mediator.Send(new GetAllSupplierEInvoiceQuery() { Comid = currentUser.ComId, TypeSupplierEInvoice = data.Data.TypeSupplierEInvoice });
+                if (_send.Succeeded)
+                {
+                    int[] arrPattern = JsonConvert.DeserializeObject<int[]>(data.Data.PatternSerial);
+                    data.Data.ManagerPatternEInvoices = _send.Data.FirstOrDefault()?.ManagerPatternEInvoices;
+                    if (data.Data.ManagerPatternEInvoices.Count()>0)
+                    {
+                        data.Data.ManagerPatternEInvoices.ForEach(x =>
+                        {
+                            if (arrPattern.Contains(x.Id))
+                            {
+                                x.Selected = true;
+                            }
+                            else
+                            {
+                                x.Selected = false;
+                            }
+                        });
+                    }
+                }
+                var html = await _viewRenderer.RenderViewToStringAsync("_CreateOrEdit", data.Data);
                 return new JsonResult(new { isValid = true, html = html });
             }
             _notify.Error(data.Message);
@@ -159,22 +248,34 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         [EncryptedParameters("secret")]
         [Authorize(Policy = "AutoTimer.edit")]
-        public async Task<ActionResult> RemoveAsync(int id)
+        public async Task<ActionResult> RemoveAsync(int id,ENumSupplierEInvoice TypeSupplierEInvoice)
         {
             var currentUser = User.Identity.GetUserClaimLogin();
             _logger.LogInformation(User.Identity.Name + "--> SupplierEInvoice RemoveAsync");
-            var data = await _mediator.Send(new DeleteSupplierEInvoiceCommand() { Id = id, ComId = currentUser.ComId });
+            var data = await _mediator.Send(new DeleteAutoSendTimerCommand() { Id = id, ComId = currentUser.ComId,TypeSupplierEInvoice= TypeSupplierEInvoice });
             if (data.Succeeded)
             {
-                return new JsonResult(new { isValid = true });
+                _notify.Success(GeneralMess.ConvertStatusToString(data.Message));
+                return new JsonResult(new { isValid = true , loadTable =true});
             }
             _notify.Error(GeneralMess.ConvertStatusToString(data.Message));
             return new JsonResult(new { isValid = false, html = string.Empty });
         }
         [Authorize(Policy = "AutoTimer.create")]
         [HttpPost]
-        public async Task<ActionResult> OnPostCreateOrEditAsync(SupplierEInvoice model)
+        public async Task<ActionResult> OnPostCreateOrEditAsync(AutoSendTimer model,string Time, int[] pattern)
         {
+            if (!string.IsNullOrEmpty(Time))
+            {
+                model.Hour = int.Parse(Time.Split(':')[0]);
+                model.Minute = int.Parse(Time.Split(':')[1]);
+            }
+            if (pattern==null || pattern.Count()==0)
+            {
+                _notify.Error("Vui lòng chọn mẫu số ký hiệu");
+                return new JsonResult(new { isValid = false, html = string.Empty });
+            }
+            model.PatternSerial= JsonConvert.SerializeObject(pattern);
             if (ModelState.IsValid)
             {
                 try
@@ -186,15 +287,13 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
 
                     if (model.Id == 0)
                     {
-                        var createProductCommand = _mapper.Map<CreateSupplierEInvoiceCommand>(model);
+                        var createProductCommand = _mapper.Map<CreateAutoSendTimerCommand>(model);
                         var result = await _mediator.Send(createProductCommand);
                         if (result.Succeeded)
                         {
 
-                            var values = "id=" + result.Data.Id;
+                            var values = "id=" + result.Data;
                             secret = CryptoEngine.Encrypt(values, _config.Value.Key);
-                            var valuestype = "type=" + (int)result.Data.TypeSupplierEInvoice;
-                            secrettype = CryptoEngine.Encrypt(valuestype, _config.Value.Key);
                             _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS008));
                         }
                         else
@@ -205,7 +304,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     }
                     else
                     {
-                        var createProductCommand = _mapper.Map<UpdateSupplierEInvoiceCommand>(model);
+                        var createProductCommand = _mapper.Map<UpdateAutoSendTimerCommand>(model);
                         var result = await _mediator.Send(createProductCommand);
                         if (result.Succeeded)
                         {
@@ -221,12 +320,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                             return new JsonResult(new { isValid = false, html = string.Empty });
                         }
                     }
-                    return new JsonResult(new { isValid = true, closeSwal = true, secret = secret, secrettype = secrettype });
+                    return new JsonResult(new { isValid = true, closeSwal = true, loadTable=true });
                 }
                 catch (Exception ex)
                 {
                     _notify.Error(ex.Message);
-                    return View();
+                    return new JsonResult(new { isValid = false});
                 }
             }
             else

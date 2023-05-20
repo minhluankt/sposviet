@@ -186,7 +186,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var data = await _mediator.Send(new DeleteManagerPatternEInvoiceCommand() { Id = id, ComId = currentUser.ComId ,TypeSupplierEInvoice= TypeSupplierEInvoice });
             if (data.Succeeded)
             {
-                _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.SUS007));
+                _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS007));
                 return new JsonResult(new { isValid = true, loadTable = true});
             }
             _notify.Error(GeneralMess.ConvertStatusToString(data.Message));

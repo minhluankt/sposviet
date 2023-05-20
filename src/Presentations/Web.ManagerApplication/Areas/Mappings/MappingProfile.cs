@@ -2,6 +2,7 @@
 
 using Application.DTOs.Logs;
 using Application.Features.Areas.Commands;
+using Application.Features.AutoSendTimers.Commands;
 using Application.Features.Banners.Commands;
 using Application.Features.Brands.Commands;
 using Application.Features.CategoryCevenues.Commands;
@@ -158,6 +159,8 @@ namespace Web.ManagerApplication.Areas.Mappings
             CreateMap<UpdateInfoDeliveryCustomerCommand, CustomerModelView>().ReverseMap();
 
            
+            CreateMap<CreateAutoSendTimerCommand, AutoSendTimer>().ReverseMap();
+            CreateMap<UpdateAutoSendTimerCommand, AutoSendTimer>().ReverseMap();
             CreateMap<UpdateCustomerCommand, CustomerModelView>().ReverseMap();
 
             CreateMap<GetReportPosQuery, SearchReportPosModel>().ReverseMap();

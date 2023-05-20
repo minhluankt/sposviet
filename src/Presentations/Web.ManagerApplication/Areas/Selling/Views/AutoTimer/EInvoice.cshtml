@@ -108,6 +108,7 @@
 
 @section Scripts
     {
+    <script src="~/lib/datepicker/jquery.datetimepicker.full.min.js"></script>
     <script>
         $(document).ready(function () {
             laodEventAutoSendTimer.loadSupllerEinvoice()
@@ -175,15 +176,15 @@
                         TypeSupplierEInvoice: function () { return "@(Model.TypeSupplierEInvoice)" }
                     }
                 },
-                "columns": [
+                "columns": [{
+                    "data": "jobId", "name": "JobId", "autoWidth": true
+
+                },
                     {
                         "data": "name", "Name": "Pattern", "autoWidth": true
 
                     },
                     {
-                        "data": "jobId", "name": "JobId", "autoWidth": true
-
-                    }, {
                         "data": "active", "name": "Active",
                         "render": function (data, type, full, meta) {
                             if (full.active == true) {
@@ -211,19 +212,24 @@
                     {
                         "data": null, "name": "",
                         "render": function (data, type, full, meta) {
-
+                            let htmljob = "";
+                            if(full.active==false){
+                            htmljob = `<a class="dropdown-item" href = "javascript:0;" onclick = "AutoTimer.StartJob('/Selling/AutoTimer/StartJob?secret=` + full.secret + `',@((int)Model.TypeSupplierEInvoice))" > <i class="fas fa-play mr-2"></i> Start ứng dụng</a>`
+                            }else{
+                            htmljob = `<a class="dropdown-item" href = "javascript:0;" onclick = "AutoTimer.StopJob('/Selling/AutoTimer/StopJob?secret=` + full.secret + `',@((int)Model.TypeSupplierEInvoice))" > <i class="fas fa-ban mr-2"></i> </i> Stop ứng dụng</a>`
+                            }
                             let html = `<div class="btn-group dropleft">
-                                                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                  </button>
-                                                                      <div class="dropdown-menu">
-                                                                                <a class="dropdown-item" href="javascript:0;" onclick="ManagerPatternEInvoice.addOredit('/Selling/ManagerPatternEInvoice/edit?secret=` + full.secret + `&TypeSupplierEInvoice=@(Model.TypeSupplierEInvoice)')"><i class="fas fa-edit mr-2"></i> Sửa</a>
-                                                                               <form id="form_delete_`+ full.id + `" action="/Selling/ManagerPatternEInvoice/Remove?secret=` + full.secret + `&TypeSupplierEInvoice=@(Model.TypeSupplierEInvoice)"  asp-controller="ManagerPatternEInvoice" asp-area="Selling" method="post" asp-action="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">
-                                                                                  <a  class="dropdown-item"  href="javascript:$('#form_delete_`+ full.id + `').submit();">
-                                                                                     <i class="fas fa-trash-alt mr-2"></i> Xóa
-                                                                                    </a>
-                                                                                   </form>
-                                                                                   </div>
-                                                         </div>`;
+                                                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                                        <div class="dropdown-menu">
+                                                                `+ htmljob + `
+                                                            <a class="dropdown-item" href="javascript:0;" onclick="AutoTimer.addOreditEInvoice('/Selling/AutoTimer/edit?secret=` + full.secret + `&TypeSupplierEInvoice=@(Model.TypeSupplierEInvoice)')"><i class="fas fa-edit mr-2"></i> Sửa</a>
+                                                            <form id="form_delete_`+ full.id + `" action="/Selling/AutoTimer/Remove?secret=` + full.secret + `&TypeSupplierEInvoice=@(Model.TypeSupplierEInvoice)"  asp-controller="AutoTimer" asp-area="Selling" method="post" asp-action="Remove" onsubmit="return jQueryModalDelete(this)" class="d-inline">
+                                                                <a  class="dropdown-item"  href="javascript:$('#form_delete_`+ full.id + `').submit();">
+                                                                  <i class="fas fa-trash-alt mr-2"></i> Xóa
+                                                                </a>
+                                                            </form>
+                                                        </div>
+                                      </div>`;
                             return html;
                         }
                     },

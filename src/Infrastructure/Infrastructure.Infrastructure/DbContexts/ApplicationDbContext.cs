@@ -63,6 +63,8 @@ namespace Infrastructure.Infrastructure.DbContexts
         public DbSet<HistoryReSearch> HistoryReSearch { get; set; }
         public DbSet<RevenueExpenditure> RevenueExpenditure { get; set; }
         public DbSet<CategoryCevenue> CategoryCevenue { get; set; }
+        public DbSet<AutoSendTimer> AutoSendTimer { get; set; }
+        public DbSet<HistoryAutoSendTimer> HistoryAutoSendTimer { get; set; }
 
         /// <summary>
         /// ///////
@@ -429,6 +431,19 @@ namespace Infrastructure.Infrastructure.DbContexts
              // Tạo Index Unique trên 1 cột
              entity.HasIndex(p => new { p.Vkey })
                     .IsUnique();
+
+         });
+         builder.Entity<AutoSendTimer>(entity =>
+         {
+             // Tạo Index Unique trên 1 cột
+             entity.HasMany(x => x.HistoryAutoSendTimers).WithOne(x => x.AutoSendTimer).HasForeignKey(x => x.IdAutoSendTimer);
+
+         });
+
+             builder.Entity<HistoryAutoSendTimer>(entity =>
+         {
+             // Tạo Index Unique trên 1 cột
+             entity.HasOne(p => p.AutoSendTimer).WithMany(p => p.HistoryAutoSendTimers).HasForeignKey(x => x.IdAutoSendTimer).OnDelete(deleteBehavior: DeleteBehavior.NoAction);
 
          });
 

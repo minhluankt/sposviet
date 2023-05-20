@@ -161,6 +161,64 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.ToTable("AuditLogs");
                 });
 
+            modelBuilder.Entity("Domain.Entities.AutoSendTimer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ComId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Hour")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("JobId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Minute")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PatternSerial")
+                        .HasMaxLength(700)
+                        .HasColumnType("nvarchar(700)");
+
+                    b.Property<int>("TypeSupplierEInvoice")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AutoSendTimer");
+                });
+
             modelBuilder.Entity("Domain.Entities.BankAccount", b =>
                 {
                     b.Property<int>("Id")
@@ -1496,6 +1554,33 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.HasIndex("IdInvoice");
 
                     b.ToTable("EInvoiceItem");
+                });
+
+            modelBuilder.Entity("Domain.Entities.HistoryAutoSendTimer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IdAutoSendTimer")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAutoSendTimer");
+
+                    b.ToTable("HistoryAutoSendTimer");
                 });
 
             modelBuilder.Entity("Domain.Entities.HistoryEInvoice", b =>
@@ -4505,6 +4590,17 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Navigation("EInvoice");
                 });
 
+            modelBuilder.Entity("Domain.Entities.HistoryAutoSendTimer", b =>
+                {
+                    b.HasOne("Domain.Entities.AutoSendTimer", "AutoSendTimer")
+                        .WithMany("HistoryAutoSendTimers")
+                        .HasForeignKey("IdAutoSendTimer")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("AutoSendTimer");
+                });
+
             modelBuilder.Entity("Domain.Entities.HistoryEInvoice", b =>
                 {
                     b.HasOne("Domain.Entities.EInvoice", "EInvoice")
@@ -4901,6 +4997,11 @@ namespace Infrastructure.Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Area", b =>
                 {
                     b.Navigation("RoomAndTables");
+                });
+
+            modelBuilder.Entity("Domain.Entities.AutoSendTimer", b =>
+                {
+                    b.Navigation("HistoryAutoSendTimers");
                 });
 
             modelBuilder.Entity("Domain.Entities.BankAccount", b =>

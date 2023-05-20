@@ -24,6 +24,7 @@ namespace Application.Interfaces.Repositories
         Task<IResult<PublishInvoiceModelView>> SycnInvoiceAsync(int[] lst, int ComId, string Carsher, string IdCarsher, EnumTypeSyncEInvoice TypeSyncEInvoice);
         Task CreateAsync(T Entity, string Carsher, string IdCarsher);
         Task<IResult<PublishInvoiceModelView>> SendCQTAsync(int[] lstid, int Comid, string Carsher, string IdCarsher);
+        Task SendCQTAutoAsync(List<HistoryAutoSendTimer> history, int[] lstPattern, int Comid, ENumSupplierEInvoice SupplierEInvoice);
         Task<IResult<PublishInvoiceModelView>> SendCQTTokenAsync(int[] lstid, string dataXml, int Comid, string Carsher, string IdCarsher);
         Task UpdateAsync(T Entity);
         Task<T> FindByIdAsync(int id, bool asNotracking = false);

@@ -28,6 +28,11 @@ table.dataTable > tbody > tr.child ul.dtr-details {
         text-align: left !important;
     }
 }
+.swal2-container.swal2-top-end.Swal900 {
+    .swal2-popup {
+        width: 900px;
+    }
+}
 .hidermenu {
     display: none;
 }
@@ -1378,7 +1383,33 @@ a.codeinvoiceold {
         }
     }
 }
+.formAutoTimer {
+    .ele-patern {
+        fieldset {
+            border: 1px solid #e4e7ea;
+            padding: 15px;
+            border-radius: 8px;
 
+            legend {
+                font-size: 16px;
+                width: max-content;
+                margin-bottom: 0px;
+            }
+
+            .selectall {
+                margin-bottom: 20px;
+            }
+
+            .list-pattern {
+                padding-left: 0px;
+
+                li {
+                    list-style: none
+                }
+            }
+        }
+    }
+}
 .form-check {
     padding-left: 0 !important;
 }
@@ -1902,6 +1933,7 @@ div#datafoodbyroom {
         }
     }
 }
+
 body#sellting-chitken-skin1 {
     header {
         background-color: #fff;
@@ -6297,7 +6329,11 @@ img#Imgdata {
 }
 // Medium devices (tablets, less than 992px)
 @media (max-width: 991.98px) {
-
+    .swal2-container.swal2-top-end.Swal900 {
+        .swal2-popup {
+            width: 100%;
+        }
+    }
     button.btnfullScreen {
         font-size: 16px;
     }

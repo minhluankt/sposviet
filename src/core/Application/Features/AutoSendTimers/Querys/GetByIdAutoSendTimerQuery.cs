@@ -30,7 +30,7 @@ namespace Application.Features.AutoSendTimers.Query
             }
             public async Task<Result<AutoSendTimer>> Handle(GetByIdAutoSendTimerQuery query, CancellationToken cancellationToken)
             {
-                var product = await _repository.Entities.Where(x => x.Id == query.Id && x.TypeSupplierEInvoice== query.TypeSupplierEInvoice && x.ComId == query.ComId).AsNoTracking().SingleOrDefaultAsync();
+                var product = await _repository.Entities.Where(x => x.Id == query.Id  && x.ComId == query.ComId).AsNoTracking().SingleOrDefaultAsync();
                 if (product == null)
                 {
                     return Result<AutoSendTimer>.Fail(HeperConstantss.ERR012);

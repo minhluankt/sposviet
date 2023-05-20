@@ -1688,6 +1688,31 @@ var validateForm = {
             }
         });
     },
+    addOrEditAutoTimer: function () {
+        $("#create-form").validate({
+            ignore: 'input[type=hidden]',
+            rules: {
+                "Name": {
+                    required: true,
+                    minlength: 3
+                },
+                "Time": {
+                    required: true,
+                }
+            },
+            messages: {
+                "Name": {
+                    required: errrequired,
+                    minlength: errminlength3
+                },
+                "Time": {
+                    required: errrequired
+                }
+            },
+            submitHandler: function (form) {
+            }
+        });
+    },
     EditOrUpdateProduct: function () {
         $("#create-formProduct").validate({
             ignore: 'input[disabled=disabled]',
@@ -3586,7 +3611,100 @@ function loaddataCheckboxGET(URL, idselectd = "") {
 }
 
 ///////////////////
+function loadTimePicker() {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
 
+    today = dd + '/' + mm + '/' + yyyy;
+    let fotmat = "HH:mm";
+    $('.fc-datetimepicker').daterangepicker({
+        "singleDatePicker": true,
+        "showDropdowns": true,
+        showTodayButton: true,
+        minDate: 0,
+        datepicker: false,
+        //startDate: today,
+        autoApply: true,
+        todayHighlight: true,
+        "autoUpdateInput": false,
+        alwaysShowCalendars: false,
+        timePicker: true,
+        timePicker24Hour: true,
+        dateFormat: '',
+        "format": fotmat,
+        timeFormat: fotmat,
+        "locale": {
+            "format": fotmat,
+            "separator": " - ",
+            "applyLabel": "Đồng ý",
+            "cancelLabel": "Hủy bỏ",
+            "fromLabel": "From",
+            "toLabel": "To",
+            "customRangeLabel": "Custom",
+            "weekLabel": "W",
+            "daysOfWeek": [
+                "CN",
+                "T2",
+                "T3",
+                "T4",
+                "T5",
+                "T6",
+                "T7"
+            ],
+            "monthNames": [
+                "Tháng 1",
+                "Tháng 2",
+                "Tháng 3",
+                "Tháng 4",
+                "Tháng 5",
+                "Tháng 6",
+                "Tháng 7",
+                "Tháng 8",
+                "Tháng 9",
+                "Tháng 10",
+                "Tháng 11",
+                "Tháng 12"
+            ],
+            "firstDay": 1
+        },
+    });
+
+
+    var isClick = 0;
+
+    $(window).on('click', function () {
+        isClick = 0;
+    });
+    var myCalendar = $('.fc-datetimepicker');
+    $(myCalendar).on('apply.daterangepicker', function (ev, picker) {
+        isClick = 0;
+        $(this).val(picker.startDate.format(fotmat));
+
+    });
+
+    $('.js-btn-calendar').on('click', function (e) {
+        e.stopPropagation();
+
+        if (isClick === 1) isClick = 0;
+        else if (isClick === 0) isClick = 1;
+
+        if (isClick === 1) {
+            myCalendar.focus();
+        }
+    });
+
+    $(myCalendar).on('click', function (e) {
+        e.stopPropagation();
+        isClick = 1;
+    });
+
+    $('.daterangepicker').on('click', function (e) {
+        e.stopPropagation();
+    });
+
+}
 function loaddaterangepicker(timePicker = true) {
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
@@ -17187,6 +17305,69 @@ var supplierEInvoice = {
 }
 
 var AutoTimer = {
+    eventCheckAll: function () {
+        var triggeredByChild = false;
+        $('input.checkAll').on('ifChanged', function (event) {
+           
+            if ($(this).prop("checked") == true){
+                var triggeredByChild = false;
+                $("input.itemcheck").iCheck('check');
+            }
+            else if ($(this).prop("checked") == false) {
+                if (!triggeredByChild) {
+                    $('.itemcheck').iCheck('uncheck');
+                }
+                triggeredByChild = false;
+            }
+        });
+
+        $('input.itemcheck').on('ifChanged', function (event) {
+            if ($(this).prop("checked") == false) {
+                triggeredByChild = true;
+                $('input.checkAll').iCheck('uncheck');
+            } else {
+                if ($('.itemcheck').filter(':checked').length == $('.itemcheck').length) {
+                    $('input.checkAll').iCheck('check');
+                }
+            }
+        });
+    },
+    StartJob: function (url,type) {
+        $.ajax({
+            type: 'POST',
+            //global: false,
+            url: url,
+            data: {
+                TypeSupplierEInvoice: type,
+            },
+            success: function (res) {
+                if (res.isValid) {
+                    dataTableOut.ajax.reload(null, false);
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    },
+    StopJob: function (url,  type) {
+        $.ajax({
+            type: 'POST',
+            //global: false,
+            url: url,
+            data: {
+                TypeSupplierEInvoice: type,
+            },
+            success: function (res) {
+                if (res.isValid) {
+                    dataTableOut.ajax.reload(null, false);
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    },
     addOreditEInvoice: function (url) {
         $.ajax({
             type: 'GET',
@@ -17198,8 +17379,13 @@ var AutoTimer = {
             success: function (res) {
                 if (res.isValid) {
                     Swal.fire({
+                        title:"Cấu hình tự động gửi hóa đơn lên cơ quan thuế",
                         // icon: 'success',
                         position: 'top-end',
+                        customClass: {
+                            container: 'Swal900',
+                            footer: 'footer-Swal'
+                        },
                         showClass: {
                             popup: `
                               popup-formcreate
@@ -17214,7 +17400,6 @@ var AutoTimer = {
                         },
                         showCloseButton: true,
 
-                        title: res.title,
                         html: res.html,
                         //showClass: {
                         //    popup: 'popup-formcreate'
@@ -17226,19 +17411,32 @@ var AutoTimer = {
                         showCancelButton: false,
                         cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                         didRender: () => {
-                            validateForm.addOrEditMangerPatternEInvoice();
-
+                          // loadTimePicker();
+                            $('.timepicker').timepicker({//https://timepicker.co/
+                                timeFormat: 'HH:mm',
+                                interval: 30,
+                               // minTime: '10',
+                               // maxTime: '6:00pm',
+                                defaultTime: '17',
+                                startTime: '00:00',
+                                dynamic: false,
+                                dropdown: true,
+                                scrollbar: true
+                            });
+                            validateForm.addOrEditAutoTimer();
+                            loadEventIcheck();
                             $(".btn-continue").click(function () {
                                 Swal.close();
                             });
 
                             $(".btn-save").click(function () {
+
                                 if ($("form#create-form").valid()) {
                                     jQueryModalPost($("form#create-form")[0]);
                                 }
 
                             });
-
+                            AutoTimer.eventCheckAll();
                         }
                     });
                 }
