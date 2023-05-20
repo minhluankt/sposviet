@@ -52,7 +52,7 @@ namespace Application.Features.AutoSendTimers.Commands
                     _log.LogError("UpdateAutoSendTimerCommand Không tìm thấy Đơn vị  " + command.TypeSupplierEInvoice);
                     return await Result<int>.FailAsync("Không tìm thấy dữ liệu");
                 }
-                return await Result<int>.SuccessAsync(up.Data.Id);
+                return await Result<int>.SuccessAsync(up.Data.Id,up.Message);
             }
             catch (Exception ex)
             {

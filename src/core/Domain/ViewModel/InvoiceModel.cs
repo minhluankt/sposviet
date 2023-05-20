@@ -72,6 +72,9 @@ namespace Domain.ViewModel
         public string Unit { get; set; }
         public decimal Price { get; set; }
         public decimal Total { get; set; }
+        public float VATRate { get; set; }
+        public decimal VATAmount { get; set; }
+        public decimal Amount { get; set; }
         public EnumTypeProductCategory TypeProductCategory { get; set; }
         /// <summary>
         ///  dành cho tính thuế khi xuất hóa đơn có thuế

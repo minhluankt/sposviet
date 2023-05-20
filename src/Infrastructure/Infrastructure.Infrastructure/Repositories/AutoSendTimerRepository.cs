@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using NStandard;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Spire.Doc.Documents;
 using System;
@@ -93,13 +94,26 @@ namespace Infrastructure.Infrastructure.Repositories
             var data = await _repository.Entities.SingleOrDefaultAsync(x => x.Id == entity.Id && x.ComId == entity.ComId);
             if (data != null)
             {
-                data.Name = entity.Name;    
-                data.Hour = entity.Hour;    
-                data.Minute = entity.Minute;    
-                data.Active = entity.Active;  
+                data.Name = entity.Name;
+                data.Hour = entity.Hour;
+                data.Minute = entity.Minute;
+                string mess = string.Empty;
+                if (data.Active && !entity.Active)//nếu dg bật mà update tắt thì xóa
+                {
+                    RecurringJob.RemoveIfExists(data.JobId.ToString());
+                    mess = "Đã hủy bỏ ứng dụng đang chạy";
+                }
+                else if(!data.Active && entity.Active)//ngược lại
+                {
+                    RecurringJob.AddOrUpdate(data.JobId.ToString(), () => this.StartJobEInvoiceAsync(data), Cron.Daily(data.Hour, data.Minute), TimeZoneInfo.Local);
+                    _logger.LogInformation("Kích hoạt thành công, ứng dụng đã khởi chạy");
+                    mess = "Kích hoạt thành công, ứng dụng đã khởi chạy";
+                }
+                data.Active = entity.Active;
+                
                 await _repository.UpdateAsync(data);
                 await _unitOfWork.SaveChangesAsync();
-                return await Result<AutoSendTimer>.SuccessAsync(data);
+                return await Result<AutoSendTimer>.SuccessAsync(data, mess);
             }
             else
             {

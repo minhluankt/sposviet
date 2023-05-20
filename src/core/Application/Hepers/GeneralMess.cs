@@ -35,7 +35,7 @@ namespace Application.Hepers
                     html = "Toàn bộ lô hóa đơn hoặc không tìm thấy hoặc đã gửi thuế";
                     break;
                 case "ERR:20":
-                    html = "Thông tin pattern hoặc serial không hợp lệ";
+                    html = "Thông tin mẫu số hoặc ký hiệu không hợp lệ";
                     break;
                 case "ERR:21":
                     html = "Không tìm thấy công ty hoặc tài khoản không tồn tại";

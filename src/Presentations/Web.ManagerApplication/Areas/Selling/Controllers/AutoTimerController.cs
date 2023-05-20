@@ -241,7 +241,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     }
                 }
                 var html = await _viewRenderer.RenderViewToStringAsync("_CreateOrEdit", data.Data);
-                return new JsonResult(new { isValid = true, html = html });
+                return new JsonResult(new { isValid = true, html = html,hour = data.Data.Hour, minute = data.Data.Minute });
             }
             _notify.Error(data.Message);
             return new JsonResult(new { isValid = false, html = string.Empty });
@@ -312,7 +312,14 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                             secret = CryptoEngine.Encrypt(values, _config.Value.Key);
                             var valuestype = "type=" + (int)model.TypeSupplierEInvoice;
                             secrettype = CryptoEngine.Encrypt(valuestype, _config.Value.Key);
-                            _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
+                            if (!string.IsNullOrEmpty(result.Message))
+                            {
+                                _notify.Success(result.Message);
+                            }
+                            else
+                            {
+                                _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
+                            }
                         }
                         else
                         {

@@ -266,7 +266,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         }
                         catch (Exception e)
                         {
-                            _log.LogError($"Mã {einvoice.EInvoiceCode} Lỗi sinh XMl khi phát hành hóa đơn điện tử" + e.ToString());
+                            _log.LogError($"Mã {einvoice.EInvoiceCode}, {e.Message}, Lỗi sinh XMl khi phát hành hóa đơn điện tử" + e.ToString());
                             return await Result<string>.FailAsync($"{CommonException.ExceptionXML}Lỗi sinh XMl khi phát hành hóa đơn điện tử");
                         }
                         var pub = await _vnptrepository.ImportAndPublishInvMTTAsync(company.DomainName, xmlData, company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin, pattern, serial);

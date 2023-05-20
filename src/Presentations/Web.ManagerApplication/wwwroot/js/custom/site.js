@@ -6927,6 +6927,9 @@ var eventInvocie = {
             $("#JsonInvoiceOld").val(JSON.stringify(InvoiceOlds));
         }
         //---------------------//
+        let checkvatrate = parseInt($("#checkErrorVATRate").val());
+        let vatrateModel = $("#checkErrorVATRate").data("rate");
+       
         $("#tableinvoicemerge").find("tbody").find("tr").each(function (index, element) {
             let typeProductCategory = parseInt($(this).find(".name").data("typeProductCategory")) || EnumTypeProductCategory.PRODUCT;
             let code = $(this).find(".code").text();
@@ -6935,13 +6938,26 @@ var eventInvocie = {
             let price = $(this).find(".price").text().replaceAll(",", "") || 0;
             let quantity = $(this).find(".quantity").text().replaceAll(",", "") || 0;
             let total = $(this).find(".total").text().replaceAll(",", "") || 0;
+            let vatrate = NOVATRate;
+            let vatamount= 0;
+            let amount = parseFloat(total);
+            
+            if (checkvatrate > 0 && parseInt($(this).val()) != vatrateModel) {
+                vatrate = parseFloat($(this).find(".vatrate").text().replaceAll(",", "")) || 0;
+                vatamount = parseFloat($(this).find(".vatamount").text().replaceAll(",", "")) || 0;
+                amount = parseFloat($(this).find(".amount").text().replaceAll(",", "")) || 0;
+            }
             var Product = {}; //khởi tạo object
             Product.TypeProductCategory = typeProductCategory;
+            Product.Name = name;
             Product.Code = code;
             Product.Unit = unit;
             Product.Price = parseFloat(price);
             Product.Total = parseFloat(total);
             Product.Quantity = parseFloat(quantity);
+            Product.VATRate = vatrate;
+            Product.VATAmount = vatamount;
+            Product.Amount = amount;
             if (code == "") {
                 alert("Sản phẩm: " + name + " không hợp lệ!");
                 Swal.close();
@@ -6958,7 +6974,16 @@ var eventInvocie = {
         }
     },
     eventChanegVATrate: function () {
+        let checkvatrate = parseInt($("#checkErrorVATRate").val());
+        let vatrate = $("#checkErrorVATRate").data("rate");
+
         $("#Vatrate").change(function () {
+            if (checkvatrate >0 && parseInt($(this).val()) != vatrate) {
+                toastrcus.error("Thuế suất bạn chọn không khớp với thuế trong hàng hóa");
+                $("#Vatrate option[value='" + vatrate + "']").prop("selected", "selected");
+                return;
+            }
+
             let total = parseFloat($(".Total").val().replaceAll(",", "")) || 0;
             let discountAmount = parseFloat($(".DiscountAmount").val().replaceAll(",", "")) || 0;
             if (discountAmount > 0) {
@@ -17412,12 +17437,13 @@ var AutoTimer = {
                         cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                         didRender: () => {
                           // loadTimePicker();
+                            let time = res.hour + ":" + res.minute
                             $('.timepicker').timepicker({//https://timepicker.co/
                                 timeFormat: 'HH:mm',
                                 interval: 30,
                                // minTime: '10',
                                // maxTime: '6:00pm',
-                                defaultTime: '17',
+                                defaultTime: time,
                                 startTime: '00:00',
                                 dynamic: false,
                                 dropdown: true,

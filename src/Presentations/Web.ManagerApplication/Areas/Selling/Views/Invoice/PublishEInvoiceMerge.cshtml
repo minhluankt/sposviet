@@ -1,4 +1,4 @@
-﻿
+﻿@using Application.Enums
 @model Domain.ViewModel.PublishEInvoiceMergeModel
 @{
     var selected = Model.SupplierEInvoice.ManagerPatternEInvoices.FirstOrDefault(x => x.Selected);
@@ -14,8 +14,20 @@
     {
         nameinvoice = HelperLibrary.LibraryCommon.GetNameInvoice(selected.Pattern);
     }
-   
+    int checkVAT = Model.Invoice.InvoiceItems.Where(x => x.VATRate != (float)NOVAT.NOVAT).Select(x => x.VATRate).Distinct().Count();
+    var tientruocthue = Model.Invoice.Total;
+    decimal tienthue = 0;
+    if (checkVAT>0)
+    {
+        tientruocthue = Model.Invoice.InvoiceItems.Sum(x => x.Total);
+    }
 }
+
+@if (checkVAT>1)
+{
+    <span class="red">Hóa đơn này không thể thực hiện gộp vui lòng kiểm tra lại thuế suất, các hóa đơn có thuế suất khác nhau không hợp lệ</span>
+}
+<input type="hidden" id="checkErrorVATRate" value="@checkVAT" data-rate="@Model.Invoice.VATRate" />
 <form id="create-formProduct" asp-controller="Invoice" asp-action="PublishEInvoiceMerge">
     <input type="hidden" name="JsonProduct" id="JsonProduct"/>
     <input type="hidden" name="JsonInvoiceOld" id="JsonInvoiceOld" />
@@ -174,6 +186,12 @@
                     <th scope="col">Số lượng</th>
                     <th scope="col">Đơn giá</th>
                     <th scope="col">Thành tiền</th>
+                        @if (checkVAT==1)
+                        {
+                            <th scope="col">Thuế suất</th>
+                            <th scope="col">Tiền thuế</th>
+                            <th scope="col">Tổng tiền</th>
+                        }
                 </tr>
             </thead>
             <tbody>
@@ -188,15 +206,32 @@
                         <td class="name" data-typeProductCategory="@((int)item.TypeProductCategory)">@item.Name</td>
                         <td class="number3 text-center unit">@item.Unit</td>
                         <td class="number3 text-center quantity">@item.Quantity</td>
-                        <td class="number3 text-right price">@item.Price.ToString().Replace(",",".")</td>
+                        <td class="number3 text-right price">
+                                @if (checkVAT == 1)//1 la gia dax co thue, thì hiển thị giá trước thuế
+                                {
+                                    @item.PriceNoVAT.ToString().Replace(",",".")
+                                }
+                                else
+                                {
+                                    @item.Price.ToString().Replace(",",".")
+                                }
+
+                        </td>
                         <td class="number3 text-right total">@item.Total.ToString().Replace(",",".")</td>
-                    </tr>
+                            @if (checkVAT == 1)
+                            {
+                                <td class="number3 text-right vatrate">@item.VATRate.ToString().Replace(",",".")</td>
+                                <td class="number3 text-right vatamount">@item.VATAmount.ToString().Replace(",",".")</td>
+                                <td class="number3 text-right amount">@item.Amonut.ToString().Replace(",",".")</td>
+                            }
+                        </tr>
                 }
             </tbody>
             <tfoot>
+
                 <tr>
                     <th colspan="6" class="text-right">Tiền trước thuế</th>
-                    <th class="text-right"><input type="text" name="Total" id="Total" class="form-control font-weight-bold text-right Total number3" value="@Model.Invoice.Total.ToString().Replace(",",".")" /></th>
+                        <th class="text-right"><input type="text" name="Total" id="Total" class="form-control font-weight-bold text-right Total number3" value="@Model.Invoice.Total.ToString().Replace(",",".")" /></th>
                 </tr> 
                 <tr>
                     <th colspan="6" class="text-right">Giảm giá</th>
@@ -206,14 +241,14 @@
                     <th colspan="6" class="text-right">Thuế suất:
                         <select class="Vatrate" id="Vatrate" name="Vatrate">
                             <option></option>
-                            <option value="0">0%</option>
-                            <option value="5">5%</option>
-                            <option value="8">8%</option>
-                            <option value="10" selected>10%</option>
+                                <option value="0" selected="@(Model.Invoice.VATRate==0)">0%</option>
+                                <option value="5" selected="@(Model.Invoice.VATRate==5)">5%</option>
+                                <option value="8" selected="@(Model.Invoice.VATRate==8)">8%</option>
+                                <option value="10" selected="@(Model.Invoice.VATRate==10)">10%</option>
                         </select>
                     </th>
                     <th class="text-right">
-                            <input type="text" name="VATAmount" id="VATAmount" class="form-control text-right VATAmount number3 font-weight-bold" value="@Model.Invoice.Amonut.ToString().Replace(",",".")" />
+                            <input type="text" name="VATAmount" id="VATAmount" class="form-control text-right VATAmount number3 font-weight-bold" value="@Model.Invoice.VATAmount.ToString().Replace(",",".")" />
                     </th>
                 </tr>
                 <tr>

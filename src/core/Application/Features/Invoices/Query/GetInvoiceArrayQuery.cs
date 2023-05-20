@@ -1,4 +1,5 @@
 ﻿using Application.Constants;
+using Application.Enums;
 using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
 using Domain.Entities;
@@ -74,31 +75,44 @@ namespace Application.Features.Invoices.Query
                     listiteminvoice.AddRange(item.InvoiceItems);
                 }
                 listiteminvoice.ForEach(x => x.Id = 0);
+                float?[] vatRate = listiteminvoice.Where(x=>x.PriceNoVAT>0).Select(x => x.VATRate).Distinct().ToArray();
+
                 var grinvocie = listiteminvoice.GroupBy(x=>x.Code);
                 listiteminvoice = new List<InvoiceItem>();
                 foreach (var item in grinvocie)
                 {
+                    var first = item.First();
                     var iteminvoice = new InvoiceItem()
                     {
                         Code = item.Key,
                         Name = item.First().Name,
                         Unit = item.First().Unit,
                         Price = item.First().Price,
+                        PriceNoVAT = item.First().PriceNoVAT,
                         VATRate = item.First().VATRate,
                         TypeProductCategory = item.First().TypeProductCategory,
                         Quantity = item.Sum(x => x.Quantity),
-                        Total = item.Sum(x => x.Quantity) * item.First().Price,
+                        Total = item.Sum(x => x.Total),
+                        VATAmount = item.Sum(x => x.VATAmount),
+                        Amonut = item.Sum(x => x.Amonut),
                     };
-                    decimal vatrate = Convert.ToDecimal(iteminvoice.VATRate==-1?0: iteminvoice.VATRate);
-                    iteminvoice.VATAmount = Math.Round(iteminvoice.Total * (vatrate / 100), MidpointRounding.AwayFromZero);
-                    iteminvoice.Amonut = Math.Round(iteminvoice.Total + iteminvoice.VATAmount, MidpointRounding.AwayFromZero);
+                    if (first.VATRate == (float)NOVAT.NOVAT && vatRate.Count()>0)
+                    {
+                        decimal vatrate = Convert.ToDecimal(vatRate[0]);
+                        iteminvoice.PriceNoVAT = iteminvoice.Price;
+                        iteminvoice.VATRate = vatRate[0];
+                        iteminvoice.VATAmount = Math.Round(iteminvoice.Total * (vatrate / 100), MidpointRoundingCommon.Three);
+                        iteminvoice.Amonut = Math.Round(iteminvoice.Total + iteminvoice.VATAmount, MidpointRoundingCommon.Three);
+
+                    }
                     listiteminvoice.Add(iteminvoice);
                 }
 
                 var getfirstinvoice = Invoice.FirstOrDefault();
-                getfirstinvoice.Total = listiteminvoice.Sum(x=>x.Total);
-                getfirstinvoice.VATAmount = listiteminvoice.Sum(x=>x.VATAmount);
-                getfirstinvoice.Amonut = listiteminvoice.Sum(x=>x.Amonut);
+                getfirstinvoice.Total = Math.Round(listiteminvoice.Sum(x=>x.Total), MidpointRounding.AwayFromZero);
+                getfirstinvoice.VATRate = vatRate.Count() > 0? vatRate[0]:10;
+                getfirstinvoice.VATAmount = Math.Round(listiteminvoice.Sum(x=>x.VATAmount), MidpointRounding.AwayFromZero);
+                getfirstinvoice.Amonut = Math.Round(listiteminvoice.Sum(x=>x.Amonut), MidpointRounding.AwayFromZero);
                 getfirstinvoice.DiscountAmount = Invoice.Sum(x=>x.DiscountAmount);
                 getfirstinvoice.InvoiceItems = listiteminvoice;
                 return await Result<Invoice>.SuccessAsync(getfirstinvoice, lstcodeinvoice);

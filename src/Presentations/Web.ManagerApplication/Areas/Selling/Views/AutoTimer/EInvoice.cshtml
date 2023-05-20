@@ -92,6 +92,7 @@
                             <th class="text-center d-none">STT</th>
                             <th class="text-center">Jobid</th>
                             <th class="text-center">Tên</th>
+                            <th class="text-center">Thời gian</th>
                             <th class="text-center">Trạng thái</th>
                             <th class="text-center">Người tạo</th>
                             <th class="text-center">Ngày tạo</th>
@@ -183,7 +184,13 @@
                     {
                         "data": "name", "Name": "Pattern", "autoWidth": true
 
-                    },
+                }, {
+                    "data": null, "name": "Hour",
+                    "render": function (data, type, full, meta) {
+                        const zeroPad = (num, places) => String(num).padStart(places, '0')
+                        return zeroPad(full.hour, 2) + ":" + zeroPad(full.minute, 2);
+                    }
+                },
                     {
                         "data": "active", "name": "Active",
                         "render": function (data, type, full, meta) {

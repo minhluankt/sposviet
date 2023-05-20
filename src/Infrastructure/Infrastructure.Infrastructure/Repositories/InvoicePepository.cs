@@ -1027,6 +1027,8 @@ namespace Infrastructure.Infrastructure.Repositories
             }
 
             //-------------------thực hiện map thành hóa đơn mới---------------------------//
+
+            //------------------
             var listiteminvoice = new List<InvoiceItem>();
             foreach (var item in getAllInvoice)
             {
@@ -1052,31 +1054,58 @@ namespace Infrastructure.Infrastructure.Repositories
             //-------------------------
 
             listiteminvoice.ForEach(x => x.Id = 0);
-            var grinvocie = listiteminvoice.GroupBy(x => x.Code);
+            //var grinvocie = listiteminvoice.GroupBy(x => x.Code);
+            //------------Tạo hóa đơn mới
             Invoice invoicenew = new Invoice();
             invoicenew.ComId = ComId;
             invoicenew.TypeProduct = model.TypeProduct;
-            listiteminvoice = new List<InvoiceItem>();
-            foreach (var item in grinvocie)
+            //-----------------tao lisst item , lấy luôn item từ view vào vì để người dùng thấy đúng giá trị đã xem
+            var listiteminvoicenew = new List<InvoiceItem>();
+            foreach (var item in model.PublishInvoiceItemModel)
             {
                 var iteminvoice = new InvoiceItem()
                 {
-                    Code = item.Key,
-                    Name = item.First().Name,
-                    Unit = item.First().Unit,
-                    Price = item.First().Price,
-                    VATRate = Convert.ToInt32(model.VATRate),
-                    TypeProductCategory = item.First().TypeProductCategory,
-                    Quantity = item.Sum(x => x.Quantity),
-                    Total = item.Sum(x => x.Quantity) * item.First().Price,
+                    Code = item.Code,
+                    Name = item.Name,
+                    Unit = item.Unit,
+                    Price = item.Price,
+                    VATRate = item.VATRate,
+                    VATAmount = item.VATAmount,
+                    TypeProductCategory = item.TypeProductCategory,
+                    Quantity = item.Quantity,
+                    Total = item.Total,
+                    Amonut = item.Amount
                 };
-
-                decimal vatrate = Convert.ToDecimal(model.VATRate == -1 ? 0 : model.VATRate);
-                iteminvoice.VATAmount = Math.Round(iteminvoice.Total * (vatrate / 100), MidpointRounding.AwayFromZero);
-                iteminvoice.Amonut = Math.Round(iteminvoice.Total + iteminvoice.VATAmount, MidpointRounding.AwayFromZero);
-                listiteminvoice.Add(iteminvoice);
+                var getpro = listiteminvoice.FirstOrDefault(x=>x.Code==item.Code);
+                if (getpro!=null)
+                {
+                    iteminvoice.IdProduct = getpro.IdProduct;
+                    iteminvoice.PriceNoVAT = getpro.PriceNoVAT;
+                    iteminvoice.Price = getpro.Price;
+                    iteminvoice.Name = getpro.Name;
+                }
+                listiteminvoicenew.Add(iteminvoice);
             }
-            invoicenew.InvoiceItems = listiteminvoice;
+            //foreach (var item in grinvocie)
+            //{
+            //    var iteminvoice = new InvoiceItem()
+            //    {
+            //        Code = item.Key,
+            //        Name = item.First().Name,
+            //        Unit = item.First().Unit,
+            //        Price = item.First().Price,
+            //        VATRate = Convert.ToInt32(model.VATRate),
+            //        TypeProductCategory = item.First().TypeProductCategory,
+            //        Quantity = item.Sum(x => x.Quantity),
+            //        Total = item.Sum(x => x.Quantity) * item.First().Price,
+            //    };
+
+            //    decimal vatrate = Convert.ToDecimal(model.VATRate == -1 ? 0 : model.VATRate);
+            //    iteminvoice.VATAmount = Math.Round(iteminvoice.Total * (vatrate / 100), MidpointRounding.AwayFromZero);
+            //    iteminvoice.Amonut = Math.Round(iteminvoice.Total + iteminvoice.VATAmount, MidpointRounding.AwayFromZero);
+            //    listiteminvoice.Add(iteminvoice);
+            //}
+            invoicenew.InvoiceItems = listiteminvoicenew;
            
             // xử lý đưa vào db
             await _unitOfWork.CreateTransactionAsync();
@@ -1239,7 +1268,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 else
                 {
                     await _unitOfWork.RollbackAsync();
-                    return await Result<PublishInvoiceModelView>.FailAsync(publisheinvoice.Message);
+                    return await Result<PublishInvoiceModelView>.FailAsync(GeneralMess.GeneralMessStartPublishEInvoice(publisheinvoice.Message));
                 }
                // publishInvoiceModelView.DetailInvoices = ListDetailInvoice;
               
@@ -1247,8 +1276,7 @@ namespace Infrastructure.Infrastructure.Repositories
             catch (Exception e)
             {
                 await _unitOfWork.RollbackAsync();
-                _log.LogError(ComId.ToString());
-                _log.LogError(e.Message);
+                _log.LogError(e.ToString());
                 return await Result<PublishInvoiceModelView>.FailAsync(e.Message);
             }
 
@@ -1268,7 +1296,7 @@ namespace Infrastructure.Infrastructure.Repositories
             invoice.IdPaymentMethod = model.IdPaymentMethod;
             invoice.IsRetailCustomer = model.IsRetailCustomer;
             invoice.Quantity = invoice.InvoiceItems.Sum(x => x.Quantity);
-            invoice.VATRate = Convert.ToInt32(model.VATRate);
+            invoice.VATRate = (float)model.VATRate;
             invoice.VATAmount = model.VATAmount;
             invoice.Amonut = model.Amount;
             invoice.Total = model.Total;
