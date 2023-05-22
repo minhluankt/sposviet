@@ -19,7 +19,7 @@ namespace Domain.ViewModel
         public decimal Amount { get; set; }
         public decimal VATAmount { get; set; }
         public decimal Total { get; set; }
-        public float? VATRate { get; set; }
+        public decimal? VATRate { get; set; }
         public decimal Discount { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal CusSendAmount { get; set; }//tiền khách đưa
@@ -37,9 +37,14 @@ namespace Domain.ViewModel
         public decimal DiscountAmount { get; set; }
         public decimal Price { get; set; }
         public decimal PriceNew { get; set; }
+        public decimal PriceNoVAT { get; set; }
+        public decimal VATRate { get; set; }
         public decimal RetailPrice { get; set; }
         public decimal Quantity { get; set; }
+        public decimal Total { get; set; }
+        public decimal VATAmount { get; set; }
         public decimal Amount { get; set; }
+        public bool IsVAT { get; set; }
     }
     public class CustomerOrderInvoiceModel
     {

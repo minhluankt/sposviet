@@ -213,7 +213,7 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public IQueryable<EInvoice> GetAllAsync()
         {
-            return _repository.GetAllQueryable().AsNoTracking();
+            return _repository.Entities.AsNoTracking();
         }
         public async Task<IResult<string>> CheckConnectWebserviceAsync(string doamin, string userservice, string passservice, string useradmin, string passadmin)
         {

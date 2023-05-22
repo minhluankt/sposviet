@@ -1,4 +1,14 @@
-﻿<div class="app-page-title">
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Application.Hepers;
+@inject UserManager<ApplicationUser> UserManager
+@inject IHtmlLocalizer<SharedResource> localizer
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    var user = User.Identity.GetUserClaimLogin();
+}
+
+
+<div class="app-page-title">
     <div class="page-title-wrapper">
         <div class="page-title-heading">
             <div class="page-title-icon">
@@ -67,41 +77,48 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4 col-lg-3 item-col">
-        <div class="main-card card">
-            <div class="card-body">
-                <a href="/Selling/Areas">
-                    <div class="area-settings-nav">
-                        <div class="item-left">
-                            <i class="fas fa-warehouse"></i>
-                        </div>
-                        <div class="item-right">
-                            <b>1. Thiết lập khu vực</b>
-                            <span>Xem và thiết lập khu vực trong nhà hàng</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 col-lg-3 item-col">
 
-        <div class="main-card card">
-            <div class="card-body">
-                <a href="/Selling/roomtable">
-                    <div class="area-settings-nav">
-                        <div class="item-left">
-                            <i class="fas fa-table"></i>
+    @if (user.IdDichVu==Application.Enums.EnumTypeProduct.AMTHUC)
+    {
+        <div class="col-md-4 col-lg-3 item-col">
+            <div class="main-card card">
+                <div class="card-body">
+                    <a href="/Selling/Areas">
+                        <div class="area-settings-nav">
+                            <div class="item-left">
+                                <i class="fas fa-warehouse"></i>
+                            </div>
+                            <div class="item-right">
+                                <b>1. Thiết lập khu vực</b>
+                                <span>Xem và thiết lập khu vực trong nhà hàng</span>
+                            </div>
                         </div>
-                        <div class="item-right">
-                            <b>1. Thiết lập bàn/phòng</b>
-                            <span>Xem và thiết lập bàn phòng trong nhà hàng</span>
-                        </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+        <div class="col-md-4 col-lg-3 item-col">
+
+            <div class="main-card card">
+                <div class="card-body">
+                    <a href="/Selling/roomtable">
+                        <div class="area-settings-nav">
+                            <div class="item-left">
+                                <i class="fas fa-table"></i>
+                            </div>
+                            <div class="item-right">
+                                <b>1. Thiết lập bàn/phòng</b>
+                                <span>Xem và thiết lập bàn phòng trong nhà hàng</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    }
+   
+
     <div class="col-md-4 col-lg-3 item-col">
 
         <div class="main-card card">

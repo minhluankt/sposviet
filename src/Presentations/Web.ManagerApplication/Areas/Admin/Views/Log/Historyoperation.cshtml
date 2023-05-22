@@ -85,7 +85,7 @@
                     <th>Giá trị cũ</th>
                     <th>Giá trị mới</th>
                     <th>Columns thay đổi</th>
-              
+                    <th>Key</th>
                     <th>Hành động</th>
                 </tr>
             </thead>
@@ -107,7 +107,7 @@
                         <td>@name.OldValues</td>
                         <td>@name.NewValues</td>
                         <td>@name.AffectedColumns</td>
-                        @*<td>@name.PrimaryKey</td>*@
+                        <td>@name.PrimaryKey</td>
                         <td></td>
                     </tr>
                 }
@@ -126,7 +126,8 @@
                 của tổng số @Model.TotalItemCount dòng ( trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount)
             </div>
             <div class="col-md-6">
-                @Html.PagedListPager(Model, page => Url.Action("Historyoperation", new { page, pageSize = Model.PageSize, userId = userId, FromDate = FromDate, ToDate = ToDate }),
+                @Html.PagedListPager(Model, page => Url.Action("Historyoperation", new { page, pageSize = Model.PageSize,
+                userId = userId, FromDate = FromDate, ToDate = ToDate ,textSearch=textSearch}),
                 PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
                 {
                 MaximumPageNumbersToDisplay = 10,

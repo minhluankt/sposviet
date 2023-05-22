@@ -1390,14 +1390,17 @@ namespace Infrastructure.Infrastructure.Repositories
                     Quantity = x.Quantity,
                     Price = x.PriceNew,
                     Unit = x.Unit,
+                    Total = x.Total,
+                    VATRate = (float)x.VATRate,
+                    VATAmount = x.VATAmount,
+                    Amonut = x.Amount,
                     EntryPrice = x.RetailPrice,
-                    Total = x.Amount,
                     Discount = x.Discount,
                     DiscountAmount = x.DiscountAmount,
                 };
                 if (iteminvoice.VATRate.HasValue && iteminvoice.VATRate > (int)NOVAT.NOVAT)
                 {
-                    iteminvoice.VATRate = model.VATRate;
+                    iteminvoice.VATRate = (float)model.VATRate;
                     iteminvoice.VATAmount = iteminvoice.Total * (Convert.ToDecimal(model.VATRate) / 100);
                     iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
                 }
@@ -1435,8 +1438,27 @@ namespace Infrastructure.Infrastructure.Repositories
                             x.Code = item.Code;
                             x.Name = item.Name;
                             x.Unit = item.Unit;
+                            x.PriceNoVAT = item.PriceNoVAT;
+                            x.VATRate = item.VATRate;
+                            x.IsVAT = item.IsVAT;
                             x.RetailPrice = item.RetailPrice;
                             //x.Price = item.Price;
+                            //if (x.IsVAT)// nếu sp có thuế
+                            //{
+                            //    x.Total = x.Quantity * x.PriceNoVAT;
+                            //    x.VATAmount = x.Total * (x.VATRate / 100.0M);
+                            //}
+                            //else if(model.VATMTT &&!x.IsVAT)//nếu hóa đơn có thuế sp k thuếthì updatelaij total và tính lại amount
+                            //{
+                            //    x.Total = x.Amount;
+                            //    x.VATAmount = x.Total * (model.VATRate.Value / 100.0M);
+                            //    x.Amount = x.Total + x.VATAmount;
+                            //}
+                            //else
+                            //{
+                            //    x.Total = x.Amount;
+                            //    x.VATRate = (int)NOVAT.NOVAT;
+                            //}
                         }
                     });
                 }
@@ -1460,7 +1482,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 inv.DiscountAmount = model.DiscountAmount;
                 inv.Discount = (float)model.Discount;
                 inv.Total = model.Total;// tong tien chưa giam, gán amount bởi vì là giá trị gốc của hóa đơn ban đầu
-                inv.VATRate = model.VATRate;//
+                inv.VATRate = (float)model.VATRate;//
                 inv.VATAmount = model.VATAmount;//
                 inv.Amonut = model.Amount;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
                 inv.AmountCusPayment = model.CusSendAmount;// tieefn khasch đưa
@@ -1586,7 +1608,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         modelein.ComId = inv.ComId;
                         modelein.IdManagerPatternEInvoice = model.IdPattern.Value;
                         modelein.isVAT = model.VATMTT;
-                        modelein.VATRate = model.VATRate.Value;
+                        modelein.VATRate = (float)model.VATRate.Value;
                         modelein.VATAmount = model.VATAmount;
                         modelein.Amount = model.Amount;
                         modelein.TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT;

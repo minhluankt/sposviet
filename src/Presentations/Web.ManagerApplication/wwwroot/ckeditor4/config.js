@@ -10,26 +10,26 @@ CKEDITOR.editorConfig = function( config ) {
 	config.fullPage= true;
 	config.allowedContent = true;
 	config.filebrowserBrowseUrl = '/Elfinder/browse';
-	config.extraPlugins = 'lineheight,docprops,bootstrapTabs';//   //bật cái này và trong file js là xong
+	config.extraPlugins = 'lineheight,docprops';//  bootstrapTabs //bật cái này và trong file js là xong
 	//config.line_height = "10px;15px;18px;20px;25px;30px;35px";
-	config.contentsCss = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css';
+	//config.contentsCss = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css';
 		
 };
-CKEDITOR.on('instanceReady', function (ev) {
-	var jqScript = document.createElement('script');
-	var bsScript = document.createElement('script');
+//CKEDITOR.on('instanceReady', function (ev) {
+//	var jqScript = document.createElement('script');
+//	var bsScript = document.createElement('script');
 
-	jqScript.src = 'https://code.jquery.com/jquery-2.0.2.js';
-	bsScript.src = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js';
+//	jqScript.src = 'https://code.jquery.com/jquery-2.0.2.js';
+//	bsScript.src = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js';
 
-	var editorHead = ev.editor.document.$.head;
-	editorHead.appendChild(jqScript);
-	editorHead.appendChild(bsScript);
-	//setTimeout(function () {
+//	var editorHead = ev.editor.document.$.head;
+//	editorHead.appendChild(jqScript);
+//	editorHead.appendChild(bsScript);
+//	//setTimeout(function () {
 		
-	//}, 2000)
+//	//}, 2000)
 	
-});
+//});
 
 
 // Load CK Editor
