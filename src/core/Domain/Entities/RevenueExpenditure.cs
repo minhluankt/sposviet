@@ -28,7 +28,7 @@ namespace Domain.Entities
         [StringLength(20)]
         public string Code { get; set; }
         public string Content { get; set; }
-        [StringLength(50, ErrorMessage = "Tên người nộp không quá 30 ký tự")]
+        [StringLength(600, ErrorMessage = "Tên người nộp không quá 600 ký tự")]
         public string CustomerName { get; set; }//tên người nộp
         public EnumStatusRevenueExpenditure Status { get; set; }//trạng thái
         public int? IdCustomer { get; set; }//id người nộp

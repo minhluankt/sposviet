@@ -6853,7 +6853,7 @@ var eventInvocie = {
                 $("#parentautocomplete").css({
                     height: "calc(100vh - 100px)",
                     top: "52px",
-                    "z-index": "5"
+                    "z-index": "6"
                 });
 
                 //if (localStorage.getItem('Barcode') != 1) {
@@ -12291,7 +12291,7 @@ var eventBanle = {
                     $("#parentautocomplete").css({
                         height: "calc(100vh - 100px)",
                         top: "52px",
-                        "z-index": "5"
+                        "z-index": "6"
                     });
 
                     //if (localStorage.getItem('Barcode') != 1) {
@@ -12398,7 +12398,7 @@ var eventBanle = {
                     $("#parentautocomplete").css({
                         height: "calc(100vh - 100px)",
                         top: "52px",
-                        "z-index": "5"
+                        "z-index": "6"
                     });
 
                     $(this).autocomplete("search");
@@ -13261,10 +13261,10 @@ var loadeventPos = {
                         }
                         htmlcate += ` <li data-id="` + item.id + `" data-idcategory="` + item.idCategory + `">
                                             <div class="head_pro">
-                                                    `+ htmlimg + `
+                                                    `+ htmlimg + htmlvat +`
                                                 </div>
                                              <div class="footer_pro">
-                                                 <span>`+ item.name + htmlvat+`</span>
+                                                 <span>`+ item.name + `</span>
                                                  <b class="required priceFormat">`+ item.retailPrice + `</b>
                                           </div>
                                       </li>`;
@@ -14233,7 +14233,7 @@ var loadeventPos = {
                     $("#parentautocomplete").css({
                         height: "calc(100vh - 100px)",
                         top: "52px",
-                        "z-index": "5"
+                        "z-index": "6"
                     });
                     $(this).autocomplete("search");
                     $(this).select()
@@ -14315,7 +14315,7 @@ var loadeventPos = {
                     $("#parentautocomplete").css({
                         height: "calc(100vh - 100px)",
                         top: "52px",
-                        "z-index": "5"
+                        "z-index": "6"
                     });
 
                     $(this).autocomplete("search");

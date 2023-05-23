@@ -1679,6 +1679,9 @@ div#parentautocomplete {
     background-color: #fff;
     padding: 2px 5px;
     border-radius: 8px;
+  
+    z-index: 5;
+    left: 0;
 }
 #item-mon {
     padding-left: 0px;
@@ -2345,7 +2348,16 @@ button.btnfullScreen {
             position: relative;
             border: 1px solid rgba(0, 102, 204, 0.1);
 
-            i {
+            .productpercent {
+                position: absolute;
+
+                i {
+                    font-size: 13px !important;
+                    position: relative;
+                }
+            }
+
+            > i {
                 font-size: 39px;
                 position: absolute;
                 bottom: 0;
