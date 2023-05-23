@@ -3693,8 +3693,8 @@ namespace Infrastructure.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(600)
+                        .HasColumnType("nvarchar(600)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
