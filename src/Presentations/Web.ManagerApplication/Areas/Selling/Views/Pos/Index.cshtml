@@ -109,56 +109,65 @@
                         </ul>
                         <div class="tab-content p-0">
                             <div class="tab-pane active tab-roomtablepos" id="tab-animated-0" role="tabpanel">
-                                @if (Model.Areas!=null && Model.Areas.Count()>0)
-                                {
-                                    <div class="listArea">
-                                        <button class="btn-area active" data-idarea="-1" type="button">Tất cả(@Model.RoomAndTables.Count())</button>
-                                        @foreach (var item in Model.Areas)
+                               <div class="bodytable">
+                                    <div class="leftContentTable">
+                                        @if (Model.Areas != null && Model.Areas.Count() > 0)
                                         {
-                                            <button data-idarea="@item.IdGuid" class="btn-area" type="button">@item.Name</button>
+                                            <div class="listArea">
+                                               
+                                                <button class="btn-area active" data-idarea="-1" type="button">Tất cả(@Model.RoomAndTables.Count())</button>
+                                                @foreach (var item in Model.Areas)
+                                                {
+                                                    <button data-idarea="@item.Id" class="btn-area" type="button">@item.Name (@item.NumberTable)</button>
+                                                }
+                                            </div>
                                         }
                                     </div>
-                                }
-                                
-                                <div class="list-other-table">
-                                    <div class="form-check pl-0">
-                                        <input class="form-check-input icheck" type="radio" value="0" checked name="optiontablename" id="flexCheckDefaultoptiontablename">
-                                        <label class="form-check-label" for="flexCheckDefaultoptiontablename">
-                                            Tất cả bàn
-                                        </label>
-                                        (<b class="value"></b>)
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input icheck" type="radio" value="1" name="optiontablename" id="flexCheckDefaultoptiontablename2">
-                                        <label class="form-check-label" for="flexCheckDefaultoptiontablename2">
-                                            Bàn đang có khách
-                                        </label>
-                                        (<b class="value red"></b>)
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input icheck" type="radio" value="2" name="optiontablename" id="flexCheckDefault3">
-                                        <label class="form-check-label" for="flexCheckDefault3">
-                                            Bàn trống
-                                        </label>
-                                        (<b class="value"></b>)
+                                    <button class="btn-showhide" type="button"><i class="fas fa-angle-double-up"></i> <span class="value">Thu lại</span></button>
+                                    <div class="bodyContentTable">
+                                        <div class="list-other-table">
+                                            <div class="form-check pl-0">
+                                                <input class="form-check-input icheck" type="radio" value="0" checked name="optiontablename" id="flexCheckDefaultoptiontablename">
+                                                <label class="form-check-label" for="flexCheckDefaultoptiontablename">
+                                                    Tất cả bàn
+                                                </label>
+                                                (<b class="value"></b>)
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input icheck" type="radio" value="1" name="optiontablename" id="flexCheckDefaultoptiontablename2">
+                                                <label class="form-check-label" for="flexCheckDefaultoptiontablename2">
+                                                    Bàn đang có khách
+                                                </label>
+                                                (<b class="value red"></b>)
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input icheck" type="radio" value="2" name="optiontablename" id="flexCheckDefault3">
+                                                <label class="form-check-label" for="flexCheckDefault3">
+                                                    Bàn trống
+                                                </label>
+                                                (<b class="value"></b>)
+                                            </div>
+
+                                        </div>
+
+                                        <ul id="lst-roomandtable" class="ul-nonestyle">
+                                            <li class="bringback" data-id="-1" data-idarea="-1">
+                                                <i class="fas"></i>
+                                                <b>Mang về</b>
+                                            </li>
+                                            @foreach (var item in Model.RoomAndTables)
+                                            {
+                                                <li data-id="@item.IdGuid" data-idarea="@item.Area?.Id">
+                                                    <span class="img"></span>
+                                                    <b>@item.Name</b>
+                                                    <span class="datetime"></span>
+                                                </li>
+                                            }
+                                        </ul>
                                     </div>
 
                                 </div>
-
-                                <ul id="lst-roomandtable" class="ul-nonestyle">
-                                    <li class="bringback" data-id="-1">
-                                        <i class="fas"></i>
-                                        <b>Mang về</b>
-                                    </li>
-                                    @foreach (var item in Model.RoomAndTables)
-                                    {
-                                        <li data-id="@item.IdGuid" data-idarea="@item.Area?.IdGuid">
-                                            <span class="img"></span>
-                                            <b>@item.Name</b>
-                                            <span class="datetime"></span>
-                                        </li>
-                                    }
-                                </ul>
+                                
                                 <div class="showmenuClickroom">
                                     <input type="checkbox" class="icheck" /> <span>Kích vào bàn sẽ mở menu thực đơn</span>
                                 </div>
@@ -179,7 +188,7 @@
                                         <ul id="lst-product" class="ul-nonestyle">
                                             <li>
                                                 <div class="head_pro">
-                                                    <img src="/Upload/Product/1/c9ae9e77-e2d8-4414-87c5-d34f7dbde0a1_chanh-leo.jpg">
+                                                   @* <img src="/Upload/Product/1/c9ae9e77-e2d8-4414-87c5-d34f7dbde0a1_chanh-leo.jpg">*@
                                                 </div>
                                                 <div class="footer_pro">
                                                     <span>
@@ -342,7 +351,9 @@
         });
 
         loadEventadmin.evnetFullscreen();
+        loadeventPos.eventShowArea();
         loadeventPos.eventLoadCheckradiotable();
+        loadeventPos.eventLoadChangeAreatable();
         loadeventPos.loadEventCheckbox();
         loadeventPos.loadEventActiveTabMenuLeft();
         loadeventPos.loadDataAttributeProductAndTable();

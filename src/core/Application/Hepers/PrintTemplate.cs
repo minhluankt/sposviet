@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Domain.ViewModel;
 using HelperLibrary;
+using Library;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,11 +29,12 @@ namespace Application.Hepers
             {
                 foreach (var item in orderTableItems)
                 {
+                    //https://www.csharp-examples.net/string-format-double/
                     tableProduct += result.Replace("{tenhanghoa}", item.Name)
                         .Replace("{donvitinh}", item.Unit)
-                        .Replace("{dongia}", item.Price.ToString("N0"))
-                        .Replace("{thanhtien}", item.Amount.ToString("N0"))
-                        .Replace("{soluong}", item.Quantity.ToString("N0"));
+                        .Replace("{dongia}", string.Format(LibraryCommon.GetIFormatProvider(), "{0:0,#.###}", item.Price))//item.Price.ToString("N0").TrimEnd('0', ',')
+                        .Replace("{thanhtien}", string.Format(LibraryCommon.GetIFormatProvider(), "{0:0,#.###}", item.Amount))//item.Amount.ToString("N0").TrimEnd('0', ',')
+                        .Replace("{soluong}", string.Format(LibraryCommon.GetIFormatProvider(), "{0:0,#.###}", item.Quantity));
                 }
                 templateInvoice = templateInvoice.Replace(result, tableProduct);
             }

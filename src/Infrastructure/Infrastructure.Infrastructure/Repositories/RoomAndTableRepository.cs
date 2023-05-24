@@ -52,7 +52,7 @@ namespace Infrastructure.Infrastructure.Repositories
             {
                 DateTime today = DateTime.Now;
                 TimeSpan value = today.Subtract(item.CreateDateInvoice);
-                item.TimeNumber = value.Seconds;
+                item.TimeNumber = value.TotalSeconds;
             }
             return getdata;
             // return await _repositoryRoomAndTable.GetAllQueryable().Where(x => x.ComId == ComId && x.Active).Include(x => x.OrderTables.Where(x => x.Status == enumStatusOrder)).ToListAsync();

@@ -70,9 +70,8 @@ namespace Application.Features.PosSellings.Query
                     Name = x.First().Area?.Name,
                     IdGuid = x.First().Area.IdGuid,
                     Id = x.First().Area.Id,
+                    NumberTable = x.Count(),
                 }).ToList();
-
-
             }
             else if (request.TypeProduct == EnumTypeProduct.BAN_LE || request.TypeProduct == EnumTypeProduct.TAPHOA_SIEUTHI)
             {

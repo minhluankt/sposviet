@@ -8962,7 +8962,7 @@ var posStaff = {
                                         lstArrayTable.push(table);
                                     }
                                 });
-                                debugger
+                                
                                 var newArrfilterTable = lstArrayTable.filter(x => x.idArea == idArea);
                                 lstArrayArea = [];
                                 res.jsoncate.map(function (index, ele) {
@@ -13160,19 +13160,22 @@ var loadeventPos = {
         $("#lst-roomandtable .datetime").each(function (i, item) {
             //setInterval(countTimer, 1000);
             var totalSeconds = parseInt($(item).data("time"));
-            setInterval(function () {
-                ++totalSeconds;
-                var hour = Math.floor(totalSeconds / 3600);
-                var minute = Math.floor((totalSeconds - hour * 3600) / 60);
-                var seconds = totalSeconds - (hour * 3600 + minute * 60);
-                if (hour < 10)
-                    hour = "0" + hour;
-                if (minute < 10)
-                    minute = "0" + minute;
-                if (seconds < 10)
-                    seconds = "0" + seconds;
-                $(item).html(hour + ":" + minute + ":" + seconds);
-            }, 1000);
+            if (typeof totalSeconds != "undefined" && totalSeconds > 0) {
+                setInterval(function () {
+                    ++totalSeconds;
+                    var hour = Math.floor(totalSeconds / 3600);
+                    var minute = Math.floor((totalSeconds - hour * 3600) / 60);
+                    var seconds = totalSeconds - (hour * 3600 + minute * 60);
+                    if (hour < 10)
+                        hour = "0" + hour;
+                    if (minute < 10)
+                        minute = "0" + minute;
+                    if (seconds < 10)
+                        seconds = "0" + seconds;
+                    $(item).html(hour + ":" + minute + ":" + seconds);
+                }, 1000);
+
+            }
             
         });
     },
@@ -13270,7 +13273,7 @@ var loadeventPos = {
             $(".tab-content-order").find(".tab-pane.active").attr("data-id", data.IdGuid);
             loadeventPos.loadAmoutAndQuantity(data.Amount, data.Quantity);
             loadeventPos.loadEventClickIconAddAndMinus();//sự kiện kích vào icon
-            loadeventPos.loadAddOrRemoveCurentClassTable(true);// xem có sản phẩm thì add class curen table
+            loadeventPos.loadAddOrRemoveCurentClassTable(true, data.createDate);// xem có sản phẩm thì add class curen table
         // console.log(dataObject.IdOrderItem);
         }
        
@@ -13462,12 +13465,14 @@ var loadeventPos = {
             }
         });
     },//thay đổi bàn cho đơn
-    loadAddOrRemoveCurentClassTable: function (isAdd = false) {
+    loadAddOrRemoveCurentClassTable: function (isAdd = false,createDate = 0) {
         if (!isAdd) {
             $("#lst-roomandtable li.active").removeClass("CurentOrder");// nếu đã hết sản phẩm tức là không đặt nữa thì xóa curen đi
+            $("#lst-roomandtable li.active").find(".datetime").data("time", -1);
         } else {
             if (!$("#lst-roomandtable li.active").hasClass("CurentOrder")) {
                 $("#lst-roomandtable li.active").addClass("CurentOrder");// nếu theem sản phẩm thi active CurentOrder
+                $("#lst-roomandtable li.active").find(".datetime").data("time", createDate);// nếu theem sản phẩm thi active CurentOrder
             }
         }
         loadeventPos.eventloadNumberStatusTable();
@@ -15739,14 +15744,30 @@ var loadeventPos = {
         let _iAll = 0;
         let _iActive = 0;
         let _iNo = 0;
+        let idarea = parseInt($(".listArea button.active").data("idarea"));
+
         $('#lst-roomandtable li').map(function () {
-            _iAll += 1;
+            
             var element = $(this);
-            if (element.hasClass("CurentOrder")) {
-                _iActive += 1;
-            } else if (element.not(".CurentOrder")) {
-                _iNo += 1;
+            if (idarea==-1) {//nếu dg là khu vực tất cả thì kiểu này
+                _iAll += 1;
+                if (element.hasClass("CurentOrder")) {
+                    _iActive += 1;
+                } else if (element.not(".CurentOrder")) {
+                    _iNo += 1;
+                }
+            } else {
+                if (element.data("idarea") == idarea) {
+                    _iAll += 1;
+                    if (element.hasClass("CurentOrder")) {
+                        _iActive += 1;
+                    } else if (element.not(".CurentOrder")) {
+                        _iNo += 1;
+                    }
+                }
+               
             }
+
         });
 
         $('.list-other-table input[name="optiontablename"]').map(function () {
@@ -15767,26 +15788,40 @@ var loadeventPos = {
         $('.list-other-table input[name="optiontablename"]:checked').trigger("ifChecked");
     },
     eventLoadCheckradiotable: function () {
-
-
         $('.list-other-table input[name="optiontablename"]').on('ifChecked', function (event) {
-
+            let idarea = $(".listArea button.active").data("idarea");
             switch (parseInt(event.target.value)) {
                 case _TypeSelectTableRadio.All:
 
                     $('#lst-roomandtable li').filter(function () {
                         var element = $(this);
-                        element.css('display', "flex");
+                        if (idarea == "-1") {//tức là dg tất cả
+                            element.css('display', "flex");
+                        } else {
+                            if (element.data("idarea") == idarea) {
+                                element.css('display', "flex");
+                            } else {
+                                element.css('display', "none");
+                            }
+                        }
                     });
                     break;
                 case parseInt(_TypeSelectTableRadio.IsActive):
 
                     $('#lst-roomandtable li').filter(function () {
                         var element = $(this);
-                        if (element.hasClass("CurentOrder")) {
-                            element.css('display', "flex");
+                        if (idarea == "-1") {//tức là dg tất cả
+                            if (element.hasClass("CurentOrder")) {
+                                element.css('display', "flex");
+                            } else {
+                                element.css('display', "none");
+                            }
                         } else {
-                            element.css('display', "none");
+                            if (element.hasClass("CurentOrder") && element.data("idarea") == idarea) {
+                                element.css('display', "flex");
+                            } else {
+                                element.css('display', "none");
+                            }
                         }
 
                     });
@@ -15794,11 +15829,21 @@ var loadeventPos = {
                 case _TypeSelectTableRadio.No:
                     $('#lst-roomandtable li').filter(function () {
                         var element = $(this);
-                        if (element.hasClass("CurentOrder")) {
-                            element.css('display', "none");
+                        
+                        if (idarea == "-1") {//tức là dg tất cả
+                            if (element.hasClass("CurentOrder")) {
+                                element.css('display', "none");
+                            } else {
+                                element.css('display', "flex");
+                            }
                         } else {
-                            element.css('display', "flex");
+                            if (!element.hasClass("CurentOrder") && element.data("idarea") == idarea) {
+                                element.css('display', "flex");
+                            } else {
+                                element.css('display', "none");
+                            }
                         }
+
                     });
                     break;
                 default:
@@ -15808,13 +15853,96 @@ var loadeventPos = {
         });
 
     },
+    eventShowArea: function () {
+        $(".btn-showhide").click(function () {
+            if ($(this).siblings(".leftContentTable").hasClass("hide")) {
+                $(this).html(`<i class="fas fa-angle-double-up"></i> <span class="value">Thu lại</span>`);
+                $(sel).parent(".bodytable").toggleClass("active");
+            } else {
+               
+               
+                sel = $(this);
+                setTimeout(function () {
+                    $(sel).html(`<i class="fas fa-angle-double-down"></i> <span class="value">Mở ra</span>`);
+                    $(sel).parent(".bodytable").toggleClass("active");
+                }, 1000);
+            }
+            $(this).siblings(".leftContentTable").toggleClass("hide");
+        });
+    },
     eventLoadChangeAreatable: function () {
         if ($(".listArea").length > 0) {
-            $(".listArea button").click(function () {
+            $(".listArea button:not(.btn-showhide)").click(function () {
+                $(".listArea button:not(.btn-showhide)").removeClass("active");
+                let idarea = $(this).data("idarea");
+                let valueSelected = $('.list-other-table input[name="optiontablename"]:checked').val();
+                switch (parseInt(valueSelected)) {
+                    case _TypeSelectTableRadio.All:
+                        $('#lst-roomandtable li').filter(function (ind, _element) {
+                            element = $(_element);
+                            if (idarea == "-1") {
+                                element.css('display', "flex");
+                            } else {
+                                if (element.data("idarea") == idarea || element.data("idarea") == "-1") {
+                                    element.css('display', "flex");
+                                } else {
+                                    element.css('display', "none");
+                                }
+                            }
+                        });
+                        break;
+                    case parseInt(_TypeSelectTableRadio.IsActive):
 
+                        $('#lst-roomandtable li').filter(function (ind, _element) {
+                            element = $(_element);
+                            if (idarea == "-1") {
+                                if (element.hasClass("CurentOrder")) {
+                                    element.css('display', "flex");
+                                } else {
+                                    element.css('display', "none");
+                                }
+                            } else {
+                                if (element.hasClass("CurentOrder") && element.data("idarea") == idarea) {
+                                    element.css('display', "flex");
+                                } else {
+                                    element.css('display', "none");
+                                }
+                            }
+                           
+
+                        });
+                        break;
+                    case _TypeSelectTableRadio.No:
+                        $('#lst-roomandtable li').filter(function (ind, _element) {
+                            element = $(_element);
+
+                            if (idarea == "-1") {
+                                if (!element.hasClass("CurentOrder")) {
+                                    element.css('display', "flex");
+                                } else {
+                                    element.css('display', "none");
+                                }
+                            } else {
+                                if (!element.hasClass("CurentOrder") && element.data("idarea") == idarea) {
+                                    element.css('display', "flex");
+                                } else {
+                                    element.css('display', "none");
+                                }
+                            }
+                          
+                        });
+                        break;
+                    default:
+                        console.log(_TypeSelectTableRadio.All)
+                    // code block
+                }
+
+               //------addclass active
+                $(this).addClass("active");
+                loadeventPos.eventloadNumberStatusTable();
             });
         }
-    },
+    },//sự kiện kích vào khu vực bàn
     eventAddNoteOrder: function () {
         $(".btn-noteOder").click(function () {
             let checkInorder = $(".tab-content-order .tab-pane.active").find("#item-mon").length;

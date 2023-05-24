@@ -2312,24 +2312,34 @@ button.btnfullScreen {
     font-size: 20px;
     border-radius: 999px;
 }
+
 .listArea {
     display: flex;
-    gap: 20px;
-    width: max-content;
+    gap: 15px;
+    width: 100%;
     margin: auto;
+    justify-content: center;
+    padding: 6px;
+    box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px;
+    margin-bottom: 10px;
+    flex-wrap: nowrap;
+    overflow: auto;
+
+    button {
+        white-space: nowrap;
+    }
 
     button.btn-area {
-        padding: 5px 10px;
-        border-radius: 100px;
-        border: #ccc solid thin;
+        padding: 10px 10px;
+        border: none;
         color: #000;
-        margin-bottom: 15px;
+        margin-bottom: 0;
+        border-radius: 100px;
 
         &.active {
             background-color: #008bb7;
-            border: #008bb7 solid thin;
             color: #fff;
-            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            box-shadow: rgba(0,0,0,0.24) 0px 3px 8px;
         }
     }
 }
@@ -2770,7 +2780,9 @@ ul.dashboardEinvoice {
     display: flex;
     align-items: center;
     position: absolute;
-    bottom: 10px;
+    bottom: 0px;
+    background-color: #fff;
+    padding: 5px;
 
     span {
         margin-left: 15px;
@@ -3168,6 +3180,70 @@ ul.dashboardEinvoice {
 
 .tab-roomtablepos {
     padding: 10px;
+    padding-left: 0px;
+    padding-top: 0px;
+    padding-right: 0px;
+
+    .bodytable {
+        .bodyContentTable {
+            margin-top: -32px;
+        }
+
+        button.btn-showhide {
+            position: relative;
+            left: 0px;
+            right: 0;
+            bottom: 9px;
+            /* float: right; */
+            border: none;
+            padding: 5px 8px;
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 4px 7px 0px;
+            /* margin: auto; */
+            text-align: right;
+            display: flex;
+            width: max-content;
+            margin-left: auto;
+            /* margin-top: -9px; */
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .leftContentTable {
+            position: relative;
+            // box-shadow: rgba(33,35,38,0.1) -10px 10px 10px -10px;
+            -webkit-transition: max-height 1s;
+            -moz-transition: max-height 1s;
+            -ms-transition: max-height 1s;
+            -o-transition: max-height 1s;
+            transition: max-height 1s;
+            //background: #e5feff;
+            overflow: hidden;
+            // "height: 0" not work with css transitions
+            max-height: 300px;
+
+
+            &.hide {
+                // If use the "height: auto", the effect not works. Is necessary some value for the CSS create a CSS animate, and we can use "max-height" with a great value for emulate this effect.
+
+                max-height: 0;
+            }
+        }
+
+        &.active {
+            .btn-showhide {
+                bottom: 0px
+            }
+
+            .bodyContentTable {
+                margin-top: -25px;
+            }
+        }
+
+        .listArea {
+            //border-right: #ccc solid thin;
+        }
+    }
 }
 
 .vertical-nav-menu li a.mm-active {
@@ -4923,6 +4999,7 @@ span.discountAmountItemPro {
         display: flex;
         margin-bottom: 20px;
         gap: 13px;
+        justify-content: center;
 
         .form-check {
             align-items: center;
