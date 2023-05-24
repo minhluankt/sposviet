@@ -67,7 +67,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         // GET: User/Details/5
         public IActionResult getSelect2(string idselectd)
         {
-            var allUsersExceptCurrentUser = from d in _userManager.Users select new { id = d.Id, text = !string.IsNullOrEmpty(d.FullName) ? d.FullName : d.FirstName + " " + d.LastName, selected = d.Id == idselectd };
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var allUsersExceptCurrentUser = from d in _userManager.Users.Where(x=>x.ComId==currentUser.ComId) select new { id = d.Id, text = !string.IsNullOrEmpty(d.FullName) ? d.FullName : d.FirstName + " " + d.LastName, selected = d.Id == idselectd, isStoreOwner = d.IsStoreOwner };
             var json = allUsersExceptCurrentUser.ToArray();
             var data = JsonConvert.SerializeObject(allUsersExceptCurrentUser);
             return Content(data);

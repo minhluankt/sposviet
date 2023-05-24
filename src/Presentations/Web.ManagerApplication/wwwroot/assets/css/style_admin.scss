@@ -2977,6 +2977,14 @@ ul.dashboardEinvoice {
         }
     }
 }
+.selectUserPoscontainer {
+    .select2-selection__clear {
+        display: none;
+    }
+}
+span.select2-dropdown.selectUserPos {
+    min-width: 200px;
+}
 .select2ChangeTableStaff li {
     padding: 15px 10px;
     border-top: #ccc dashed 1px;

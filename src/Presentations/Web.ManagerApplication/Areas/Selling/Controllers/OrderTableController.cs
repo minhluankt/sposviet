@@ -48,9 +48,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             return View();
         }
 
-        //[Authorize(Policy = "pos.order")]
-
-       
         public async Task<IActionResult> LoadDataOrderStaff(string idtable,Guid? idOrder=null)
         {
             //sự kiện kích thêm oder trên bàn, sự kiện thêm khách hàng,
@@ -95,7 +92,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         //[Authorize(Policy = "pos.order")]
 
-
+     
         public async Task<IActionResult> LoadDataOrder(string idtable)
         {
             //sự kiện kích thêm oder trên bàn, sự kiện thêm khách hàng,
@@ -130,6 +127,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 {
                     isValid = true,
                     data = html,
+                    //idStaff = orderTableViewModel.OrderTables.FirstOrDefault()?.IdStaff,
                     active = orderTableViewModel.OrderTables.Count() > 0 ? true : false,
                     dataCus = customerModelViewPos,
                     dataNote = ListNoteOrderModelViewPos
@@ -190,6 +188,47 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             _notify.Error(update.Message);
             return new JsonResult(new { isValid = false });
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateStaffOrder(Guid? idtable,string idStaff)
+        {
+            if (idtable==null)
+            {
+                _notify.Error("Lỗi không tìm thấy đơn");
+                return Json(new { isValid = false });
+            }
+            if (string.IsNullOrEmpty(idStaff))
+            {
+                _notify.Error("Vui lòng chọn nhân viên");
+                return Json(new { isValid = false });
+            }
+            OrderTableModel model = new OrderTableModel();
+
+            var currentUser = User.Identity.GetUserClaimLogin();
+            model.ComId = currentUser.ComId;
+            model.IdGuid = idtable.Value;
+            model.IdCasher = idStaff;//dùng IdCasher sài nhé
+           // var user = await _userManager.FindByIdAsync(idStaff);
+            var user =  _userManager.Users.SingleOrDefault(x=>x.ComId==currentUser.ComId&&x.Id== idStaff);
+            if (user==null)
+            {
+                _notify.Error("Lỗi không tìm thấy nhân viên");
+                return Json(new { isValid = false });
+            }
+            model.CasherName = user.FullName;//dùng IdCasher sài nhé
+            model.TypeUpdate = EnumTypeUpdatePos.UpdateStaffOrder;
+            var ipdateOrderTableCommand = _mapper.Map<UpdateOrderTableCommand>(model);
+            var UpdateQuantity = await _mediator.Send(ipdateOrderTableCommand);
+            if (UpdateQuantity.Succeeded)
+            {
+                _notify.Success(UpdateQuantity.Message);
+                return Json(new { isValid = true });
+            }
+            else
+            {
+                _notify.Error(UpdateQuantity.Message);
+                return Json(new { isValid = false });
+            }
         }
         [HttpPost]
         public async Task<IActionResult> AddOrderTableAsync(OrderTableModel model)

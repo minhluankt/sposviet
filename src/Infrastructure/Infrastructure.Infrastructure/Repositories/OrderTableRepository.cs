@@ -1778,5 +1778,23 @@ namespace Infrastructure.Infrastructure.Repositories
             }
           
         }
+
+        public async Task<IResult> UpdateStaffAsync(int comid, Guid idOrder, string idstaff, string staffName)
+        {
+            var getOrder = await _repository.Entities.SingleOrDefaultAsync(x=>x.ComId == comid && x.IdGuid==idOrder);
+            if (getOrder!=null)
+            {
+                getOrder.IdStaff = idstaff;
+                getOrder.StaffName = staffName;
+                await _repository.UpdateAsync(getOrder);
+                await _unitOfWork.SaveChangesAsync();  
+                return await Result.SuccessAsync("Cập nhật thành công");
+            }
+            else
+            {
+                return await Result.FailAsync("Không tìm thấy đơn để cập nhật");
+            }
+            
+        }
     }
 }

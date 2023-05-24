@@ -63,6 +63,17 @@ namespace Application.Features.OrderTables.Commands
                     case EnumTypeUpdatePos.UpdateQuantity:
                         updatequantity = await _orderTableRepository.UpdateItemOrderAsync(request.IdCustomer, request.CusCode, request.ComId, request.IdGuid.Value, request.IdOrderItem.Value, request.IdRoomAndTableGuid, request.IsBringBack, request.Quantity, request.CasherName, request.IdCasher, request.Note,  isRemoveRow, request.IsCancel);
                         break;
+                    case EnumTypeUpdatePos.UpdateStaffOrder:
+                        var up = await _orderTableRepository.UpdateStaffAsync(request.ComId, request.IdGuid.Value, request.IdCasher, request.CasherName);
+                        if (up.Succeeded)
+                        {
+                            return await Result<OrderTableModel>.SuccessAsync(up.Message);
+                        }
+                        fix lỗi 0.5 hiển thị .5
+                        else
+                        {
+                            return await Result<OrderTableModel>.FailAsync(up.Message);
+                        }
                     case EnumTypeUpdatePos.CloneItemOrder:
                         if (request.IdGuid == null || request.IdOrderItem == null)
                         {

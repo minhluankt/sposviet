@@ -14,7 +14,7 @@
     @foreach (var item in Model.OrderTables)
     {
         <li class="nav-item">
-            <a role="tab" class="nav-link" data-id="@item.IdGuid" data-toggle="tab" href="#tab-order-@item.Id">
+            <a role="tab" class="nav-link" data-id="@item.IdGuid" data-idstaff="@item.IdStaff" data-toggle="tab" href="#tab-order-@item.Id">
                 <span class="orderCode">@item.OrderTableCode</span>
                 <span class="btn-removeTab"><i class="fas fa-times"></i></span>
             </a>
@@ -23,7 +23,7 @@
     @if (Model.OrderTables.Count() == 0)
     {
         <li class="nav-item" data-title="newtab">
-            <a role="tab" class="nav-link" data-toggle="tab" href="#tab-order-0">
+            <a role="tab" class="nav-link" data-toggle="tab" data-idstaff="-1" href="#tab-order-0">
                 <span class="orderCode">OD-New</span>
                 @*<span>OD-@Model.OrderTableCode</span>*@
                 <span class="btn-removeTab"><i class="fas fa-times"></i></span>

@@ -159,6 +159,7 @@ var _TypeUpdatePos = {
     UpdateRoomOrTableInOrder: 12,// update lại bàn hoặc phòng cho đơn đó khi khách chuyển bàn/phòng
     UpdateNoteAndTopping : 13,// cập nhật note và món thêm của 1 item trong order
     CloneItemOrder : 14,// clone item order
+    UpdateStaffOrder: 15,// cập nhật nhân viên cho đơn
 }
 var _TypeSpitOrderPos = {
     Unknown: 0,
@@ -13548,6 +13549,79 @@ var loadeventPos = {
             $(".btn-notif").attr("disabled", "disabled");
         }
     },
+    eventLoadAndAddUser: function () {
+         $.ajax({
+            type: "GET",
+            url: "/selling/users/getSelect2",
+            // async: true,
+            data: {
+                //idselectd: idselectd
+            },
+            success: function (data) {
+                var arr = JSON.parse(data);
+                localStorage.setItem("userdata", data);
+                //arr.push("");
+                //$(".staffname").select2().empty()
+                //$(".staffname").select2({
+                //    data: arr,
+                //    placeholder:  "Chọn nhân viên",
+                //    allowClear: true,
+                //    containerCssClass: "selectUserPos",
+                //    language: {
+                //        noResults: function () {
+                //            return "Không tìm thấy dữ liệu";
+                //        }
+                //    },
+                //})
+            }
+        });
+    },
+    eventLoadStaffOrder: function () {
+        let idStaff = $("#ul-tab-order a.active").data("idstaff");
+        let idorder = $("#ul-tab-order a.active").data("id");
+        let getjsonuser = localStorage.getItem("userdata");
+        if (typeof getjsonuser != "undefined" && getjsonuser != null) {
+            var arr = JSON.parse(getjsonuser);
+            let index = arr.findIndex(x => x.id == idStaff);
+            if (index!=-1) {
+                arr[index].selected = true;
+            }
+            //arr.push("");
+            $(".staffname").unbind();
+           // $(".staffname").select2().destroy();
+            $(".staffname").select2().empty()
+            $(".staffname").select2({
+                data: arr,
+                placeholder: "Chọn nhân viên",
+                allowClear: true,
+                dropdownCssClass: "selectUserPos",
+                containerCssClass: "selectUserPoscontainer",
+                language: {
+                    noResults: function () {
+                        return "Không tìm thấy dữ liệu";
+                    }
+                },
+            }).on("change", function (e) {
+                if ($(this).val() == "") {
+                    toastrcus.error("Vui lòng chọn nhân viên");
+                } else {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Selling/OrderTable/UpdateStaffOrder',
+                        dataType: 'json',
+                        data: {
+                            idtable: idorder,
+                            idStaff: $(this).val()
+                        },
+                        // traditional: true,
+                        success: async function (res) {
+
+                        }
+                    });
+                }
+            })
+        }
+    },
     orderTable: function (dataObject) {
         $.ajax({
             type: 'POST',
@@ -14668,6 +14742,7 @@ var loadeventPos = {
             loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
             loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
             loadeventPos.eventUpdatedataItemMonOrder();//update lại các data
+          
             if (loadOrder.data.dataCus.length > 0) {
                 ListCusByOrderPos = loadOrder.data.dataCus;
             }
@@ -14699,6 +14774,7 @@ var loadeventPos = {
         $('#ul-tab-order a:first').trigger('click');
         loadeventPos.loadAmoutAndQuantity();// load tong tien
         loadEventadmin.evnetFullscreen();// sự kiện full màn hình
+        loadeventPos.eventLoadStaffOrder();//load nhân viên của đơn
         // $(".btnfullScreen").trigger("click");
         // loadeventPos.loadCustomerByOrder($('#ul-tab-order a:first').data("id"));// load khasch hang
 
@@ -15994,7 +16070,6 @@ var loadeventPos = {
                                 let index = ListNoteOrder.findIndex(x => x.idOrder == idorder);
                                 ListNoteOrder.splice(index, 1);
                                 if (note == "") {
-
                                     loadeventPos.eventUpdateClassNote(false)
                                 } else {
                                     let _nnote = {};

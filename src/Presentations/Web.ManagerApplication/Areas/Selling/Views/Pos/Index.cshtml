@@ -275,12 +275,15 @@
                             <div class="action-note-amount">
                                 <button class="btn btn-default btn-moreaction-pos"><i class="fas fa-ellipsis-v"></i></button>
                                 <div class="action-left-footer">
+                                    <select class="staffname" style="width:100px">
+                                     
+                                    </select>
                                     <button type="button" class="btn btn-noteOder btn-transparent"><i class="fas fa-pen"></i></button>
-                                    <button type="button" class="btn btn-splitOder btn-transparent"><i class="fas fa-cut"></i> Tách ghép đơn</button>
+                                    <button type="button" class="btn btn-splitOder btn-transparent"><i class="fas fa-cut"></i></button>
                                     <button type="button" class="btn btn-history btn-transparent"><i class="fas fa-history"></i></button>
                                     <div class="input-group actionpaymentMTTpos d-none">
                                         <div class="input-group-append">
-                                            <span class="input-group-text" id="basic-addon2">VAT MTT</span>
+                                            <span class="input-group-text" id="basic-addon2">VAT</span>
                                         </div>
                                         <input type="checkbox" class="form-control paymentvatmtt"  aria-label="Recipient's username" aria-describedby="basic-addon2">
                                     </div>
@@ -329,12 +332,11 @@
         <div class='tab-pane' role='tabpanel' id='tab${device}'>${device}</div>
     </script>
     <script type="text/javascript" src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
-
     <partial name="Admin/_Scripts" />
     <script src="~/js/custom/sposvietkyso.min.js?time=666"></script>
     <script>
        // testConnetWebSocket();
-      
+        //loaddataSelect2("/Selling/users/getSelect2", ".staffname", "0");
         document.onreadystatechange = function () {
             var state = document.readyState
             if (state == 'complete') {
@@ -351,6 +353,7 @@
         });
 
         loadEventadmin.evnetFullscreen();
+        loadeventPos.eventLoadAndAddUser();
         loadeventPos.eventShowArea();
         loadeventPos.eventLoadCheckradiotable();
         loadeventPos.eventLoadChangeAreatable();
