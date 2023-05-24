@@ -52,6 +52,13 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating mb-3">
+                                    <input type="text" asp-for="Title" class="form-control" id="tb-fname">
+                                    <label for="tb-fname">Tên hiển thị (hiển thị trên bill thanh toán...)</label>
+                                    <span asp-validation-for="Title"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating mb-3">
                                     <input type="text" asp-for="Address" class="form-control" id="tb-fname" placeholder="">
                                     <label for="tb-fname">Địa chỉ</label>
                                     <span asp-validation-for="Address"></span>

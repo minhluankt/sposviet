@@ -70,5 +70,31 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return new JsonResult(new { isValid = false });
             }
         }
+        public async Task<IActionResult> GetConfig()
+        {
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var _send = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.PRINT_BAO_BEP.ToString()) { ComId = currentUser.ComId });
+            if (_send.Succeeded)
+            {
+                bool getvalue = Convert.ToBoolean(_send.Data.Value);
+                if (getvalue)
+                {
+                    var checkconfig = _send.Data.ConfigSystems.SingleOrDefault(x => x.Key == EnumConfigParameters.PRINT_KET_NOI.ToString());
+                    if (checkconfig != null)
+                    {
+                        if (Convert.ToBoolean(checkconfig.Value))
+                        {
+                            return Json(new { isValid = false });
+                        }
+                    }
+                    return Json(new { isValid = true});
+                }
+                else
+                {
+                    return Json(new { isValid = false });
+                }
+            }
+            return Json(new { isValid = false });
+        }
     }
 }

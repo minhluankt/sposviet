@@ -2967,6 +2967,26 @@ ul.dashboardEinvoice {
         border-radius: 7px;
         position: relative;
 
+        &.CurentOrder {
+            .datetime {
+                display: block;
+                position: absolute;
+                bottom: 10px;
+                color: #fff;
+                left: 0;
+                /* top: 0px; */
+                right: 0;
+                font-size: 12px;
+                margin: auto;
+                background-color: transparent !important;
+                width: max-content;
+            }
+        }
+
+        .datetime {
+            display: none;
+        }
+
         &.bringback {
 
             b {

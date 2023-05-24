@@ -75,27 +75,43 @@ namespace SposVietPlugin_net_4._6._1
                 }
                 //domain = "https://localhost:7269";
                 var url = $"{domain}/Signal";
-                List<TimeSpan> timeSpans = new List<TimeSpan>(0);
+                List<TimeSpan> timeSpans = new List<TimeSpan>();
                 timeSpans.Add(TimeSpan.FromSeconds(1));
                 timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(5));
-                timeSpans.Add(TimeSpan.FromSeconds(8));
-                timeSpans.Add(TimeSpan.FromSeconds(10));
-                timeSpans.Add(TimeSpan.FromSeconds(15));
-                timeSpans.Add(TimeSpan.FromSeconds(20));
-                timeSpans.Add(TimeSpan.FromSeconds(25));
-                timeSpans.Add(TimeSpan.FromSeconds(30));
-                timeSpans.Add(TimeSpan.FromSeconds(60));
-                timeSpans.Add(TimeSpan.FromSeconds(70));
-                timeSpans.Add(TimeSpan.FromSeconds(90));
-                timeSpans.Add(TimeSpan.FromSeconds(120));
-                timeSpans.Add(TimeSpan.FromSeconds(150));
-                timeSpans.Add(TimeSpan.FromSeconds(170));
-                timeSpans.Add(TimeSpan.FromSeconds(190));
-                timeSpans.Add(TimeSpan.FromSeconds(200));
-                timeSpans.Add(TimeSpan.FromSeconds(300));
-                timeSpans.Add(TimeSpan.FromSeconds(500));
-
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
+                timeSpans.Add(TimeSpan.FromSeconds(3));
                 var connection = new HubConnectionBuilder()
                     .WithUrl(url)
                     .WithAutomaticReconnect(timeSpans.ToArray())
@@ -179,6 +195,7 @@ namespace SposVietPlugin_net_4._6._1
             }
             catch (Exception e)
             {
+                LogControl.Write("RestartConnection: " + e.ToString());
                 await RestartConnection();
                 return connected;
             }
@@ -192,7 +209,7 @@ namespace SposVietPlugin_net_4._6._1
         } 
         private async void Connection_StateChangedCore(HubConnectionState obj)
         {
-            if (obj == HubConnectionState.Disconnected)
+            //if (obj == HubConnectionState.Disconnected)
             {
                 await RestartConnection();
             }

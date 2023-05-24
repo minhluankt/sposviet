@@ -144,6 +144,7 @@ namespace SposVietPlugin_net_4._6._1
             this.btnlogout.TabIndex = 3;
             this.btnlogout.Text = "Đăng xuất";
             this.btnlogout.UseVisualStyleBackColor = true;
+            this.btnlogout.Click += new System.EventHandler(this.btnlogout_Click);
             // 
             // Company
             // 

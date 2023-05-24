@@ -12,8 +12,8 @@ namespace SposVietPlugin_net_4._6._1
         }
         private void btnlogout_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.ComId = 0;
-            Properties.Settings.Default.Save();
+            //Properties.Settings.Default.ComId = 0;
+            //Properties.Settings.Default.Save();
             this.Hide();
             LoginForm loginForm = new LoginForm();
             loginForm.Show();

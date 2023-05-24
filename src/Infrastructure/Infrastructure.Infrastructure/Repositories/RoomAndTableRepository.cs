@@ -45,13 +45,14 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         Idtable = tb.IdGuid,
                         CreateDate = tb.CreatedOn,
+                        CreateDateInvoice = od.CreatedOn,
                         IsOrder = true,
                     }).ToList();
             foreach (var item in getdata)
             {
                 DateTime today = DateTime.Now;
-                TimeSpan value = today.Subtract(item.CreateDate);
-                item.TimeNumber = value.Seconds;
+                TimeSpan value = today.Subtract(item.CreateDateInvoice);
+                item.TimeNumber = value.Seconds; không lấy dc
             }
             return getdata;
             // return await _repositoryRoomAndTable.GetAllQueryable().Where(x => x.ComId == ComId && x.Active).Include(x => x.OrderTables.Where(x => x.Status == enumStatusOrder)).ToListAsync();

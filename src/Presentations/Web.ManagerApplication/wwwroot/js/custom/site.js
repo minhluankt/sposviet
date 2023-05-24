@@ -2598,6 +2598,22 @@ function pushState(url) {
 }
 ///////////////////admin
 var eventConfigSaleParameters = {
+    getConfig: async function () {
+        isValid = false;
+        $.ajax({
+            global: false,
+            async: false,
+            url: "/Selling/ConfigSaleParameters/GetConfig",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                if (data.isValid) {
+                    isValid = true;
+                }
+            },
+        });
+        return isValid;
+    },
     eventUpdatecheckbox: function () {
         //duyệt update
         $(".ConfigSaleParameter input").map(function (index, ele) {
@@ -8704,6 +8720,7 @@ var posStaff = {
                                 $(".actionstaff").find(".btn-addNeworderStaff").remove();
                                 $(".actionstaff").find(".btn-removerOrder").remove();
                                 $(".actionstaff").find(".btn-historyOrder").remove();
+                                $(".actionstaff").find(".btn-changeTable").remove();
                             }
                         },
                         error: function (err) {
@@ -8875,6 +8892,7 @@ var posStaff = {
         $(".actionstaff").find(".btn-addNeworderStaff").remove();
         $(".actionstaff").find(".btn-removerOrder").remove();
         $(".actionstaff").find(".btn-historyOrder").remove();
+        $(".actionstaff").find(".btn-changeTable").remove();
         $(".actionstaff").append('<button type="button" class="btn-addNeworderStaff btn btn-primary"><i class="fas fa-plus"></i></button>')
         $(".actionstaff").append('<button type="button" class="btn-removerOrder btn btn-danger ml-2"><i class="fas fa-trash"></i></button>');
         $(".actionstaff").append('<button type="button" class="btn-historyOrder btn btn-info ml-2"><i class="fas fa-history"></i></button>');
@@ -13138,6 +13156,47 @@ var eventBanle = {
     },
 }
 var loadeventPos = {
+    loadeventCoutUpTimes: function () {
+        $("#lst-roomandtable .datetime").each(function (i, item) {
+            //setInterval(countTimer, 1000);
+            var totalSeconds = parseInt($(item).data("time"));
+            setInterval(function () {
+                ++totalSeconds;
+                var hour = Math.floor(totalSeconds / 3600);
+                var minute = Math.floor((totalSeconds - hour * 3600) / 60);
+                var seconds = totalSeconds - (hour * 3600 + minute * 60);
+                if (hour < 10)
+                    hour = "0" + hour;
+                if (minute < 10)
+                    minute = "0" + minute;
+                if (seconds < 10)
+                    seconds = "0" + seconds;
+                $(item).html(hour + ":" + minute + ":" + seconds);
+            }, 1000);
+            
+        });
+    },
+    loadeventCoutUpTime: async function (sel) {
+        //$(sel).each(function (i, item) {
+            var totalSeconds = parseInt($(sel).data("time"));
+            
+            setInterval(countTimer, 1000);
+            function countTimer() {
+                ++totalSeconds;
+                var hour = Math.floor(totalSeconds / 3600);
+                var minute = Math.floor((totalSeconds - hour * 3600) / 60);
+                var seconds = totalSeconds - (hour * 3600 + minute * 60);
+                if (hour < 10)
+                    hour = "0" + hour;
+                if (minute < 10)
+                    minute = "0" + minute;
+                if (seconds < 10)
+                    seconds = "0" + seconds;
+                $(sel).html(hour + ":" + minute + ":" + seconds);
+                
+            }
+       // });
+    },
     eventRealtimeOrdertable: function (data) {
        json = JSON.parse(data);
         $("#lst-roomandtable li").filter(async function () {
@@ -13145,10 +13204,11 @@ var loadeventPos = {
             if (json.IdRoomAndTableGuid == iddata) {
                 if (json.OrderTableItems.length == 0 || json.TypeUpdate == _TypeUpdatePos.RemoveOrder) {
                     $(this).removeClass("CurentOrder");
+                    loadeventPos.loadeventCoutUpTime();
                 } else if (!$(this).hasClass("CurentOrder")) {
                     $(this).addClass("CurentOrder");
                 }
-                if ($(this).hasClass("active")) {
+                if ($(this).hasClass("active")) {//xử lý cho việc get dữ liệu table
                     let GetTable = $(this).find("b").html();
 
                     if (json.IsBringBack) {
@@ -13159,10 +13219,10 @@ var loadeventPos = {
                     loadeventPos.loadDataOfTable(json);
                     $(".btn-showttable").data("id", iddata);
                     $(".btn-showttable").find(".showTableOrder").html(GetTable);
-
                 }
             }
         });
+        loadeventPos.eventloadNumberStatusTable();
     },
     loadDataOfTable: async function (data) {
         if (data.OrderTableItems.length == 0) {
@@ -13519,11 +13579,11 @@ var loadeventPos = {
 
                         if (dataObject.TypeUpdate == _TypeUpdatePos.CloneItemOrder) {
                             const ids = res.data.OrderTableItems.map(object => {
-                                return object.id;
+                                return object.Id;
                             }); //lọc lấy ra danh sách id
                             const max = Math.max(...ids);//lấy id lớn nhất
-                            var getIdorderItemClone = res.data.OrderTableItems.find(x => x.idProduct == dataObject.IdProduct && x.id == max);
-                            loadeventPos.loadactiveClickItemMon(getIdorderItemClone.idGuid, dataObject.IdProduct);// sự kiện animaiton cho dòng vừa dc thêm
+                            var getIdorderItemClone = res.data.OrderTableItems.find(x => x.IdProduct == dataObject.IdProduct && x.Id == max);
+                            loadeventPos.loadactiveClickItemMon(getIdorderItemClone.IdGuid, dataObject.IdProduct);// sự kiện animaiton cho dòng vừa dc thêm
                         } else {
                             loadeventPos.loadactiveClickItemMon(dataObject.IdOrderItem, dataObject.IdProduct);// sự kiện animaiton cho dòng vừa dc thêm
                         }
@@ -15703,12 +15763,14 @@ var loadeventPos = {
                     break;
             }
         })
-        $('.list-other-table input[name="optiontablename"]:checked').trigger("ifChecked")
+        //$('.list-other-table input[name="optiontablename"]').unbind();
+        $('.list-other-table input[name="optiontablename"]:checked').trigger("ifChecked");
     },
     eventLoadCheckradiotable: function () {
 
 
         $('.list-other-table input[name="optiontablename"]').on('ifChecked', function (event) {
+
             switch (parseInt(event.target.value)) {
                 case _TypeSelectTableRadio.All:
 
@@ -15915,14 +15977,24 @@ var loadeventPos = {
                     let getIN = loadOrder.data.data.find(x => x.isBringBack);
                     if (typeof getIN != "undefined" && getIN.isOrder) {
                         $(this).addClass("CurentOrder");
+                        console.log(getIN.timeNumber);
+                        $(this).find(".datetime").data("time", getIN.timeNumber);
+                        
                     }
                 } else {
                     let getIN = loadOrder.data.data.find(x => x.idtable == idData);
                     if (typeof getIN != "undefined" && getIN.isOrder) {
                         $(this).addClass("CurentOrder");
+                        console.log(getIN.timeNumber);
+                        $(this).find(".datetime").data("time", getIN.timeNumber);
+                        
                     }
                 }
             });
+            //check đếm giờ
+            loadeventPos.loadeventCoutUpTimes();
+       
+            //check số bàn trống và bàn dg có
             loadeventPos.eventloadNumberStatusTable();
         }
     },// mới đầu load dữ liệu tô màu các bàn đang có khách

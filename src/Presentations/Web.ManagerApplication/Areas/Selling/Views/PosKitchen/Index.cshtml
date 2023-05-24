@@ -126,7 +126,12 @@
     <partial name="Admin/_Scripts" />
     <script src="~/js/custom/sposvietkyso.min.js?time=678"></script>
     <script>
-        //testConnetWebSocket();
+        eventConfigSaleParameters.getConfig().then(function(data){
+            if (data==true){
+                testConnetWebSocket();
+            }
+        });
+
         document.onreadystatechange = function () {
             var state = document.readyState
             if (state == 'complete') {
@@ -138,10 +143,8 @@
                 }, 100); 
             }
         }
-
         loadcentChitkent.loadDataFoodReady(true);
         loadcentChitkent.loadDataFoodNew(true);
-
         $(document).ready(function () {
            // loadcentChitkent.loadeventtimeago();
         });
@@ -159,11 +162,12 @@
             var connection = new signalR.HubConnectionBuilder()
                 .withAutomaticReconnect({
                     nextRetryDelayInMilliseconds: retryContext => {
-                        if (retryContext.elapsedMilliseconds < 600000) {
+                        if (retryContext.elapsedMilliseconds < 36000000) { //600 phút nhé là 10 tiếng
                             console.log("đang conncet");
                             // If we've been reconnecting for less than 60 seconds so far,
                             // wait between 0 and 10 seconds before the next reconnect attempt.
-                            return Math.random() * 3000;
+                            //return Math.random() * 3000;
+                            return 1000;
                         } else {
                             // If we've been reconnecting for more than 60 seconds so far, stop reconnecting.
                             return null;
@@ -189,7 +193,7 @@
                 } catch (err) {
                     console.assert(connection.state === signalR.HubConnectionState.Disconnected);
                     console.log(err);
-                    setTimeout(() => start(), 5000);
+                    setTimeout(() => start(), 1000);
                 }
             };
             // Create a function that the hub can call to broadcast messages.
