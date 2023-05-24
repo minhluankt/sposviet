@@ -998,6 +998,8 @@ namespace Infrastructure.Infrastructure.Repositories
             var getAllInvoice = await _invoiceRepository.Entities.AsNoTracking().Where(x => lstinvoiccode.Contains(x.InvoiceCode)).Include(x => x.InvoiceItems).ToListAsync();
             if (getAllInvoice.Count() != lstinvoiccode.Count())
             {
+                _log.LogInformation($"old Json"+ model.JsonInvoiceOld);
+                _log.LogInformation($"new Json"+ ConvertSupport.ConverObjectToJsonString(getAllInvoice.Select(x => x.InvoiceCode).ToArray()));
                 return await Result<PublishInvoiceModelView>.FailAsync("Sản phẩm đã bị thay đổi vui lòng thực hiện lại!");
             }
             //----------------check xem đã có người phát hành chưa--------------//

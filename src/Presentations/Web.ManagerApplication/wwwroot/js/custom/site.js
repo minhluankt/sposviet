@@ -15808,6 +15808,13 @@ var loadeventPos = {
         });
 
     },
+    eventLoadChangeAreatable: function () {
+        if ($(".listArea").length > 0) {
+            $(".listArea button").click(function () {
+
+            });
+        }
+    },
     eventAddNoteOrder: function () {
         $(".btn-noteOder").click(function () {
             let checkInorder = $(".tab-content-order .tab-pane.active").find("#item-mon").length;

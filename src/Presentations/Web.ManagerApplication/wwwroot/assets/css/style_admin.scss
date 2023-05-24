@@ -2312,6 +2312,27 @@ button.btnfullScreen {
     font-size: 20px;
     border-radius: 999px;
 }
+.listArea {
+    display: flex;
+    gap: 20px;
+    width: max-content;
+    margin: auto;
+
+    button.btn-area {
+        padding: 5px 10px;
+        border-radius: 100px;
+        border: #ccc solid thin;
+        color: #000;
+        margin-bottom: 15px;
+
+        &.active {
+            background-color: #008bb7;
+            border: #008bb7 solid thin;
+            color: #fff;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+    }
+}
 
 #lst-product {
     display: grid;

@@ -109,6 +109,17 @@
                         </ul>
                         <div class="tab-content p-0">
                             <div class="tab-pane active tab-roomtablepos" id="tab-animated-0" role="tabpanel">
+                                @if (Model.Areas!=null && Model.Areas.Count()>0)
+                                {
+                                    <div class="listArea">
+                                        <button class="btn-area active" data-idarea="-1" type="button">Tất cả(@Model.RoomAndTables.Count())</button>
+                                        @foreach (var item in Model.Areas)
+                                        {
+                                            <button data-idarea="@item.IdGuid" class="btn-area" type="button">@item.Name</button>
+                                        }
+                                    </div>
+                                }
+                                
                                 <div class="list-other-table">
                                     <div class="form-check pl-0">
                                         <input class="form-check-input icheck" type="radio" value="0" checked name="optiontablename" id="flexCheckDefaultoptiontablename">
@@ -141,7 +152,7 @@
                                     </li>
                                     @foreach (var item in Model.RoomAndTables)
                                     {
-                                        <li data-id="@item.IdGuid">
+                                        <li data-id="@item.IdGuid" data-idarea="@item.Area?.IdGuid">
                                             <span class="img"></span>
                                             <b>@item.Name</b>
                                             <span class="datetime"></span>

@@ -65,7 +65,14 @@ namespace Application.Features.PosSellings.Query
                     var secret = CryptoEngine.Encrypt(values, _config.Value.Key);
                     x.IdString = secret;
                 });
-                
+                model.Areas = model.RoomAndTables.GroupBy(x=>x.IdArea).Select(x => new Area()
+                {
+                    Name = x.First().Area?.Name,
+                    IdGuid = x.First().Area.IdGuid,
+                    Id = x.First().Area.Id,
+                }).ToList();
+
+
             }
             else if (request.TypeProduct == EnumTypeProduct.BAN_LE || request.TypeProduct == EnumTypeProduct.TAPHOA_SIEUTHI)
             {
