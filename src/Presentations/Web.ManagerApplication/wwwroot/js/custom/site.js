@@ -2976,11 +2976,32 @@ var Product = {
         let amount = $(sel).data("am");
         let iddata = $(sel).data("id");
         let price = parseFloat($(sel).val().replaceAll(",", "")) || 0;
+        let pricenovat = 0;
+        let vatrate = parseFloat($(sel).parents("tr").find(".vatrate").val().replaceAll(",", "")) || 0;
+        if (vatrate > -3) {
+            if (vatrate <= 0) {
+                vatrate = 0;
+            }
+            let newvatrate = (vatrate / 100) + 1;
+            if (vatrate == 0) {
+                newvatrate = 0;
+                $(sel).parents("tr").find(".priceNoVAT").val(0)
+            } else {
+                pricenovat = parseFloat((price / newvatrate).toFixed(3));
+                $(sel).parents("tr").find(".priceNoVAT").val(pricenovat.format0VND(3, 3))
+            }
+           
+        } else {
+            pricenovat = 0;
+            vatrate = NOVATRate;
+        }
         $.ajax({
             type: 'POST',
             url: "/Selling/Product/UpdatePrice",
             async: true,
             data: {
+                VATRate: vatrate,
+                PriceNoVAT: pricenovat,
                 id: iddata,
                 price: price
             },

@@ -315,12 +315,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         [HttpPost]
         [Authorize(Policy = "product.updatePrice")]
-        public async Task<ActionResult> UpdatePriceAsync(int id,decimal price)
+        public async Task<ActionResult> UpdatePriceAsync(int id,decimal price,decimal PriceNoVAT,decimal VATRate)
         {
             try
             {
                 var currentUser = User.Identity.GetUserClaimLogin();;
-                var get = await _mediator.Send(new UpdatePriceCommand() { Id = id,Price= price,ComId = currentUser.ComId});
+                var get = await _mediator.Send(new UpdatePriceCommand() { Id = id,Price= price,PriceNoVAT= PriceNoVAT,VATRate=VATRate, ComId = currentUser.ComId});
                 if (get.Succeeded)
                 {
                     _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));

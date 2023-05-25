@@ -277,7 +277,7 @@ using (var scope = app.Services.CreateScope())
         //await Infrastructure.Infrastructure.Identity.Seeds.DefaultBasicUser.SeedAsync(userManager, roleManager);
         logger.LogInformation("Application Starting");
         recurringJobManager.AddOrUpdate("serilog", () => serviceProvider.GetService<ILogRepository>().JobDeleteSerilog(SystemVariableHelper.folderLog), Cron.Daily(23), TimeZoneInfo.Local);
-        recurringJobManager.AddOrUpdate("clearAuditLog", () => serviceProvider.GetService<ILogRepository>().DeleteAuditLogAsync(), Cron.Daily(22), TimeZoneInfo.Local);
+        recurringJobManager.AddOrUpdate("clearAuditLog", () => serviceProvider.GetService<ILogRepository>().DeleteAuditLogAsync(), Cron.Daily(00,13), TimeZoneInfo.Local);
         recurringJobManager.AddOrUpdate("deleteinvoice", () => serviceProvider.GetService<IInvoicePepository<Invoice>>().JobDeleteInvoiceAsync(), Cron.Daily(24), TimeZoneInfo.Local);
 
     }

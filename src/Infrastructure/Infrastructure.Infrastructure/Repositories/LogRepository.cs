@@ -5,17 +5,23 @@ using Application.Interfaces.Shared;
 using AutoMapper;
 using Dapper;
 using Domain.Entities;
+using Infrastructure.Infrastructure.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NStandard;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SystemVariable;
+using Telegram.Bot.Types;
 using X.PagedList;
 using Yanga.Module.EntityFrameworkCore.AuditTrail.Models;
 
@@ -23,6 +29,7 @@ namespace Infrastructure.Infrastructure.Repositories
 {
     public class LogRepository : ILogRepository
     {
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IDapperRepository _dapperdb;
         private readonly IMapper _mapper;
         private readonly ILogger<LogRepository> _logger;
@@ -34,10 +41,11 @@ namespace Infrastructure.Infrastructure.Repositories
 
         [Obsolete]
         public LogRepository(IRepositoryAsync<AuditLog> repository,
-            IUnitOfWork unitOfWork,
+            IUnitOfWork unitOfWork, IServiceScopeFactory serviceScopeFactory,
             IDapperRepository dapperdb, ILogger<LogRepository> logger, IHostingEnvironment _environment, IMapper mapper, IDateTimeService dateTimeService)
         {
             _unitOfWork = unitOfWork;
+            _serviceScopeFactory = serviceScopeFactory;
             _dapperdb = dapperdb;
             _repository = repository;
             _mapper = mapper;
@@ -68,10 +76,29 @@ namespace Infrastructure.Infrastructure.Repositories
         }
          public async Task DeleteAuditLogAsync()
         {
-            DateTime dateTime = DateTime.Now.AddDays(-40);
-            var logs = await _repository.Entities.Where(a => a.DateTime<= dateTime).ToListAsync();
-            await  _repository.DeleteRangeAsync(logs);
-            await _unitOfWork.SaveChangesAsync();
+            try
+            {
+                using (IDbConnection db = new SqlConnection(SystemVariableHelper.ConnectionString))
+                {
+                    DateTime dateTime = DateTime.Now.AddDays(-20);
+                    //using (var scope = _serviceScopeFactory.CreateScope())
+                    //{
+                    //    var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+                    //    var logs = await db.AuditLogs.Where(a => a.DateTime <= dateTime).ToListAsync();
+                    //    db.RemoveRange(logs);
+                    //    db.SaveChanges();
+                    //}
+                    string sql = "delete  FROM [DemoCoreWeb].[dbo].[AuditLogs] WHERE DateTime < @datetime";
+                    DynamicParameters param = new DynamicParameters();
+                    param.Add("datetime", dateTime.ToString("yyyy-MM-dd"));
+                    await  db.ExecuteAsync(sql, param);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Job xóa thất bại audilog" + e.ToString());
+            }
+            
         }
 
         /// <summary>
@@ -83,7 +110,7 @@ namespace Infrastructure.Infrastructure.Repositories
         public void JobDeleteSerilog(string folder)
         {
             _logger.LogInformation("JobDeleteSerilog Check");
-            DateTime dateTime = DateTime.Now.AddDays(-60);
+            DateTime dateTime = DateTime.Now.AddDays(-15);
             IOrderedEnumerable<FileInfo> fileInfos = this.GetAllSerilog(SystemVariableHelper.folderLog);
             var getFiledeletes = fileInfos.Where(m => m.CreationTime < dateTime);
             foreach (var item in getFiledeletes)

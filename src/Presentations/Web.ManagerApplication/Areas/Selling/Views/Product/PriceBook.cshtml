@@ -145,15 +145,16 @@
                         dropdownCssClass: "selectCustome100",
                     }).on("change", function (e) {
                         let value = parseFloat($(this).val());
+                        let pricenovat =0;
                         if (value==-3){
                             value =0;
                              $(this).parents("tr").find(".priceNoVAT").val(0);
-                            return;
+                        }else{
+                            let price = parseFloat($(this).parents("tr").find(".amount").val().replaceAll(",", ""));
+                            let vatamount = (value / 100) + 1;
+                            pricenovat = parseFloat((price / vatamount).toFixed(3));
+                            $(this).parents("tr").find(".priceNoVAT").val(pricenovat.format0VND(3, 3))
                         }
-                        let price = parseFloat($(this).parents("tr").find(".amount").val().replaceAll(",", ""));
-                        let vatamount = (value/100) + 1;
-                        let pricenovat = parseFloat((price / vatamount).toFixed(3));
-                        $(this).parents("tr").find(".priceNoVAT").val(pricenovat.format0VND(3, 3))
                         Product.UpdateVATProduct(this, pricenovat);
                     });
                     $('table#dataTable tbody input').unbind();
@@ -201,7 +202,7 @@
                     {
                         "data": "vatRate", "name": "VATRate", "autoWidth": true,
                         "render": function (data, type, full, meta) {
-                            let html = `<select class="dt-select2" style="width:100px" data-id="` + full .id+ `">
+                            let html = `<select class="dt-select2 vatrate" style="width:100px" data-id="` + full .id+ `">
                                             <option value="-3" `+ (full.vatRate == -3 ? "selected" : "") + `>Không thuế</option>
                                             <option value="0" `+ (full.vatRate == 0 ? "selected" : "") + `>0%</option>
                                             <option value="5" `+ (full.vatRate == 5 ? "selected" : "") + `>5%</option>

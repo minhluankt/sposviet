@@ -1317,6 +1317,10 @@ namespace Infrastructure.Infrastructure.Repositories
             try
             {
                 var datatiem = DateTime.Now.AddDays(-30);
+
+
+
+
                 var getall = _invoiceRepository.GetAllQueryable().Where(x => x.Status == EnumStatusInvoice.XOA_BO && x.CreatedOn < datatiem);
                 if (getall.Count() > 0)
                 {

@@ -55,7 +55,17 @@ namespace Application.Features.Products.Commands
                 {
                     if (command.TypeUpdatePriceProduct==EnumTypeUpdatePriceProduct.PRICE)
                     {
+                        if (command.VATRate > 0 && command.PriceNoVAT <= 0)
+                        {
+                            return Result<int>.Fail("Đơn giá trước thuế không hợp lệ khi có thuế suất");
+                        } 
+                        if (command.VATRate <=0  && command.PriceNoVAT > 0)
+                        {
+                            return Result<int>.Fail("Đơn giá trước thuế không hợp lệ khi thuế suất là "+ command.VATRate);
+                        }
                         product.Price = command.Price;
+                        product.VATRate = command.VATRate;
+                        product.PriceNoVAT = command.PriceNoVAT;
                     }
                     else if (command.TypeUpdatePriceProduct == EnumTypeUpdatePriceProduct.VATPRICE)
                     {

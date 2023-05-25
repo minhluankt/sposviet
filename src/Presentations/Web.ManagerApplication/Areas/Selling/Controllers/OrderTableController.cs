@@ -325,7 +325,24 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                                             return Json(new { isValid = true, data = JsonConvert.SerializeObject(UpdateQuantity.Data), isbaobep = false });
                                         }
                                     }
-                                    return Json(new { isValid = true, data = JsonConvert.SerializeObject(UpdateQuantity.Data), isbaobep = true, dataHtml = UpdateQuantity.Data.HtmlPrint });
+                                    //---------------in bếp-------
+                                    //return Json(new
+                                    //{
+                                    //    isValid = true,
+                                    //    data = JsonConvert.SerializeObject(UpdateQuantity.Data),
+                                    //    isbaobep = true,
+                                    //    dataHtml = UpdateQuantity.Data.HtmlPrint
+                                    //});
+                                    //---------------xử lý gọi ngay chỗ màn báo bếp để in---------
+                                    await dashboardHub.Printbaobep(UpdateQuantity.Data.HtmlPrint, "IN");
+                                    return Json(new
+                                    {
+                                        isValid = true,
+                                        data = JsonConvert.SerializeObject(UpdateQuantity.Data),
+                                        isbaobep = false,
+                                        dataHtml = UpdateQuantity.Data.HtmlPrint
+                                    });
+
                                 }
                                 else
                                 {
@@ -758,7 +775,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                             }
                         }
                         _notify.Success("Thông báo bếp thành công!");
-                        return Json(new { isValid = true, html = send.Data, isNotPrint = false });
+                        //return Json(new { isValid = true, html = send.Data, isNotPrint = false }); dành cho khi trả kết quả view rồi tiếp gọi lên lại
+                        //---------------xử lý gọi ngay chỗ màn báo bếp để in---------
+                        await dashboardHub.Printbaobep(send.Data,"IN");
+                        return Json(new { isValid = true, html = send.Data, isNotPrint = true });
                     }
                     else
                     {
