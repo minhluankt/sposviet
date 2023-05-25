@@ -31,6 +31,12 @@ namespace Application.Enums
         BOOL = 1,
         STRING = 2,
         INT = 3,
+    } 
+    public enum EnumTypeUpdatePriceProduct
+    {
+        PRICE = 1,
+        VATPRICE = 2,
+        PRICENOVAT = 3,
     }
     public enum EnumTypeEventInvoice
     {

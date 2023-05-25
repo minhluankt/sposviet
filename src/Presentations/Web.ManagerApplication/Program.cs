@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
@@ -95,7 +96,13 @@ builder.Services.AddNotyf(o =>
     o.HasRippleEffect = true;
     o.Position = NotyfPosition.TopRight;
 });
-
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { "en-US", "fr" };
+    options.SetDefaultCulture(supportedCultures[0])
+        .AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures);
+}); 
 //builder.Services.AddSignalR()
 //    .AddJsonProtocol(options => {
 //        options.PayloadSerializerOptions.PropertyNamingPolicy = null;

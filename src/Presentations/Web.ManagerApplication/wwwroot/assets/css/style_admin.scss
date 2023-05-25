@@ -2985,6 +2985,9 @@ ul.dashboardEinvoice {
 span.select2-dropdown.selectUserPos {
     min-width: 200px;
 }
+span.select2-dropdown.selectCustome100 {
+    min-width: 100px;
+}
 .select2ChangeTableStaff li {
     padding: 15px 10px;
     border-top: #ccc dashed 1px;
@@ -4893,6 +4896,35 @@ span.discountAmountItemPro {
     .tab-content > .active {
         height: 100%;
         overflow: auto;
+        /* Firefox */
+        * {
+            scrollbar-width: auto;
+            scrollbar-color: #8f54a0 #ffffff;
+        }
+        /* Chrome, Edge, and Safari */
+        &::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #ffffff;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: #8f54a0;
+            border-radius: 10px;
+            border: 3px solid #ffffff;
+        }
+
+        &:hover {
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: rgba(0,0,0,.2)
+            }
+        }
     }
 
     #item-mon {

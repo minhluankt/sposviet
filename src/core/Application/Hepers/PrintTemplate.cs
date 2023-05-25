@@ -33,10 +33,10 @@ namespace Application.Hepers
                     //https://www.csharp-examples.net/string-format-double/
                     tableProduct += result.Replace("{tenhanghoa}", item.Name)
                         .Replace("{donvitinh}", item.Unit)
-                        .Replace("{dongia}", String.Format(LibraryCommon.GetIFormatProvider(), "{0:#,#.##}", item.Price))//item.Price.ToString("#,#.##", LibraryCommon.GetIFormatProvider()).TrimEnd('0', ',')
+                        .Replace("{dongia}", String.Format(LibraryCommon.GetIFormatProvider(), "{0:#,0.##}", item.Price))//item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider()).TrimEnd('0', ',')
                         
-                        .Replace("{thanhtien}", item.Amount.ToString("#,#.##", LibraryCommon.GetIFormatProvider()))//item.Amount.ToString("#,#.##", LibraryCommon.GetIFormatProvider()).TrimEnd('0', ',')
-                        .Replace("{soluong}", item.Quantity.ToString("#,#.##", LibraryCommon.GetIFormatProvider()));
+                        .Replace("{thanhtien}", item.Amount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()))//item.Amount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()).TrimEnd('0', ',')
+                        .Replace("{soluong}", item.Quantity.ToString("#,0.##", LibraryCommon.GetIFormatProvider()));
                 }
                 templateInvoice = templateInvoice.Replace(result, tableProduct);
             }
@@ -76,9 +76,9 @@ namespace Application.Hepers
                 {
                     tableProduct += result.Replace("{tenhanghoa}", item.Name)
                         .Replace("{donvitinh}", item.Unit)
-                        .Replace("{dongia}", item.Price.ToString("#,#.##", LibraryCommon.GetIFormatProvider()))
-                        .Replace("{thanhtien}", item.Amonut.ToString("#,#.##", LibraryCommon.GetIFormatProvider()))
-                        .Replace("{soluong}", item.Quantity.ToString("#,#.##", LibraryCommon.GetIFormatProvider()));
+                        .Replace("{dongia}", item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider()))
+                        .Replace("{thanhtien}", item.Amonut.ToString("#,0.##", LibraryCommon.GetIFormatProvider()))
+                        .Replace("{soluong}", item.Quantity.ToString("#,0.##", LibraryCommon.GetIFormatProvider()));
                 }
                 templateInvoice = templateInvoice.Replace(result, tableProduct);
             }
@@ -155,7 +155,7 @@ namespace Application.Hepers
             {
                 foreach (var item in notifylist)
                 {
-                    tableProduct += result.Replace("{tenhanghoa}", item.Name).Replace("{donvitinh}", item.Unit).Replace("{dongia}", item.Price.ToString("#,#.##", LibraryCommon.GetIFormatProvider())).Replace("{ghichu}", item.Note).Replace("{soluong}", item.Quantity.ToString("#,#.##", LibraryCommon.GetIFormatProvider()));
+                    tableProduct += result.Replace("{tenhanghoa}", item.Name).Replace("{donvitinh}", item.Unit).Replace("{dongia}", item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider())).Replace("{ghichu}", item.Note).Replace("{soluong}", item.Quantity.ToString("#,0.##", LibraryCommon.GetIFormatProvider()));
                 }
             }
             templateInvoice = templateInvoice.Replace(result, tableProduct);

@@ -2996,6 +2996,31 @@ var Product = {
             }
         })
     },
+    UpdateVATProduct: function (sel, priceNoVAT)
+    {
+        let iddata = $(sel).data("id");
+        let vatrate = parseFloat($(sel).val().replaceAll(",", "")) || 0;
+        $.ajax({
+            type: 'POST',
+            url: "/Selling/Product/UpdateVATPrice",
+            async: true,
+            data: {
+                id: iddata,
+                vatrate: vatrate,
+                priceNoVAT: priceNoVAT,
+            },
+            success: function (res) {
+                //if (res.isValid) {
+                //    $(sel).data("am", price);
+                //} else {
+                //    $(sel).val(parseFloat(amount).format0VND(3, 3, ""));
+                //}
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    },
     Delete: function (url, id, idProduct) {
         var xoa = false;
         try {
@@ -13585,6 +13610,11 @@ var loadeventPos = {
             let index = arr.findIndex(x => x.id == idStaff);
             if (index!=-1) {
                 arr[index].selected = true;
+            } else {
+                index = arr.findIndex(x => x.isStoreOwner == true);
+                if (index!=-1) {
+                    arr[index].selected = true;
+                }
             }
             //arr.push("");
             $(".staffname").unbind();

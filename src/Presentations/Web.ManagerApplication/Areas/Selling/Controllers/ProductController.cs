@@ -336,6 +336,53 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return new JsonResult(new { isValid = false });
             }
         }
+        [HttpPost]
+        [Authorize(Policy = "product.updatePrice")]
+        public async Task<ActionResult> UpdateVATPriceAsync(int id,decimal VatRate,decimal PriceNoVat)
+        {
+            try
+            {
+                var currentUser = User.Identity.GetUserClaimLogin();;
+                var get = await _mediator.Send(new UpdatePriceCommand() { Id = id,PriceNoVAT= PriceNoVat,VATRate= VatRate, ComId = currentUser.ComId,TypeUpdatePriceProduct=EnumTypeUpdatePriceProduct.VATPRICE});
+                if (get.Succeeded)
+                {
+                    _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
+                    return new JsonResult(new { isValid = true });
+                }
+                _notify.Error(GeneralMess.ConvertStatusToString(get.Message));
+                return new JsonResult(new { isValid = false });
+            }
+            catch (Exception e)
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString(e.Message));
+                _logger.LogError(e, e.ToString());
+                return new JsonResult(new { isValid = false });
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "product.updatePrice")]
+        public async Task<ActionResult> UpdatePriceNoVATAsync(int id,decimal VatRate,decimal PriceNoVat)
+        {
+            try
+            {
+                var currentUser = User.Identity.GetUserClaimLogin();;
+                var get = await _mediator.Send(new UpdatePriceCommand() { Id = id,PriceNoVAT= PriceNoVat,VATRate= VatRate, ComId = currentUser.ComId,TypeUpdatePriceProduct=EnumTypeUpdatePriceProduct.PRICENOVAT});
+                if (get.Succeeded)
+                {
+                    _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
+                    return new JsonResult(new { isValid = true });
+                }
+                _notify.Error(GeneralMess.ConvertStatusToString(get.Message));
+                return new JsonResult(new { isValid = false });
+            }
+            catch (Exception e)
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString(e.Message));
+                _logger.LogError(e, e.ToString());
+                return new JsonResult(new { isValid = false });
+            }
+        }
 
         [Authorize(Policy = "product.edit")]
         [EncryptedParameters("secret")]

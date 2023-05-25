@@ -47,15 +47,18 @@
 
 <div class="card">
     <div id="viewAll" class="card-body">
-        <table class="table table-bordered table-striped" style=" " id="dataTable">
+        <table class="table table-bordered table-striped" id="dataTable">
             <thead>
                 <tr>
                     <th>Mã hàng</th>
                     <th>Tên hàng</th>
                     
                     <th>Danh mục</th>
-                    <th>Giá vốn</th>
+                    <th>Giá bán</th>
+                   
                     <th>Giá bán mới</th>
+                    <th>Thuế VAT</th>
+                    <th>Đơn giá trước thuế</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,6 +110,7 @@
                 ],
                 "columnDefs": [
 
+                   
                     { className: "text-right", "targets": [3, 4] },
                     { className: "text-center", "targets": [-1,0, 2] },
 
@@ -119,7 +123,9 @@
                         "targets": [-1, 0],
 
                     },
-                    { "width": "100px", "targets": [-1] }
+                    { "width": "100px", "targets": [-1] },
+                    { "width": "130px", "targets": [5] },
+                    { "width": "100px", "targets": [4] }
 
                 ],
                 ajax: {
@@ -135,7 +141,22 @@
                     }
                 }, 
                 "drawCallback": function (settings) {
-
+                    $('.dt-select2').select2({
+                        dropdownCssClass: "selectCustome100",
+                    }).on("change", function (e) {
+                        let value = parseFloat($(this).val());
+                        if (value==-3){
+                            value =0;
+                             $(this).parents("tr").find(".priceNoVAT").val(0);
+                            return;
+                        }
+                        let price = parseFloat($(this).parents("tr").find(".amount").val().replaceAll(",", ""));
+                        let vatamount = (value/100) + 1;
+                        let pricenovat = parseFloat((price / vatamount).toFixed(3));
+                        $(this).parents("tr").find(".priceNoVAT").val(pricenovat.format0VND(3, 3))
+                        Product.UpdateVATProduct(this, pricenovat);
+                    });
+                    $('table#dataTable tbody input').unbind();
                     $('table#dataTable tbody input.number3')
                         .each(function (i, item) {
                             $(this).data("am", this.value);//am laf amount
@@ -151,9 +172,11 @@
                         .focusout(function () {
                             fnFocusOut(this);
                         });
-                    $('table#dataTable tbody input').change(function () {
-                        Product.UpdatePriceProduct(this);
-                    });
+                  
+                        $('table#dataTable tbody input').change(function () {
+                            Product.UpdatePriceProduct(this);
+                        });
+                   
                 },
                 
                 "columns": [
@@ -165,17 +188,64 @@
                    
                     { "data": "nameCategory", "name": "NameCategory", "autoWidth": true },
                     {
-                        "data": "_RetailPrice", "name": "RetailPrice", "autoWidth": true,
+                        "data": "_Price", "name": "Price", "autoWidth": true,
                         render: $.fn.dataTable.render.number(',', '.', 0)
                     },
+                    
                     {
                         "data": "_Price", "name": "Price",
                          "render": function (data, type, full, meta) {
-                            return "<input type='text' class='form-control text-right amount number3' data-id=" + full .id+ " value='" + parseFloat(full._Price) + "'/>";
+                            return "<input type='text' class='form-control text-right amount number3'  data-id=" + full .id+ " value='" + parseFloat(full._Price) + "'/>";
+                        }
+                    }, 
+                    {
+                        "data": "vatRate", "name": "VATRate", "autoWidth": true,
+                        "render": function (data, type, full, meta) {
+                            let html = `<select class="dt-select2" style="width:100px" data-id="` + full .id+ `">
+                                            <option value="-3" `+ (full.vatRate == -3 ? "selected" : "") + `>Không thuế</option>
+                                            <option value="0" `+ (full.vatRate == 0 ? "selected" : "") + `>0%</option>
+                                            <option value="5" `+ (full.vatRate == 5 ? "selected" : "") + `>5%</option>
+                                            <option value="8" `+ (full.vatRate == 8 ? "selected" : "") + `>8%</option>
+                                            <option value="10" `+ (full.vatRate == 10 ? "selected" : "") + `>10%</option>
+                                       </select>`;
+                            return html;
                         }
                     },
+                    {
+                        "data": "priceNoVAT", "name": "PriceNoVAT",
+                        "render": function (data, type, full, meta) {
+
+                            return "<input type='text' class='form-control text-right priceNoVAT number3' readonly data-id=" + full.id + " data-pricenovat=" + parseFloat(full.priceNoVAT) + " value='" + parseFloat(full.priceNoVAT) + "'/>";
+                        }
+                    }
 
                 ], 
+                //drawCallback: function () {
+                //    $('.dt-select2').select2({
+                //        dropdownCssClass: "selectUserPos",
+                //    });
+                //    $('table#dataTable tbody input.number3').unbind();
+                //    $('table#dataTable tbody input.number3')
+                //        .each(function (i, item) {
+                //            $(this).data("am", this.value);//am laf amount
+                //            let dataid = $(this).data("id");
+                //            $(this).removeAttr("id");
+                //            $(this).data("id", dataid);
+                //            fnInitialFormatNumber(this);
+                //        }).ForceNumericOnly()
+                //        .focus(function () {
+                //            debugger
+                //            var _val = $(this).val();
+                //            $(this).val(_val.replaceAll(',', ''));
+                //        })
+                //        .focusout(function () {
+                //            fnFocusOut(this);
+                //        });
+                //    $('table#dataTable tbody input').unbind();
+                //    $('table#dataTable tbody input').change(function () {
+                //        Product.UpdatePriceProduct(this);
+                //    });
+                //},
                 initComplete() {
                     
                     //$('table#dataTable tbody input.number3')

@@ -88,14 +88,14 @@ namespace Application.Features.Invoices.Query
                         comphone = company?.PhoneNumber,
                         comemail = company?.Email,
 
-                        tongtien = InvoiceData.Amonut.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                        tientruocthue = IsProductVAT ? (InvoiceData.VATAmount + InvoiceData.Total).ToString("#,#.##", LibraryCommon.GetIFormatProvider()) : InvoiceData.Total.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                        tienthue = InvoiceData.VATAmount.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                        thuesuat = InvoiceData.VATRate?.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                        giamgia = InvoiceData.DiscountAmount.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                        khachcantra = (InvoiceData.Amonut).ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                        khachthanhtoan = InvoiceData.AmountCusPayment?.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                        tienthuatrakhach = InvoiceData.AmountChangeCus?.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
+                        tongtien = InvoiceData.Amonut.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        tientruocthue = IsProductVAT ? (InvoiceData.VATAmount + InvoiceData.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider()) : InvoiceData.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        tienthue = InvoiceData.VATAmount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        thuesuat = InvoiceData.VATRate?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        giamgia = InvoiceData.DiscountAmount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        khachcantra = (InvoiceData.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        khachthanhtoan = InvoiceData.AmountCusPayment?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        tienthuatrakhach = InvoiceData.AmountChangeCus?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                        
 
                     }; 
@@ -104,7 +104,7 @@ namespace Application.Features.Invoices.Query
                     {
                         if (InvoiceData.VATRate != (float)VATRateInv.KHONGVAT)//nếu hóa đơn có thuế thì hiển thị tiền trước thuế phải là tiền trước thuế của sản phẩm có và k có thuế
                         {
-                            templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("#,#.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                            templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
                         }
                         else//hóa đơn k có thuế mà sp có thuế thì hiển 
                         {
@@ -116,7 +116,7 @@ namespace Application.Features.Invoices.Query
                             //        item.Amonut = item.Total;//update lại amount để hiển thị lên bill cho đúng là tiền trước thuế của sp đó
                             //    }
                             //}
-                            templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Amonut).ToString("#,#.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                            templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
                         }
 
                     }

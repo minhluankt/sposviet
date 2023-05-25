@@ -69,7 +69,7 @@ namespace Application.Features.OrderTables.Commands
                         {
                             return await Result<OrderTableModel>.SuccessAsync(up.Message);
                         }
-                        fix lỗi 0.5 hiển thị .5
+                     
                         else
                         {
                             return await Result<OrderTableModel>.FailAsync(up.Message);

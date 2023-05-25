@@ -107,14 +107,14 @@ namespace Application.Features.OrderTablePos.Commands
                             comemail = company?.Email,
 
                             isVAT = command.vat,
-                            tongtien = product.Data.Invoice.Amonut.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                            tientruocthue = (product.Data.IsProductVAT) ? (product.Data.Invoice.VATAmount+ product.Data.Invoice.Total).ToString("#,#.##", LibraryCommon.GetIFormatProvider()): product.Data.Invoice.Total.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                            tienthue = product.Data.Invoice.VATAmount.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                            thuesuat = product.Data.Invoice.VATRate?.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                            giamgia = (product.Data.Invoice.DiscountAmount+ product.Data.Invoice.DiscountOther).ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                            khachcantra = (product.Data.Invoice.Amonut).ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                            khachthanhtoan = product.Data.Invoice.AmountCusPayment?.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
-                            tienthuatrakhach = product.Data.Invoice.AmountChangeCus?.ToString("#,#.##", LibraryCommon.GetIFormatProvider()),
+                            tongtien = product.Data.Invoice.Amonut.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            tientruocthue = (product.Data.IsProductVAT) ? (product.Data.Invoice.VATAmount+ product.Data.Invoice.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider()): product.Data.Invoice.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            tienthue = product.Data.Invoice.VATAmount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            thuesuat = product.Data.Invoice.VATRate?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            giamgia = (product.Data.Invoice.DiscountAmount+ product.Data.Invoice.DiscountOther).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            khachcantra = (product.Data.Invoice.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            khachthanhtoan = product.Data.Invoice.AmountCusPayment?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            tienthuatrakhach = product.Data.Invoice.AmountChangeCus?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                           
                         };
                         var listitemnew = product.Data.Invoice.InvoiceItems;
@@ -129,11 +129,11 @@ namespace Application.Features.OrderTablePos.Commands
                                 //        item.Amonut = item.Total;//update lại amount để hiển thị lên bill cho đúng là tiền trước thuế của sp đó
                                 //    }
                                 //}
-                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("#,#.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
                             }
                             else
                             {
-                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Amonut).ToString("#,#.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
                             }
 
                         }
@@ -180,10 +180,10 @@ namespace Application.Features.OrderTablePos.Commands
                         //                        $"<td colspan=\"4\"><span style=\"display: block;font-size: 11px\">{item.Name}</span></td>" +
                         //                    "</tr>" +
                         //                    "<tr style='border-botom-style: dotted;border-width: 0.3px'>" +
-                        //                        $"<td><span style=\"display: block;  text-align: left;font-size: 11px\">{item.Price.ToString("#,#.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
-                        //                        $"<td style='text-align: right'><span style=\"display: block; font-size: 11px\">{item.Quantity.ToString("#,#.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
+                        //                        $"<td><span style=\"display: block;  text-align: left;font-size: 11px\">{item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
+                        //                        $"<td style='text-align: right'><span style=\"display: block; font-size: 11px\">{item.Quantity.ToString("#,0.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
                         //                        $"<td><span style=\"display: block; text-align: center;font-size: 11px\">{item.Unit}</span></td>" +
-                        //                        $"<td><span style=\"display: block; text-align: right;font-size: 11px\">{item.Total.ToString("#,#.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
+                        //                        $"<td><span style=\"display: block; text-align: right;font-size: 11px\">{item.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
                         //                    "</tr>";
 
                         //}
