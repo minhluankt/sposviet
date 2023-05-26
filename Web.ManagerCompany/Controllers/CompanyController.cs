@@ -162,7 +162,7 @@ namespace Web.ManagerCompany.Controllers
                                     IdDichVu = model.IdDichVu,
                                     UserName = model.AccountName,
                                     Email = model.Email,
-                                    FullName = model.Name,
+                                    FullName = !string.IsNullOrEmpty(model.Title)? model.Title : model.Name,
                                     PhoneNumber = model.PhoneNumber,
                                     IsActive = true,
                                     EmailConfirmed = true,

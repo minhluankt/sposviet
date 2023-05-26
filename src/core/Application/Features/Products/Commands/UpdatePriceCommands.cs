@@ -63,6 +63,14 @@ namespace Application.Features.Products.Commands
                         {
                             return Result<int>.Fail("Đơn giá trước thuế không hợp lệ khi thuế suất là "+ command.VATRate);
                         }
+                        if (command.VATRate != (decimal)NOVAT.NOVAT)
+                        {
+                            product.IsVAT = true;
+                        }
+                        else
+                        {
+                            product.IsVAT = false;
+                        }
                         product.Price = command.Price;
                         product.VATRate = command.VATRate;
                         product.PriceNoVAT = command.PriceNoVAT;
@@ -70,16 +78,19 @@ namespace Application.Features.Products.Commands
                     else if (command.TypeUpdatePriceProduct == EnumTypeUpdatePriceProduct.VATPRICE)
                     {
                         product.VATRate = command.VATRate;
+                     
                         if (command.VATRate > 0 && command.PriceNoVAT <= 0)
                         {
                             return Result<int>.Fail("Đơn giá trước thuế không hợp lệ khi có thuế suất");
                         }
                         if (command.VATRate==(decimal)NOVAT.NOVAT)
                         {
+                            product.IsVAT = false;
                             product.PriceNoVAT = 0;
                         }
                         else
                         {
+                            product.IsVAT = true;
                             product.PriceNoVAT = command.PriceNoVAT;
                         }
                     }
@@ -94,7 +105,7 @@ namespace Application.Features.Products.Commands
                         {
                             return Result<int>.Fail("Đơn giá trước thuế không hợp lệ khi có thuế suất");
                         }
-
+                        
                         product.PriceNoVAT = command.PriceNoVAT;
                     }
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
