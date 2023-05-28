@@ -156,22 +156,14 @@ namespace Application.Features.OrderTablePos.Commands
                         {
                             templateInvoiceParameter.kyhieuhoadon = GetEInvoiceNoFormat.get_kyhieu(product.Data.Pattern, product.Data.Serial);
                             templateInvoiceParameter.sohoadon = GetEInvoiceNoFormat.get_no(product.Data.InvoiceNo);
+                            if (!string.IsNullOrEmpty(product.Data.Fkey))
+                            {
+                                templateInvoiceParameter.linktracuu = product.Data.UrlDomain;
+                                templateInvoiceParameter.matracuu = product.Data.Fkey;
+                                templateInvoiceParameter.macoquanthue = product.Data.MCQT;
+                            }
                         }
-                        if (!string.IsNullOrEmpty(product.Data.Fkey))
-                        {
-                            templateInvoiceParameter.UrlDomain = product.Data.UrlDomain;
-                            templateInvoiceParameter.Fkey = product.Data.Fkey;
-                            templateInvoiceParameter.MCQT = product.Data.MCQT;
-                            //string url = InfoSeachInvCons.thong_tin_tra_cuu(product.Data.UrlDomain, product.Data.Fkey, product.Data.MCQT);
-                            //thongtintracuuhoadon = $"<hr />" +
-                            //                        $"<table style='margin-top: 0mm;width: 100%;'>" +
-                            //                        $"<tr style='width: 100%;'>" +
-                            //                        $"<td style='text-align: center; font-size: 11px;'>" +
-                            //                        $"<span style='display: block;'>{url}</span>" +
-                            //                        $"</td>" +
-                            //                        $"</tr>" +
-                            //                        $"</table>";
-                        }
+                       
 
                         //string tableProduct = string.Empty;
                         //foreach (var item in product.Data.Invoice.InvoiceItems)

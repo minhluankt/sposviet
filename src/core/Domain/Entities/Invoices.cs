@@ -141,10 +141,10 @@ namespace Domain.Entities
             this.CreateDate = DateTime.Now;
         }
 
-        public int IdInvoice { get; set; }// bàn/phòng
+        public int IdInvoice { get; set; }//
         public int Id { get; set; }
         public string Name { get; set; }//
-        public string InvoiceCode { get; set; }//  mã đơn của bàn mới cho lúc chuyển món
+        public string InvoiceCode { get; set; }// 
         public string Carsher { get; set; }// người thêm
         public DateTime CreateDate { get; set; }
         [NotMapped]

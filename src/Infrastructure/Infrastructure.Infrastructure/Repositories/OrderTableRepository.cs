@@ -598,6 +598,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
                     if (checkOrder.Customer!=null)
                     {
+                        // nếu có thêm gì nhớ thêm bên invoice khi xem chi tiết có update khách hàng nữa nhé
                         inv.Buyer = checkOrder.Customer.Buyer?.Trim();
                         inv.CusName = checkOrder.Customer.Name?.Trim();
                         inv.Taxcode = checkOrder.Customer.Taxcode?.Trim();

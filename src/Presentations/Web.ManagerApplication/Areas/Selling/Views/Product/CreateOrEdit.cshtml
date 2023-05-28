@@ -326,7 +326,7 @@
                                                       <div class="input-group-prepend">
                                                             <span class="input-group-text" style="background-color: rgb(255 255 255 / 24%);padding: 3px 10px;" id="basic-addon1"> <input asp-for="IsVAT" class="icheck" /></span>
                                                       </div>
-                                                        <select class="form-control" asp-for="VATRate">
+                                                        <select class="form-control" name="VATRate" id="VATRate" @(Model.IsVAT ? "" : "disabled")>
                                                             <option value="-3" selected="@(Model.VATRate==-3)">Chọn thuế suất</option>
                                                             <option value="0" selected="@(Model.VATRate==0)">0%</option>
                                                             <option value="5" selected="@(Model.VATRate==5)">5%</option>
@@ -336,7 +336,7 @@
                                                         
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3 elePriceProductNoVAT @(!Model.IsVAT?"d-none":"")">
+                                                <div class="col-md-3 mb-3 elePriceProductNoVAT @(!Model.IsVAT?"d-none":"")">
                                                     <label for="" asp-for="_PriceNoVAT">Đơn giá bán trước thuế</label>
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">

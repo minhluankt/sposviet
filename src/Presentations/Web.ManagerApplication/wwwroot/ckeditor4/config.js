@@ -13,7 +13,7 @@ CKEDITOR.editorConfig = function( config ) {
 	config.extraPlugins = 'lineheight,docprops';//  bootstrapTabs //bật cái này và trong file js là xong
 	//config.line_height = "10px;15px;18px;20px;25px;30px;35px";
 	//config.contentsCss = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css';
-		
+	//config.fontSize_sizes= '12px;2.3em;130%;larger;x-small';
 };
 //CKEDITOR.on('instanceReady', function (ev) {
 //	var jqScript = document.createElement('script');

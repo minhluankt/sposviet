@@ -88,9 +88,11 @@ namespace Application.Features.SaleRetails.Commands
                         }
                         if (!string.IsNullOrEmpty(product.Data.Fkey))
                         {
-                            templateInvoiceParameter.UrlDomain = product.Data.UrlDomain;
-                            templateInvoiceParameter.Fkey = product.Data.Fkey;
-                            templateInvoiceParameter.MCQT = product.Data.MCQT;
+                            templateInvoiceParameter.linktracuu = product.Data.UrlDomain;
+                            templateInvoiceParameter.matracuu = product.Data.Fkey;
+                            templateInvoiceParameter.macoquanthue = product.Data.MCQT;
+
+
                     
                         }
 

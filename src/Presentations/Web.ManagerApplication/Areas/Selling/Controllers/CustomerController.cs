@@ -7,6 +7,7 @@ using Application.Interfaces.Repositories;
 using Application.Providers;
 using HelperLibrary;
 using Infrastructure.Infrastructure.Identity.Models;
+using Infrastructure.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -306,6 +307,31 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 {
                     var data = JsonConvert.SerializeObject(listkq);
                     return Content(data);
+                }
+            }
+            return Content("[]");
+        }
+        public async Task<IActionResult> GetAllDataCustomerAsync(int? idselectd,string text="")
+        {
+            var user = User.Identity.GetUserClaimLogin();
+           // var allUsersExceptCurrentUser = from d in _suppliersRepository.GetAll(user.ComId) select new { id = d.Id, text = d.Name, selected = d.Id == idselectd };
+            var response = await _mediator.Send(new SearchCustomerQuery()
+            {
+                Name= text,
+                Comid = user.ComId,
+            });
+            if (response.Succeeded)
+            {
+                response.Data.Add(new Domain.Entities.Customer { Id=-1,Name="Khách lẻ" });
+                var listkq = response.Data.OrderBy(x => x.Name).Select(x => new
+                {
+                    id = x.Id,
+                    selected = x.Id== idselectd,
+                    text = x.Name
+                }).ToList();
+                if (listkq.Count() > 0)
+                {
+                    return Content(JsonConvert.SerializeObject(listkq));
                 }
             }
             return Content("[]");

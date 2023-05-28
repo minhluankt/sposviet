@@ -63,6 +63,11 @@
     <div id="parentautocomplete"></div>
     <div class="container-fluid pl-0 pr-0 mt-3">
         <div class="info-login">
+            <div class="lstbtn-actionhead">
+                <button class="btn btn-settingprint">
+                    <i class="fas fa-print"></i>
+                </button>
+            </div>
             @if (login)
             {
                 <input type="hidden" id="UserIdentity" value="@User.Identity.Name"/>
@@ -352,6 +357,7 @@
             toggleFullScreen();
         });
 
+        settingpos.setingPrinter();
         loadEventadmin.evnetFullscreen();
         loadeventPos.eventLoadAndAddUser();
         loadeventPos.eventShowArea();

@@ -126,7 +126,7 @@ namespace Application.Hepers
                 }
                 //-----------mẫu số ký hiệu hóa đơn
                 //------------thông tin tra cứu hóa đơn xóa bỏ đi nếu k có
-                if (string.IsNullOrEmpty(templateInvoiceParameter.MCQT))
+                if (string.IsNullOrEmpty(templateInvoiceParameter.matracuu))
                 {
                     string regex = @"<.*?{linktracuu}.*?>";
                     rg = new Regex(regex);
@@ -136,6 +136,7 @@ namespace Application.Hepers
                     {
                         templateInvoice = templateInvoice.Replace(result, "");
                     }
+
                 }
                 //----------end
             }

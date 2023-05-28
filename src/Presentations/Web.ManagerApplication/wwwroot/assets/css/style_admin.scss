@@ -1252,9 +1252,31 @@ input.select2-search__field {
     }
 }
 
-.detail-invoice-pos table {
-    td, th {
-        font-size: 15px;
+.detail-invoice-pos {
+    table {
+        td, th {
+            font-size: 15px;
+        }
+    }
+    .select2-container .select2-selection--single .select2-selection__rendered{
+        padding-left:0px;
+    }
+    .select2-selection__clear {
+        display: none;
+    }
+
+    .select2-container--default .select2-selection--single {
+      border:none;
+        border-bottom: 1px solid #e4e7ea;
+       
+    }
+
+    .elecus {
+        align-items: center;
+
+        .title {
+            width: 120px;
+        }
     }
 }
 
@@ -1355,6 +1377,15 @@ a.codeinvoiceold {
         margin-bottom: 0px;
         max-height: 190px;
         overflow: auto;
+
+        li {
+            border-bottom: #ccc dashed thin;
+            padding: 3px;
+
+            > b {
+                color: #f49358;
+            }
+        }
         /*
  *  STYLE 4
  */
@@ -1957,6 +1988,7 @@ body#sellting-chitken-skin1 {
             right: 0;
             width: max-content;
             color: #000;
+
         }
     }
 
@@ -2737,7 +2769,39 @@ ul.dashboardEinvoice {
 .border-primary {
     border-color: #3283f6 !important;
 }
+.showSettingPrintPos {
+    position: absolute;
+    background-color: #fff;
+    z-index: 6;
+    color: #000;
+    right: 0;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 8px;
+    padding: 10px 20px;
 
+    ul {
+        padding-left: 0px;
+
+        li {
+            list-style: none;
+            padding-bottom: 10px;
+            display: flex;
+            align-items:center;
+            white-space: nowrap;
+            justify-content: space-between;
+            font-size: 16px;
+            color: #000810;
+            gap: 30px;
+
+            input.lienin {
+                width: 50px;
+                border: #ccc solid thin;
+                border-radius: 6px;
+                padding:3px 5px;
+            }
+        }
+    }
+}
 .rounded-circle {
     border-radius: 50% !important;
 }
@@ -3708,6 +3772,22 @@ span.select2-dropdown.selectCustome100 {
         right: 15px;
         z-index: 9;
         color: #fff;
+        display: flex;
+        align-items: center;
+
+
+        .lstbtn-actionhead {
+            button{
+                padding:0px;
+            }
+            i {
+                color: white;
+                margin-left: 0px;
+                background-color: #2a7285;
+                padding: 9px;
+                border-radius: 50%;
+            }
+        }
 
         .user-name {
             display: flex;

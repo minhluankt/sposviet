@@ -150,9 +150,9 @@ namespace Application.Features.Invoices.Query
                                 if (companyvnpt!=null) {
                                     string urlportal = ConvertSupport.ConverDoaminVNPTPortal<string>(companyvnpt.DomainName);
                                     //thongtintracuuhoadon = InfoSeachInvCons.thong_tin_tra_cuu(urlportal, inv.FkeyEInvoice, inv.MCQT);
-                                    templateInvoiceParameter.UrlDomain = urlportal;
-                                    templateInvoiceParameter.Fkey = inv.FkeyEInvoice;
-                                    templateInvoiceParameter.MCQT = inv.MCQT;
+                                    templateInvoiceParameter.linktracuu = urlportal;
+                                    templateInvoiceParameter.matracuu = inv.FkeyEInvoice;
+                                    templateInvoiceParameter.macoquanthue = inv.MCQT;
                                 }
                             }
                             //string thongtinthue = string.Empty;

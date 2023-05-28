@@ -115,9 +115,6 @@ namespace Infrastructure.Infrastructure.DbContexts
         public DbSet<AdJusPaymentSupplier> AdJusPaymentSupplier { get; set; }
         public DbSet<Area> Area { get; set; }
         public DbSet<ComponentProduct> ComponentProduct { get; set; }
-
-
-
         /// </summary>
         public void BeginTransaction()
         {
@@ -293,7 +290,7 @@ namespace Infrastructure.Infrastructure.DbContexts
                 entity.HasIndex(p => new {p.FkeyEInvoice }).IsUnique();
                 entity.HasIndex(p => new {p.Fkey, p.ComId }).IsUnique();
                 entity.HasIndex(p => new {p.MCQT, p.ComId }).IsUnique();
-                entity.HasIndex(p => new {p.InvoiceCode, p.ComId }).IsUnique();
+                entity.HasIndex(p => new {p.InvoiceCode, p.ComId, p.StatusEinvoice }).IsUnique();
                 entity.HasIndex(p => new { p.IdInvoice });
                 entity.HasIndex(p => new {p.CusCode });
                 entity.HasIndex(p => new {p.ComId });

@@ -11,6 +11,7 @@ namespace Application.Interfaces.Repositories
     public interface IInvoicePepository<T> where T : class
     {
         Task<Result<PublishInvoiceModelView>> CancelInvoice(Guid IdInvoice,int ComId,string CasherName,string Note, EnumTypeEventInvoice type);
+        Task<Result<PublishInvoiceModelView>> UpdateCustomerInvoice(Guid IdInvoice,int ComId,int IdCustomer,string CasherName);
         Task<Result<PublishInvoiceModelView>> DeleteIsMergeInvoice(Guid IdInvoice,int ComId,string CasherName);
         Task<Result<PublishInvoiceModelView>> CancelInvoice(int[] lstid,int ComId,string CasherName,string Note, EnumTypeEventInvoice type,bool IsDelete,bool IsDeletePT = false);
         Task<Result<PublishInvoiceModelView>> PublishEInvoiceMerge(PublishInvoiceMergeModel model, int ComId);
