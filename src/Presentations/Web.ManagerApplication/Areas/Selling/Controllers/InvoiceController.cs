@@ -161,6 +161,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         [HttpPost]
         [Authorize(Policy = "invoice.publishinvoice")]
+    
         public async Task<IActionResult> PublishEInvoiceAsync(int[] lstid, EnumTypeEventInvoice TypeEventInvoice,float? Vatrate,int idPattern)
         {
             try
@@ -346,6 +347,36 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             {
                 _notify.Success("Hủy bỏ thành công: " + response.Message);
                 return Json(new { isValid = true });
+            }
+           
+            _notify.Error(GeneralMess.ConvertStatusToString(response.Message));
+            return Json(new { isValid = false });
+        }
+        
+        [HttpPost]
+        public async Task<ActionResult> UpdateCustomerAsync(Guid? id,int? idCus)
+        {
+            if (idCus == null)
+            {
+                _notify.Error("Dữ liệu khách hàng không hợp lệ");
+                return Json(new { isValid = false });
+            }
+            if (id == null)
+            {
+                _notify.Error("Đơn hàng không tồn tại");
+                return Json(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var response = await _mediator.Send(new UpdateInvoiceCommand() { 
+                CasherName= currentUser.FullName,
+                ComId = currentUser.ComId, 
+                Id = id,
+                IdCustomer = idCus,
+                TypeEventInvoice = EnumTypeEventInvoice.UpdateCustomer });
+            if (response.Succeeded)
+            {
+                _notify.Success(response.Message);
+                return Json(new { isValid = true,note = response.Data.Note });
             }
            
             _notify.Error(GeneralMess.ConvertStatusToString(response.Message));

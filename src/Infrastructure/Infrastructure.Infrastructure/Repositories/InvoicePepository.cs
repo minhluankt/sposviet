@@ -222,7 +222,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         lstinvoicefail.Add(item);
                     }
-                    else if (item.StatusPublishInvoiceOrder != EnumStatusPublishInvoiceOrder.NONE)
+                    else if (item.StatusPublishInvoiceOrder != EnumStatusPublishInvoiceOrder.NONE && item.StatusPublishInvoiceOrder != EnumStatusPublishInvoiceOrder.CANCEL)
                     {
                         lstinvoicefail.Add(item);
                     }
@@ -457,7 +457,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             TypePublishEinvoice = ENumTypePublishEinvoice.ERROR,
                             code = item.InvoiceCode,
-                            note = $"Mã đơn này có trạng thái là {GeneralMess.GeneralMessEnumStatusInvoice(item.Status)}",
+                            note = $"Mã đơn này có trạng thái là {GeneralMess.GeneralMessEnumStatusInvoice(item.Status)},trạng thái hóa đơn điện tử {item.StatusPublishInvoiceOrder.ToString()}",
                         });
                     }
 
@@ -1317,10 +1317,6 @@ namespace Infrastructure.Infrastructure.Repositories
             try
             {
                 var datatiem = DateTime.Now.AddDays(-30);
-
-
-
-
                 var getall = _invoiceRepository.GetAllQueryable().Where(x => x.Status == EnumStatusInvoice.XOA_BO && x.CreatedOn < datatiem);
                 if (getall.Count() > 0)
                 {
@@ -1388,6 +1384,81 @@ namespace Infrastructure.Infrastructure.Repositories
                 _log.LogError(e.Message);
                 return await Result<PublishInvoiceModelView>.FailAsync(e.Message);
             }
+        }
+
+        public async Task<Result<PublishInvoiceModelView>> UpdateCustomerInvoice(Guid IdInvoice, int ComId, int IdCustomer, string CasherName)
+        {
+            await _unitOfWork.CreateTransactionAsync();
+            try
+            {
+                string customerold = string.Empty;
+                var inv = await _invoiceRepository.Entities.SingleOrDefaultAsync(x => x.IdGuid == IdInvoice && x.ComId == ComId);
+                if (inv == null)
+                {
+                    return await Result<PublishInvoiceModelView>.FailAsync("Không tìm thấy hóa đơn");
+                }
+                customerold = $"{(!string.IsNullOrEmpty(inv.CusName) ? inv.CusName+" - "+ inv.CusCode : inv.Buyer)}";
+                if (IdCustomer == -1)
+                {
+                    inv.IsRetailCustomer = true;
+                    inv.IdCustomer = null;
+                    inv.Buyer = CommonKhachle.Name;
+                    inv.CusName = null;
+                    inv.Taxcode = null;
+                    inv.CusCode = null;
+                    inv.PhoneNumber = null;
+                    inv.CCCD = null;
+                    inv.Address = null;
+                    inv.Email = null;
+                    inv.CusBankNo = null;
+                    inv.CusBankName = null;
+                }
+                else
+                {
+                    var cus = await _repositoryCusomer.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == IdCustomer);
+                    if (cus != null)
+                    {
+                        inv.IsRetailCustomer = false;
+                        inv.IdCustomer = cus.Id;
+                        inv.Buyer = cus.Buyer;
+                        inv.CusName = cus.Name;
+                        inv.Taxcode = cus.Taxcode;
+                        inv.CusCode = cus.Code;
+                        inv.PhoneNumber = cus.PhoneNumber;
+                        inv.CCCD = cus.CCCD;
+                        inv.Address = cus.Address;
+                        inv.Email = cus.Email;
+                        inv.CusBankNo = cus.CusBankNo;
+                        inv.CusBankName = cus.CusBankName;
+                    }
+                    else
+                    {
+                        return await Result<PublishInvoiceModelView>.FailAsync("Không tìm thấy khách hàng");
+                    }
+                }
+                PublishInvoiceModelView publishInvoiceModelView = new PublishInvoiceModelView();
+                string note = $"Thay đổi thông tin khách hàng từ <b>{customerold}</b>, thành <b>{(!string.IsNullOrEmpty(inv.CusName) ? inv.CusName + " - " + inv.CusCode : inv.Buyer)}</b>";
+                var his = new HistoryInvoice()
+                {
+                    IdInvoice = inv.Id,
+                    InvoiceCode = inv.InvoiceCode,
+                    Carsher = CasherName,
+                    Name = note,
+                };
+                publishInvoiceModelView.Note  =    $"<b>{his.CreateDate.ToString("dd/MM/yyyy HH:mm")} - {CasherName} </b> <span> {note}</span>";
+                await _historyInvoiceRepository.AddAsync(his);
+                await _invoiceRepository.UpdateAsync(inv);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
+                return await Result<PublishInvoiceModelView>.SuccessAsync(publishInvoiceModelView,"Cập nhật thành công khách hàng");
+            }
+            catch (Exception e)
+            {
+                await _unitOfWork.RollbackAsync();
+                _log.LogError(e.ToString());
+                return await Result<PublishInvoiceModelView>.FailAsync("Có lỗi khi cập nhật khách hàng: "+e.Message);
+            }
+            
         }
     }
 }

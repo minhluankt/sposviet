@@ -14,6 +14,10 @@
     {
         public const string OK = "OK:";
     }  
+    public class CommonKhachle
+    {
+        public const string Name = "Khách lẻ";
+    }  
     public class MidpointRoundingCommon
     {
         public const int Three = 3;

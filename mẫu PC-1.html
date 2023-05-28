@@ -1,36 +1,41 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
 <table style="width:100%">
 	<tbody>
 		<tr>
-			<td style="text-align:center"><strong>{comname}</strong><br />
-			<span style="font-size:12px">{comaddress}</span><br />
-			<span style="font-size:12px">----------***----------</span><br />
-			<span style="font-size:12px">Ng&agrave;y b&aacute;n: {ngaythangnamxuat}</span></td>
+			<td style="text-align:center"><span style="font-size:0.938em;"><strong>{comname}</strong></span><br />
+			<span style="font-size:0.75em;">{comaddress}<br />
+			----------***----------<br />
+			Ng&agrave;y b&aacute;n: {ngaythangnamxuat}</span></td>
 		</tr>
 		<tr>
 			<td style="text-align:center">
-			<p><strong>H&Oacute;A ĐƠN B&Aacute;N H&Agrave;NG</strong><br />
-			<strong>Số HD: {invoiceNo}</strong></p>
+			<p><span style="font-size:1.375em;"><strong>H&Oacute;A ĐƠN B&Aacute;N H&Agrave;NG</strong></span><br />
+			<span style="font-size:0.938em;"><strong>Số : {invoiceNo}</strong></span></p>
 
-			<p style="text-align:right"><span style="font-size:12px"><strong>K&yacute; hiệu: {kyhieuhoadon}</strong><br />
+			<p style="text-align: right;"><span style="font-size:0.875em;"><strong>K&yacute; hiệu: {kyhieuhoadon}</strong><br />
 			<strong>Số HD: {sohoadon}</strong></span></p>
 			</td>
 		</tr>
 	</tbody>
 </table>
 
-<table style="margin-bottom:5px; width:100%">
+<table border="0" bordercolor="#ccc" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
 	<tbody>
 		<tr>
-			<td style="text-align:left"><span style="font-size:12px">T&ecirc;n kh&aacute;ch: {buyer}</span></td>
+			<td style="text-align:left"><span style="font-size:0.813em;">T&ecirc;n kh&aacute;ch: {buyer}</span></td>
 		</tr>
 		<tr>
-			<td style="text-align:left"><span style="font-size:12px">SĐT: {cusPhone}</span></td>
+			<td style="text-align:left"><span style="font-size:0.813em;">SĐT: {cusPhone}</span></td>
 		</tr>
 		<tr>
-			<td style="text-align:left"><span style="font-size:12px">Địa chỉ: {cusAddress}</span></td>
+			<td style="text-align:left"><span style="font-size:0.813em;">Địa chỉ: {cusAddress}</span></td>
 		</tr>
 		<tr>
-			<td style="text-align:left"><span style="font-size:12px">Nh&acirc;n vi&ecirc;n b&aacute;n: {staffName}</span></td>
+			<td style="text-align:left"><span style="font-size:0.813em;">Nh&acirc;n vi&ecirc;n b&aacute;n: {staffName}</span></td>
 		</tr>
 	</tbody>
 </table>
@@ -38,59 +43,175 @@
 <table style="margin-bottom:10px; margin-top:2px; width:100%">
 	<thead>
 		<tr>
-			<th style="text-align:left"><span style="font-size:12px">Đ.Gi&aacute;</span></th>
-			<th style="text-align:center"><span style="font-size:12px">S.Lượng</span></th>
-			<th style="text-align:center"><span style="font-size:12px">ĐVT</span></th>
-			<th style="text-align:right"><span style="font-size:12px">Th&agrave;nh tiền</span></th>
+			<th style="text-align:left"><span style="font-size:0.813em;">Đ.Gia</span></th>
+			<th style="text-align:center"><span style="font-size:0.813em;">S.Lượng</span></th>
+			<th style="text-align:center"><span style="font-size:0.813em;">ĐVT</span></th>
+			<th style="text-align:right"><span style="font-size:0.813em;">Th&agrave;nh tiền</span></th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
 			<td colspan="4" style="text-align:left">
-			<div>
-			<div style="border-top:0.5px dashed black"><span style="font-size:12px">{tenhanghoa}</span></div>
+			<div style="border-top: 0.063em dashed black">
+			<div><span style="font-size:0.813em;">{tenhanghoa}</span></div>
 			</div>
 			</td>
 		</tr>
 		<tr>
-			<td style="text-align:left"><span style="font-size:12px">{dongia}</span></td>
-			<td style="text-align:center"><span style="font-size:12px">{soluong}</span></td>
-			<td style="text-align:center"><span style="font-size:12px">{donvitinh}</span></td>
-			<td style="text-align:right"><span style="font-size:12px">{thanhtien}</span></td>
+			<td style="text-align:left"><span style="font-size:0.813em;">{dongia}</span></td>
+			<td style="text-align:center"><span style="font-size:0.813em;">{soluong}</span></td>
+			<td style="text-align:center"><span style="font-size:0.813em;">{donvitinh}</span></td>
+			<td style="text-align:right"><span style="font-size:0.813em;">{thanhtien}</span></td>
 		</tr>
 	</tbody>
 	<tfoot>
 		<tr>
 			<td colspan="4" style="white-space:nowrap">
-			<div style="border-top:0.5px dashed black; display:flex; justify-content:space-between; padding-top:5px; text-align:right">
-			<div style="text-align:left"><span style="font-size:12px">Tổng tiền</span></div>
+			<div style="border-top: 0.063em dashed black; display:flex; justify-content:space-between; padding-top:5px; text-align:right">
+			<div style="text-align:left"><span style="font-size:0.813em;">Tổng tiền</span></div>
 
-			<div><span style="font-size:12px">{tientruocthue}</span></div>
+			<div><span style="font-size:0.813em;">{tientruocthue}</span></div>
 			</div>
 			</td>
 		</tr>
 		<tr>
-			<td colspan="3"><span style="font-size:12px">Chiết khấu</span></td>
-			<td style="text-align:right"><span style="font-size:12px">{giamgia}</span></td>
+			<td colspan="3"><span style="font-size:0.813em;">Chiết khấu</span></td>
+			<td style="text-align:right"><span style="font-size:0.813em;">{giamgia}</span></td>
 		</tr>
 		<tr>
-			<td colspan="3"><span style="font-size:12px">Tiền thuế:{thuesuat}%</span></td>
-			<td style="text-align:right"><span style="font-size:12px">{tienthue}</span></td>
+			<td colspan="3"><span style="font-size:0.813em;">Tiền thuế:{thuesuat}%</span></td>
+			<td style="text-align:right"><span style="font-size:0.813em;">{tienthue}</span></td>
 		</tr>
 		<tr>
-			<td colspan="3"><strong><span style="font-size:12px">Kh&aacute;ch cần trả</span></strong></td>
-			<td style="text-align:right"><strong><span style="font-size:12px">{khachcantra}</span></strong></td>
+			<td colspan="3"><span style="font-size:1.25em;"><strong>Kh&aacute;ch cần trả</strong></span></td>
+			<td style="text-align:right"><span style="font-size:1.25em;"><strong>{khachcantra}</strong></span></td>
 		</tr>
 	</tfoot>
 </table>
 
 <table style="margin-top:0mm; width:100%">
 	<tbody>
-	<tr>
-			<td style="text-align:center"><span style="font-size:11px">Tra cứu hóa đơn tại: {linktracuu}, mã tra cứu {matracuu}</span></td>
-		</tr>
 		<tr>
-			<td style="text-align:center"><span style="font-size:11px">Đơn vị cung cấp giải ph&aacute;p: SposViet, li&ecirc;n hệ:0949906004</span></td>
+			<td style="text-align:center"><span style="font-size:0.75em;">Tra cứu h&oacute;a đơn tại: {linktracuu}, m&atilde; tra cứu:{matracuu}</span><br />
+			<span style="font-size:0.688em;">Đơn vị cung cấp giải ph&aacute;p: SposViet, li&ecirc;n hệ:0949906004</span></td>
 		</tr>
 	</tbody>
 </table>
+</body>
+<script id="allow-copy_script">(function agent() {
+    let unlock = false
+    document.addEventListener('allow_copy', (event) => {
+      unlock = event.detail.unlock
+    })
+
+    const copyEvents = [
+      'copy',
+      'cut',
+      'contextmenu',
+      'selectstart',
+      'mousedown',
+      'mouseup',
+      'mousemove',
+      'keydown',
+      'keypress',
+      'keyup',
+    ]
+    const rejectOtherHandlers = (e) => {
+      if (unlock) {
+        e.stopPropagation()
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation()
+      }
+    }
+    copyEvents.forEach((evt) => {
+      document.documentElement.addEventListener(evt, rejectOtherHandlers, {
+        capture: true,
+      })
+    })
+  })()</script><script id="allow-copy_script">(function agent() {
+    let unlock = false
+    document.addEventListener('allow_copy', (event) => {
+      unlock = event.detail.unlock
+    })
+
+    const copyEvents = [
+      'copy',
+      'cut',
+      'contextmenu',
+      'selectstart',
+      'mousedown',
+      'mouseup',
+      'mousemove',
+      'keydown',
+      'keypress',
+      'keyup',
+    ]
+    const rejectOtherHandlers = (e) => {
+      if (unlock) {
+        e.stopPropagation()
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation()
+      }
+    }
+    copyEvents.forEach((evt) => {
+      document.documentElement.addEventListener(evt, rejectOtherHandlers, {
+        capture: true,
+      })
+    })
+  })()</script><script id="allow-copy_script">(function agent() {
+    let unlock = false
+    document.addEventListener('allow_copy', (event) => {
+      unlock = event.detail.unlock
+    })
+
+    const copyEvents = [
+      'copy',
+      'cut',
+      'contextmenu',
+      'selectstart',
+      'mousedown',
+      'mouseup',
+      'mousemove',
+      'keydown',
+      'keypress',
+      'keyup',
+    ]
+    const rejectOtherHandlers = (e) => {
+      if (unlock) {
+        e.stopPropagation()
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation()
+      }
+    }
+    copyEvents.forEach((evt) => {
+      document.documentElement.addEventListener(evt, rejectOtherHandlers, {
+        capture: true,
+      })
+    })
+  })()</script><script id="allow-copy_script">(function agent() {
+    let unlock = false
+    document.addEventListener('allow_copy', (event) => {
+      unlock = event.detail.unlock
+    })
+
+    const copyEvents = [
+      'copy',
+      'cut',
+      'contextmenu',
+      'selectstart',
+      'mousedown',
+      'mouseup',
+      'mousemove',
+      'keydown',
+      'keypress',
+      'keyup',
+    ]
+    const rejectOtherHandlers = (e) => {
+      if (unlock) {
+        e.stopPropagation()
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation()
+      }
+    }
+    copyEvents.forEach((evt) => {
+      document.documentElement.addEventListener(evt, rejectOtherHandlers, {
+        capture: true,
+      })
+    })
+  })()</script></html>

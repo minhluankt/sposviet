@@ -1491,13 +1491,13 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.HasIndex("Fkey", "ComId")
                         .IsUnique();
 
-                    b.HasIndex("InvoiceCode", "ComId")
-                        .IsUnique()
-                        .HasFilter("[InvoiceCode] IS NOT NULL");
-
                     b.HasIndex("MCQT", "ComId")
                         .IsUnique()
                         .HasFilter("[MCQT] IS NOT NULL");
+
+                    b.HasIndex("InvoiceCode", "ComId", "StatusEinvoice")
+                        .IsUnique()
+                        .HasFilter("[InvoiceCode] IS NOT NULL");
 
                     b.ToTable("EInvoice");
                 });

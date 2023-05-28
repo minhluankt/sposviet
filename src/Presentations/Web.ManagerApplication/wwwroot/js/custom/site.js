@@ -4103,6 +4103,81 @@ $(document).on("click", '#btn-cancelorder', function (event) {
     return false;
 
 })
+var settingpos = {
+    setingPrinter: function () {
+        settingpos.eventLoadintSetup();
+        $(".btn-settingprint").click(function () {
+            let getisprintloca = localStorage.getItem("IsPrint");
+            
+            let getisprintlocaapp = localStorage.getItem("IsPrintApp");
+            let getlienin = localStorage.getItem("LienInNumber");
+
+            if ($(".showSettingPrintPos").length > 0) {
+                $(".showSettingPrintPos").remove();
+            } else {
+                html = `<div class='showSettingPrintPos'>
+                            <ul>
+                                <li>In hóa đơn <input type="checkbox" class="isprint icheck" `+ (getisprintloca=="true"?"checked":"")+`></li>
+                                <li>In bằng ứng dụng <input data-value="0" type="checkbox" class="icheck printbyapp"`+ (getisprintlocaapp == "true" ? "checked" : "") +`></li>
+                                <li>Số lượng in (Liên) <input type="number" class="lienin text-right" value="`+ getlienin +`"></li>
+                            </ul>
+                        </div>`;
+                $(this).after(html);
+                loadEventIcheck();
+                settingpos.eventLoadChangeSettingPrint();
+            }
+        });
+        $(document).mouseup(function (e) {
+            var container = $(".showSettingPrintPos");
+            // if the target of the click isn't the container nor a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+               
+                container.remove();
+
+            }
+        });
+    },
+    eventLoadintSetup: function () {
+        let getisprintloca = localStorage.getItem("IsPrint");
+        let getisprintlocaapp = localStorage.getItem("IsPrintApp");
+        let getlienin = localStorage.getItem("LienInNumber");
+        if (typeof getisprintloca == "undefined" || getisprintloca == null) {
+            localStorage.setItem("IsPrint", true);
+        }
+        if (typeof getisprintlocaapp == "undefined" || getisprintlocaapp == null) {
+            localStorage.setItem("IsPrintApp", false);
+        } else {
+            testConnetWebSocket();
+        }
+        if (typeof getlienin == "undefined" || getlienin == null) {
+            localStorage.setItem("LienInNumber", 1);
+        }
+    },
+    eventLoadChangeSettingPrint: function () {
+        $('.showSettingPrintPos input.isprint').on('ifChanged', function (event) {
+            if ($(this).prop("checked") == true) {
+                localStorage.setItem("IsPrint", true);
+                $('input.printbyapp').iCheck('enable');
+                $('input.lienin').removeAttr("disabled");
+            } else if ($(this).prop("checked") == false) {
+                localStorage.setItem("IsPrint", false);
+                $('input.printbyapp').iCheck('disable');
+                $('input.lienin').attr("disabled","disabled");
+            }
+        });
+        $('.showSettingPrintPos input.printbyapp').on('ifChanged', function (event) {
+            if ($(this).prop("checked") == true) {
+                localStorage.setItem("IsPrintApp", true);
+                testConnetWebSocket();
+            } else if ($(this).prop("checked") == false) {
+                localStorage.setItem("IsPrintApp", false);
+            }
+        });
+        $('.showSettingPrintPos input.lienin').keyup(function () {
+            localStorage.setItem("LienInNumber", $(this).val());
+        });
+    }
+}
 var eventCreate = {
     viewSupplier: function (url) {//khu vực nhà hàng
         $.ajax({
@@ -4472,8 +4547,12 @@ var eventCreate = {
                             $(".btn-continue").click(function () {
                                 Swal.close();
                             });
+                            //CKEDITOR.editorConfig = function (config) {
+                            //    config.fontSize_sizes= '0.313em;0.652rem;0.688rem;0.75rem;0.814rem;0.875rem;0.938rem;1rem;1.125rem;1.25rem;1.375rem;1.563rem;1.688rem;1.813rem;1.875rem;2rem;'
+                            //};
                             CKEDITOR.replace('Template', {
                                 height: '500px',
+                                fontSize_sizes: '0.5em;0.563em;0.625em;0.688em;0.75em;0.813em;0.875em;0.938em;1em;1.125em;1.25em;1.375em;1.563em;1.625em;1.75em;1.875em;2em;2.125em;2.25em;2.375em;2.5em;2.688em;2.813em;3em;3.125em;4em;',
                                // contentsCss: 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
                                  on: {
                                   //  instanceReady: loadBootstrap,
@@ -7190,7 +7269,7 @@ var eventInvocie = {
             // data: fomrdata,
             contentType: false,
             processData: false,
-            success: function (res) {
+            success:  function (res) {
                 //if (res.isValid) {
                 Swal.fire({
                     // icon: 'success',
@@ -7210,7 +7289,7 @@ var eventInvocie = {
                     },
                     showCloseButton: true,
 
-                    title: "Thêm/Chỉnh sửa phòng/bàn",
+                    title: "Thông tin hóa đơn bán hàng",
                     html: res,
                     //showClass: {
                     //    popup: 'popup-formcreate'
@@ -7221,9 +7300,10 @@ var eventInvocie = {
                     showConfirmButton: false,
                     showCancelButton: false,
                     cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
-                    didRender: () => {
+                    didRender: async () => {
                         evetnFormatTextnumber3(true);
                         var idinvoice = $("#invoiceid").val();
+                        var IdCustomer = $("#IdCustomer").val();
                         let status = $("#Status").val();
                         var TypeEventInvoice = EnumTypeEventInvoice.Cancel;
                         let title = "Bạn có chắc chắn muốn xóa đơn không?";
@@ -7232,6 +7312,27 @@ var eventInvocie = {
                             title = "Bạn có chắc chắn muốn khôi phục đơn không?";
                             $(".btn-cancelinvoice").html("<i class='fas fa-undo mr-2'> Khôi phục hóa đơn");
                         }
+
+                        let getCustomre = await axios.get("/Selling/Customer/GetAllDataCustomer?idselectd=" + IdCustomer);
+
+                        $(".customerselect").select2({
+                            dropdownParent: $(".detail-invoice-pos"),
+                            data: getCustomre.data,
+                            placeholder: {
+                                id: '', // the value of the option
+                                text: "Chọn khách hàng"
+                            },
+                            allowClear: true,
+                            language: {
+                                noResults: function () {
+                                    return "Không tìm thấy dữ liệu";
+                                }
+                            },
+                        }).on("change", function (e) {
+                            eventInvocie.eventUpdateCustomer($(this).val());
+                        })
+
+
                         $(".btn-continue").click(function () {
                             Swal.close();
                         });
@@ -7262,13 +7363,31 @@ var eventInvocie = {
 
                     }
                 });
-                //}
             },
             error: function (err) {
                 console.log(err)
             }
         });
     },
+    eventUpdateCustomer: function (id) {
+        $.ajax({
+            type: 'POST',
+            url: "/Selling/Invoice/UpdateCustomer",
+            data: {
+                idCus: id,
+                id: $("#IdInvoice").data("id")
+            },
+            dataType: 'json',
+            success: function (res) {
+                if (res.isValid) {
+                    $(".historyInvoice ul").append("<li>" + res.note + "</li>")
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    }
 }
 var commonEventpost = {
 
@@ -14966,20 +15085,39 @@ var loadeventPos = {
                     loadeventPos.checkHighlightTableInOrder();// check highlight
 
                     if (htmlPrint != "") {
-                        printDiv(htmlPrint);
-                        //dataObject = {};
-                        //dataObject.type = TypeEventWebSocket.PrintInvoice;
-                        //dataObject.html = htmlPrint;
-                        //loadingStart();
-                        //sposvietplugin.sendConnectSocket(listport[0]).then(function (data) {
-                        //    console.log(data);
-                        //    sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
-                        //        loadingStop();
-                        //        if (data == "-1") {
-                        //            toastrcus.error("Có lỗi xảy ra");
-                        //        }
-                        //    });
-                        //});
+                        let getisprintloca = localStorage.getItem("IsPrint");
+                        let getisprintlocaapp = localStorage.getItem("IsPrintApp");
+                        let getlienin = parseInt(localStorage.getItem("LienInNumber"));
+                        if (getisprintloca == "true") {
+                            if (getisprintlocaapp == "true") {
+                                if (getlienin > 1) {
+                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                    let html = htmlPrint;
+                                    for (var i = 0; i < getlienin; i++) {
+                                        await loadeventPos.eventPrintbyApp(html).then(function (data) {
+                                            if (data == false) {
+                                                return false;
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                    loadeventPos.eventPrintbyApp(htmlPrint);
+                                }
+                            } else {
+                                if (getlienin > 1) {
+                                    let htmlpr = htmlPrint;
+                                    for (var i = 1; i < getlienin; i++) {
+                                        htmlpr += '<div style="page-break-after: always;">&nbsp;</div>' + htmlPrint;
+                                    }
+                                    // htmlpr += '<div style="page-break-after: always;">&nbsp;</div>' + htmlPrint;
+                                    printDiv(htmlpr);
+                                } else {
+                                    printDiv(htmlPrint);
+                                }
+
+                            }
+                        }
                     }
                 }
             },
@@ -15150,24 +15288,49 @@ var loadeventPos = {
                                 Vatrate: vatrate,
 
                             },
-                            success: function (res) {
+                            success: async function (res) {
                                 if (res.isValid) {
-                                    printDiv(res.html);
+                                    let getisprintloca = localStorage.getItem("IsPrint");
+                                    let getisprintlocaapp = localStorage.getItem("IsPrintApp");
+                                    let getlienin = parseInt(localStorage.getItem("LienInNumber"));
+                                    if (getisprintloca == "true") {
+                                        if (getisprintlocaapp == "true") {
+                                            //loadeventPos.eventPrintbyApp(res.html);
+                                            //for (var i = 0; i < getlienin; i++) {
+                                            //    loadeventPos.eventPrintbyApp(res.html);
+                                            //}
+                                            if (getlienin > 1) {
+                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                                let html = res.html;
+                                                for (var i = 0; i < getlienin; i++) {
+                                                    await loadeventPos.eventPrintbyApp(html).then(function (data) {
+                                                        if (data == false) {
+                                                            return false;
+                                                        }
+                                                    });
+                                                }
+                                                //html += res.html
+
+                                            } else {
+                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                                loadeventPos.eventPrintbyApp(res.html);
+                                            }
 
 
-                                    //dataObject = {};
-                                    //dataObject.type = TypeEventWebSocket.PrintInvoice;
-                                    //dataObject.html = res.html;
-                                    //loadingStart();
-                                    //sposvietplugin.sendConnectSocket(listport[0]).then(function (data) {
-                                    //    console.log(data);
-                                    //    sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
-                                    //        loadingStop();
-                                    //        if (data == "-1") {
-                                    //            toastrcus.error("Có lỗi xảy ra");
-                                    //        }
-                                    //    });
-                                    //});
+                                        } else {
+                                            if (getlienin > 1) {
+                                                let htmlpr = res.html;
+                                                for (var i = 1; i < getlienin; i++) {
+                                                    htmlpr += '<div style="page-break-after: always;">&nbsp;</div>' + res.html;
+                                                }
+                                                // htmlpr += '<div style="page-break-after: always;">&nbsp;</div>' + res.html;
+                                                printDiv(htmlpr);
+                                            } else {
+                                                printDiv(res.html);
+                                            }
+
+                                        }
+                                    }
 
                                 }
                             },
@@ -15188,25 +15351,49 @@ var loadeventPos = {
                         vat: vat,
                         Vatrate: vatrate,
                     },
-                    success: function (res) {
+                    success: async function (res) {
                         if (res.isValid) {
-                            printDiv(res.html);
+                            let getisprintloca = localStorage.getItem("IsPrint");
+                            let getisprintlocaapp = localStorage.getItem("IsPrintApp");
+                            let getlienin = parseInt(localStorage.getItem("LienInNumber"));
+                            if (getisprintloca=="true") {
+                                if (getisprintlocaapp == "true") {
+                                    //loadeventPos.eventPrintbyApp(res.html);
+                                    //for (var i = 0; i < getlienin; i++) {
+                                    //    loadeventPos.eventPrintbyApp(res.html);
+                                    //}
+                                    if (getlienin > 1) {
+                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                        let html = res.html;
+                                        for (var i = 0; i < getlienin; i++) {
+                                            await loadeventPos.eventPrintbyApp(html).then(function (data) {
+                                                if (data == false) {
+                                                    return false;
+                                                }
+                                            });
+                                        }
+                                        //html += res.html
+                                      
+                                    } else {
+                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                        loadeventPos.eventPrintbyApp(res.html);
+                                    }
 
 
-                            //dataObject = {};
-                            //dataObject.type = TypeEventWebSocket.PrintInvoice;
-                            //dataObject.html = res.html;
-                            //loadingStart();
-                            //sposvietplugin.sendConnectSocket(listport[0]).then(function (data) {
-                            //    console.log(data);
-                            //    sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
-                            //        loadingStop();
-                            //        if (data == "-1") {
-                            //            toastrcus.error("Có lỗi xảy ra");
-                            //        }
-                            //    });
-                            //});
-
+                                } else {
+                                    if (getlienin > 1) {
+                                        let htmlpr = res.html;
+                                        for (var i = 1; i < getlienin; i++) {
+                                            htmlpr += '<div style="page-break-after: always;">&nbsp;</div>' + res.html;
+                                        }
+                                       // htmlpr += '<div style="page-break-after: always;">&nbsp;</div>' + res.html;
+                                        printDiv(htmlpr);
+                                    } else {
+                                        printDiv(res.html);
+                                    }
+                                   
+                                }
+                            }
                         }
                     },
                     error: function (err) {
@@ -15218,6 +15405,24 @@ var loadeventPos = {
         })
 
     },//in tạm tính
+    eventPrintbyApp: async function (html) {
+        let Isprint = false;
+        dataObject = {};
+        dataObject.type = TypeEventWebSocket.PrintInvoice;
+        dataObject.html = html;
+        // loadingStart();
+        await sposvietplugin.sendConnectSocket(listport[0]).then( async function (data) {
+            // console.log(data);
+            await  sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
+                // loadingStop();
+                if (data == "-1") {
+                    toastrcus.error("Có lỗi xảy ra");
+                }
+                Isprint = true;
+            });
+        });
+        return Isprint;
+    },
     eventPayment: function () {
         //$(".btn-notif").click(function () {
         //    loadeventPos.NotifyChitken();

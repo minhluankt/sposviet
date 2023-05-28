@@ -173,7 +173,7 @@ namespace SposVietPlugin_net_4._6._1
                             }
                             else
                             {
-                                PrintServer.Print(model.html);
+                                PrintServer.PrintPageBaoBep(model.html);
                                 res.isSuccess = true;
                                 res.Message = "In thành công";
                                 Send(JsonConvert.SerializeObject(res));
@@ -207,7 +207,7 @@ namespace SposVietPlugin_net_4._6._1
                             }
                             else
                             {
-                                PrintServer.Print(model.html);
+                                PrintServer.PrintPageBaoBep(model.html);
                                 res.isSuccess = true;
                                 res.Message = "In thành công";
                                 Send(JsonConvert.SerializeObject(res));

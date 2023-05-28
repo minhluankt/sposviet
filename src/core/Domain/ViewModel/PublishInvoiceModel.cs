@@ -15,6 +15,7 @@ namespace Domain.ViewModel
             this.DetailInvoices = new List<DetailInvoice>();
         }
         public bool IsError { get; set; }
+        public string Note { get; set; }// ghi chú bất kỳ
         public string Hash { get; set; }// chuỗi hash VNPT trả về
         public ENumTypeSeri TypeSeri { get; set; }// dạng ký số gì
         public EnumTypeEventInvoice TypeEventInvoice { get; set; }// phast hafnh hay tap moi

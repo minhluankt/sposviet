@@ -18,6 +18,7 @@ namespace Application.Features.Invoices.Commands
     public partial class UpdateInvoiceCommand : IRequest<Result<PublishInvoiceModelView>>
     {
         public Guid? Id { get; set; }
+        public int? IdCustomer { get; set; }
         public bool IsDeletePT { get; set; }//có xóa phiếu thu liên quan không
         public bool IsDelete { get; set; }
         public int ComId { get; set; }
@@ -51,6 +52,10 @@ namespace Application.Features.Invoices.Commands
                     return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR000);
                 }
                 return await _Repository.DeleteIsMergeInvoice(command.Id.Value, command.ComId, command.CasherName);
+            }
+            else if (command.TypeEventInvoice==EnumTypeEventInvoice.UpdateCustomer)
+            {
+                return await _Repository.UpdateCustomerInvoice(command.Id.Value, command.ComId, command.IdCustomer.Value, command.CasherName);
             }
             else if(command.lstid!=null && command.lstid.Count()>0)
             {

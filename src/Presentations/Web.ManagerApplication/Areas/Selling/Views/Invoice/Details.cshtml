@@ -3,8 +3,15 @@
 @{
     Layout = null;
     var checkvatproduct = Model.InvoiceItems.Count(x => x.VATRate>(int)NOVAT.NOVAT);
+    int idCus = -1;
+    if (Model.IdCustomer!=null)
+    {
+        idCus = Model.IdCustomer.Value;
+    }
 }
 <div class="detail-invoice-pos">
+    <input type="hidden" id="IdCustomer" value="@idCus" />
+    <input type="hidden" id="IdInvoice" value="@Model.IdGuid" data-id="@Model.IdGuid" />
     <div class="row">
         <div class="col-md-4">
             <table class="table-info-cus">
@@ -22,9 +29,12 @@
                 </tr>
 
                 <tr>
-                    <td colspan="2" class="text-left" style="    line-height: 24px;">
-                        Khách hàng: <br />
-                        <span class="text-primary">@(!string.IsNullOrEmpty(Model.CusName) ? Model.CusName : Model.Buyer)</span>
+                    <td colspan="2" class="text-left" style="line-height: 24px;">
+                      <div class="elecus">
+                            <span class="title"> Khách hàng:</span>
+                            @*<span class="text-primary">@(!string.IsNullOrEmpty(Model.CusName) ? Model.CusName : Model.Buyer)</span>*@
+                            <select class="customerselect" style="width:100%"></select>
+                      </div>
                     </td>
                 </tr>
 
@@ -81,9 +91,13 @@
                     </tr>
                 }
                 <tr>
-                    <td>Người nhận đơn</td>
+                    <td>Thu ngân</td>
                     <td>@Model.CasherName</td>
-                </tr> 
+                </tr>
+                <tr>
+                    <td>Phục vụ</td>
+                    <td>@Model.StaffName</td>
+                </tr>
                 @if (ViewBag.ListInvoice!=null)
                 {
                     <tr>
@@ -113,7 +127,7 @@
                 <ul>
                     @foreach (var item in Model.HistoryInvoices)
                     {
-                        <li><b>@item.CreateDate.ToString("dd/MM/yyyy HH:mm") - @item.Carsher </b><span>- @item.Name</span></li>
+                        <li><b>@item.CreateDate.ToString("dd/MM/yyyy HH:mm") - @item.Carsher </b><span>- @Html.Raw(item.Name)</span></li>
                     }
                 </ul>
             </div>

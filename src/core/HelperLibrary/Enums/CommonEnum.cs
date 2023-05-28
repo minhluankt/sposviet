@@ -49,6 +49,7 @@ namespace Application.Enums
         Delete = 6,//xóa hóa đơn khỏi hệ thống
         PublishEInvoiceMerge = 7,//phát hành gộp
         DeleteIsMerge = 8,//Xóa các hóa đơn lieine quan đã gộp
+        UpdateCustomer = 9,//update khách hàng
     }
     public enum ENumTypeCustomer
     {

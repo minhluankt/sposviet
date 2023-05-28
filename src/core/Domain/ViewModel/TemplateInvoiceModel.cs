@@ -56,9 +56,9 @@ namespace Domain.ViewModel
         ////
         public string lienhehotline { get; set; }//là đơn vị cung cấp giả pháp sposviet
         //
-        public string UrlDomain { get; set; }//thong tin tra cứu hóa đơn
-        public string Fkey { get; set; }//mã tra cứu
-        public string MCQT { get; set; }//mã cơ quan thuế
+        public string linktracuu { get; set; }//thong tin tra cứu hóa đơn
+        public string matracuu { get; set; }//mã tra cứu
+        public string macoquanthue { get; set; }//mã cơ quan thuế
         public EnumTypeTemplatePrint TypeTemplatePrint { get; set; }
 
     }

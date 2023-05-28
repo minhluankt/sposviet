@@ -147,8 +147,6 @@ namespace SposVietPlugin_net_4._6._1
                 LogControl.Write(e.ToString());
                 throw new Exception("IN thất bại", e);
             }
-
-
         }
         private static byte[] ImageToByteArray(
             System.Drawing.Image imageIn,

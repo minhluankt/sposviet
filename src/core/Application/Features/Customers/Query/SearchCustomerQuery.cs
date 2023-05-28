@@ -50,7 +50,7 @@ namespace Application.Features.Customers.Query
             var datalist = _repository.GetAllQueryable().AsNoTracking().Where(x => x.Comid == request.Comid);
             if (!string.IsNullOrEmpty(request.Name) && request.type ==AutocompleteTypeCustomer.NONE)
             {
-                datalist = datalist.Where(m => m.Name.ToLower().Contains(request.Name.ToLower()) || m.UserName.ToLower().Contains(request.Name.ToLower()) || m.Code.ToLower().Contains(request.Name.ToLower()));
+                datalist = datalist.Where(m => m.Name.ToLower().Contains(request.Name.ToLower()) || m.Taxcode.ToLower().Contains(request.Name.ToLower()) || m.Code.ToLower().Contains(request.Name.ToLower()));
             }
             else if (request.type == AutocompleteTypeCustomer.TAXCODE)
             {
