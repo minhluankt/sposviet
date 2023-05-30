@@ -42,6 +42,8 @@ using Application.CacheKeys;
 using X.PagedList;
 using Spire.Doc;
 using static System.Data.Entity.Infrastructure.Design.Executor;
+using AspNetCoreHero.Abstractions.Repository;
+using Telegram.Bot.Types;
 
 namespace Infrastructure.Infrastructure.Repositories
 {
@@ -62,6 +64,7 @@ namespace Infrastructure.Infrastructure.Repositories
         private readonly IVNPTPortalServiceRepository _vnptportalrepository;
         private readonly ISupplierEInvoiceRepository<SupplierEInvoice> _supplierEInvoicerepository;
         private readonly IRepositoryAsync<EInvoice> _repository;
+        private readonly IRepositoryAsync<EInvoiceItem> _einvoiceitemrepository;
         private readonly IRepositoryAsync<Invoice> _Invoicerepository;
         private readonly IRepositoryAsync<HistoryEInvoice> _HistoryEInvoicerepository;
         private readonly ILogger<EInvoiceRepository> _log;
@@ -71,7 +74,7 @@ namespace Infrastructure.Infrastructure.Repositories
             IManagerInvNoRepository managerInvNoRepository, IVNPTBusinessServiceRepository vnptbusinessrepository,
             UserManager<ApplicationUser> userManager, IRepositoryAsync<Invoice> Invoicerepository,
                IRepositoryAsync<Customer> repositoryCusomer, IOptions<CryptoEngine.Secrets> config,
-        ISupplierEInvoiceRepository<SupplierEInvoice> supplierEInvoicerepository,
+        ISupplierEInvoiceRepository<SupplierEInvoice> supplierEInvoicerepository, IRepositoryAsync<EInvoiceItem> einvoiceitemrepository,
             IVNPTPublishServiceRepository vnptrepository, ILogger<EInvoiceRepository> log
             )
         {
@@ -88,6 +91,7 @@ namespace Infrastructure.Infrastructure.Repositories
             _repositoryCusomer = repositoryCusomer;
             _log = log;
             _supplierEInvoicerepository = supplierEInvoicerepository;
+            _einvoiceitemrepository = einvoiceitemrepository;
             _vnptrepository = vnptrepository;
             _repository = repository;
         }
@@ -2030,6 +2034,34 @@ namespace Infrastructure.Infrastructure.Repositories
         public async Task<List<EInvoice>> GetReportMonth(DateTime todate, DateTime enddate, int ComId)
         {
            return await _repository.Entities.Where(x=>x.ComId==ComId && x.CreatedOn >= todate && x.CreatedOn<enddate && x.InvoiceNo>0).ToListAsync();
+        }
+        public async Task<List<ReportMonthProductEInvoice>> GetReportMonthProduct(DateTime todate, DateTime enddate, int ComId)
+        {
+          
+            var InvoiceData = await _repository.Entities.Where(x => x.ComId == ComId && x.CreatedOn >= todate && x.CreatedOn < enddate && x.InvoiceNo > 0)
+                .Join(_einvoiceitemrepository.Entities, inv => inv.Id, einv => einv.IdInvoice, (invoice, einvitem) => new ReportMonthProductEInvoice()
+                {
+                    Patern = invoice.Pattern,
+                    Serial = invoice.Serial,
+                    InvoiceNo = invoice.InvoiceNo,
+                    Status = invoice.StatusEinvoice,
+                    SignDate = invoice.CreatedOn,
+                    Buyer = invoice.Buyer,
+                    CusName = invoice.CusName,
+                    Address = invoice.Address,
+                    TaxCode = invoice.CusTaxCode,
+                    Payment = invoice.PaymentMethod,
+                    ProductName = einvitem.ProName,
+                    ProductCode = einvitem.ProCode,
+                    ProductQuantity = einvitem.Quantity,
+                    ProductPrice = einvitem.Price,
+                    ProductUnit = einvitem.Unit,
+                    ProductTotal = einvitem.Total,
+                    ProductVATAmount = einvitem.VATAmount,
+                    ProductVATRate = einvitem.VATRate,
+                }).ToListAsync();
+
+            return InvoiceData;
         }
 
         public async Task SendCQTAutoAsync(List<HistoryAutoSendTimer> history,int[] lstPattern, int Comid, ENumSupplierEInvoice SupplierEInvoice)

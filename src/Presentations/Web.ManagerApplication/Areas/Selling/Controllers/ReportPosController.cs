@@ -10,7 +10,7 @@ using Domain.ViewModel;
 using Hangfire.MemoryStorage.Database;
 using HelperLibrary;
 using Infrastructure.Infrastructure.Identity.Models;
-
+using Library;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -274,7 +274,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             LoadViewbagProduct();
             return View();
         }
-        [Authorize(Policy = "reportPos.EInvoice")]
+        
         [HttpGet]
         public virtual ActionResult DownloadEInvoiceMonth(string fileGuid, string fileName)
         {
@@ -307,18 +307,33 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     // Do something to populate your workbook
 
                     // Generate a new unique identifier against which the file can be stored
-                    //string handle = Guid.NewGuid().ToString();
+                    string handle = Guid.NewGuid().ToString();
                     //using (MemoryStream memoryStream = new MemoryStream(_send.Data.dataExcel))
                     //{
-                    //    //workbook.SaveAs(memoryStream);
+                    //    _send.Data.dataExcel.SaveAs(memoryStream);
                     //    memoryStream.Position = 0;
                     //    TempData[handle] = memoryStream.ToArray();
                     //}
-                    //return Json(new { FileGuid = handle, FileName = "TestReportOutput.xlsx", isValid = true });
-                    return File(_send.Data.dataExcel, "application/vnd.ms-excel", "TestReportOutput.xlsx");
+                   
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        if (_send.Data.dataExcel.Length>0)
+                        {
+                           // TempData[handle] = _send.Data.dataExcel;
+                            return Json(new { FileGuid = handle, FileName = "EinvoiceReportOutput.xlsx", isValid = true,data = Convert.ToBase64String(_send.Data.dataExcel) });
+                        }
+                        _notify.Error(GeneralMess.ConvertStatusToString(_send.Message));
+                        return Json(new { isValid = false });
+                    }
+                    
+                   
+                    //return File(_send.Data.dataExcel, "application/vnd.ms-excel", "TestReportOutput.xlsx");
                 }
-
-                return  Json(new { isValid = false });
+                else
+                {
+                    _notify.Error(GeneralMess.ConvertStatusToString(_send.Message));
+                    return Json(new { isValid = false });
+                }
                 // Note we are returning a filename as well as the handle
 
             }
@@ -366,7 +381,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                             _notify.Error("Loại báo cáo không hợp lệ");
                             break;
                     }
-
                 }
                 return Json(new { isValid = false });
             }

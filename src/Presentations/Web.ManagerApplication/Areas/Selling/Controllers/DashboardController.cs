@@ -38,12 +38,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 var currentUser = User.Identity.GetUserClaimLogin();
                 // var currentUser = await _userManager.GetUserAsync(HttpContext.User);
                 DashboardModel model = new DashboardModel();
-                var getall = _repository.Entities.Where(x => x.ComId == currentUser.ComId);
-                var getallorder = _repositoryOrderTable.Entities.Where(x => x.ComId == currentUser.ComId);
+                var getall = _repository.Entities.AsNoTracking().Where(x => x.ComId == currentUser.ComId);
+                var getallorder = _repositoryOrderTable.Entities.AsNoTracking().Where(x => x.ComId == currentUser.ComId);
                 model.DOANHSO = await getall.Where(x => x.Status == Application.Enums.EnumStatusInvoice.DA_THANH_TOAN && x.CreatedOn.Date == DateTime.Now.Date).SumAsync(X => X.Amonut);
-                model.DOANHSOHOMQUA = getall.Where(x => x.Status == Application.Enums.EnumStatusInvoice.DA_THANH_TOAN && x.CreatedOn.Date == DateTime.Now.AddDays(-1).Date).Sum(X => X.Amonut);
+                model.DOANHSOHOMQUA = await getall.Where(x => x.Status == Application.Enums.EnumStatusInvoice.DA_THANH_TOAN && x.CreatedOn.Date == DateTime.Now.AddDays(-1).Date).SumAsync(X => X.Amonut);
                 model.DONDAXONG = await getall.Where(x => x.Status == Application.Enums.EnumStatusInvoice.DA_THANH_TOAN && x.CreatedOn.Date == DateTime.Now.Date).CountAsync();
-                model.DONDAXONGHOMQUA = getallorder.Where(x => x.Status == Application.Enums.EnumStatusOrderTable.DA_THANH_TOAN && x.CreatedOn.Date == DateTime.Now.AddDays(-1).Date).Count();
+                model.DONDAXONGHOMQUA = await getall.Where(x => x.Status == Application.Enums.EnumStatusInvoice.DA_THANH_TOAN && x.CreatedOn.Date == DateTime.Now.AddDays(-1).Date).CountAsync();
                 
                 var dondangpv = await getallorder.Where(x => x.Status == Application.Enums.EnumStatusOrderTable.DANG_DAT && x.CreatedOn.Date == DateTime.Now.Date).Select(x=>x.Amonut).ToListAsync();
                 model.DONDANGPHUCVU = dondangpv.Count();

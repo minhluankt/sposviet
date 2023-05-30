@@ -126,12 +126,7 @@
     <partial name="Admin/_Scripts" />
     <script src="~/js/custom/sposvietkyso.min.js?time=678"></script>
     <script>
-        eventConfigSaleParameters.getConfig().then(function(data){
-            if (data==true){
-                testConnetWebSocket();
-            }
-        });
-
+        loadcentChitkent.intEvent();
         document.onreadystatechange = function () {
             var state = document.readyState
             if (state == 'complete') {

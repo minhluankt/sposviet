@@ -111,6 +111,7 @@
     <Compile Include="Features\Invoices\Query\GetInvoiceByCodeQuery.cs" />
     <Compile Include="Features\Invoices\Query\PrintInvoicePos.cs" />
     <Compile Include="Features\Kitchens\Commands\UpdateNotifyChitkenCommand.cs" />
+    <Compile Include="Features\Kitchens\Querys\GetFoodConfirmationOrderQuery.cs" />
     <Compile Include="Features\Kitchens\Querys\GetOrderChitkenQuery.cs" />
     <Compile Include="Features\Kitchens\Querys\GetOrderChitkenTableQuery.cs" />
     <Compile Include="Features\Logs\Commands\AddActivityLog\AddActivityLogCommand.cs" />

@@ -919,6 +919,49 @@ var report = {
             }]
         });
 
+    },
+    getReportEinvoice: function () {
+       
+        $("#btnSearchEinvoice").click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                //cache: false,
+                type: "POST",
+                //contentType: 'application/json; charset=utf-8',
+                url: '/selling/reportpos/PostReportEInvoiceMonth',
+               // contentType: false,
+               // processData: false,
+                data: {
+                    TypeReportEInvoice: $("#typereportEinvoice").val(),
+                    rangesDate: $("#rangesDate").val(),
+                },
+                //contentType: false,
+               // contentType: 'application/json; charset=utf-8',
+               // processData: false,
+                dataType: 'json',
+                success: function (r) {
+                    if (!r.isValid) {
+                        return;
+                    }
+                    var bytes = Base64ToBytes(r.data);
+                    //Convert Byte Array to BLOB.
+                  //  var blob = new Blob([bytes], { type: "application/octetstream" });
+
+                    //Check the Browser type and download the File.
+                    var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = "applicationFileName.xlsx";
+                    link.click();
+
+                    link.remove();
+
+                },
+                error: function (error) {
+                    console.log(JSON.stringify(error));
+                }
+            });
+        })
     }
 }
 var dashboardreport = {

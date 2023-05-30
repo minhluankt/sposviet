@@ -18,25 +18,26 @@ namespace Domain.ViewModel
         public string productcode { get; set; }
         public string FromDate { get; set; }
         public string rangesDate { get; set; }
-        public DateTime? srartDate { 
+        public DateTime? srartDate {
             get {
                 if (!string.IsNullOrEmpty(rangesDate))
                 {
                     var splt = rangesDate.Split('-');
                     return LibraryCommon.ConvertStringToDateTime(splt[0]);
                 }
-                return  null;
+                return null;
             }
-        } 
-        public DateTime? endDate { 
+        }
+        public DateTime? endDate {
             get {
                 if (!string.IsNullOrEmpty(rangesDate))
                 {
                     var splt = rangesDate.Split('-');
                     return LibraryCommon.ConvertStringToDateTime(splt[1]);
                 }
-                return  null;
+                return null;
             }
+            set { }
         }
         public EnumTypeReportPos typeReportPos { get; set; }
         public EnumTypeReportProduct typeReportProduct { get; set; }
@@ -77,16 +78,16 @@ namespace Domain.ViewModel
     }
     public class ResponseReport
     {
-        public List<Product> Products { get; set;}
-        public EnumTypeReportPos TypeReportPos { get; set;}
-        public ReportPosModel ReportPosModel { get; set;}
-        public ReportHuyDon ReportHuyDon { get; set;}
-        public List<ReportXuatNhapTonKho> ReportXuatNhapTonKhos { get; set;}
-        public ReportHinhThucPhucVu ReportHinhThucPhucVu { get; set;}
-        public bool isShowChart { get; set;}
-        public byte[] dataExcel { get; set;}
+        public List<Product> Products { get; set; }
+        public EnumTypeReportPos TypeReportPos { get; set; }
+        public ReportPosModel ReportPosModel { get; set; }
+        public ReportHuyDon ReportHuyDon { get; set; }
+        public List<ReportXuatNhapTonKho> ReportXuatNhapTonKhos { get; set; }
+        public ReportHinhThucPhucVu ReportHinhThucPhucVu { get; set; }
+        public bool isShowChart { get; set; }
+        public byte[] dataExcel { get; set; }
     }
-    public class ReportPosModel{
+    public class ReportPosModel {
         public int InvoiceAll { get; set; }//tổng hóa đơn
         public int InvoiceCancel { get; set; }//tổng hóa đơn hủy
         public decimal Product { get; set; }//số lượng mặt hàng
@@ -127,7 +128,7 @@ namespace Domain.ViewModel
         public int InvoiceCancelCount { get; set; }//hủy hoặc hoàn tiền all
         public decimal Amount { get; set; }
         public decimal VATAmount { get; set; }
-    } 
+    }
     public class ItemReportProduct
     {
         public string ProductCode { get; set; }
@@ -141,7 +142,7 @@ namespace Domain.ViewModel
         public string Unit { get; set; }
         public decimal Quantity { get; set; }
     }
-     public class ItemReportProductDetailt : ItemReportProduct
+    public class ItemReportProductDetailt : ItemReportProduct
     {
         public string CreateDate { get; set; }
         public string Buyer { get; set; }
@@ -187,5 +188,27 @@ namespace Domain.ViewModel
         public int Hour { get; set; }
 
 
+    }
+
+    public class ReportMonthProductEInvoice{
+        public string Patern { get; set; }
+        public string Serial { get; set; }
+        public int InvoiceNo { get; set; }
+        public DateTime SignDate { get; set; }
+        public string CusName { get; set; }
+        public string Buyer { get; set; }
+        public string Payment { get; set; }
+        public string TaxCode { get; set; }
+        public string Address { get; set; }
+        public string ProductName { get; set; }
+        public string ProductCode { get; set; }
+        public string ProductUnit { get; set; }
+        public decimal ProductQuantity { get; set; }
+        public decimal ProductPrice { get; set; }
+        public float ProductVATRate { get; set; }
+        public decimal ProductTotal { get; set; }
+        public decimal ProductVATAmount { get; set; }
+        public string Note { get; set; }
+        public StatusEinvoice Status { get; set; }
     }
 }
