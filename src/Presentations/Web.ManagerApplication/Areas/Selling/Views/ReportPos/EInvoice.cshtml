@@ -10,7 +10,7 @@
     }
 </style>
 <div class="card mb-2">
-    <form asp-controller="ReportPos" method="post" asp-action="PostReportEInvoiceMonth">
+   
     <div class="card-body">
         <div class="row">
             <div class="col-md-3">
@@ -37,19 +37,23 @@
         </div>
     </div>
     <div class="card-footer text-center" style=" display: block;">
-        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearchEinvoice" type="button" data-style="expand-left">
+        <button class="mb-2 mr-2 btn btn-primary" id="btnSearchEinvoice" type="button" data-style="expand-left">
             <span class="ladda-label"><i class="fas fa-search mr-2"></i> Báo cáo</span>
             <span class="ladda-spinner"></span>
         </button>
     </div>
-    </form>
+    
 </div>
 
 @section Scripts
     {
+
+      <script src="~/js/custom/report.min.js?time=123"></script>
+  
         <script>
-        $("#btnSearchEinvoice").click(function(){
-            $(this).parents("form").submit();
+        report.getReportEinvoice();
+        //$("#btnSearchEinvoice").click(function(){
+           // $(this).parents("form").submit();
             //$.ajax({
             //    type: "GET",
             //    contentType: 'application/json',
@@ -71,7 +75,7 @@
             //        alert('Error: ' + textStatus + ' ' + errorThrown);
             //    }
             //})
-        })
+       // })
         $('#rangesDate').daterangepicker({
             ranges: {
                 'Hôm nay': [moment(), moment()],

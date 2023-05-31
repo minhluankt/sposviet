@@ -1,0 +1,38 @@
+﻿@model List<Domain.Entities.Kitchen>
+
+
+<div class="bodyListKitchenConfirm">
+    <div class="title-header">
+        <button class="btn-back"><i class="fas fa-arrow-left"></i></button>
+        <span>Xử lý món @Model.First()?.RoomTableName</span>
+    </div>
+    <div class="infoOrder">
+        <button class="btn-confirm btn btn-success"><i class="fas fa-check"></i> Đã chuyển khách</button>
+        <button class="btn-cancel btn btn-danger"><i class="fas fa-trash-alt"></i> Hủy món</button>
+    </div>
+    <ul class="list-food">
+        @foreach (var collection in Model.GroupBy(x => x.CreatedOn))
+        {
+            <div class="ele-time">
+                <span class="timecr">@collection.Key.ToString("dd/MM/yyyy HH:mm:ss")</span>
+            </div>
+            @foreach (var item in collection)
+            {
+                <li>
+                    <div class="content">
+                        <span>
+                            @item.ProName <b class="red">(@item.Quantity.ToString("#,0.##"))</b> - <i class="Cashername">@item.Cashername</i>
+                        </span>
+                        <small>
+                            @item.Note
+                        </small>
+                    </div>
+                    <div class="btn-actionconfirm">
+                        <button class="btn-action"><i class="fas fa-check text-success"></i></button>
+                     
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+</div>

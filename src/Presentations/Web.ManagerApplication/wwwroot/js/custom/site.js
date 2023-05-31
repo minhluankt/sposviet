@@ -7431,6 +7431,16 @@ var commonEventpost = {
     }
 }
 var loadcentChitkent = {
+    intEvent: function () {
+        eventConfigSaleParameters.getConfig().then(function (data) {
+            if (data == true) {
+                testConnetWebSocket();
+            }
+            setInterval(function () {
+                testConnetWebSocket();
+            }, 1200000);
+        });
+    },
     loadeventacceptAllnotify: function () {
         $("#next-allneworder").click(function () {
             let lstid = [];
@@ -8887,6 +8897,7 @@ var posStaff = {
                                 $(".actionstaff").find(".btn-removerOrder").remove();
                                 $(".actionstaff").find(".btn-historyOrder").remove();
                                 $(".actionstaff").find(".btn-changeTable").remove();
+                                $(".actionstaff").find(".btn-completeFoodOk").remove();
                             }
                         },
                         error: function (err) {
@@ -9040,6 +9051,7 @@ var posStaff = {
             $(".actionstaff").find(".btn-removerOrder").remove();
             $(".actionstaff").find(".btn-historyOrder").remove();
             $(".actionstaff").find(".btn-changeTable").remove();
+            $(".actionstaff").find(".btn-completeFoodOk").remove();
             if (loadOrder.data.active) {
                 posStaff.loadShowBtnRemoveAndHistoryorder();//show các button xóa đơn hay xem lịch sử món
                 $("#lst-roomandtable li.active").addClass("active");
@@ -9059,14 +9071,31 @@ var posStaff = {
         $(".actionstaff").find(".btn-removerOrder").remove();
         $(".actionstaff").find(".btn-historyOrder").remove();
         $(".actionstaff").find(".btn-changeTable").remove();
+        $(".actionstaff").find(".btn-completeFoodOk").remove();
         $(".actionstaff").append('<button type="button" class="btn-addNeworderStaff btn btn-primary"><i class="fas fa-plus"></i></button>')
         $(".actionstaff").append('<button type="button" class="btn-removerOrder btn btn-danger ml-2"><i class="fas fa-trash"></i></button>');
         $(".actionstaff").append('<button type="button" class="btn-historyOrder btn btn-info ml-2"><i class="fas fa-history"></i></button>');
         $(".actionstaff").append('<button type="button" class="btn-changeTable btn btn-primary ml-2"><i class="fas fa-table"></i></button>'); 
+        $(".actionstaff").append('<button type="button" class="btn-confirmationFoodOk btn btn-primary ml-2"><i class="fas fa-utensils"></i></button>'); 
+        posStaff.loadEventconfirmationDoneFood();//xác nhận món đã đưa khách xong
         posStaff.loadeventChangeTableOrder();
         posStaff.loadeventremoveOrder();
         posStaff.loadShowHistoryOrder();//sự kện xem lịch sử gọi món
     },//show button xóa đơn xem lịch sử món
+    loadEventconfirmationDoneFood: function () {
+        $(".btn-confirmationFoodOk").click(async function () {
+            let idOrder = $("#id-order").data("id");
+            const ipAPI = '/Selling/PosKitchen/GetFoodConfirmation?IdOrder=' + idOrder;
+            var loadhis = await axios.get(ipAPI);
+            if (loadhis.data.isValid) {
+                $("body").remove(".bodyListKitchenConfirm");
+                $("body").append(loadhis.data.data);
+                $(".btn-back").click(function () {
+                    $(this).parents(".bodyListKitchenConfirm").remove();
+                })
+            }
+        })
+    },//xác nhận món đã đưa khách xong
     loadeventChangeTableOrder: function () {
         $(".btn-changeTable").click(function () {
             $.ajax({
@@ -18811,7 +18840,7 @@ async function CheckExpired() {
                         }
                     } else if (getloca.numdate > 0) {
 
-                        let html = "<div class='ExpiredStort'><b class='red'>Hệ thống sắp hết hạn sử dụng, thời hạn còn " + getloca.numdate + " ngày, đến ngày: " + getloca.datesExpired + " </b> <i class='fas fa-sync-alt checkagin'></i> </div>";
+                        let html = "<div class='ExpiredStort'><b class='red'>Hệ thống sắp hết hạn sử dụng, thời hạn còn " + getloca.numdate + " ngày, đến ngày: " + getloca.datesExpired + " hệ thống sẽ tự động khóa</b> <i class='fas fa-sync-alt checkagin'></i> </div>";
                         if ($(".ExpiredStort").length > 0) {
                             $(".ExpiredStort").remove();
                         }

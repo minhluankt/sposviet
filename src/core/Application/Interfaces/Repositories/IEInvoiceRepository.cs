@@ -19,6 +19,7 @@ namespace Application.Interfaces.Repositories
         Task<IResult<string>> ConvertForStoreFkeyMutiInvoiceAsync(int[] lstid, int Comid, ENumTypePrint typePrint, string Carsher, string IdCarsher);
         Task<IResult<string>> ConvertForStoreFkeyAsync(int IdEInvoice, int Comid, string Carsher, string IdCarsher);
         Task<IResult<string>> GetHashTokenVNPTAsync(int[] lstid, int Comid);
+        Task<List<ReportMonthProductEInvoice>> GetReportMonthProduct(DateTime todate, DateTime enddate, int ComId);
         Task<IResult<string>> CheckConnectWebserviceAsync(string doamin, string userservice, string passservice, string useradmin, string passadmin);
         Task<IResult<PublishInvoiceModelView>> PublishInvoiceAsync(int[] lst, int ComId, string Carsher, string IdCarsher);
         Task<IResult<PublishInvoiceModelView>> SycnInvoiceAsync(int[] lst, int ComId, string Carsher, string IdCarsher, EnumTypeSyncEInvoice TypeSyncEInvoice);

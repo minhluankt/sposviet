@@ -93,7 +93,7 @@ table.dataTable > tbody > tr.child ul.dtr-details {
 
                 td {
                     border-top: none;
-                    overflow: hidden;
+                   // overflow: hidden;
                 }
             }
 
@@ -1988,7 +1988,6 @@ body#sellting-chitken-skin1 {
             right: 0;
             width: max-content;
             color: #000;
-
         }
     }
 
@@ -2006,17 +2005,20 @@ body#sellting-chitken-skin1 {
             //grid-template-columns: 20% 20% 20% 20%20%;
             height: calc(100vh - 100px);
             overflow: auto;
-            border-top: #ccc solid thin;
+            // border-top: #ccc solid thin;
             grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
 
             > li {
                 list-style: none;
                 color: #000;
-                border: #ccc solid thin;
+                // border: #ccc solid thin;
                 border-top: none;
                 border-left: none;
                 text-align: center;
-
+                margin: 5px;
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+                border-radius: 8px;
+                margin-top:0px;
                 .header-li {
                     font-size: 16px;
                     padding: 6px 5px;
@@ -2030,6 +2032,9 @@ body#sellting-chitken-skin1 {
                     &.tableError {
                         background-color: #9f1111;
                         color: #fff;
+                        border-top-left-radius: 8px;
+                        border-top-right-radius: 8px;
+
 
                         time.creareDatetable {
                         }
@@ -2072,10 +2077,18 @@ body#sellting-chitken-skin1 {
             display: flex;
             flex-direction: column;
             background-color: #0d80b3;
-            max-height: calc(100vh - 100px);
+            max-height: calc(100vh - 106px);
             overflow: auto;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            /* margin: 5px; */
+            border-radius: 8px;
+            margin-right: 5px;
 
             li {
+                &:first-child {
+                    border-top: none;
+                }
+
                 list-style: none;
                 color: #fff;
                 border-top: #ccc dashed thin;
@@ -4479,7 +4492,149 @@ span.discountAmountItemPro {
 .bodyorderstaff {
     background-color: #f5f6f9;
 }
+.bodyListKitchenConfirm {
+    position: fixed;
+    background-color: #fff;
+    width: 100%;
+    top: 0;
+    z-index: 10;
+    height: 100vh;
 
+    .infoOrder {
+        padding: 10px;
+        padding-bottom: 0;
+        font-size: 18px;
+    }
+
+    .title-header {
+        padding: 10px 5px;
+        background-color: #0b78d7;
+        position: relative;
+
+        .btn-back {
+            border: navajowhite;
+            background: transparent;
+            color: #fff;
+            font-size: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        span {
+            color: #fff;
+            position: absolute;
+            left: 0;
+            right: 0;
+            text-align: center;
+            margin: auto;
+            font-size: 18px;
+        }
+    }
+
+    ul.list-food {
+        padding: 10px 0px;
+
+        .ele-time {
+            text-align: center;
+            position: relative;
+
+            .timecr {
+                position: relative;
+                z-index: 1;
+                background: #fff;
+            }
+
+            &:after {
+                content: "";
+                width: 100%;
+                position: absolute;
+                height: 1px;
+                border: dashed #ddd 0.1px;
+                left: 0px;
+                top: 11px;
+            }
+        }
+
+        li {
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+            padding: 5px 10px;
+            margin: 10px;
+            border-radius: 6px;
+
+            .content {
+                display: flex;
+                flex-direction: column;
+
+                small {
+                    color: red;
+                    font-style: italic;
+                }
+
+                .Cashername {
+                    font-size: 11px
+                }
+            }
+
+            button {
+                border: none;
+                background: transparent;
+            }
+
+            .btn-action {
+                height: 33px;
+                width: 40px;
+            }
+
+            .btn-actionconfirm {
+                position: relative;
+
+                .lstbtn-action {
+                    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+                    margin-bottom:20px;
+                    border-radius:8px;
+                    position: absolute;
+                    right: 0;
+                    background: #fff;
+                    padding: 20px;
+                    z-index: 6;
+                    display: flex;
+                    flex-direction: column;
+                    width: max-content;
+
+                    button {
+                        text-align: left;
+
+                        i {
+                            margin-right: 10px;
+                        }
+                    }
+
+                    .btn-confirm {
+                        margin-bottom: 10px;
+
+                        i {
+                            color: #02b302;
+                        }
+                    }
+
+                    .btn-cancel {
+                        i {
+                            color: red
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 #orderstaff {
     .actionstaff {
         padding: 8px;
@@ -4636,6 +4791,7 @@ span.discountAmountItemPro {
                 display: flex;
                 flex-direction: column;
                 padding-left: 35px;
+                position: relative;
 
                 span {
                     font-size: 15px;
@@ -4643,6 +4799,11 @@ span.discountAmountItemPro {
 
                 span.name {
                     font-weight: bold;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
                 }
 
                 i {
@@ -4670,6 +4831,9 @@ span.discountAmountItemPro {
                         display: flex;
                         align-items: center;
                         gap: 5px;
+                        position: absolute;
+                        left: 96px;
+                        white-space: nowrap;
 
                         &:not(.active) {
                             span {

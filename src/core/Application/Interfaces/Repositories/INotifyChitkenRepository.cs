@@ -19,6 +19,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<int>> UpdateNotifyOrder(int Comid, Guid? IdOrder, Guid? IdKitchen, int? IdProduct, bool UpdateOne, EnumTypeNotifyKitchenOrder typeupdate, EnumStatusKitchenOrder Status, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC);
         IQueryable<Kitchen> GetAllNotifyOrder(int Comid, EnumStatusKitchenOrder status = EnumStatusKitchenOrder.MOI);
         Task<KitChenTableModel> GetAllNotifyOrderByTable(int Comid);
+        Task<List<Kitchen>> GetAllFoodNewByOrder(int Comid,Guid idOrder);
         Task<Kitchen> UpdateNotifyProcessingFood(int Comid,int IdChitKen,string StaffName, EnumStatusKitchenOrder status=EnumStatusKitchenOrder.Processing);
         Task<IResult<List<Kitchen>>> UpdateNotifyDoneByProduct(int Comid, int IdProduct, int Quantity);//Quantity để xác định là người nhấn với số lượng món dg hiển thị khi họ xem check đúng số lượng mới update, vì khi lúc nhân viên chọn báo bếp món mới, trùng với lúc bếp nhấn done thì dễ bị update all sản phẩm đó
         Task UpdateNotifyKitchenCancelAsync(int Comid, Guid IdOrder, int IdProduct, decimal Quantity, string CasherName, string IdCasher, bool removeAllfood = false);

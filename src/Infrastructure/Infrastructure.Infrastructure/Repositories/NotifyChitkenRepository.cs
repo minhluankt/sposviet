@@ -2177,30 +2177,7 @@ namespace Infrastructure.Infrastructure.Repositories
                             createDateTable = ordertable.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"),
                             createDateFood = kitchen.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"),
                         }).ToListAsync();
-            //var getorder = _ordertableRepository.Entities.Where(x => x.Status == EnumStatusOrderTable.DANG_DAT && x.ComId==Comid).ToList();
-            //var getorder2 = _kitchenRepository.Entities.Where(x => x.Status == EnumStatusKitchenOrder.MOI && x.ComId==Comid).ToList();
-           //cách này chạy lâu
-            //var query2 = (from ordertable in _ordertableRepository.Entities.Where(x=>x.Status==EnumStatusOrderTable.DANG_DAT)
-            //              join kitchen in _kitchenRepository.Entities on ordertable.IdRoomAndTableGuid
-            //             equals kitchen.IdRoomTable
-            //             where kitchen.Quantity > 0
-            //             select new OrderDetailByOrder
-            //             {
-            //                 orderCode = kitchen.OrderCode,
-            //                 quantity = kitchen.Quantity,
-            //                 Note = kitchen.Note,
-            //                 orderStaff = kitchen.Cashername,
-            //                 idRoomTable = kitchen.IdRoomTable,
-            //                 idOrder = kitchen.IdOrder,
-            //                 IdItemOrder = kitchen.IdItemOrder,
-            //                 idProduct = kitchen.IdProduct,
-            //                 tableName = kitchen.RoomTableName,
-            //                 proName = kitchen.ProName,
-            //                 proCode = kitchen.ProCode,
-            //                 createDate = ordertable.CreatedOn,
-            //                 createDateTable = ordertable.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"),
-            //                 createDateFood = kitchen.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss"),
-            //             }).ToList();
+        
             List<KitChenTableListModel> kitChenlistbyTableModel = new List<KitChenTableListModel>();
             //------xử lý gr theo bàn
             var grbytable = query.GroupBy(x => x.idOrder);//idRoomTable theo đơn k nên theo bàn
@@ -2311,6 +2288,11 @@ namespace Infrastructure.Infrastructure.Repositories
                 return await Result<List<Kitchen>>.SuccessAsync(getupdate);
             }
             return await Result<List<Kitchen>>.FailAsync($"Số lượng món cần chuyển trạng thái đã xong là {Quantity}, không khớp với số lượng hiện có là {string.Format("{0:0.###}", getupdate.Sum(x => x.Quantity))}");
+        }
+
+        public async Task<List<Kitchen>> GetAllFoodNewByOrder(int Comid, Guid idOrder)
+        {
+            return await _kitchenRepository.Entities.AsNoTracking().Where(x => x.ComId == Comid && x.IdOrder == idOrder && x.Status==EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.Processing).ToListAsync();
         }
 
         //public Task UpdateNotifyKitchenSpitOrderIsCreateOrderAsync(Guid IdOrder, List<OrderTableItem> lstorderold, int ComId, OrderTable newOrder)

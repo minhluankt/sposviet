@@ -1,4 +1,5 @@
 ﻿using Application.Enums;
+using Application.Features.KitchenPos.Querys;
 using Application.Features.Kitchens.Commands;
 using Application.Features.Kitchens.Querys;
 using Application.Hepers;
@@ -49,6 +50,44 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             if (getAll.Succeeded)
             {
                 var html = await _viewRenderer.RenderViewToStringAsync("ChitkenByRoom", getAll.Data);
+                return new JsonResult(new
+                {
+                    isValid = true,
+                    data = html
+                });
+            }
+            _notify.Error(GeneralMess.ConvertStatusToString(getAll.Message));
+            return new JsonResult(new
+            {
+                isValid = false
+            });
+
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetFoodConfirmationAsync(Guid? idorder)
+        {
+            if (idorder==null)
+            {
+                _notify.Error("Đơn đã bị xóa, hoặc đã thanh toán");
+                return new JsonResult(new
+                {
+                    isValid = false
+                });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var getAll = await _mediator.Send(new GetFoodConfirmationOrderQuery() { Comid = currentUser.ComId,idOrder = idorder.Value, Status = EnumStatusKitchenOrder.MOI });
+            if (getAll.Succeeded)
+            {
+                if (getAll.Data.Count()==0)
+                {
+                    _notify.Warning("Bàn chưa có món cần chế biến");
+                    return new JsonResult(new
+                    {
+                        isValid = false
+                    });
+                }
+                var html = await _viewRenderer.RenderViewToStringAsync("_FoodConfirmationOrder", getAll.Data);
                 return new JsonResult(new
                 {
                     isValid = true,
