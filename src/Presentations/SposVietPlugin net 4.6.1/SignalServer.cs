@@ -76,42 +76,12 @@ namespace SposVietPlugin_net_4._6._1
                 //domain = "https://localhost:7269";
                 var url = $"{domain}/Signal";
                 List<TimeSpan> timeSpans = new List<TimeSpan>();
-                timeSpans.Add(TimeSpan.FromSeconds(1));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
-                timeSpans.Add(TimeSpan.FromSeconds(3));
+                for (int i = 0; i < 100; i++)
+                {
+                    timeSpans.Add(TimeSpan.FromSeconds(1));
+                }
+               
+               
                 var connection = new HubConnectionBuilder()
                     .WithUrl(url)
                     .WithAutomaticReconnect(timeSpans.ToArray())

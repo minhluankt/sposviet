@@ -85,6 +85,9 @@ var sposvietplugin = {
            
                 //if (webSocket == null) {
                 timer = setTimeout(function () {
+                    var s = webSocket;
+                    webSocket = null;
+                   // s.close();
                     IdPort++;
                     sposvietplugin.againConnect(port, data, resolve);
                 }, timeOut);
