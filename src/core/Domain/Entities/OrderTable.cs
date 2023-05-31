@@ -52,10 +52,14 @@ namespace Domain.Entities
         public virtual RoomAndTable RoomAndTable { get; set; } // RoomAndTable
         [ForeignKey("IdPaymentMethod")]
         public virtual PaymentMethod PaymentMethod { get; set; } // trạng thái
+        [JsonIgnore]
         public virtual Invoice Invoice { get; set; } // trạng thái
+        [JsonIgnore]
         public virtual ICollection<OrderTableItem> OrderTableItems { get; set; } // trạng thái
+        [JsonIgnore]
         public virtual ICollection<HistoryOrder> HistoryOrders { get; set; } // trạng thái
         [NotMapped]
+        [JsonIgnore]
         public virtual List<NotifyOrderNewModel> NotifyOrderNewModels { get; set; } // để lưu in thông báo bếp
 
     }

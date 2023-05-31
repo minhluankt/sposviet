@@ -44,6 +44,10 @@ namespace Application.Features.OrderTablePos.Querys
                 roomAndTableModel = getAll;
                 if (getMangve.Count() > 0)
                 {
+                    //foreach (var item in getMangve)
+                    //{
+                    //    roomAndTableModel.Add(new RoomAndTableModel() { Idtable = item.IdRoomAndTableGuid, IsBringBack = true, IsOrder = true });
+                    //}
                     roomAndTableModel.Add(new RoomAndTableModel() { Idtable = Guid.NewGuid(), IsBringBack = true, IsOrder = true });
                 }
 

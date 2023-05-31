@@ -24,6 +24,7 @@ namespace Application.Features.Invoices.Commands
         public int ComId { get; set; }
         public int[] lstid { get; set; }
         public string CasherName { get; set; }
+        public string IdCasherName { get; set; }
         public string Note { get; set; }
         public EnumTypeEventInvoice TypeEventInvoice { get; set; }
     }

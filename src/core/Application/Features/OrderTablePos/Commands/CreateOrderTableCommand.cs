@@ -3,10 +3,12 @@ using AspNetCoreHero.Results;
 using AutoMapper;
 using Domain.Entities;
 using Domain.ViewModel;
+using Domain.XmlDataModel;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -137,6 +139,12 @@ namespace Application.Features.OrderTablePos.Commands
                 orderTableModel = request.orderTableModel;
                 orderTableModel.CreateDate = update.Data.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss");
                 orderTableModel.IsBringBack = update.Data.IsBringBack;
+                //--------xử lý giờ
+                DateTime today = DateTime.Now;
+                TimeSpan value = today.Subtract(update.Data.CreatedOn);
+                orderTableModel.TimeNumber = value.TotalSeconds;
+                //--------xử lý giờ
+
                 orderTableModel.IdGuid = update.Data.IdGuid;
                 orderTableModel.IdOrder = update.Data.Id;
                 orderTableModel.OrderCode = update.Data.OrderTableCode;

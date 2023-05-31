@@ -17,6 +17,8 @@
 
     }
     var listProduct = Model.Products.GroupBy(x => x.IdCategory).OrderByDescending(x=>x.Key).ToList();
+     var idtable = Context.Request.Query["idtable"].ToString();
+     var idOder = Context.Request.Query["idOder"].ToString();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -330,6 +332,8 @@
             </div><!-- modal-content -->
         </div><!-- modal-dialog -->
     </div><!-- modal -->
+    <input type="hidden" id="idtableClone" data-id="@idtable" value="@idtable"/>
+    <input type="hidden" id="idOderClone" data-id="@idOder"  value="@idOder"/>
     <div class="footer-pos">
         Liên hệ hỗ trợ: <a href="tel:0949906004">0949.906.004 Mr. Luận</a>
     </div>

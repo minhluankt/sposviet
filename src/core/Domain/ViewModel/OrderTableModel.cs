@@ -19,6 +19,7 @@ namespace Domain.ViewModel
         public string OrderCode { get; set; }// ví dụ OD-13
         public Guid? IdOrderItem { get; set; }// 
         public int ComId { get; set; }// 
+        public double TimeNumber { get; set; }// id của sản phẩm
         public int IdProduct { get; set; }// id của sản phẩm
         public string CreateDate { get; set; }// thời gian tạo
         public string ProductCode { get; set; }// id của sản phẩm

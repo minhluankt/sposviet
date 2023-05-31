@@ -213,9 +213,34 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 _notify.Error(e.Message);
                 return new JsonResult(new { isValid = false });
             }
-            
+
         }
- 
+        [EncryptedParameters("secret")]
+        public async Task<IActionResult> CloneOrder(Guid? id)
+        {
+            if (id==null)
+            {
+                _notify.Error("Không tìm thấy hóa đơn!");
+                return Json(new { isValid = false });
+            }
+            else
+            {
+                var currentUser = User.Identity.GetUserClaimLogin();
+                var response = await _mediator.Send(new CloneOrderCommand() { 
+                    ComId = currentUser.ComId,
+                    Id = id,
+                    CasherName= currentUser.FullName,
+                    IdCasherName= currentUser.Id});
+                if (response.Succeeded)
+                {
+                    _notify.Success("Sao chép thành công");
+                    return Json(new { isValid = true,idTabel = response.Data.IdRoomAndTableGuid,idOder = response.Data.IdGuid });
+                }
+                _notify.Error($"{response.Message}");
+                return new JsonResult(new { isValid = false });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> LoadAll(InvoiceModel model)
         {

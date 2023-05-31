@@ -6406,7 +6406,7 @@ var eventInvocie = {
                     else {
                         Swal.close();
                     }
-                    
+
                 },
                 error: function (err) {
                     console.log(err)
@@ -7071,7 +7071,7 @@ var eventInvocie = {
         //---------------------//
         let checkvatrate = parseInt($("#checkErrorVATRate").val());
         let vatrateModel = $("#checkErrorVATRate").data("rate");
-       
+
         $("#tableinvoicemerge").find("tbody").find("tr").each(function (index, element) {
             let typeProductCategory = parseInt($(this).find(".name").data("typeProductCategory")) || EnumTypeProductCategory.PRODUCT;
             let code = $(this).find(".code").text();
@@ -7081,9 +7081,9 @@ var eventInvocie = {
             let quantity = $(this).find(".quantity").text().replaceAll(",", "") || 0;
             let total = $(this).find(".total").text().replaceAll(",", "") || 0;
             let vatrate = NOVATRate;
-            let vatamount= 0;
+            let vatamount = 0;
             let amount = parseFloat(total);
-            
+
             if (checkvatrate > 0 && parseInt($(this).val()) != vatrateModel) {
                 vatrate = parseFloat($(this).find(".vatrate").text().replaceAll(",", "")) || 0;
                 vatamount = parseFloat($(this).find(".vatamount").text().replaceAll(",", "")) || 0;
@@ -7120,7 +7120,7 @@ var eventInvocie = {
         let vatrate = $("#checkErrorVATRate").data("rate");
 
         $("#Vatrate").change(function () {
-            if (checkvatrate >0 && parseInt($(this).val()) != vatrate) {
+            if (checkvatrate > 0 && parseInt($(this).val()) != vatrate) {
                 toastrcus.error("Thuế suất bạn chọn không khớp với thuế trong hàng hóa");
                 $("#Vatrate option[value='" + vatrate + "']").prop("selected", "selected");
                 return;
@@ -7196,6 +7196,57 @@ var eventInvocie = {
             }
         })
 
+    },
+    CloneToOrder: async function (url){
+        let ideinvoice = parseInt($(this).data("id"));
+        if (typeof ideinvoice != "undefined" && ideinvoice > 0) {
+            let title = "Hóa đơn này đã được phát hành hóa đơn điện tử, bạn có chắc chắn muốn sao chép thành đơn mới không?";
+            const { value: note } = await Swal.fire({
+                icon: 'warning',
+                title: title,
+                // showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Đồng ý sao chép',
+                cancelButtonText: 'Hủy bỏ',
+                // denyButtonText: `Don't save`,
+            }).then((result) => {
+
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        //global: false,
+                        url: url,
+                        data: {
+                        },
+                        success: function (res) {
+                            if (res.isValid) {
+                                window.location.href = "/Selling/Pos?idtable=" + res.idTabel + "&idOder=" + res.idOder;
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                }
+            })
+        } else {
+            $.ajax({
+                type: 'POST',
+                //global: false,
+                url: url,
+                data: {
+                },
+                success: function (res) {
+                    if (res.isValid) {
+                        window.location.href = "/Selling/Pos?idtable=" + res.idTabel + "&idOder=" + res.idOder;
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            });
+        }
     },
     DeleteIsMerge: async function (idinvoice) {
         let title = "Bạn có chắc chắn muốn xóa các hóa đơn đã gộp cho hóa đơn này không?";
@@ -7390,7 +7441,6 @@ var eventInvocie = {
     }
 }
 var commonEventpost = {
-
     addOrEditPostOnePgae: function (url) {
         $.ajax({
             type: 'GET',
@@ -13354,8 +13404,8 @@ var loadeventPos = {
     loadeventCoutUpTimes: function () {
         $("#lst-roomandtable .datetime").each(function (i, item) {
             //setInterval(countTimer, 1000);
-            var totalSeconds = parseInt($(item).data("time"));
-            if (typeof totalSeconds != "undefined" && totalSeconds > 0) {
+            var totalSeconds = parseInt(parseFloat($(item).data("time")));
+            if (typeof totalSeconds != "undefined" && totalSeconds >= 0) {
                 setInterval(function () {
                     ++totalSeconds;
                     var hour = Math.floor(totalSeconds / 3600);
@@ -13376,10 +13426,10 @@ var loadeventPos = {
     },
     loadeventCoutUpTime: async function (sel) {
         //$(sel).each(function (i, item) {
-            var totalSeconds = parseInt($(sel).data("time"));
+        var totalSeconds = parseInt(parseFloat($(sel).data("time")));
             
-            setInterval(countTimer, 1000);
-            function countTimer() {
+        if (typeof totalSeconds != "undefined" && totalSeconds >= 0) {
+            setInterval(function () {
                 ++totalSeconds;
                 var hour = Math.floor(totalSeconds / 3600);
                 var minute = Math.floor((totalSeconds - hour * 3600) / 60);
@@ -13391,8 +13441,9 @@ var loadeventPos = {
                 if (seconds < 10)
                     seconds = "0" + seconds;
                 $(sel).html(hour + ":" + minute + ":" + seconds);
-                
-            }
+            }, 1000);
+
+        }
        // });
     },
     eventRealtimeOrdertable: function (data) {
@@ -13468,7 +13519,8 @@ var loadeventPos = {
             $(".tab-content-order").find(".tab-pane.active").attr("data-id", data.IdGuid);
             loadeventPos.loadAmoutAndQuantity(data.Amount, data.Quantity);
             loadeventPos.loadEventClickIconAddAndMinus();//sự kiện kích vào icon
-            loadeventPos.loadAddOrRemoveCurentClassTable(true, data.createDate);// xem có sản phẩm thì add class curen table
+            
+            loadeventPos.loadAddOrRemoveCurentClassTable(true, data.TimeNumber);// xem có sản phẩm thì add class curen table
         // console.log(dataObject.IdOrderItem);
         }
        
@@ -13668,6 +13720,8 @@ var loadeventPos = {
             if (!$("#lst-roomandtable li.active").hasClass("CurentOrder")) {
                 $("#lst-roomandtable li.active").addClass("CurentOrder");// nếu theem sản phẩm thi active CurentOrder
                 $("#lst-roomandtable li.active").find(".datetime").data("time", createDate);// nếu theem sản phẩm thi active CurentOrder
+                //check đếm giờ
+                loadeventPos.loadeventCoutUpTime($("#lst-roomandtable li.active").find(".datetime"));
             }
         }
         loadeventPos.eventloadNumberStatusTable();
@@ -14856,6 +14910,8 @@ var loadeventPos = {
 
             if (typeof (Storage) !== "undefined") {
                 // Store
+               
+                let idtableClone = $("#idtableClone").data("id");
                 var _getActivetable = localStorage.getItem("activeTable");
                 if (!isNaN(parseInt(_getActivetable))) {
                     _getActivetable = parseInt(_getActivetable) + 1;
@@ -14863,8 +14919,20 @@ var loadeventPos = {
                         _getActivetable = 1;
                     }
                     // $("#lst-roomandtable li:nth-child(" + _getActivetable + ")").trigger('click'); // là số thì active cái đó
-                    let ele = $("#lst-roomandtable li:nth-child(" + _getActivetable + ")"); // là số thì active cái đó
-                    loadeventPos.loadDatatable(ele);
+                    if (idtableClone != "" && idtableClone != null) {
+
+                        let ele = $("#lst-roomandtable li:nth-child(" + _getActivetable + ")"); // là số thì active cái đó
+                        $("#lst-roomandtable li").map(function () {
+                            if ($(this).data("id") == idtableClone) {
+                                ele = $(this);
+                            }
+                        })
+                        loadeventPos.loadDatatable(ele);
+                    } else {
+                        let ele = $("#lst-roomandtable li:nth-child(" + _getActivetable + ")"); // là số thì active cái đó
+                        loadeventPos.loadDatatable(ele);
+                    }
+                 
 
                 } else {
                     // let ele = $("#lst-roomandtable li:nth-child(1)").trigger("click");// k thì phải active cái đầu
@@ -14970,7 +15038,23 @@ var loadeventPos = {
         loadeventPos.loadEventClose();
 
         loadeventPos.loadClicktabOrder();
-        $('#ul-tab-order a:first').trigger('click');
+
+        //------check clone để load đơn
+        let idtableClone = $("#idtableClone").data("id");//lấy đơn nếu có clone
+        if ($("#lst-roomandtable li.active").data("id") == idtableClone) {
+            let idOderClone = $("#idOderClone").data("id");//lấy đơn nếu có clone
+            if ($('#ul-tab-order a[data-id="' + idOderClone + '"]').length>0) {
+                $('#ul-tab-order a[data-id="' + idOderClone + '"]').trigger('click');
+            } else {
+                $('#ul-tab-order a:first').trigger('click');
+            }
+           
+        } else {
+            $('#ul-tab-order a:first').trigger('click');
+        }
+     
+       
+
         loadeventPos.loadAmoutAndQuantity();// load tong tien
         loadEventadmin.evnetFullscreen();// sự kiện full màn hình
         loadeventPos.eventLoadStaffOrder();//load nhân viên của đơn
@@ -16472,7 +16556,7 @@ var loadeventPos = {
                     let getIN = loadOrder.data.data.find(x => x.isBringBack);
                     if (typeof getIN != "undefined" && getIN.isOrder) {
                         $(this).addClass("CurentOrder");
-                        console.log(getIN.timeNumber);
+                        //console.log(getIN.timeNumber);
                         $(this).find(".datetime").data("time", getIN.timeNumber);
                         
                     }
@@ -16480,7 +16564,7 @@ var loadeventPos = {
                     let getIN = loadOrder.data.data.find(x => x.idtable == idData);
                     if (typeof getIN != "undefined" && getIN.isOrder) {
                         $(this).addClass("CurentOrder");
-                        console.log(getIN.timeNumber);
+                       // console.log(getIN.timeNumber);
                         $(this).find(".datetime").data("time", getIN.timeNumber);
                         
                     }

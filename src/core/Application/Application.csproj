@@ -102,6 +102,7 @@
     <Compile Include="Features\EInvoices\Query\GetDashboardQuery.cs" />
     <Compile Include="Features\EInvoices\Query\GetHashTokenQuery.cs" />
     <Compile Include="Features\EInvoices\Query\ViewInvoiceQuery.cs" />
+    <Compile Include="Features\Invoices\Commands\CloneOrderCommand.cs" />
     <Compile Include="Features\Invoices\Commands\PublishEInvoiceMergeCommand.cs" />
     <Compile Include="Features\Invoices\Commands\PublishInvoiceCommand.cs" />
     <Compile Include="Features\Invoices\Commands\UpdateInvoiceCommand.cs" />

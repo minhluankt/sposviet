@@ -12,6 +12,7 @@ using Hangfire.Logging;
 using HelperLibrary;
 using Infrastructure.Infrastructure.Identity.Models;
 using Infrastructure.Webservice.Repository.VNPT;
+using Joker.Extensions;
 using Library;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -1459,6 +1460,59 @@ namespace Infrastructure.Infrastructure.Repositories
                 return await Result<PublishInvoiceModelView>.FailAsync("Có lỗi khi cập nhật khách hàng: "+e.Message);
             }
             
+        }
+
+        public async Task<Result<OrderTable>> CloneOrder(Guid IdInvoice, int ComId, string IdCasherName, string CasherName)
+        {
+            var inv = await _invoiceRepository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.IdGuid == IdInvoice && x.ComId == ComId);
+            if (inv == null)
+            {
+                return await Result<OrderTable>.FailAsync("Không tìm thấy hóa đơn");
+            }
+            if (inv.IdOrderTable==null)
+            {
+                return await Result<OrderTable>.FailAsync("Không tìm thấy đơn hàng");
+            }
+            var getorder = await _orderTableRepository.Entities.AsNoTracking().Include(x=>x.OrderTableItems).SingleOrDefaultAsync(x => x.Id == inv.IdOrderTable);
+            if (getorder == null)
+            {
+                return await Result<OrderTable>.FailAsync("Không tìm thấy đơn hàng");
+            }
+            await _unitOfWork.CreateTransactionAsync();
+            try
+            {
+                var clone = getorder.CloneJson();
+                clone.Id = 0;
+                clone.IdGuid = Guid.NewGuid();
+                clone.Note = string.Empty;
+                clone.IdCasher = IdCasherName;
+                clone.CasherName = CasherName;
+                clone.PurchaseDate = null;
+                clone.Status = EnumStatusOrderTable.DANG_DAT;
+                clone.OrderTableItems = getorder.OrderTableItems;
+                clone.OrderTableItems.ForEach(x => { x.Id = 0; x.IdGuid = Guid.NewGuid(); x.IdOrderTable = 0;x.QuantityNotifyKitchen = 0;x.Note = string.Empty; });
+                var checkOrder = await _managerInvNoRepository.UpdateInvNo(ComId, ENumTypeManagerInv.OrderTable, false);
+                clone.OrderSort = checkOrder;
+                if (clone.TypeProduct == EnumTypeProduct.BAN_LE || clone.TypeProduct == EnumTypeProduct.TAPHOA_SIEUTHI)
+                {
+                    clone.OrderTableCode = $"HD-{clone.OrderSort}";
+                }
+                else
+                {
+                    clone.OrderTableCode = $"OD-{clone.OrderSort}";
+                }
+                await _orderTableRepository.AddAsync(clone);
+                await _unitOfWork.SaveChangesAsync(new CancellationToken());
+                await _unitOfWork.CommitAsync();
+                return await Result<OrderTable>.SuccessAsync(clone);
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e.ToString());
+                _unitOfWork.Rollback();
+                return await Result<OrderTable>.FailAsync(e.Message);
+            }
+           
         }
     }
 }
