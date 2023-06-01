@@ -7488,7 +7488,7 @@ var loadcentChitkent = {
             }
             setInterval(function () {
                 testConnetWebSocket();
-            }, 1200000);
+            }, 900000);
         });
     },
     loadeventacceptAllnotify: function () {
@@ -13719,6 +13719,10 @@ var loadeventPos = {
         } else {
             if (!$("#lst-roomandtable li.active").hasClass("CurentOrder")) {
                 $("#lst-roomandtable li.active").addClass("CurentOrder");// nếu theem sản phẩm thi active CurentOrder
+                $("#lst-roomandtable li.active").find(".datetime").unbind();
+                $("#lst-roomandtable li.active").find(".datetime").remove();
+                $("#lst-roomandtable li.active").append(`<span class="datetime"></span>`);
+
                 $("#lst-roomandtable li.active").find(".datetime").data("time", createDate);// nếu theem sản phẩm thi active CurentOrder
                 //check đếm giờ
                 loadeventPos.loadeventCoutUpTime($("#lst-roomandtable li.active").find(".datetime"));

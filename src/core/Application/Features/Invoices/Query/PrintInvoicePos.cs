@@ -26,6 +26,7 @@ namespace Application.Features.Invoices.Query
         public Guid Id { get; set; }
         public int ComId { get; set; }
         public bool IncludeCustomer { get; set; } = true;
+        public bool IncludeRoomAndTable { get; set; }
 
         public class PrintInvoicePosHandler : IRequestHandler<PrintInvoicePos, Result<string>>
         {
@@ -56,6 +57,9 @@ namespace Application.Features.Invoices.Query
                 if (query.IncludeCustomer)
                 {
                     Invoice = Invoice.Include(x => x.Customer);
+                } if (query.IncludeRoomAndTable)
+                {
+                    Invoice = Invoice.Include(x => x.RoomAndTable);
                 }
                 var InvoiceData = await Invoice.SingleOrDefaultAsync();
 
@@ -82,7 +86,7 @@ namespace Application.Features.Invoices.Query
                         cusPhone = InvoiceData.Customer?.PhoneNumber,
                         cusAddress = InvoiceData.Customer?.Address,
                         cuscode = InvoiceData.Customer?.Code,
-
+                        tenbanphong = InvoiceData.RoomAndTable != null ? InvoiceData.RoomAndTable.Name : "Mang về",
                         comname = !string.IsNullOrEmpty(company.Title) ? company.Title.Trim() : company.Name,
                         comaddress = company?.Address,
                         comphone = company?.PhoneNumber,

@@ -324,7 +324,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         public async Task<ActionResult> PrintInvoiceAsync(Guid id)
         {
             var currentUser = User.Identity.GetUserClaimLogin();
-            var response = await _mediator.Send(new PrintInvoicePos() { ComId = currentUser.ComId, Id = id });
+            var response = await _mediator.Send(new PrintInvoicePos() { ComId = currentUser.ComId, Id = id, IncludeRoomAndTable=true });
             if (response.Succeeded)
             {
                 return Json(new { isValid = true, html = response.Data });

@@ -88,7 +88,6 @@ namespace Application.Features.OrderTablePos.Commands
                     {
                         TemplateInvoiceParameter templateInvoiceParameter = new TemplateInvoiceParameter()
                         {
-                          
                             giovao = product.Data.Invoice.ArrivalDate.Value.ToString("dd/MM/yyyy HH:mm:ss"),
                             ngaythangnamxuat = product.Data.Invoice.PurchaseDate.Value.ToString("dd/MM/yyyy HH:mm:ss"),
                             TypeTemplatePrint = EnumTypeTemplatePrint.IN_BILL,
@@ -100,7 +99,7 @@ namespace Application.Features.OrderTablePos.Commands
                             cusPhone = product.Data.Invoice.PhoneNumber,
                             cusAddress = product.Data.Invoice.Address,
                             cuscode = product.Data.Invoice.CusCode,
-
+                            tenbanphong = product.Data.Invoice.RoomAndTable != null ? product.Data.Invoice.RoomAndTable.Name : "Mang về",
                             comname = !string.IsNullOrEmpty(company.Title)? company.Title.Trim(): company.Name,
                             comaddress = company?.Address,
                             comphone = company?.PhoneNumber,

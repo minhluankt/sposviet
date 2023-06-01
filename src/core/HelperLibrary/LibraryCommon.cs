@@ -614,6 +614,9 @@ namespace HelperLibrary
                             case "comaddress":
                                 comaddress = value;
                                 break;
+                            case "tenbanphong":
+                                tenbanphong = value;
+                                break;
                             case "buyer":
                                 buyer = value;
                                 break;

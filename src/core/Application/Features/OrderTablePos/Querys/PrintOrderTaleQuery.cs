@@ -41,7 +41,7 @@ namespace Application.Features.OrderTablePos.Querys
             }
             public async Task<Result<string>> Handle(PrintOrderTaleQuery query, CancellationToken cancellationToken)
             {
-                var product = await _repository.GetAllQueryable().AsNoTracking().Include(x => x.OrderTableItems).Include(x => x.Customer).SingleOrDefaultAsync(x => x.ComId == query.Comid && x.IdGuid== query.IdOrder);
+                var product = await _repository.GetAllQueryable().AsNoTracking().Include(x => x.OrderTableItems).Include(x => x.Customer).Include(x => x.RoomAndTable).SingleOrDefaultAsync(x => x.ComId == query.Comid && x.IdGuid== query.IdOrder);
 
                 CompanyAdminInfo company = _companyProductRepository.GetCompany(query.Comid);
                 TemplateInvoice templateInvoice = await _templateInvoicerepository.GetTemPlate(query.Comid,EnumTypeTemplatePrint.IN_TAM_TINH);
@@ -71,6 +71,7 @@ namespace Application.Features.OrderTablePos.Querys
                         cusPhone = product.Customer?.PhoneNumber,
                         cusAddress = product.Customer?.Address,
                         cuscode = product.Customer?.Code,
+                        tenbanphong = product.RoomAndTable!=null? product.RoomAndTable.Name:"Mang về",
 
                         comname = !string.IsNullOrEmpty(company.Title) ? company.Title.Trim() : company.Name,
                         comaddress = company?.Address,
@@ -84,6 +85,7 @@ namespace Application.Features.OrderTablePos.Querys
                         //khachthanhtoan = product.AmountCusPayment?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         //tienthuatrakhach = product.AmountChangeCus?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                     };
+
                     bool IsProductVAT = false;
                    
                     var neworderitem = new List<OrderTableItem>();
