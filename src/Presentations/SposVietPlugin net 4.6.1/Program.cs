@@ -67,7 +67,7 @@ namespace SposVietPlugin_net_4._6._1
                 //chen gia tri key
                 regkey.SetValue("Index", keyvalue);
                 //registryKey.SetValue("SposVietKySo", "");
-                registryKey.SetValue("SPOSVIET_PLUGIN", $"\"{Application.StartupPath}SposVietPlugin4.6.1.exe\"");
+                registryKey.SetValue("SPOSVIET_PLUGIN", $"\"{Application.StartupPath}\\SposVietPlugin4.6.1.exe\"");
                 //registryKey.SetValue("SPOSVIET-PLUGIN", Application.StartupPath + "SposVietPlugin_net_4._6._1.exe");
 
             }
