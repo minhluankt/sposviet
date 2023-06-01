@@ -335,14 +335,16 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [HttpPost]
         [EncryptedParameters("secret")]
         [Authorize(Policy = "invoice.cancel")]
-        public async Task<ActionResult> CancelInvoiceAsync(Guid id, EnumTypeEventInvoice TypeEventInvoice,string Note)
+        public async Task<ActionResult> CancelInvoiceAsync(Guid id, EnumTypeEventInvoice TypeEventInvoice,string Note, bool IsDeletePT = false)
         {
             var currentUser = User.Identity.GetUserClaimLogin();
             if (string.IsNullOrEmpty(Note))
             {
                 _notify.Error("Vui lòng nhập lý do");
             }
-            var response = await _mediator.Send(new UpdateInvoiceCommand() { CasherName= currentUser.FullName, ComId = currentUser.ComId, Id = id, Note= Note, TypeEventInvoice = TypeEventInvoice });
+            var response = await _mediator.Send(new UpdateInvoiceCommand() { CasherName= currentUser.FullName,
+                IsDeletePT = IsDeletePT,
+                ComId = currentUser.ComId, Id = id, Note= Note, TypeEventInvoice = TypeEventInvoice });
             if (response.Succeeded)
             {
                 _notify.Success("Hủy bỏ thành công: " + response.Message);

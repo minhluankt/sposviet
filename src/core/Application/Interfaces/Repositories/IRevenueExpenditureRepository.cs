@@ -12,5 +12,7 @@ namespace Application.Interfaces.Repositories
         IQueryable<RevenueExpenditure> GetAllAsync();
         Task AddAsync(T entity);
         Task DeleteAsync(int IdInvoice, int ComId);
+        Task CancelAsync(int IdInvoice, int ComId);
+        Task RestoreAsync(int IdInvoice, int ComId);
     }
 }

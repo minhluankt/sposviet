@@ -10,7 +10,7 @@ namespace Application.Interfaces.Repositories
 {
     public interface IInvoicePepository<T> where T : class
     {
-        Task<Result<PublishInvoiceModelView>> CancelInvoice(Guid IdInvoice,int ComId,string CasherName,string Note, EnumTypeEventInvoice type);
+        Task<Result<PublishInvoiceModelView>> CancelInvoice(Guid IdInvoice,int ComId,string CasherName,string Note, EnumTypeEventInvoice type, bool IsDeletePT = false);
         Task<Result<PublishInvoiceModelView>> UpdateCustomerInvoice(Guid IdInvoice,int ComId,int IdCustomer,string CasherName);
         Task<Result<OrderTable>> CloneOrder(Guid IdInvoice, int ComId, string IdCasherName, string CasherName);
         Task<Result<PublishInvoiceModelView>> DeleteIsMergeInvoice(Guid IdInvoice,int ComId,string CasherName);

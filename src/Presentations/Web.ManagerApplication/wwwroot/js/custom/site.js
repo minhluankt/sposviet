@@ -6447,63 +6447,73 @@ var eventInvocie = {
                         // showDenyButton: true,
                         showCancelButton: true,
                         confirmButtonText: 'Đồng ý',
-                        cancelButtonText: 'Không, chỉ hủy hóa đơn',
+                        showDenyButton: true,
+                        denyButtonText: `Không, chỉ hủy hóa đơn`,
+                        cancelButtonText: 'Hủy bỏ không thực hiện',
                     }).then((result2) => {
                         let DeletePT = false;
+                        let Cancel = false;
                         if (result2.isConfirmed) {
                             DeletePT = true;
+                        } else if (result.isDenied) {
+                            DeletePT = false;
+                        } else {
+                            Cancel = true;
                         }
-                        $.ajax({
-                            type: 'POST',
-                            //global: false,
-                            url: '/Selling/Invoice/CancelInvoiceList',
-                            data: {
-                                lstid: lstid,
-                                Note: notevalue,
-                                IsDeletePT: DeletePT,
-                            },
-                            success: function (res) {
-                                if (res.isValid) {
-                                    dataTableOut.ajax.reload(null, false);
-                                    Swal.close();
-                                    title = "Hủy hóa đơn";
-                                    Swal.fire({
-                                        // icon: 'success',
-                                        position: 'center',
-                                        showClass: {
-                                            popup: `popup-formcreate eventpublisinvoice`
-                                        },
+                        if (!Cancel) {
+                            $.ajax({
+                                type: 'POST',
+                                //global: false,
+                                url: '/Selling/Invoice/CancelInvoiceList',
+                                data: {
+                                    lstid: lstid,
+                                    Note: notevalue,
+                                    IsDeletePT: DeletePT,
+                                },
+                                success: function (res) {
+                                    if (res.isValid) {
+                                        dataTableOut.ajax.reload(null, false);
+                                        Swal.close();
+                                        title = "Hủy hóa đơn";
+                                        Swal.fire({
+                                            // icon: 'success',
+                                            position: 'center',
+                                            showClass: {
+                                                popup: `popup-formcreate eventpublisinvoice`
+                                            },
 
-                                        showCloseButton: true,
+                                            showCloseButton: true,
 
-                                        title: title,
-                                        html: res.html,
-                                        //showClass: {
-                                        //    popup: 'popup-formcreate'
-                                        //},
+                                            title: title,
+                                            html: res.html,
+                                            //showClass: {
+                                            //    popup: 'popup-formcreate'
+                                            //},
 
-                                        // footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
-                                        allowOutsideClick: true,
-                                        showConfirmButton: false,
-                                        showCancelButton: true,
-                                        cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
-                                        didRender: () => {
+                                            // footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                                            allowOutsideClick: true,
+                                            showConfirmButton: false,
+                                            showCancelButton: true,
+                                            cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                                            didRender: () => {
 
-                                            $(".btn-continue").click(function () {
-                                                Swal.close();
-                                            });
-                                            $("#accordionkqpubinv a.text-dark").click(function () {
-                                                alert("ok");
-                                            });
+                                                $(".btn-continue").click(function () {
+                                                    Swal.close();
+                                                });
+                                                $("#accordionkqpubinv a.text-dark").click(function () {
+                                                    alert("ok");
+                                                });
 
-                                        }
-                                    });
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function (err) {
+                                    console.log(err)
                                 }
-                            },
-                            error: function (err) {
-                                console.log(err)
-                            }
-                        });
+                            });
+                        }
+                        
                     })
                 }
             })
@@ -7155,8 +7165,10 @@ var eventInvocie = {
     },
     CancelInvoice: async function (idinvoice, TypeEventInvoice) {
         let title = "Bạn có chắc chắn muốn hủy hóa đơn không?";
+        let titlephieuthu = "Bạn có muốn hủy phiếu thu liên quan không!";
         if (TypeEventInvoice == EnumTypeEventInvoice.Restore) {
             title = "Bạn có chắc chắn muốn khôi phục đơn không?";
+            titlephieuthu = "Bạn có muốn khôi phục lại phiếu thu liên quan không!";
         }
         const { value: note } = await Swal.fire({
             icon: 'warning',
@@ -7173,25 +7185,48 @@ var eventInvocie = {
                     return 'Vui lòng nhập lý do!'
                 }
             }
-        }).then((result) => {
+        }).then(async (result) => {
 
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                $.ajax({
-                    type: 'POST',
-                    //global: false,
-                    url: '/Selling/Invoice/CancelInvoice?secret=' + idinvoice,
-                    data: {
-                        TypeEventInvoice: TypeEventInvoice,
-                        Note: result.value,
-                    },
-                    success: function (res) {
-                        if (res.isValid) {
-                            dataTableOut.ajax.reload(null, false);
-                        }
-                    },
-                    error: function (err) {
-                        console.log(err)
+
+                await Swal.fire({
+                    icon: 'warning',
+                    title: titlephieuthu,
+                    showCancelButton: true,
+                    confirmButtonText: 'Đồng ý',
+                    showDenyButton: true,
+                    denyButtonText: `Không, chỉ hủy hóa đơn`,
+                    cancelButtonText: 'Hủy bỏ không thực hiện',
+                }).then((result2) => {
+                    let DeletePT = false;
+                    let Cancel = false;
+                    if (result2.isConfirmed) {
+                        DeletePT = true;
+                    } else if (result.isDenied) {
+                        DeletePT = false;
+                    } else {
+                        Cancel = true;
+                    }
+                    if (!Cancel) {
+                        $.ajax({
+                            type: 'POST',
+                            //global: false,
+                            url: '/Selling/Invoice/CancelInvoice?secret=' + idinvoice,
+                            data: {
+                                TypeEventInvoice: TypeEventInvoice,
+                                Note: result.value,
+                                IsDeletePT: DeletePT,
+                            },
+                            success: function (res) {
+                                if (res.isValid) {
+                                    dataTableOut.ajax.reload(null, false);
+                                }
+                            },
+                            error: function (err) {
+                                console.log(err)
+                            }
+                        });
                     }
                 });
             }

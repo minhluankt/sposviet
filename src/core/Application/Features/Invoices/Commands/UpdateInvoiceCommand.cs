@@ -60,7 +60,7 @@ namespace Application.Features.Invoices.Commands
             }
             else if(command.lstid!=null && command.lstid.Count()>0)
             {
-                return await _Repository.CancelInvoice(command.lstid, command.ComId, command.CasherName, command.Note, command.TypeEventInvoice, command.IsDelete);
+                return await _Repository.CancelInvoice(command.lstid, command.ComId, command.CasherName, command.Note, command.TypeEventInvoice, command.IsDelete, command.IsDeletePT);
 
             }
             else
@@ -69,7 +69,7 @@ namespace Application.Features.Invoices.Commands
                 {
                     return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR000);
                 }
-                return await _Repository.CancelInvoice(command.Id.Value, command.ComId, command.CasherName, command.Note, command.TypeEventInvoice);
+                return await _Repository.CancelInvoice(command.Id.Value, command.ComId, command.CasherName, command.Note, command.TypeEventInvoice, command.IsDeletePT);
                 
             }
           

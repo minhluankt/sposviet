@@ -152,7 +152,7 @@ namespace Infrastructure.Infrastructure.Repositories
             return data;
         }
 
-        public async Task<Result<PublishInvoiceModelView>> CancelInvoice(Guid IdInvoice, int ComId, string CasherName, string Note, EnumTypeEventInvoice TypeEventInvoice)
+        public async Task<Result<PublishInvoiceModelView>> CancelInvoice(Guid IdInvoice, int ComId, string CasherName, string Note, EnumTypeEventInvoice TypeEventInvoice, bool IsDeletePT = false)
         {
             await _unitOfWork.CreateTransactionAsync();
             try
@@ -175,17 +175,29 @@ namespace Infrastructure.Infrastructure.Repositories
                     _invoice.Status = EnumStatusInvoice.HUY_BO;
                     _invoice.Note = $"{Note}, Thời gian {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}";
                     his.Name = $"Đã hủy hóa đơn bởi {CasherName}, lý do: {Note}";
-
+                    if (IsDeletePT)//update hủy thôi
+                    {
+                        //có xóa phiếu thu liên quan, lưu ý trường hợp đã trả hàng thì k cho xóa hóa đơn này,điều chỉnh sau
+                        await _revenueExpenditureRepository.CancelAsync(_invoice.Id, _invoice.ComId);
+                    }
                 }
                 else if (TypeEventInvoice == EnumTypeEventInvoice.Restore)
                 {
                     _invoice.Status = EnumStatusInvoice.DA_THANH_TOAN;
                     his.Name = $"Đã khôi phục lại hóa đơn bởi {CasherName}, lý do: {Note}";
+
+                    if (IsDeletePT)//update  thôi
+                    {
+                        //có xóa phiếu thu liên quan, lưu ý trường hợp đã trả hàng thì k cho xóa hóa đơn này,điều chỉnh sau
+                        await _revenueExpenditureRepository.RestoreAsync(_invoice.Id, _invoice.ComId);
+                    }
                 }
                 else
                 {
                     return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR042);
                 }
+
+               
                 //add his
                 await _historyInvoiceRepository.AddAsync(his);
 
@@ -689,8 +701,8 @@ namespace Infrastructure.Infrastructure.Repositories
                             });
                             if (IsDeletePT)
                             {
-                                //có xóa phiếu thu liên quan, lưu ý trường hợp đã trả hàng thì k cho xóa hóa đơn này
-                                await _revenueExpenditureRepository.DeleteAsync(_invoice.Id, _invoice.ComId);
+                                //có hủy phiếu thu liên quan, lưu ý trường hợp đã trả hàng thì k cho xóa hóa đơn này
+                                await _revenueExpenditureRepository.CancelAsync(_invoice.Id, _invoice.ComId);
                             }
                             _invoice.Note += $"{Note}, Thời gian {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}";
                             //add his

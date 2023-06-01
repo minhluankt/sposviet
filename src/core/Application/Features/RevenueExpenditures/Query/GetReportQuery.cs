@@ -54,7 +54,7 @@ namespace Application.Features.RevenueExpenditures.Query
 
         public async Task<Result<ReportRevenueExpenditureModel>> Handle(GetReportRevenueExpenditureQuery request, CancellationToken cancellationToken)
         {
-            IQueryable<RevenueExpenditure> lst = _repository.GetAllQueryable().Where(x => x.ComId == request.ComId).AsNoTracking();
+            IQueryable<RevenueExpenditure> lst = _repository.Entities.Where(x => x.ComId == request.ComId && x.Status==EnumStatusRevenueExpenditure.HOANTHANH).AsNoTracking();
         
             if (!string.IsNullOrEmpty(request.RangesDate))
             {
