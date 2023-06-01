@@ -14,6 +14,7 @@
 //        //cancelButton: 'your-cancel-button-class',
 //        footer: 'footer-Swal'
 //},
+var handleInterval;
 var dataTableOut;
 var dataTable;
 var ProductsArrays = "ProductsArrays";
@@ -7482,14 +7483,19 @@ var commonEventpost = {
 }
 var loadcentChitkent = {
     intEvent: function () {
+        
         eventConfigSaleParameters.getConfig().then(function (data) {
             if (data == true) {
+                localStorage.setItem("IsPrintBepLoca",1);
                 testConnetWebSocket();
             }
-            setInterval(function () {
-                testConnetWebSocket();
-            }, 900000);
+			loadcentChitkent.setIntervalConnectApp();
         });
+    },
+    setIntervalConnectApp: function () {
+        handleInterval = setInterval(function () {
+            testConnetWebSocket();
+        }, 300000);//5 phút
     },
     loadeventacceptAllnotify: function () {
         $("#next-allneworder").click(function () {
@@ -15822,6 +15828,12 @@ var loadeventPos = {
                             if (data == "-1") {
                                 toastrcus.error("Có lỗi xảy raaaaaaaa");
                             }
+                            clearInterval(handleInterval);
+                            let getcheckcon = localStorage.getItem("IsPrintBepLoca");
+                            if (typeof getcheckcon != "undefined" && getcheckcon != null) {
+                                //console.log("chạy lại: " + moment().format('DD/MM/YYY HH:mm:ss'))
+                                loadcentChitkent.setIntervalConnectApp();
+                            }
                         });
                     });
     },
@@ -18907,7 +18919,9 @@ function checkautido() {
     })
 }
 function testConnetWebSocket() {
+
     sposvietplugin.sendConnectSocket(listport[0]).then(function (data) {
+        console.log(moment().format('DD/MM/YYYY HH:mm:ss'));
         console.log(data);
     });
 }
