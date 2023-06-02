@@ -18965,10 +18965,9 @@ async function CheckExpired() {
         let getloca = localStorage.getItem("CheckExpired");
         if (typeof (getloca) !== "undefined" && getloca != null) {
             getloca = JSON.parse(getloca);
-
             var date = moment(getloca.date, 'DD/MM/YYYY HH:mm');
-            let getdate = date.format("DD-MM-YYYY");
-            if (getdate == moment().format("DD-MM-YYYY")) {
+            let getdate = parseInt(date.format("DD-MM-YYYY").replaceAll("-", ""));
+            if (getdate == parseInt(moment().format("DD-MM-YYYY").replaceAll("-", ""))) {
                 if (getloca.IsExpired) {
                     if (getloca.numdate == 0) {
                         let getlogout = await axios.get("/Identity/Account/logout");
@@ -19020,7 +19019,7 @@ async function getCheckExpired() {
             data.numdate = getCustomre.data.numdate;
             data.datesExpired = getCustomre.data.datesExpired;
             data.IsExpired = getCustomre.data.isExpired;
-            localStorage.setItem("CheckExpired", JSON.stringify(data)); // tham số active table
+            localStorage.setItem("CheckExpired", JSON.stringify(data)); 
             CheckExpired();
             // Retrieve
         } else {
