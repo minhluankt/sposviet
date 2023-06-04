@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Repositories;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SmartBreadcrumbs.Attributes;

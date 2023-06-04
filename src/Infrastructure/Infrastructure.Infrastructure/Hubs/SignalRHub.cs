@@ -1,8 +1,9 @@
 ﻿using Application.Enums;
 using Application.Hepers;
+using Domain.Identity;
 using FluentValidation.Results;
 using Hangfire.Storage;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,7 @@ namespace Infrastructure.Infrastructure.HubS
             _httpcontext = httpcontext;
         }
         public static List<KeyValuePair<string, string>> Ids = new List<KeyValuePair<string, string>>();
+        //https://www.hieutech.vn/2022/09/gioi-thieu-ve-realtime-voi-signalr-trong-net-core.html
         public override async Task OnConnectedAsync()
         {
             //using (var scope = _serviceProvider.CreateScope())
@@ -44,12 +46,23 @@ namespace Infrastructure.Infrastructure.HubS
                 if (currentUser != null)
                 {
                     isreconncet = true;
-                    string _Groupbep = $"{currentUser.ComId}_CHITCHEN";
-                    checkExitRoomChitchen(Context.ConnectionId, _Groupbep);
-
-                    string _Group = $"{currentUser.ComId}_POS";
-                    checkExitRoomChitchen(Context.ConnectionId, _Group);
-                    await this.LoadOrdertable(EnumTypePrint.TEST, "reconcect LoadOrdertable");
+                    if (currentUser.IsBep || currentUser.IsAdmin)
+                    {
+                        string _Groupbep = $"{currentUser.ComId}_CHITCHEN";
+                        checkExitRoomChitchen(Context.ConnectionId, _Groupbep);
+                    }
+                    if (currentUser.IsPhucVu || currentUser.IsAdmin|| currentUser.IsBep)
+                    {
+                        string _Groupbep = $"{currentUser.ComId}_StaffAlertBep";
+                        checkExitRoomChitchen(Context.ConnectionId, _Groupbep);
+                    }
+                    if (currentUser.IsThuNgan || currentUser.IsAdmin)
+                    {
+                        string _Group = $"{currentUser.ComId}_POS";
+                        checkExitRoomChitchen(Context.ConnectionId, _Group);
+                        await this.LoadOrdertable(EnumTypePrint.TEST, "reconcect LoadOrdertable");
+                    }
+                   
                     await Printbaobep("reconcect Printbaobep", "TEST");
                     await PrintbaobepSposViet(currentUser.ComId, "TEST");
                     isreconncet = false;
@@ -111,26 +124,30 @@ namespace Infrastructure.Infrastructure.HubS
         public async Task Printbaobep(string data,string text= "IN")//dành cho phương án 1
         {
             var currentUser = Context.User.Identity.GetUserClaimLogin();
-            string _Group = $"{currentUser.ComId}_Printbaobep";
-            checkExitRoomChitchen(Context.ConnectionId, _Group);
-            //await Clients.OthersInGroup(_Group).SendAsync("Printbaobep", data);
-            if (text=="TEST")
+            if (currentUser!=null)
             {
-                await Clients.Group(_Group).SendAsync("Printbaobep", text);
+                string _Group = $"{currentUser.ComId}_Printbaobep";
+                checkExitRoomChitchen(Context.ConnectionId, _Group);
+                //await Clients.OthersInGroup(_Group).SendAsync("Printbaobep", data);
+                if (text == "TEST")
+                {
+                    await Clients.Group(_Group).SendAsync("Printbaobep", text);
+                }
+                else
+                {
+                    await Clients.Group(_Group).SendAsync("Printbaobep", data);
+                    //try
+                    //{
+                    //   await this.PrintbaobepSposViet(currentUser.ComId, data);
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    _log.LogInformation("PrintbaobepSposViet thất bại");
+                    //    _log.LogInformation(e.ToString());
+                    //}
+                }
             }
-            else
-            {
-                await Clients.Group(_Group).SendAsync("Printbaobep", data);
-                //try
-                //{
-                //   await this.PrintbaobepSposViet(currentUser.ComId, data);
-                //}
-                //catch (Exception e)
-                //{
-                //    _log.LogInformation("PrintbaobepSposViet thất bại");
-                //    _log.LogInformation(e.ToString());
-                //}
-            }
+            
         }
         public async Task LoadOrdertable(EnumTypePrint Type,string JsonData)
         {
@@ -233,6 +250,63 @@ namespace Infrastructure.Infrastructure.HubS
                
             }
         }
+        //-------------xử lý cho nhân viên yêu cầu hủy món
+        public async Task StaffAlertBep(int ComId, string data)// tên StaffAlertBep là đùng dể invoke ở client
+        {
+            if (data == "TEST")
+            {
+                string _Group = $"{ComId}_StaffAlertBep";
+                checkExitRoomChitchen(Context.ConnectionId, _Group);
+                await Clients.Group(_Group).SendAsync("StaffAlertBep", data);//StaffAlertBep là hàm ở client nhận method
+            }
+            else
+            {
+                var json = new
+                {
+                    //Type = data == "TEST" ? EnumTypePrint.TEST : EnumTypePrint.PrintBaoBep,
+                    ComId = ComId,
+                    data = data,
+                };
+                string datajson = Common.ConverModelToJson(json);
+                string _Group = $"{ComId}_StaffAlertBep";
+                checkExitRoomChitchen(Context.ConnectionId, _Group);
+                await Clients.Group(_Group).SendAsync("StaffAlertBep", datajson);//StaffAlertBep là hàm ở client nhận method on
+            }
+           
+            
+        }
+        //---------------
+        //------xử lý khi bếp phản hồi lại cho nhân viên phục vụ
+        public async Task FeedbackBepToStaff(string userId, string data, int type)// tên FeedbackBepToStaff là đùng dể invoke ở client
+        {
+            // type 1 là yêu cầu trùng vì đã có nhân viên trước đó đã thao tác gửi yêu cầu, chặn k cho 2nguowfi thao tác trên 1 bàn
+            // type 2 gủi data xác nhận đồng ý hủy món
+            // type 3 gủi data xác nhận từ chối hủy món
+            var currentUser = Context.User.Identity.GetUserClaimLogin();
+            if (data == "TEST")
+            {
+                string _Group = $"{currentUser.ComId}_FeedbackBepToStaff";
+                checkExitRoomChitchen(Context.ConnectionId, _Group);
+                await Clients.Group(_Group).SendAsync("FeedbackBepToStaff", data);//FeedbackBepToStaff là hàm ở client nhận method
+            }
+            else
+            {
+                if (type==1)
+                {
+                    var json = new
+                    {
+                        IsValid = false,
+                        Mess = data,
+                    };
+                    await Clients.User(userId).SendAsync("FeedbackBepToStaff", Common.ConverModelToJson(json));//StaffAlertBep là hàm ở client nhận method on, gủi cho nhân viên là k dc gửi yêu cầu cùng bàn
+                }
+                else if (type==2)
+                {
+
+                }
+            }
+        }
+        //----------
         private async void checkExitRoomChitchen(string ConnectionId, string _Group)
         {
             if (Ids.Count()>0)

@@ -3401,6 +3401,7 @@ span.select2-dropdown.selectCustome100 {
 
             &.addFood {
                 font-size: 16px;
+                display: flex;
             }
 
             &.removeFood {
@@ -4492,6 +4493,138 @@ span.discountAmountItemPro {
 .bodyorderstaff {
     background-color: #f5f6f9;
 }
+.countdown {
+    font-size: 6.5rem;
+    margin-top: 0px;
+}
+.container-datacountdownstaff {
+    position: fixed;
+    z-index: 10;
+    background-color: #676767a1;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+
+    .body-content {
+        background-color: #fff;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+
+        title-coundow {
+            font-size: 27px;
+        }
+    }
+}
+.dataitemcancelfood {
+
+    .progressshow {
+        position: absolute;
+        top: 5px;
+        width: 100%;
+    }
+
+    #progress {
+        width: 100%;
+        height: 10px;
+        position: relative;
+        background-color: #ddd;
+    }
+
+    #bar {
+        width: 100%;
+        height: 100%;
+        text-align: right;
+        padding: 0 10px;
+        line-height: 10px;
+        font-size: 12px;
+        background-color: #4267b2;
+        display: flex;
+        color:#fff;
+        white-space: nowrap;
+    }
+
+    ul.listitem {
+        padding-left: 0px;
+
+        li {
+            position: relative;
+            list-style: none;
+            border-bottom: #ccc dashed thin;
+            display: grid;
+            grid-template-columns: auto 200px 128px 75px;
+            padding-bottom: 10px;
+
+            &:not(.first) {
+                padding-top: 20px;
+            }
+
+            .leftcontent {
+                display: flex;
+                flex-direction: column;
+
+                i {
+                    font-size: 15px;
+                    color: red;
+                }
+            }
+        }
+    }
+
+    .button-lst {
+        flex-direction: row;
+        display: flex;
+        gap: 30px;
+        align-items: center;
+        justify-content: center;
+        padding-bottom: 20px;
+        border-bottom: #ccc solid thin;
+
+        button {
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            width: max-content;
+        }
+
+        .btnOk {
+            background-color: green;
+            color: #fff;
+        }
+
+        .btnCancel {
+            background-color: #e7683b;
+            color: #fff;
+        }
+    }
+}
+.title-header-staff {
+    padding: 10px 5px;
+    background-color: #0b78d7;
+    position: relative;
+
+    .btn-back {
+        border: navajowhite;
+        background: transparent;
+        color: #fff;
+        font-size: 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    span {
+        color: #fff;
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        margin: auto;
+        font-size: 18px;
+    }
+}
 .bodyListKitchenConfirm {
     position: fixed;
     background-color: #fff;
@@ -4506,33 +4639,32 @@ span.discountAmountItemPro {
         font-size: 18px;
     }
 
-    .title-header {
-        padding: 10px 5px;
-        background-color: #0b78d7;
-        position: relative;
-
-        .btn-back {
-            border: navajowhite;
-            background: transparent;
-            color: #fff;
-            font-size: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        span {
-            color: #fff;
-            position: absolute;
-            left: 0;
-            right: 0;
-            text-align: center;
-            margin: auto;
-            font-size: 18px;
-        }
-    }
+    
 
     ul.list-food {
         padding: 10px 0px;
+
+        > li.active {
+            background-color: forestgreen;
+            color: #fff;
+            min-height: 43px;
+            &.isProcessing{
+
+            }
+            .red {
+                color: #ff982a;
+            }
+
+            .btn-actionconfirm {
+                display: none
+            }
+        }
+
+        li {
+            &.isProcessing:not(.active) {
+                background-color: #ffd587;
+            }
+        }
 
         .ele-time {
             text-align: center;
@@ -4598,8 +4730,8 @@ span.discountAmountItemPro {
 
                 .lstbtn-action {
                     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-                    margin-bottom:20px;
-                    border-radius:8px;
+                    margin-bottom: 20px;
+                    border-radius: 8px;
                     position: absolute;
                     right: 0;
                     background: #fff;
@@ -5114,10 +5246,14 @@ span.discountAmountItemPro {
         width: 100%;
         padding: 10px 10px;
         border-top: #e4e7ea solid thin;
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 55px auto;
         align-items: center;
         background-color: white;
+
+        .dropdown-toggle::after {
+            font-size: 20px;
+        }
 
         .leftcol {
             display: flex;
@@ -5129,13 +5265,90 @@ span.discountAmountItemPro {
             }
         }
 
+        .content-amountandnotify {
+            display: flex;
+            justify-content: space-between;
+        }
+
         .rightcol button {
-            padding: 15px 20px;
+            padding: 15px 8px;
             font-size: 15px;
         }
     }
 }
+.footerfix-staff {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 
+    button.btn-checkout {
+        border: none;
+        width: 100%;
+        padding: 11px 10px;
+        background-color: green;
+        color: #fff;
+        font-size: 21px;
+    }
+}
+.payment-staff {
+    position: fixed;
+    background-color: #fff;
+    top: 0;
+    z-index: 11;
+
+    .infocus {
+        color: #2b7ec7;
+        font-size: 20px;
+        margin-bottom: 10px
+    }
+
+    .table-info-pay {
+        td, th {
+            border: none
+        }
+
+        input#discountPayment {
+            border: none;
+            border-bottom: #ebebeb solid thin;
+            padding-right:0px;
+        }
+
+        .paymentMethod {
+            label.form-check-label {
+                display: inline-block;
+            }
+
+            > .form-check {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            fieldset {
+                border-radius: 10px;
+                border: #ddd solid thin;
+                padding: 20px;
+
+                legend {
+                    display: inline-block;
+                    width: max-content;
+                }
+            }
+        }
+    }
+
+    .bodypay {
+        padding: 15px;
+        padding-bottom: 100px;
+        height: calc(100vh - 105.5px);
+        overflow: auto;
+    }
+}
+.btn-paymentactionstaff {
+    .dropdown button.btn-showaction {
+        padding: 17px 8px;
+    }
+}
 #sellting-pos {
     .tab-content > .active {
         height: 100%;

@@ -15,9 +15,10 @@ using System.Diagnostics.Metrics;
 
 using GrapeCity.Documents.Html;
 
-using CoreHtmlToImage;
 using System.Reflection;
 using ESC_POS_USB_NET.Printer;
+using SelectPdf;
+using CoreHtmlToImage;
 
 namespace SposVietPluginKySo
 {
@@ -53,35 +54,35 @@ namespace SposVietPluginKySo
             NReco.PdfGenerator.HtmlToPdfConverter htmlToPdfConverter = new NReco.PdfGenerator.HtmlToPdfConverter();
             var bytes = htmlToPdfConverter.GeneratePdf(data);
 
-            using (MemoryStream ms = new MemoryStream(bytes))
-            {
-                using (var document = PdfDocument.Load(ms))
-                {
-                    // cài NuGet\Install-Package PdfiumViewer.Native.x86_64.v8-xfa -Version 2018.4.8.256
-                    // và NuGet\Install-Package PdfiumViewer.Native.x86.v8-xfa -Version 2018.4.8.256
-                    using (var printDocument = document.CreatePrintDocument())
-                    {
-                        //var path = Path.GetDirectoryName(Application.ExecutablePath);
-                        //settings.PrintFileName = Path.Combine(path, "file" + count++ + ".pdf");
-                        //settings.PrintToFile = true;
-                        printDocument.PrinterSettings = settings;
-                        //printDocument.DocumentName = Path.Combine(path, "file" + count++ + ".pdf");
-                        printDocument.DefaultPageSettings = new PageSettings(printDocument.PrinterSettings)
-                        {
-                            // Margins = new Margins(0, 0, 0, 0),
-                            PaperSize = GetPaperSize(settings, (int)PaperKind.A6),
-                            //PaperSize = new PaperSize("Custom",250,750),
+            //using (MemoryStream ms = new MemoryStream(bytes))
+            //{
+            //    using (var document = PdfDocument.Load(ms))
+            //    {
+            //        // cài NuGet\Install-Package PdfiumViewer.Native.x86_64.v8-xfa -Version 2018.4.8.256
+            //        // và NuGet\Install-Package PdfiumViewer.Native.x86.v8-xfa -Version 2018.4.8.256
+            //        using (var printDocument = document.CreatePrintDocument())
+            //        {
+            //            //var path = Path.GetDirectoryName(Application.ExecutablePath);
+            //            //settings.PrintFileName = Path.Combine(path, "file" + count++ + ".pdf");
+            //            //settings.PrintToFile = true;
+            //            printDocument.PrinterSettings = settings;
+            //            //printDocument.DocumentName = Path.Combine(path, "file" + count++ + ".pdf");
+            //            printDocument.DefaultPageSettings = new PageSettings(printDocument.PrinterSettings)
+            //            {
+            //                // Margins = new Margins(0, 0, 0, 0),
+            //                PaperSize = GetPaperSize(settings, (int)PaperKind.A6),
+            //                //PaperSize = new PaperSize("Custom",250,750),
 
-                        };
-                        //printDocument.DefaultPageSettings.PaperSize.RawKind = (int)PaperKind.Custom;
-                        //printDocument.PrinterSettings.DefaultPageSettings.PaperSize.RawKind = (int)PaperKind.Custom;
-                        //printDocument.DefaultPageSettings.Landscape = false;
+            //            };
+            //            //printDocument.DefaultPageSettings.PaperSize.RawKind = (int)PaperKind.Custom;
+            //            //printDocument.PrinterSettings.DefaultPageSettings.PaperSize.RawKind = (int)PaperKind.Custom;
+            //            //printDocument.DefaultPageSettings.Landscape = false;
 
-                        printDocument.PrintController = new StandardPrintController();
-                        printDocument.Print();
-                    }
-                }
-            }
+            //            printDocument.PrintController = new StandardPrintController();
+            //            printDocument.Print();
+            //        }
+            //    }
+            //}
 
         }
         public static void PrintReceiptForTransaction()
@@ -115,12 +116,31 @@ namespace SposVietPluginKySo
                 PrinterSettings settings = new PrinterSettings();
                 Printer printer = new Printer(settings.PrinterName);
                 //------------in hình
-                var converter = new HtmlConverter();
-                var bytes = converter.FromHtmlString(html);
+                //var converter = new HtmlConverter();
+                //var bytes = converter.FromHtmlString(html);
+                //Stream stream = new MemoryStream(bytes);
+                //Bitmap image = new Bitmap(Bitmap.FromStream(stream));
                 //------------cách 1
-                Stream stream = new MemoryStream(bytes);
-                Bitmap image = new Bitmap(Bitmap.FromStream(stream));
-               // Bitmap image = new Bitmap(stream);
+
+                //cách 2
+                int webPageWidth = 1024;
+                HtmlToImage imgConverter = new HtmlToImage();
+
+                // set converter options
+                imgConverter.WebPageWidth = webPageWidth;
+
+                // imgConverter.WebPageHeight = webPageHeight;
+                System.Drawing.Image imageinhtml =
+               imgConverter.ConvertHtmlString(html);
+                System.Drawing.Imaging.ImageFormat imageFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
+                // get image bytes
+                // byte[] img = ImageToByteArray(imageinhtml, imageFormat);
+                //----------end cách 2
+                //Stream stream = new MemoryStream(bytes);
+                //Bitmap image = new Bitmap(Bitmap.FromStream(stream));
+
+                Bitmap image = new Bitmap(imageinhtml);
+
                 System.Text.EncodingProvider ppp = System.Text.CodePagesEncodingProvider.Instance;
                 Encoding.RegisterProvider(ppp);
 

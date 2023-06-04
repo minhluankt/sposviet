@@ -3,7 +3,7 @@ using Application.Features.CompanyInfo.Query;
 using Application.Hepers;
 using Application.Providers;
 using Domain.Entities;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

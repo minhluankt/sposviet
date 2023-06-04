@@ -1,6 +1,12 @@
 ﻿using Application.Constants;
+using Application.Enums;
+using Application.Features.Permissions.Query;
+using Application.Interfaces.CacheRepositories;
 using Application.Interfaces.Repositories;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
+using Domain.ViewModel;
+using Domain.Identity;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -10,12 +16,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Application.Hepers;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Infrastructure.Repositories
 {
     public class SignInManagerRepository : ISignInManagerRepository<ApplicationUser>
     {
-
+        private readonly IMapper _mapper;
+        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly IPermissionCacheRepository _permissionCache;
         //  public  IUserClaimsPrincipalFactory<ApplicationUser> ClaimsFactory { get; set; }
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _contextAccessor;
@@ -38,7 +49,10 @@ namespace Infrastructure.Infrastructure.Repositories
                 _context = value;
             }
         }
-        public SignInManagerRepository(UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor)
+        public SignInManagerRepository(UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager,
+            IHttpContextAccessor contextAccessor, IMapper mapper,
+            IPermissionCacheRepository permissionCache)
         {
             //if (claimsFactory == null)
             //{
@@ -46,7 +60,10 @@ namespace Infrastructure.Infrastructure.Repositories
             //}
             //ClaimsFactory = claimsFactory;
             _userManager = userManager;
+            _roleManager = roleManager;
             _contextAccessor = contextAccessor;
+            _mapper = mapper;
+            _permissionCache = permissionCache;
         }
         public AuthenticationProperties ConfigureExternalAuthenticationProperties(string provider, string redirectUrl, string userId = null)
         {
@@ -100,6 +117,79 @@ namespace Infrastructure.Infrastructure.Repositories
             }
 
             var userRoles = await _userManager.GetRolesAsync(user);// Custom helper method to get list of user roles
+
+
+            //xử lý quyền cho user check xem là gì 
+
+            var getsup = userRoles.Any(x => x.ToLower() == PermissionUser.admin);
+            if (user.IsStoreOwner || getsup)
+            {
+                claims.Add(new Claim(ClaimUser.IsAdmin, "1"));
+            }
+
+            var roles = await _roleManager.Roles.Where(x => x.ComId == user.ComId && userRoles.Contains(x.Name)).ToListAsync();
+            var response = await _permissionCache.GetCachedListAsync();
+            if (response.Count()>0)
+            {
+                var Claimsnew = new List<Claim>();
+                foreach (var item in roles)
+                {
+                    if (await _userManager.IsInRoleAsync(user, item.Name))
+                    {
+                        var role = await _roleManager.FindByIdAsync(item.Id);
+                        if (role!=null)
+                        {
+                            Claimsnew.AddRange(await _roleManager.GetClaimsAsync(role));
+                        }
+                       
+                    }
+                }
+                var model = new PermissionViewModel();
+                var allPermissions = new List<RoleClaimsViewModel>();
+                allPermissions.GetAllPermissions(response);
+
+                var claimsModel = _mapper.Map<List<RoleClaimsViewModel>>(Claimsnew);
+                var allClaimValues = allPermissions.Select(a => a.Value).ToList();
+                var roleClaimValues = claimsModel.Select(a => a.Value).ToList();
+                var authorizedClaims = allClaimValues.Intersect(roleClaimValues).ToList();
+                List<string> permissions = new List<string>();
+                foreach (var permission in allPermissions)
+                {
+                    if (authorizedClaims.Any(a => a == permission.Value))
+                    {
+                        permissions.Add(permission.Value);
+                    }
+                }
+                foreach (var item in permissions.Distinct())
+                {
+                    if (item == PermissionUser.quanlyketoan && user.IdDichVu == EnumTypeProduct.AMTHUC)
+                    {
+                        claims.Add(new Claim(ClaimUser.IsKeToan, "1"));
+                    }
+                    else if (item == PermissionUser.phucvuthanhtoan && user.IdDichVu == EnumTypeProduct.AMTHUC)
+                    {
+                        claims.Add(new Claim(ClaimUser.IsPhucVuPayment, "1"));
+                    } 
+                    else if (item == PermissionUser.thunganpos && user.IdDichVu == EnumTypeProduct.AMTHUC)
+                    {
+                        claims.Add(new Claim(ClaimUser.IsThuNgan, "1"));
+                    }
+                    else if (item == PermissionUser.thunganSaleRetail && (user.IdDichVu == EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == EnumTypeProduct.BAN_LE || user.IdDichVu == EnumTypeProduct.THOITRANG))
+                    {
+                        claims.Add(new Claim(ClaimUser.IsThuNgan, "1"));
+                    }
+                    else if (item == PermissionUser.beppos && user.IdDichVu == EnumTypeProduct.AMTHUC)
+                    {
+                        claims.Add(new Claim(ClaimUser.IsBep, "1"));
+                    }
+                    else if (item == PermissionUser.nhanvienphucvu && (user.IdDichVu == EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == EnumTypeProduct.BAN_LE || user.IdDichVu == EnumTypeProduct.THOITRANG))
+                    {
+                        claims.Add(new Claim(ClaimUser.IsPhucVu, "1"));
+                    }
+                }
+
+            }
+
 
             // Add Role claims
             foreach (var role in userRoles)

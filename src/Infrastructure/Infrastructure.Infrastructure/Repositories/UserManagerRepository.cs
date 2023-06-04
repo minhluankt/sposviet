@@ -1,7 +1,8 @@
 ﻿using Application.Interfaces.CacheRepositories;
 using Application.Interfaces.Repositories;
 using Dapper;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
+using Domain.Identity;
 
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Identity;

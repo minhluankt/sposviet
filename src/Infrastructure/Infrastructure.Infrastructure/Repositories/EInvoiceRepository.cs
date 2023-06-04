@@ -6,7 +6,7 @@ using Application.Providers;
 using AspNetCoreHero.Results;
 using Domain.Entities;
 using Domain.ViewModel;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -44,6 +44,7 @@ using Spire.Doc;
 using static System.Data.Entity.Infrastructure.Design.Executor;
 using AspNetCoreHero.Abstractions.Repository;
 using Telegram.Bot.Types;
+using Domain.Identity;
 
 namespace Infrastructure.Infrastructure.Repositories
 {

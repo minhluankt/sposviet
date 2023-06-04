@@ -15,7 +15,7 @@ using Application.Providers;
 using Domain.Entities;
 using Domain.ViewModel;
 using HelperLibrary;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

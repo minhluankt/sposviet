@@ -37,7 +37,7 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public IQueryable<PaymentMethod> GetAll(int comid,bool? Active = null)
         {
-            var list = _paymentMethodRepository.Entities;
+            var list = _paymentMethodRepository.Entities.AsNoTracking();
             if (Active !=null)
             {
                 list = list.Where(x => x.Active == Active);

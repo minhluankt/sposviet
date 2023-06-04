@@ -7685,6 +7685,144 @@ var loadcentChitkent = {
             })
         });
     },
+    loadUpdateDataLocaFood: function (id) {
+        let getdataloca = localStorage.getItem("dataJsoncancelFood");
+        let dataloca = JSON.parse(getdataloca);//lấy từ locas
+        let foundIndex = dataloca.findIndex(x => x.Id == id);
+        if (foundIndex != -1) {
+            dataloca.splice(foundIndex, 1);
+        }
+        localStorage.setItem("dataJsoncancelFood", JSON.stringify(dataloca));
+    },
+    loadDatacancelFood: function (data) {
+        
+        let datajson = JSON.parse(data);
+        let listFood = JSON.parse(datajson.data);
+        //check data loca
+        debugger
+        let getdataloca = localStorage.getItem("dataJsoncancelFood");
+        if (typeof getdataloca != "undefined" && getdataloca != null) {
+            let dataloca = JSON.parse(getdataloca);//lấy từ locas
+            let resultId = listFood.map(a => a.Id);//lấy lst id
+            let res = dataloca.filter(item => resultId.includes(item.Id));//tìm cái có trong data loca
+            if (res.length > 0) {
+                if (connectionKitchenIndex.state === signalR.HubConnectionState.Connected) {
+                    let mess = "Phục vụ " + res[0].StaffName + " đang thao tác món vui lòng không xử lý trùng";
+                    connectionKitchenIndex.invoke('FeedbackBepToStaff', listFood[0].IdStaffName, mess, 1);//lấy id của thèn gửi xuống
+                } else {
+                    toastrcus.error("Không kết nối được server");
+                }
+            } else {
+                listFood.forEach(function (item, index) {
+                    dataloca.push(item);
+                });
+            }
+        } else {
+            localStorage.setItem("dataJsoncancelFood", datajson.data);
+        }
+        let htmlfood = "";
+        listFood.forEach(function (item, index) {
+            htmlfood += ` <li data-id="` + item.Id +`" class="itemfood">
+                                <div class="progressshow">
+                                    <div id="progress" class="progressfood">
+                                      <div id="bar" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                                <div class="leftcontent">
+                                    <span>`+ item.Name + `</span>
+                                    <i>`+ (item.Note != null ? item.Note:"") + `</i>
+                                </div>
+                                <span class="tablename">`+ item.StaffName + `</span> 
+                                <b class="tablename">`+ item.RoomTableName + `</b>
+                                <input type="checkbox" class="icheck" />
+                            </li>`
+        })
+        let html = `<div class="dataitemcancelfood">
+                        <ul class="listitem">
+                            <li class="first"> 
+                            <b class="text">Món chế biến</b> 
+                                <b class="text">Phục vụ</b> 
+                                <b class="text">Bàn/phòng</b>
+                                <input type="checkbox" class="checkAll icheck" /> 
+                            </li>
+                           `+ htmlfood + `
+                        </ul>
+                        <div class="button-lst">
+                            <button class="btnOk">Đồng ý hủy</button>
+                            <button class="btnCancel">Từ chối hủy</button>
+                        </div>
+                    </div>`;
+        Swal.fire({
+            // icon: 'success',
+            position: 'top-end',
+            showClass: {
+                popup: `
+                              popup-formcreate
+                              popup-lg
+                               animate__animated
+                              animate__fadeInRight
+                              animate__faster
+                            `
+            },
+            hideClass: {
+                popup: "popup-formcreate popup-lg animate__animated animate__fadeOutRight animate__faster"
+
+            },
+            showCloseButton: true,
+
+            title: "Yêu cầu hủy món?",
+            html: html,
+            //footer: "<button class='btn btn-warning btn-continue mr-3'><i class='fas fa-times mr-2'></i>Đóng</button>",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+            didRender: async () => {
+                loadEventIcheck();
+               
+                $(".dataitemcancelfood ul.listitem li.itemfood").map(function () {
+                    loadcentChitkent.progressbar(30, 30, $(this).find("#progress"));
+                    //const progressBar = $(this).find("#progress");
+                    //let barWidth = 0;
+                    //const animate = () => {
+                    //    barWidth++;
+                    //    progressBar.style.width = `${barWidth}%`;
+                    //    setTimeout(() => {
+                    //       // loadingMsg.innerHTML = `${barWidth}% Completed`;
+                    //    }, 11000);
+                    //};
+                    //let intervalID = setInterval(() => {
+                    //    if (barWidth === 100) {
+                    //        clearInterval(intervalID);
+                    //    } else {
+                    //        animate();
+                    //    }
+                    //}, 1000); //this sets the speed of the animation
+                });
+            }
+        });
+    },
+    eventCheckItemFoodCancel: function () {
+        if ($(".dataitemcancelfood ul.listitem li.itemfood").length==0) {
+            Swal.close();
+        }
+    },//check xem con item k, hết thì remove popup
+    progressbar: function (timeleft, timetotal, $element) {
+        var progressBarWidth = timeleft * $element.width() / timetotal;
+        if (timeleft == timetotal) {
+            progressBarWidth = "100%";
+        }
+        $element.find('div').animate({ width: progressBarWidth }, 500).html(Math.floor(timeleft / 60) + ":" + timeleft % 60);
+        if (timeleft > 0) {
+            setTimeout(function () {
+                loadcentChitkent.progressbar(timeleft - 1, timetotal, $element);
+            }, 1000);
+        } else {
+            $element.parents("li.itemfood").remove();
+            loadcentChitkent.loadUpdateDataLocaFood($element.parents("li.itemfood").data("id"));
+            loadcentChitkent.eventCheckItemFoodCancel();
+        }
+    },
     loadDataByRoomSkin1: async function (onload = true) {
         $.ajax({
             type: 'GET',
@@ -8956,9 +9094,21 @@ var posStaff = {
 
                         success: function (res) {
                             if (res.isValid) {
+                                posStaff.resetOrderTable();
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                }
+            })
 
-                                posStaff.checkHighlightTableInOrder();// check highlight
-                                html = `<table class="table">
+        });
+    },
+    resetOrderTable: function () {
+        posStaff.checkHighlightTableInOrder();// check highlight
+        html = `<table class="table">
                                         <thead>
                                             <tr>
                                                <th colspan="2">
@@ -8981,24 +9131,14 @@ var posStaff = {
                                             </tr>
                                         </tbody>
                                     </table>`;
-                                // $(".bodybill").html(html);
-                                $("#id-order").data("id", "");//xóa đơn thì update id order = null
-                                $(".bodybill").find(".table-dataStaff").html(html);
-                                $(".actionstaff").find(".btn-addNeworderStaff").remove();
-                                $(".actionstaff").find(".btn-removerOrder").remove();
-                                $(".actionstaff").find(".btn-historyOrder").remove();
-                                $(".actionstaff").find(".btn-changeTable").remove();
-                                $(".actionstaff").find(".btn-completeFoodOk").remove();
-                            }
-                        },
-                        error: function (err) {
-                            console.log(err)
-                        }
-                    });
-                }
-            })
-
-        });
+        // $(".bodybill").html(html);
+        $("#id-order").data("id", "");//xóa đơn thì update id order = null
+        $(".bodybill").find(".table-dataStaff").html(html);
+        $(".actionstaff").find(".btn-addNeworderStaff").remove();
+        $(".actionstaff").find(".btn-removerOrder").remove();
+        //$(".actionstaff").find(".btn-historyOrder").remove();
+        $(".actionstaff").find(".btn-changeTable").remove();
+        $(".actionstaff").find(".btn-confirmationFoodOk").remove();
     },
     checkHighlightTableInOrder: function () {
 
@@ -9140,9 +9280,10 @@ var posStaff = {
             //}
             $(".actionstaff").find(".btn-addNeworderStaff").remove();
             $(".actionstaff").find(".btn-removerOrder").remove();
-            $(".actionstaff").find(".btn-historyOrder").remove();
+           // $(".actionstaff").find(".btn-historyOrder").remove();
             $(".actionstaff").find(".btn-changeTable").remove();
-            $(".actionstaff").find(".btn-completeFoodOk").remove();
+            
+            $(".actionstaff").find(".btn-confirmationFoodOk").remove();
             if (loadOrder.data.active) {
                 posStaff.loadShowBtnRemoveAndHistoryorder();//show các button xóa đơn hay xem lịch sử món
                 $("#lst-roomandtable li.active").addClass("active");
@@ -9152,6 +9293,8 @@ var posStaff = {
             }
             posStaff.eventCheckBtnNotifyOrder();
             evetnFormatTextnumber3();
+            posStaff.payment();//thanh toán
+            posStaff.loadShowHistoryOrder();//xem lịch sử món
             //evetnFormatTextnumber3decimal();
         } else {
             return false;
@@ -9160,12 +9303,12 @@ var posStaff = {
     loadShowBtnRemoveAndHistoryorder: function () {
         $(".actionstaff").find(".btn-addNeworderStaff").remove();
         $(".actionstaff").find(".btn-removerOrder").remove();
-        $(".actionstaff").find(".btn-historyOrder").remove();
+       // $(".actionstaff").find(".btn-historyOrder").remove();
         $(".actionstaff").find(".btn-changeTable").remove();
-        $(".actionstaff").find(".btn-completeFoodOk").remove();
+        $(".actionstaff").find(".btn-confirmationFoodOk").remove();
         $(".actionstaff").append('<button type="button" class="btn-addNeworderStaff btn btn-primary"><i class="fas fa-plus"></i></button>')
         $(".actionstaff").append('<button type="button" class="btn-removerOrder btn btn-danger ml-2"><i class="fas fa-trash"></i></button>');
-        $(".actionstaff").append('<button type="button" class="btn-historyOrder btn btn-info ml-2"><i class="fas fa-history"></i></button>');
+        //$(".actionstaff").append('<button type="button" class="btn-historyOrder btn btn-info ml-2"><i class="fas fa-history"></i></button>');
         $(".actionstaff").append('<button type="button" class="btn-changeTable btn btn-primary ml-2"><i class="fas fa-table"></i></button>'); 
         $(".actionstaff").append('<button type="button" class="btn-confirmationFoodOk btn btn-primary ml-2"><i class="fas fa-utensils"></i></button>'); 
         posStaff.loadEventconfirmationDoneFood();//xác nhận món đã đưa khách xong
@@ -9177,16 +9320,231 @@ var posStaff = {
         $(".btn-confirmationFoodOk").click(async function () {
             let idOrder = $("#id-order").data("id");
             const ipAPI = '/Selling/PosKitchen/GetFoodConfirmation?IdOrder=' + idOrder;
-            var loadhis = await axios.get(ipAPI);
-            if (loadhis.data.isValid) {
-                $("body").remove(".bodyListKitchenConfirm");
-                $("body").append(loadhis.data.data);
-                $(".btn-back").click(function () {
-                    $(this).parents(".bodyListKitchenConfirm").remove();
-                })
-            }
+            //var loadhis = await axios.get(ipAPI);
+            $.ajax({
+                type: 'GET',
+                async: false,
+                url: ipAPI,
+                data: {
+
+                },
+                success: function (res) {
+                    if (res.isValid) {
+                        $("body").remove(".bodyListKitchenConfirm");
+                        $("body").append(res.data);
+                        $(".btn-back").click(function () {
+                            $(this).parents(".bodyListKitchenConfirm").remove();
+                        })
+                        posStaff.loadEventActiveItemFood();//sự kiện kích vào item món
+                        posStaff.loadeventDoneFood();//sự kiện đã chuyển món cho khách hoặc hủy món
+                        //---------load remove attr data
+                        $(".bodyListKitchenConfirm .list-food li").map(function () {
+                            //------id data
+                            let id = $(this).data("id");
+                            $(this).removeAttr("data-id");
+                            $(this).data("id", id)
+                        });
+                    }
+                }
+            });
+            //if (loadhis.data.isValid) {
+               
+
+            //}
         })
     },//xác nhận món đã đưa khách xong
+    loadEventActiveItemFood: function () {
+        $(".bodyListKitchenConfirm .list-food li").click(function () {
+            $(this).toggleClass("active");
+            if ($(".bodyListKitchenConfirm .list-food li.active").length > 0) {
+                $(".btnFoodaction button").removeAttr("disabled");
+            } else {
+                $(".btnFoodaction button").attr("disabled","disabled");
+            }
+        });
+
+       
+    },
+    loadeventDoneFood: function () {
+        $(".bodyListKitchenConfirm .btn-donecusfood").click(function () {
+            let lstid = [];
+            $(".bodyListKitchenConfirm .list-food li.active").map(function () {
+                //------id data
+                let id = $(this).data("id");
+                lstid.push(id);
+            });
+            if (lstid == 0) {
+                toastrcus.error("Vui lòng chọn món");
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    //async: false,
+                    url: '/Selling/PosKitchen/UpdateStatusFoodInStaff',
+                    data: {
+                        IsCancel: false,
+                        lstIdChiken: lstid
+                    },
+
+                    success: function (res) {
+                        if (res.isValid) {
+                            $(".bodyListKitchenConfirm .list-food li.active").removeClass("active");
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                });
+            }
+        });
+        $(".bodyListKitchenConfirm .btn-cancelFood").click(function () {
+            let lstid = [];
+            let mon = "";
+            $(".bodyListKitchenConfirm .list-food li.active").map(function () {
+                //------id data
+                let id = $(this).data("id");
+                if ($(this).hasClass("isProcessing")) {
+                    let name = $(this).data("name");
+                    mon += name+", ";
+                }
+              
+                lstid.push(id);
+
+            });
+            if (mon!="") {
+                toastrcus.error("Các món sau đang chế biến không thể hủy, " + mon);
+                return;
+            }
+            if (lstid == 0) {
+                toastrcus.error("Vui lòng chọn món");
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    //async: false,
+                    url: '/Selling/PosKitchen/UpdateStatusFoodInStaff',
+                    data: {
+                        IsCancel: true,
+                        lstIdChiken: lstid
+                    },
+
+                    success: function (res) {
+                        if (res.isValid) {
+                            posStaff.loadCountdown();
+                            $(".bodyListKitchenConfirm .list-food li.active").removeClass("active");
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                });
+            }
+        });//cái này là hủy món
+
+        
+    },
+    loadEventAffterCoutdows: function () {
+        $(".container-datacountdownstaff").remove();
+        toastrcus.error("Bếp chưa xác nhận, không thể hủy món!");
+    },
+    loadEventAffterSendReject: function (mess) {
+        $(".container-datacountdownstaff").remove();
+        toastrcus.error(mess);
+    },
+    loadCountdown: function () {
+        setCountDown = (endTime) => {
+
+            // calculate how many milliseconds is left to reach endTime from now
+            secondsLeftms = endTime - Date.now();
+            // convert it to seconds
+            const secondsLeft = Math.round(secondsLeftms / 1000);
+
+            // calculate the hours, minutes and seconds
+            let hours = 0;
+            // let hours = Math.floor(secondsLeft / 3600);
+            let minutes = 0;
+            // let minutes = Math.floor(secondsLeft / 60) - (hours * 60);
+            let seconds = secondsLeft % 60;
+
+            // adding an extra zero infront of digits if it is < 10
+            if (hours < 10) {
+                hours = `0${hours}`;
+            }
+            if (minutes < 10) {
+                minutes = `0${minutes}`;
+            }
+            if (seconds < 10) {
+                seconds = `0${seconds}`;
+            }
+
+            // stopping the timer if the time is up 
+            if (secondsLeft <= 0) {
+                resetCountDown();
+                posStaff.loadEventAffterCoutdows();
+                return;
+            }
+
+            // set the .countdown text
+            // countDown.innerHTML = `${hours} : ${minutes} : ${seconds}`;
+            countDown.innerHTML = `${seconds}`;
+
+        };
+
+        let countDownInterval;
+     
+        let htmldow = `<div class="container-datacountdownstaff">
+                        <div class="body-content">
+                        <b class="title-coundow">Vui lòng chờ bếp xác nhận</b>
+                                            <!-- form -->
+                                            <!-- countdown text https://codepen.io/thecodingpie/pen/JjGeyVO-->
+                                            <p class="countdown">00</p>
+
+                                            <!-- buttons
+                                            <div class="buttons">
+                                              <button class="stop-btn" disabled>STOP</button>
+                                              <button class="reset-btn" disabled>RESET</button>
+                                            </div> -->
+                        </div>
+                        </div>
+                    `;
+        $("body").append(htmldow);
+        let countDown = document.querySelector('.countdown');
+        endTime = (35 * 1000) + Date.now();
+        setCountDown(endTime);
+        countDownInterval = setInterval(() => {
+            //if (format.value === 'hours') {
+            //    // convert hours to milliseconds
+            //    // 1 hrs = 3600000 ms (5 zeros)
+            //    countDownTime = countDownTime * 3600000;
+            //} else if (format.value === 'minutes') {
+            //    // 1 minute = 60000 ms (4 zeros)
+            //    countDownTime = countDownTime * 60000;
+            //} else if (format.value === 'seconds') {
+            //    // 1 seconds = 1000 ms (3 zeros)
+            //    countDownTime = countDownTime * 1000;
+            //}
+           
+            setCountDown(endTime);
+        }, 1000);
+       
+
+        const resetCountDown = () => {
+
+            // destroy the setInterval()
+            clearInterval(countDownInterval);
+            // reset the countdown text
+            countDown.innerHTML = '00';
+            //// set stopBtnClicked = false
+            //stopBtnClicked = false;
+            //// change inner text to STOP
+            //stopBtn.innerHTML = 'STOP';
+
+            //// enable .set-btn
+            //setBtn.disabled = false;
+
+            //// disable .stop-btn and .reset-btn
+            //stopBtn.disabled = true;
+            //resetBtn.disabled = true;
+        };
+    },
     loadeventChangeTableOrder: function () {
         $(".btn-changeTable").click(function () {
             $.ajax({
@@ -9416,6 +9774,7 @@ var posStaff = {
     eventIntwindow: function () {
         //$(".topbuton button:first").trigger("click");
         $(".bottomFix").remove();
+        
         posStaff.loadDanhSachBan();
         //loadTableActive();
         //function loadTableActive() { // load active
@@ -9444,6 +9803,88 @@ var posStaff = {
         //    }
         //}
     },
+    payment: function () {
+        $(".btn-paymentactionstaff .btn-payment").click(function () {
+            let idOrder = $("#id-order").data("id");
+            if (idOrder == "" || idOrder==null) {
+                toastrcus.error("Bàn chưa có đơn cần thanh toán");
+                return;
+            }
+            $.ajax({
+                type: 'GET',
+               // async: false,
+                url: '/OrderStaff/PaymentOrder?IdOrder=' + idOrder,
+                data: {
+
+                },
+                success: function (res) {
+                    if (res.isValid) {
+                        $("body").append(res.data);
+                        $(".btn-back").click(function () {
+                            $(this).parents(".payment-staff").remove();
+                        });
+                        posStaff.loadChangeDiscount();
+                        evetnFormatTextnumber3();
+                        evetnFormatnumber3();
+                        loadEventIcheck();
+                        posStaff.loadEventCheckOutOrder();//thanh toán
+                    }
+                }
+            });
+        });
+    },
+    loadEventCheckOutOrder: function () {
+        $(".payment-staff .btn-checkout").click(function () {
+            let idOrderInTable = $("#id-order").data("id");
+            let idOrder = $(this).data("idorder");
+            if (idOrderInTable != idOrder) {
+                toastrcus.error("Đơn hàng đã bị thay đổi vui lòng thử lại");
+                return;
+            }
+            let discountPayment = parseFloat($("#discountPayment").val().replaceAll(",", "")) || 0;
+            let totalPayment = parseFloat($(".totalPayment").text().replaceAll(",", "")) || 0;
+            let amountPayment = parseFloat($(".amountPayment").text().replaceAll(",", "")) || 0;
+            let idpayment = $('input[name=idPaymentMethod]:checked', '.paymentMethod').data("id") || 0;
+            if (discountPayment<0) {
+                toastrcus.error("Giảm giá phải lớn hơn 0");
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/OrderStaff/CheckOutOrder',
+                data: {
+                    IdOrder: idOrder,
+                    discountPayment: discountPayment,
+                    Idpayment: idpayment,
+                    Amount: amountPayment,
+                    Total: totalPayment,
+                },
+                success: function (res) {
+                    if (res.isValid) {
+                        $(".payment-staff").remove();
+                        posStaff.resetOrderTable();
+                        posStaff.loadAmoutAndQuantity(0,0);
+                    }
+                }
+            });
+        });
+    },
+    loadChangeDiscount: function () {
+        $("#discountPayment").keyup(function () {
+            let totalPayment = parseFloat($(".totalPayment").text().replaceAll(",", "")) || 0;
+            let value = parseFloat($(this).val()) || 0;
+            if (value < 0) {
+                toastrcus.error("Vui lòng nhập giảm giá phải lớn hơn 0");
+                $(this).val(0);
+                value = 0;
+            }
+            if (totalPayment==0) {
+                toastrcus.error("Tổng tiền không hợp lệ");
+            }
+            let amount = totalPayment - value;
+            $(".amountPayment").html(amount.format0VND(3,3,""))
+        });
+    },//thay đổi chiết khấu
     loadDanhSachBan: function () {
         
         $(".topbuton button:first").attr("disabled", "disabled");
@@ -9701,7 +10142,7 @@ var posStaff = {
             posStaff.eventactiveTableloca($(this).index());
             //$(".topbuton button:first").trigger("click");//kích lại cho ẩn đi
             // }
-
+           
         });
     }
 }

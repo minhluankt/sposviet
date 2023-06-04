@@ -2,13 +2,14 @@
 
 
 <div class="bodyListKitchenConfirm">
-    <div class="title-header">
+    <div class="title-header title-header-staff">
         <button class="btn-back"><i class="fas fa-arrow-left"></i></button>
         <span>Xử lý món @Model.First()?.RoomTableName</span>
     </div>
-    <div class="infoOrder">
-        <button class="btn-confirm btn btn-success"><i class="fas fa-check"></i> Đã chuyển khách</button>
-        <button class="btn-cancel btn btn-danger"><i class="fas fa-trash-alt"></i> Hủy món</button>
+    <div class="btnFoodaction  mt-3 ml-2">
+        <button class="btn-donecusfood btn btn-success" disabled><i class="fas fa-check"></i> Đã chuyển khách</button>
+        <button class="btn-cancelFood btn btn-danger" disabled><i class="fas fa-trash-alt"></i> Hủy món</button>
+       
     </div>
     <ul class="list-food">
         @foreach (var collection in Model.GroupBy(x => x.CreatedOn))
@@ -18,7 +19,7 @@
             </div>
             @foreach (var item in collection)
             {
-                <li>
+                <li data-id="@item.Id" data-status="@((int)item.Status)" data-name="@item.ProName" class="@(item.Status==Application.Enums.EnumStatusKitchenOrder.Processing?"isProcessing":"")">
                     <div class="content">
                         <span>
                             @item.ProName <b class="red">(@item.Quantity.ToString("#,0.##"))</b> - <i class="Cashername">@item.Cashername</i>

@@ -9,7 +9,7 @@ using Application.Providers;
 using Domain.Entities;
 using Domain.ViewModel;
 using Hangfire.MemoryStorage.Database;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Infrastructure.Infrastructure.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

@@ -9,7 +9,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Application.DTOs.Mail;
 using Application.Interfaces.Shared;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;

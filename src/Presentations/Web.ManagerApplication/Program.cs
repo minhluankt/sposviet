@@ -10,7 +10,7 @@ using FluentValidation.AspNetCore;
 using Hangfire;
 using Infrastructure.Infrastructure.Extensions;
 using Infrastructure.Infrastructure.HubS;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Infrastructure.Infrastructure.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;

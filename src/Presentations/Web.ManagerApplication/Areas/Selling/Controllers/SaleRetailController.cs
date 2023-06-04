@@ -6,7 +6,7 @@ using Application.Interfaces.Repositories;
 using Application.Providers;
 using Domain.Entities;
 using Domain.ViewModel;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

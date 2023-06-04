@@ -9,7 +9,8 @@ using Application.Features.CompanyInfo.Query;
 using Application.Features.Permissions.Query;
 using Application.Interfaces.Repositories;
 using AutoMapper;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.ViewModel;
+using Domain.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -25,7 +26,8 @@ using System.Security.Claims;
 using Telegram.Bot.Types;
 using Web.ManagerApplication.Abstractions;
 using Web.ManagerApplication.Areas.Admin.Models;
-using Web.ManagerApplication.Helper;
+using Application.Hepers;
+using Domain.Identity;
 
 namespace Web.ManagerApplication.Areas.Identity.Pages.Account
 {
@@ -218,7 +220,7 @@ namespace Web.ManagerApplication.Areas.Identity.Pages.Account
                                 var response = await _mediator.Send(new GetAllPermissionsCacheQuery());
                                 if (response.Succeeded)
                                 {
-                                    var roles = await _roleManager.Roles.Where(x => x.ComId == user.ComId).ToListAsync();
+                                    var roles = await _roleManager.Roles.Where(x => x.ComId == user.ComId && getrolebyuser.Contains(x.Name)).ToListAsync();
                                     var viewModel = new List<UserRolesViewModel>();
                                     var Claims = new List<Claim>();
                                     foreach (var item in roles)
@@ -226,13 +228,11 @@ namespace Web.ManagerApplication.Areas.Identity.Pages.Account
                                         if (await _userManager.IsInRoleAsync(user, item.Name))
                                         {
                                             var role = await _roleManager.FindByIdAsync(item.Id);
-                                            Claims.AddRange(await _roleManager.GetClaimsAsync(role));
-                                            //var userRolesViewModel = new UserRolesViewModel
-                                            //{
-                                            //    RoleName = item.Name,
-                                            //    RoleId = item.Id
-                                            //};
-                                            //viewModel.Add(userRolesViewModel);
+                                            if (role != null)
+                                            {
+                                                Claims.AddRange(await _roleManager.GetClaimsAsync(role));
+                                            }
+                                            
                                         }
                                     }
                                     var model = new PermissionViewModel();
@@ -263,6 +263,11 @@ namespace Web.ManagerApplication.Areas.Identity.Pages.Account
                                         {
                                             returnUrl = "/Selling/Pos";
                                             break;
+                                        } 
+                                        else if (item== PermissionUser.beppos && user.IdDichVu == EnumTypeProduct.AMTHUC)
+                                        {
+                                            returnUrl = "/Selling/PosKitchen";
+                                            break;
                                         }
                                         else if (item == PermissionUser.thunganSaleRetail && (user.IdDichVu == EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == EnumTypeProduct.BAN_LE || user.IdDichVu == EnumTypeProduct.THOITRANG))
                                         {
@@ -277,30 +282,6 @@ namespace Web.ManagerApplication.Areas.Identity.Pages.Account
                                     }
 
                                 }
-                                //var lstrole = _roleManager.Roles.Where(x => x.ComId == user.ComId).ToList();
-                                //foreach (var role in lstrole)
-                                //{
-                                //    if (await _userManager.IsInRoleAsync(user, PermissionUser.quanlyketoan))
-                                //    {
-                                //        returnUrl = "/Selling/Dashboard";
-                                //        break;
-                                //    }
-                                //    if (await _userManager.IsInRoleAsync(user, PermissionUser.thunganpos) && user.IdDichVu == EnumTypeProduct.AMTHUC)
-                                //    {
-                                //        returnUrl = "/Selling/Pos";
-                                //        break;
-                                //    }
-                                //    else if (await _userManager.IsInRoleAsync(user, PermissionUser.thunganSaleRetail) && (user.IdDichVu == EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == EnumTypeProduct.BAN_LE || user.IdDichVu == EnumTypeProduct.THOITRANG))
-                                //    {
-                                //        returnUrl = "/Selling/SaleRetail";
-                                //        break;
-                                //    }
-                                //    if (await _userManager.IsInRoleAsync(user, PermissionUser.nhanvienphucvu) && (user.IdDichVu == EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == EnumTypeProduct.BAN_LE || user.IdDichVu == EnumTypeProduct.THOITRANG))
-                                //    {
-                                //        returnUrl = "/";
-                                //        break;
-                                //    }
-                                //}
 
                                 return LocalRedirect(returnUrl);
                             }

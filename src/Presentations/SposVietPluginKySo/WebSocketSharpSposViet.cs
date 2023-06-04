@@ -32,16 +32,27 @@ namespace SposVietPluginKySo
             try{
                 if (wssv == null || !IsCreated)
                 {
-                    var gepath = wssv?.WebSocketServices?.Paths?.FirstOrDefault(x => x.Contains("8056"));
-                    if (gepath==null)
+                    var channels = WebSocketSharpSposViet.wssv?.WebSocketServices?.Paths?.ToList() ?? null;
+                    if (channels != null)
+                    {
+                        channels.ForEach(channel => { WebSocketSharpSposViet.wssv.RemoveWebSocketService(channel); channel = null; });
+                    }
+                    //var gepath = wssv?.WebSocketServices?.Paths?.FirstOrDefault(x => x.Contains("8056"));
+                    //if (gepath != null)
+                    //{
+                    //    wssv?.WebSocketServices?.Paths.
+                    //}
+                    //if (gepath==null)
                     {
                         wssv = new WebSocketServer(8056);
                         //wssv = new WebSocketServer("wss://127.0.0.1:8056");
                         wssv.AddWebSocketService<Echo>("/SposVietPlugin");
                         // wssv.AddWebSocketService<EchoAll>("/EchoAll");//dùng cho tất cả người dùng
+                        wssv.KeepClean = false;
                         wssv.Start();
                         IsCreated = true;
-                       // wssv.Stop();
+                        LogControl.Write("StartWebSocket");
+                        // wssv.Stop();
                     }
                    
                 }
@@ -49,14 +60,22 @@ namespace SposVietPluginKySo
             }
             catch (WebSocketException wse)
             {
-                wssv = null;
-                Thread.Sleep(3000);
+                IsCreated = false;
+                LogControl.Write("Đóng web WebSocketException:" + wse.ToString());
+                WebSocketSharpSposViet.wssv.Stop();
+                removeWebSocketServices();
+                WebSocketSharpSposViet.wssv = null;
+                Thread.Sleep(1000);
                 WebSocketSharpSposViet.StartWebSocket();
             }
             catch (Exception e)
             {
-                wssv = null;
-                Thread.Sleep(3000);
+                IsCreated = false;
+                LogControl.Write("Đóng web:" + e.ToString());
+                WebSocketSharpSposViet.wssv.Stop();
+                removeWebSocketServices();
+                WebSocketSharpSposViet.wssv = null;
+                Thread.Sleep(1000);
                 WebSocketSharpSposViet.StartWebSocket();
                 //wssv = null;
                 //IsCreated = false;
@@ -64,6 +83,14 @@ namespace SposVietPluginKySo
                 //    WebSocketSharpSposViet.StartWebSocket();
                 //});
                 //new Echo().SetTimeout(action, 1000); //đóng conncet thì tự gọi lại sau 3 giây
+            }
+        }
+        private static void removeWebSocketServices()
+        {
+            var channels = WebSocketSharpSposViet.wssv?.WebSocketServices?.Paths?.ToList() ?? null;
+            if (channels != null)
+            {
+                channels.ForEach(channel => { WebSocketSharpSposViet.wssv.RemoveWebSocketService(channel); channel = null; });
             }
         }
     }
@@ -87,21 +114,20 @@ namespace SposVietPluginKySo
         //}
         protected override void OnClose(CloseEventArgs e)
         {
+            LogControl.Write("OnClose client:");
             //if (WebSocketSharpSposViet.wssv != null)
             //{
             //    WebSocketSharpSposViet.wssv.Stop();
-            //    Thread.Sleep(1000);
             //    removeWebSocketServices();
             //    WebSocketSharpSposViet.wssv = null;
             //}
-            //Thread.Sleep(1000);
-            //var action = new Action(() => {
-            //    WebSocketSharpSposViet.StartWebSocket();
-            //});
-            //SetTimeout(action, 300); //đóng conncet thì tự gọi lại sau 3 giây
-            //WebSocketSharpSposViet.StartWebSocket();
+            if (WebSocketSharpSposViet.wssv == null)
+            {
+                Thread.Sleep(1000);
+                WebSocketSharpSposViet.StartWebSocket();
+            }
         }
-        internal static void removeWebSocketServices()
+        private static void removeWebSocketServices()
         {
             var channels = WebSocketSharpSposViet.wssv?.WebSocketServices?.Paths?.ToList() ?? null;
             if (channels != null)
@@ -112,6 +138,7 @@ namespace SposVietPluginKySo
 
         protected override void OnError(WebSocketSharp.ErrorEventArgs e)
         {
+            LogControl.Write("OnError:");
 
         }
 
@@ -226,6 +253,7 @@ namespace SposVietPluginKySo
             }
             catch (Exception ex)
             {
+                LogControl.Write(ex.ToString());
                 var res = new ResponseModel<string>() { Data = "", isSuccess = false, Message = "Lỗi không tìm thấy dữ liệu" + ex.Message };
                 string data = JsonConvert.SerializeObject(res);
                 Send(data);

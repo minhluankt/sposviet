@@ -6,7 +6,7 @@ using Application.Features.RoomAndTables.Commands;
 using Application.Features.RoomAndTables.Query;
 using Application.Providers;
 using Domain.ViewModel;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

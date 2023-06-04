@@ -2,7 +2,7 @@
 using Application.Interfaces;
 using Application.Interfaces.Shared;
 using Infrastructure.Infrastructure.DbContexts;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Infrastructure.Infrastructure.Identity.Services;
 using AspNetCoreHero.Results;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

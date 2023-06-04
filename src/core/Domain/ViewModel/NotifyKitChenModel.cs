@@ -20,6 +20,8 @@ namespace Domain.ViewModel
         public bool UpdateOne { get; set; }
         public bool UpdateFull { get; set; }
         public bool IsProgress { get; set; }//dg nhận món
+        public bool IsCancel { get; set; }//dg nhận món
+        public int[] lstIdChiken { get; set; }
         public Guid[] ListIdChitken { get; set; }//list này để thông báo
     }
     public class KitChenModel

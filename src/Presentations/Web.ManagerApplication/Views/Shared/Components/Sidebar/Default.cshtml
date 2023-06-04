@@ -6,8 +6,6 @@
 @{
     var user = User.Identity.GetUserClaimLogin();
 }
-
-
 <div class="app-sidebar sidebar-shadow">
     <div class="app-header__logo">
         <div class="logo-src">
@@ -209,6 +207,12 @@
                                 Xuất nhập tồn kho
                             </a>
                         </li>
+                        <li>
+                            <a asp-area="Selling" asp-controller="ReportPos" asp-action="EInvoice">
+                                <i class="metismenu-icon"></i>
+                                Hóa đơn điện tử
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li>
@@ -338,7 +342,7 @@
                     }
                     else
                     {
-                        <a href="/Selling/Pos">
+                        <a href="/OrderStaff">
                             <i class="metismenu-icon fa fa-edit"></i>
                             Bán hàng tại quầy
                         </a>

@@ -4,7 +4,7 @@ using Hangfire;
 using Hangfire.MemoryStorage;
 using Hangfire.SqlServer;
 using Infrastructure.Infrastructure.DbContexts;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Infrastructure.Shared.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

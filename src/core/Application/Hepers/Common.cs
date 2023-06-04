@@ -341,6 +341,14 @@ namespace Application.Hepers
             Claim COMID = claimsIdentity?.FindFirst(ClaimUser.COMID);
             Claim IDDICHVU = claimsIdentity?.FindFirst(ClaimUser.IDDICHVU);
             Claim IDGUID = claimsIdentity?.FindFirst(ClaimUser.IDGUID);
+
+            Claim IsAdmin = claimsIdentity?.FindFirst(ClaimUser.IsAdmin);
+            Claim IsThuNgan = claimsIdentity?.FindFirst(ClaimUser.IsThuNgan);
+            Claim IsBep = claimsIdentity?.FindFirst(ClaimUser.IsBep);
+            Claim IsPhucVu = claimsIdentity?.FindFirst(ClaimUser.IsPhucVu);
+            Claim IsPhucVuPayment = claimsIdentity?.FindFirst(ClaimUser.IsPhucVuPayment);
+            Claim IsKeToan = claimsIdentity?.FindFirst(ClaimUser.IsKeToan);
+
             Claim UserName = claimsIdentity?.FindFirst(ClaimTypes.Name);
             Claim Id = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -348,6 +356,12 @@ namespace Application.Hepers
             {
                 ComId = int.Parse(COMID.Value),
                 Id = IDGUID!=null? IDGUID.Value:Id.Value,
+                IsAdmin = IsAdmin != null? Convert.ToBoolean(Convert.ToInt16(IsAdmin.Value)) :false,
+                IsThuNgan = IsThuNgan != null? Convert.ToBoolean(Convert.ToInt16(IsThuNgan.Value)) : false,
+                IsBep = IsBep != null? Convert.ToBoolean(Convert.ToInt16(IsBep.Value)) : false,
+                IsPhucVu = IsPhucVu != null? Convert.ToBoolean(Convert.ToInt16(IsPhucVu.Value)) : false,
+                IsPhucVuPayment = IsPhucVuPayment != null? Convert.ToBoolean(Convert.ToInt16(IsPhucVuPayment.Value)) : false,
+                IsKeToan = IsKeToan != null? Convert.ToBoolean(Convert.ToInt16(IsKeToan.Value)) : false,
                 UserName = UserName.Value,
                 FullName = FULLNAME.Value,
                 IdDichVu = (EnumTypeProduct)int.Parse(IDDICHVU.Value),

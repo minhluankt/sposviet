@@ -6,7 +6,7 @@ using Application.Features.Supplierss.Query;
 using Application.Hepers;
 using Application.Providers;
 using Domain.Entities;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Joker.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

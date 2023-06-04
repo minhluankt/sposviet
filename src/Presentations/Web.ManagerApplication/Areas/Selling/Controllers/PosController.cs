@@ -5,7 +5,7 @@ using Application.Features.Products.Query;
 using Application.Hepers;
 using Application.Providers;
 using Domain.ViewModel;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

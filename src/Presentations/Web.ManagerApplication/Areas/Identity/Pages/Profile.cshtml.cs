@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;

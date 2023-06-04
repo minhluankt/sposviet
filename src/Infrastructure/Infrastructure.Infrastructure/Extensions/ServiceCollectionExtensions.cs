@@ -6,6 +6,7 @@ using Application.Interfaces.Repositories;
 using Application.Providers;
 using Ardalis.Specification;
 using Domain.Entities;
+using Domain.Identity;
 using Infrastructure.Infrastructure.CacheRepositories;
 using Infrastructure.Infrastructure.DbContexts;
 using Infrastructure.Infrastructure.HubS;
@@ -50,9 +51,9 @@ namespace Infrastructure.Infrastructure.Extensions
             services.AddTransient<IUserManager, UserManager>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IFormFileHelperRepository, FormFileHelperRepository>();
-            services.AddTransient<ISignInManagerRepository<Identity.Models.ApplicationUser>, SignInManagerRepository>();
-            services.AddTransient<IUserManagerCacheRepository<Identity.Models.ApplicationUser>, UserManagerCacheRepository>();
-            services.AddTransient<IUserManagerRepository<Identity.Models.ApplicationUser>, UserManagerRepository>();
+            services.AddTransient<ISignInManagerRepository<ApplicationUser>, SignInManagerRepository>();
+            services.AddTransient<IUserManagerCacheRepository<ApplicationUser>, UserManagerCacheRepository>();
+            services.AddTransient<IUserManagerRepository<ApplicationUser>, UserManagerRepository>();
 
             services.AddScoped<IVnPayService, VnPayService>();//ngân hàng
 

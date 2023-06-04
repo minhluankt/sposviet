@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Model;
 
 namespace Web.ManagerApplication.Areas.Mappings

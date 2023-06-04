@@ -11,7 +11,7 @@ using Application.Hepers;
 using Application.Providers;
 using Domain.Entities;
 using Domain.ViewModel;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Library;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

@@ -1,8 +1,9 @@
 ﻿using Application.Enums;
 using Application.Interfaces.Repositories;
 using Domain.Entities;
+using Domain.Identity;
 using Infrastructure.Infrastructure.HubS;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;

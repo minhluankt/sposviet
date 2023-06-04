@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using NStandard;
 using NStandard.Evaluators;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Database;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Spire.Doc;
 using System;
@@ -1796,6 +1797,202 @@ namespace Infrastructure.Infrastructure.Repositories
                 return await Result.FailAsync("Không tìm thấy đơn để cập nhật");
             }
             
+        }
+
+        public async Task<Result<PublishInvoiceResponse>> CheckOutOrderStaffAsync(int comid, int Idpayment, Guid idOrder, decimal discountPayment, decimal Amount, decimal Total, string Cashername, string IdCasher, EnumTypeProduct enumType = EnumTypeProduct.AMTHUC)
+        {
+            await _unitOfWork.CreateTransactionAsync();
+            try
+            {
+                bool IsProductVAT = false;//đánh dấu sản phẩm có thuế
+                var checkOrder = await _repository.Entities.Include(x => x.OrderTableItems)
+                    .Include(x => x.Customer)
+                    .Include(x => x.RoomAndTable)
+                    .ThenInclude(x => x.Area)
+                    .SingleOrDefaultAsync(x => x.ComId == comid && x.IdGuid == idOrder && x.TypeProduct == enumType);
+                if (checkOrder != null)
+                {
+                    checkOrder.Status = EnumStatusOrderTable.DA_THANH_TOAN;
+                    checkOrder.CasherName = Cashername;
+                    checkOrder.IdCasher = IdCasher;
+                    checkOrder.PurchaseDate = DateTime.Now; //phát hành mà có xuất hóa đơn thì phải update lại tiền thuế và tiền sau thuế
+                    await _repository.UpdateAsync(checkOrder);
+
+                    var inv = _map.Map<Invoice>(checkOrder);
+                    inv.ArrivalDate = checkOrder.CreatedOn;//giờ vào
+                    var getInv = await _managerInvNorepository.UpdateInvNo(comid, ENumTypeManagerInv.Invoice, false);
+
+                    inv.InvoiceCode = $"HD-{getInv.ToString("00000000")}";
+                    inv.Id = 0;
+                    inv.PurchaseDate = checkOrder.PurchaseDate;//giờ thanh toán
+                    inv.IdPaymentMethod = Idpayment;
+                    inv.IdOrderTable = checkOrder.Id;
+                    inv.CasherName = Cashername;
+                    inv.IdCasher = IdCasher;
+                    //check item order và map, vì có 1 sản phẩm nhiều dòng
+                    var newlistitem = new List<InvoiceItem>();
+                    foreach (var item in checkOrder.OrderTableItems.GroupBy(x => x.IdProduct))
+                    {
+                        var _item = item.First().CloneJson();
+                        _item.Quantity = item.Sum(x => x.Quantity);
+                        var invitem = _map.Map<InvoiceItem>(_item);
+                        invitem.Total = item.Sum(x => x.Total); // phải làm vậy mới lấy cùng các sp
+                        invitem.Amonut = item.Sum(x => x.Amount); // do lỗi trường nên phải làm ri
+                        invitem.VATAmount = item.Sum(x => x.VATAmount); // do lỗi trường nên phải làm ri
+                        invitem.DiscountAmount = item.Sum(x => x.DiscountAmount); // do lỗi trường nên phải làm ri
+
+                        if (!_item.IsVAT)
+                        {
+                            //invitem.Amonut = _item.Total;
+                            invitem.VATRate = (int)NOVAT.NOVAT;
+                        }
+                        //----
+                        invitem.Id = 0;
+                        newlistitem.Add(invitem);
+                    }
+
+                    inv.InvoiceItems = newlistitem;
+                    inv.Status = EnumStatusInvoice.DA_THANH_TOAN;
+                    if (checkOrder.OrderTableItems.Where(x => x.IsVAT).Count() > 0)
+                    {
+                        inv.DiscountOther = discountPayment;//nếu là sản phẩm đã có thuế thì phải giảm giá sau thuế
+                    }
+                    else
+                    {
+                        inv.DiscountAmount = discountPayment;//ngược lại là giá sau thuế
+                    }
+                    inv.Total = Math.Round(newlistitem.Sum(x => x.Total), MidpointRounding.AwayFromZero);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+                    inv.VATAmount = Math.Round(newlistitem.Sum(x => x.VATAmount), MidpointRounding.AwayFromZero);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+                                                                                                                 // lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+
+                    inv.Amonut = Amount;//inv.Amonut - discountPayment;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
+
+                    inv.AmountCusPayment = 0;// tieefn khasch đưa
+                    inv.VATRate = (int)NOVAT.NOVAT;
+                    inv.AmountChangeCus = 0;
+
+                    if (checkOrder.Customer != null)
+                    {
+                        // nếu có thêm gì nhớ thêm bên invoice khi xem chi tiết có update khách hàng nữa nhé
+                        inv.Buyer = checkOrder.Customer.Buyer?.Trim();
+                        inv.CusName = checkOrder.Customer.Name?.Trim();
+                        inv.Taxcode = checkOrder.Customer.Taxcode?.Trim();
+                        inv.CusCode = checkOrder.Customer.Code?.Trim();
+                        inv.PhoneNumber = checkOrder.Customer.PhoneNumber?.Trim();
+                        inv.CCCD = checkOrder.Customer.CCCD?.Trim();
+                        inv.Address = checkOrder.Customer.Address?.Trim();
+                        inv.Email = checkOrder.Customer.Email?.Trim();
+                        inv.CusBankNo = checkOrder.Customer.CusBankNo?.Trim();
+                        inv.CusBankName = checkOrder.Customer.CusBankName?.Trim();
+                    }
+                    if (checkOrder.RoomAndTable != null && !checkOrder.IsBringBack)
+                    {
+                        inv.TableNameArea = $"{checkOrder.RoomAndTable.Name}";
+                        if (checkOrder.RoomAndTable.Area != null)
+                        {
+                            inv.TableNameArea += $",{checkOrder.RoomAndTable.Area.Name}";
+                        }
+                    }
+                    else if (checkOrder.IsBringBack)
+                    {
+                        inv.TableNameArea = $"Mang về";
+                    }
+                    //add bảng
+                    await _InvoiceRepository.AddAsync(inv);
+                    await _unitOfWork.SaveChangesAsync();
+                    inv.Customer = checkOrder.Customer;
+
+                    //giwof tạo phiếu thu nhé
+                    RevenueExpenditure revenueExpenditure = new RevenueExpenditure()
+                    {
+                        ComId = inv.ComId,
+                        Amount = inv.Amonut,
+                        IdInvoice = inv.Id,
+                        ObjectRevenueExpenditure = EnumTypeObjectRevenueExpenditure.KHACHHANG,
+                        IdCustomer = inv.IdCustomer,
+                        Type = EnumTypeRevenueExpenditure.THU,
+                        Typecategory = EnumTypeCategoryThuChi.TIENHANG,
+                        Title = $"Thu {LibraryCommon.GetDisplayNameEnum(EnumTypeCategoryThuChi.TIENHANG).ToLower()}",
+                        Date = inv.CreatedOn,
+                        Code = $"PT{inv.InvoiceCode}",
+                        CustomerName = inv.Buyer,
+                        Status = EnumStatusRevenueExpenditure.HOANTHANH,
+                        IdPayment = inv.IdPaymentMethod,
+                    };
+                    await _revenueExpenditureRepository.AddAsync(revenueExpenditure);
+                    //
+                    // his tory đơn
+                    var his = new HistoryInvoice();
+                    his.Carsher = Cashername;
+                    his.InvoiceCode = inv.InvoiceCode;
+                    his.IdInvoice = inv.Id;
+                    his.Name = $"Thanh toán đơn";
+                    await _historyInvoiceRepository.AddAsync(his);
+
+                    //-----------------------------------//
+                    // update lại sản phẩm tồn kho
+                    var list = new List<KeyValuePair<string, decimal>>();
+                    //------grby item lại vì nó có nhiều sản phẩm trên nhiều dòng
+                    foreach (var item in inv.InvoiceItems)
+                    {
+                        if (item.TypeProductCategory != EnumTypeProductCategory.SERVICE && item.TypeProductCategory != EnumTypeProductCategory.COMBO)//lấy ra mấy csai k phải là combo và dịch vụ
+                        {
+                            list.Add(new KeyValuePair<string, decimal>(item.Code, item.Quantity * -1));
+                        }
+                        if (item.TypeProductCategory == EnumTypeProductCategory.COMBO)//nếu là combo nó sẽ có các thành phần cần lôi ra
+                        {
+                            //nếu là combo thì phải tìm ra các thành phần để update vào tồn kho
+                            var getlistprobycombo = await _comboproductrepository.Entities.AsNoTracking().Where(x => x.IdProduct == item.IdProduct).ToListAsync();
+                            if (getlistprobycombo.Count() > 0)
+                            {
+                                var getlstid = getlistprobycombo.Select(x => x.IdPro).ToArray();
+                                var listproductcombo = await _productrepository.GetProductbyListId(getlstid, inv.ComId);
+                                foreach (var combo in getlistprobycombo)
+                                {
+                                    var getprobycombo = listproductcombo.SingleOrDefault(x => x.Id == combo.IdPro);
+                                    // kquarn lý tồn kho,k phải dịch vụ k phải combo mới update
+                                    if (!getprobycombo.IsInventory && item.TypeProductCategory != EnumTypeProductCategory.SERVICE && item.TypeProductCategory != EnumTypeProductCategory.COMBO)
+                                    {
+                                        var quantity = (combo.Quantity * -1) * item.Quantity;
+                                        list.Add(new KeyValuePair<string, decimal>(getprobycombo.Code, quantity));
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                    await _productrepository.UpdateQuantity(list, comid);
+                    //end
+                    //--------------------------------//
+                    await _unitOfWork.SaveChangesAsync();
+                    _unitOfWork.Commit();
+                    var getpayment = await _paymentMethodRepository.GetAll(inv.ComId).Where(x => x.Id == inv.IdPaymentMethod).AsNoTracking().SingleOrDefaultAsync();
+                    inv.PaymentMethod = getpayment;
+                    string token = string.Empty;
+                    PublishInvoiceResponse publishInvoiceResponse = new PublishInvoiceResponse();
+
+                    if (!inv.IsBringBack && inv.IdCustomer.HasValue)
+                    {
+                        if (inv.Customer == null)
+                        {
+                            inv.Customer = await _customerRepository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == inv.IdCustomer.Value);
+                        }
+                    }
+                    publishInvoiceResponse.Invoice = inv;
+                    publishInvoiceResponse.IsProductVAT = IsProductVAT;
+                    return await Result<PublishInvoiceResponse>.SuccessAsync(publishInvoiceResponse,"Thanh toán thành công");
+                }
+                await _unitOfWork.RollbackAsync();
+                return await Result<PublishInvoiceResponse>.FailAsync(HeperConstantss.ERR043);
+
+            }
+            catch (Exception e)
+            {
+                _log.LogError("Thanh toán đơn lỗi: " + e.ToString());
+                await _unitOfWork.RollbackAsync();
+                return await Result<PublishInvoiceResponse>.FailAsync(e.ToString());
+            }
         }
     }
 }

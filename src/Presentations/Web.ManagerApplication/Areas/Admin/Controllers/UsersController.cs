@@ -2,7 +2,8 @@
 using Application.Hepers;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Shared;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

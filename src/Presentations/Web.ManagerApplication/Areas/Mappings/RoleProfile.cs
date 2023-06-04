@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

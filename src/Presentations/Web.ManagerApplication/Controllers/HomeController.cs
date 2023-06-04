@@ -5,7 +5,7 @@ using Application.Features.CompanyInfo.Query;
 using Application.Features.ConfigSystems.Query;
 using Application.Features.NotificationNewsEmails.Commands;
 using Application.Hepers;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

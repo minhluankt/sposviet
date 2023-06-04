@@ -3,7 +3,7 @@ using Application.Features.Areas.Commands;
 using Application.Features.Areas.Query;
 using Application.Hepers;
 using Application.Providers;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

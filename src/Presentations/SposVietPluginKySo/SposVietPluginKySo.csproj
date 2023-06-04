@@ -46,6 +46,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Select.HtmlToPdf">
+      <HintPath>..\..\..\packages\Select.HtmlToPdf.18.4.0\lib\net40\Select.HtmlToPdf.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

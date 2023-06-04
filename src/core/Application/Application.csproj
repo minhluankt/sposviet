@@ -111,8 +111,10 @@
     <Compile Include="Features\Invoices\Query\GetInvoiceArrayQuery.cs" />
     <Compile Include="Features\Invoices\Query\GetInvoiceByCodeQuery.cs" />
     <Compile Include="Features\Invoices\Query\PrintInvoicePos.cs" />
+    <Compile Include="Features\Kitchens\Commands\StaffUpdateFoodCommand.cs" />
     <Compile Include="Features\Kitchens\Commands\UpdateNotifyChitkenCommand.cs" />
     <Compile Include="Features\Kitchens\Querys\GetFoodConfirmationOrderQuery.cs" />
+    <Compile Include="Features\Kitchens\Querys\GetKitchenListQuery.cs" />
     <Compile Include="Features\Kitchens\Querys\GetOrderChitkenQuery.cs" />
     <Compile Include="Features\Kitchens\Querys\GetOrderChitkenTableQuery.cs" />
     <Compile Include="Features\Logs\Commands\AddActivityLog\AddActivityLogCommand.cs" />
@@ -136,6 +138,7 @@
     <Compile Include="Features\Orders\Query\GetByIdOrderQuery.cs" />
     <Compile Include="Features\Orders\Query\GetOrderQuery.cs" />
     <Compile Include="Features\OrderTablePos\Commands\CheckOutOrderCommand.cs" />
+    <Compile Include="Features\OrderTablePos\Commands\CheckOutOrderStaffCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\CreateOrderTableCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\DeleteOrderTableCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\SplitOrderCommand.cs" />

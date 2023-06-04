@@ -4,7 +4,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

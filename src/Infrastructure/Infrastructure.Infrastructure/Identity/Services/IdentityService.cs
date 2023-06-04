@@ -10,7 +10,8 @@ using Application.Providers;
 using AspNetCoreHero.Results;
 using AspNetCoreHero.ThrowR;
 using Domain.Entities;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
@@ -282,6 +283,7 @@ namespace Infrastructure.Infrastructure.Identity.Services
                 new Claim(ClaimUser.IDGUID, user.Id),
                 new Claim(ClaimUser.COMID, user.ComId.ToString()),
                 new Claim(ClaimUser.IDDICHVU, ((int)user.IdDichVu).ToString()),
+
                 new Claim("ip", ipAddress)
                 }
                // .Union(userClaims)

@@ -4,7 +4,7 @@
 
 using Application.Features.ActivityLog.Commands.AddLog;
 using Application.Interfaces.Repositories;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;

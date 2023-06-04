@@ -15,7 +15,7 @@ using SmartBreadcrumbs.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Web.ManagerApplication.Areas.Admin.Models;
 using Microsoft.AspNetCore.Identity;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 
 namespace Web.ManagerApplication.Areas.Admin.Controllers
 {

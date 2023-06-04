@@ -1,7 +1,7 @@
 ﻿using Application.CacheKeys;
 using Application.Interfaces.CacheRepositories;
 using Application.Extensions.Caching;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Identity;
 
 namespace Infrastructure.Infrastructure.CacheRepositories
 {

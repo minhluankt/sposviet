@@ -96,7 +96,7 @@ namespace Application.Features.Invoices.Query
                         tientruocthue = IsProductVAT ? (InvoiceData.VATAmount + InvoiceData.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider()) : InvoiceData.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         tienthue = InvoiceData.VATAmount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         thuesuat = InvoiceData.VATRate?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
-                        giamgia = InvoiceData.DiscountAmount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        giamgia = (InvoiceData.DiscountAmount + InvoiceData.DiscountOther).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         khachcantra = (InvoiceData.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         khachthanhtoan = InvoiceData.AmountCusPayment?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         tienthuatrakhach = InvoiceData.AmountChangeCus?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
@@ -106,7 +106,7 @@ namespace Application.Features.Invoices.Query
                     var listitemnew = InvoiceData.InvoiceItems;
                     if (IsProductVAT)//check trường hợp nếu sản phẩm có dòng đơn giá đã gồm thuế
                     {
-                        if (InvoiceData.VATRate != (float)VATRateInv.KHONGVAT)//nếu hóa đơn có thuế thì hiển thị tiền trước thuế phải là tiền trước thuế của sản phẩm có và k có thuế
+                        if (InvoiceData.VATRate !=(float)NOVAT.NOVAT)//nếu hóa đơn có thuế thì hiển thị tiền trước thuế phải là tiền trước thuế của sản phẩm có và k có thuế
                         {
                             templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
                         }

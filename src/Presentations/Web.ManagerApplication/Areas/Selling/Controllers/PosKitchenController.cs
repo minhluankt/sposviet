@@ -1,4 +1,5 @@
-﻿using Application.Enums;
+﻿using Application.Constants;
+using Application.Enums;
 using Application.Features.KitchenPos.Querys;
 using Application.Features.Kitchens.Commands;
 using Application.Features.Kitchens.Querys;
@@ -7,7 +8,8 @@ using Application.Interfaces.Repositories;
 using Application.Providers;
 using Domain.ViewModel;
 using Infrastructure.Infrastructure.HubS;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
+using Library;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -146,6 +148,83 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> UpdateStatusFoodInStaffAsync(NotifyKitChenModel model)//cho nhân viên phục vụ
+        {
+           try {
+                var currentUser = User.Identity.GetUserClaimLogin();
+                if (model.IsCancel)
+                {
+                    var getdata = await _mediator.Send(new GetKitchenListQuery() { Comid=currentUser.ComId,lstId=model.lstIdChiken});
+                    if (getdata.Succeeded)
+                    {
+                        if (getdata.Data.Count()==0)
+                        {
+                            _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR012));
+                            return Json(new { isValid = false, notityBar = false });
+                        }
+                        var today= DateTime.Now;
+                        var json= getdata.Data.Select(x=>new {Id = x.Id,
+                            Name =x.ProName,
+                            Cashername = x.Cashername,
+                            RoomTableName = x.RoomTableName,
+                            Note = x.Note,
+                            StaffName= currentUser.FullName,
+                            IdStaffName= currentUser.Id,
+                            Date = today.ToString("dd/MM/yyyy HH:mm:ss")
+                        });
+                        await dashboardHub.StaffAlertBep(currentUser.ComId, ConvertSupport.ConverObjectToJsonString(json));
+                        return Json(new { isValid = true, notityBar = true });
+                    }
+                    return Json(new { isValid = false, notityBar = false });
+                }
+                else
+                {
+                    model.ComId = currentUser.ComId;
+                    model.Cashername = currentUser.FullName;
+                    var map = _mapper.Map<StaffUpdateFoodCommand>(model);
+                    var getAll = await _mediator.Send(map);
+                    if (getAll.Succeeded)
+                    {
+                        _notify.Success(GeneralMess.ConvertStatusToString(getAll.Message));
+                        return Json(new { isValid = true });
+                    }
+                    _notify.Error(GeneralMess.ConvertStatusToString(getAll.Message));
+                    return Json(new { isValid = false });
+                }
+                
+            }
+            catch (Exception e)
+            {
+                _notify.Error(e.Message);
+                return Json(new { isValid = false });
+            }
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatusFoodInStaffKitchenAsync(NotifyKitChenModel model)//cho nhân viên bếp
+        {
+           try {
+
+                var currentUser = User.Identity.GetUserClaimLogin();
+                model.ComId = currentUser.ComId;
+                model.Cashername = currentUser.FullName;
+                var map = _mapper.Map<StaffUpdateFoodCommand>(model);
+                var getAll = await _mediator.Send(map);
+                if (getAll.Succeeded)
+                {
+                    _notify.Success(GeneralMess.ConvertStatusToString(getAll.Message));
+                    return Json(new { isValid = true });
+                }
+                _notify.Error(GeneralMess.ConvertStatusToString(getAll.Message));
+                return Json(new { isValid = false });
+            }
+            catch (Exception e)
+            {
+                _notify.Error(e.Message);
+                return Json(new { isValid = false });
+            }
+        }
+         [HttpPost]
         public async Task<IActionResult> UpdateProcessingFoodAsync(NotifyKitChenModel model)//nhận món làm hoặc done món từ bếp màn hình nhà bếp 2
         {
             try

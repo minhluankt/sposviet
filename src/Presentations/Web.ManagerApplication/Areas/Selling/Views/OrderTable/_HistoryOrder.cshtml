@@ -31,7 +31,7 @@
                         {
                             <li class="addFood">
                                 <small class="text-warning">(Chuyển món)</small>
-                                <span class="text-warning">@hisDetail.Name</span>
+                                <span class="text-warning">@hisDetail.Name<br/><i class="red">@hisDetail.Note</i></span>
                             </li>
                         }
                         else if (hisDetail.TypeKitchenOrder == Application.Enums.EnumTypeKitchenOrder.GHEP)
@@ -43,7 +43,16 @@
                         }
                         else
                         {
-                            <li class="addFood">  <small>(Thêm món)</small> @hisDetail.Name</li>
+                                <li class="addFood">  <small>(Thêm món)</small> <span >@hisDetail.Name
+
+                                        @if (!string.IsNullOrEmpty(hisDetail.Note))
+                    {
+                                            
+
+                                            <small class="red ml-3">(@hisDetail.Note)</small>
+                                        }
+                                   
+                                    </span></li>
                         }
 
                     }

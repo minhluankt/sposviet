@@ -1,7 +1,7 @@
 ﻿using Application.Constants;
 using Application.Enums;
 using Application.Interfaces.Repositories;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 

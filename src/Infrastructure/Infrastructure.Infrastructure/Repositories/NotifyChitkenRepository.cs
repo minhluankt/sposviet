@@ -10,6 +10,7 @@ using Joker.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
+using Spire.Doc;
 using Spire.Pdf.Exporting.XPS.Schema;
 using System;
 using System.Collections.Generic;
@@ -2292,7 +2293,48 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public async Task<List<Kitchen>> GetAllFoodNewByOrder(int Comid, Guid idOrder)
         {
-            return await _kitchenRepository.Entities.AsNoTracking().Where(x => x.ComId == Comid && x.IdOrder == idOrder && x.Status==EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.Processing).ToListAsync();
+            return await _kitchenRepository.Entities.AsNoTracking().Where(x => x.ComId == Comid && x.IdOrder == idOrder && (x.Status==EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.Processing)).ToListAsync();
+        }
+
+        public async Task<Result<List<Kitchen>>> StaffUpdateStaus(int Comid, int[] lstid,string StaffName, string BarName, bool IsCancel = false)
+        {
+            var getid = await _kitchenRepository.Entities.Where(x=>lstid.Contains(x.Id) && x.ComId==Comid).ToListAsync();
+            if (getid.Count()==0)
+            {
+                return await Result<List<Kitchen>>.FailAsync(HeperConstantss.ERR012);
+            }
+            else
+            {
+                if (IsCancel)
+                {
+                    getid.ForEach(x => x.Status = EnumStatusKitchenOrder.CANCEL) ;
+                }
+                else
+                {
+                    getid.ForEach(x => x.Status = EnumStatusKitchenOrder.DONE);
+                }
+                List<HistoryKitchen> HistoryAutoSendTimer = new List<HistoryKitchen>();
+                DateTime today = DateTime.Now;
+                foreach (var item in getid)
+                {
+                    HistoryKitchen historyKitchen = new HistoryKitchen();
+                    historyKitchen.IdKitchen = item.Id;
+                    historyKitchen.StaffName = !string.IsNullOrEmpty(BarName)? BarName: StaffName;
+                    historyKitchen.Note = IsCancel? $"Phục vụ:{StaffName} yêu cầu hủy món chế biến" : $"Đã chuyển món cho khách";
+                    historyKitchen.CreateDate = today;
+                    HistoryAutoSendTimer.Add(historyKitchen);
+                }
+               
+                await _historyKitchenRepository.AddRangeAsync(HistoryAutoSendTimer);
+                await _kitchenRepository.UpdateRangeAsync(getid);
+                await _unitOfWork.SaveChangesAsync();
+                return await Result<List<Kitchen>>.SuccessAsync(getid, HeperConstantss.SUS006);
+            }
+        }
+
+        public async Task<List<Kitchen>> GetByListId(int Comid, int[] lstid)
+        {
+            return await _kitchenRepository.Entities.AsNoTracking().Where(x=>lstid.Contains(x.Id) && x.ComId==Comid).ToListAsync();
         }
 
         //public Task UpdateNotifyKitchenSpitOrderIsCreateOrderAsync(Guid IdOrder, List<OrderTableItem> lstorderold, int ComId, OrderTable newOrder)

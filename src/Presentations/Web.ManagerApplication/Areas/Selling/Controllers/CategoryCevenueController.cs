@@ -6,7 +6,7 @@ using Application.Features.CategoryCevenues.Query;
 using Application.Features.RevenueExpenditures.Query;
 using Application.Hepers;
 using Application.Providers;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

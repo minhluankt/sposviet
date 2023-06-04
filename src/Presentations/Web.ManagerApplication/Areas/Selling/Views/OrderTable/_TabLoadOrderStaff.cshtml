@@ -1,11 +1,14 @@
 ﻿@model Web.ManagerApplication.Areas.Selling.Models.OrderTableViewModel
-
+@using Application.Hepers
+@{
+    var user = User.Identity.GetUserClaimLogin();
+}
 <b id="id-order" data-id="@(Model.OrderTable?.IdGuid)"></b>
 <b id="searchcustomer" data-id="@(Model.OrderTable?.IdCustomer)" data-code="@(Model.OrderTable?.CusCode)"></b>
 <div class="table-dataStaff">
-<table class="table">
-    <thead>
-        <tr>
+    <table class="table">
+        <thead>
+            <tr>
                 <th colspan="2">
                     <div class="heade-toporder-staff">
                         <span class="ordercode">Mã đơn: @(Model.OrderTable?.OrderTableCode)</span> <span class="createdate">
@@ -13,78 +16,94 @@
                         </span>
                     </div>
                 </th>
-        </tr>
-    </thead>
-    <tbody class="itemorderbody">
-        @{
-            int i = 1;
-        }
-        @if (Model.OrderTable!=null)
-        {
-            @foreach (var item in Model.OrderTable.OrderTableItems)
+            </tr>
+        </thead>
+        <tbody class="itemorderbody">
+            @{
+                int i = 1;
+            }
+            @if (Model.OrderTable != null)
             {
-                <tr data-id="@item.IdGuid" data-idpro="@item.IdProduct" data-slNotify="@item.QuantityNotifyKitchen.ToString().Replace(",",".")" data-sl="@item.Quantity.ToString().Replace(",",".")">
-                    <td>
-                        <div class="leftfood">
+                @foreach (var item in Model.OrderTable.OrderTableItems)
+                {
+                    <tr data-id="@item.IdGuid" data-idpro="@item.IdProduct" data-slNotify="@item.QuantityNotifyKitchen.ToString().Replace(",",".")" data-sl="@item.Quantity.ToString().Replace(",",".")">
+                        <td>
+                            <div class="leftfood">
                                 <button class="removerow"><i class="fas fa-trash-alt"></i></button>
-                            <div class="content">
-                                <span class="name">@(i++). @item.Name</span>
-                                <div class="eventaddnote">
-                                    <i class="number3">@item.Price.ToString().Replace(",",".")</i>
-                                    <button class="note @(!string.IsNullOrEmpty(item.Note)?"active":"")" data-note="@item.Note">
-                                        <i class="far fa-sticky-note"></i>
+                                <div class="content">
+                                    <span class="name">@(i++). @item.Name</span>
+                                    <div class="eventaddnote">
+                                        <i class="number3">@item.Price.ToString().Replace(",",".")</i>
+                                        <button class="note @(!string.IsNullOrEmpty(item.Note)?"active":"")" data-note="@item.Note">
+                                            <i class="far fa-sticky-note"></i>
 
-                                        @if (!string.IsNullOrEmpty(item.Note))
-                                        {
-                                            <span class="text">@item.Note</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text">Thêm ghi chú</span>
-                                        }
-                                    </button>
+                                            @if (!string.IsNullOrEmpty(item.Note))
+                                            {
+                                                <span class="text">@item.Note</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text">Thêm ghi chú</span>
+                                            }
+                                        </button>
+                                    </div>
+
                                 </div>
-                               
                             </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="actionaddfood">
-                            <i class="fas fa-minus"></i>
-                            <input type="text" class="quantitynew number3" value="@item.Quantity.ToString().Replace(",",".")" />
-                            <i class="fas fa-plus"></i>
+                        </td>
+                        <td>
+                            <div class="actionaddfood">
+                                <i class="fas fa-minus"></i>
+                                <input type="text" class="quantitynew number3" value="@item.Quantity.ToString().Replace(",",".")" />
+                                <i class="fas fa-plus"></i>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr class="tr-nodata">
+                    <td colspan="2">
+                        <div class="no-order">
+                            <img src="~/images/ristorante_old.png" />
+                            <b>Chưa có món nào được chọn</b>
+                            <span>Vui lòng chọn món trong thực đơn</span>
                         </div>
                     </td>
                 </tr>
             }
-            
-        }
-        else
-        {
-            <tr class="tr-nodata">
-                <td colspan="2">
-                    <div class="no-order">
-                        <img src="~/images/ristorante_old.png" />
-                        <b>Chưa có món nào được chọn</b>
-                        <span>Vui lòng chọn món trong thực đơn</span>
-                    </div>
-                </td>
-            </tr>
-        }
-        
-    </tbody>
-</table> 
+
+        </tbody>
+    </table>
 </div>
 <div class="bottomFix">
-            <div class="leftcol">
-        <span class="text-am">Tổng tiền (<b class="fullQuantity number3">@(Model.OrderTable != null ? Model.OrderTable.Quantity.ToString().Replace(",", ".") : 0)</b>)</span>
-        <span class="value-am priceFormat amountFull number3">@(Model.OrderTable != null ? Model.OrderTable.OrderTableItems.Sum(x => x.Amount).ToString().Replace(",", ".") : "0")</span>
+    <div class="btn-paymentactionstaff">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle btn-showaction" type="button" id="dropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu">
+                @if (user.IsAdmin || user.IsThuNgan || user.IsPhucVuPayment)
+                {
+                    <button class="dropdown-item btn-payment" type="button"><i class="fas fa-money-check-alt mr-2"></i> Thanh toán</button>
+                }
+                <button class="dropdown-item btn-historyOrder" type="button"><i class="fas fa-history mr-2"></i> Xem lịch sử gọi món</button>
             </div>
-            <div class="rightcol">
-        <button class="btn btn-danger btn-notif" disabled>
-                    <i class="fas fa-bell mr-2"></i> Thông báo bếp
-                </button>
-            </div>
+        </div>
+    </div>
+    <div class="content-amountandnotify">
+        <div class="leftcol">
+            <span class="text-am">Tổng tiền (<b class="fullQuantity number3">@(Model.OrderTable != null ? Model.OrderTable.Quantity.ToString().Replace(",", ".") : 0)</b>)</span>
+            <span class="value-am priceFormat amountFull number3">@(Model.OrderTable != null ? Model.OrderTable.OrderTableItems.Sum(x => x.Amount).ToString().Replace(",", ".") : "0")</span>
+        </div>
+        <div class="rightcol">
+            <button class="btn btn-danger btn-notif" disabled>
+                <i class="fas fa-bell mr-2"></i> Thông báo bếp
+            </button>
+        </div>
+    </div>
 </div>
 <!-- initially hidden right-click menu -->
 <div class="hidermenu" id="rmenu">
@@ -92,6 +111,6 @@
         <li>
             <button class="item-menu"><i class="far fa-clone"></i> Sao chép món</button>
         </li>
-       
+
     </ul>
 </div>

@@ -6,7 +6,7 @@ using Application.Hepers;
 using Application.Interfaces.Repositories;
 using Application.Providers;
 using HelperLibrary;
-using Infrastructure.Infrastructure.Identity.Models;
+using Domain.Identity;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
