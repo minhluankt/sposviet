@@ -1176,7 +1176,9 @@ input.select2-search__field {
         }
     }
 }
-
+.nowrap {
+    white-space: nowrap;
+}
 .select2-container--bootstrap .select2-selection--single .select2-selection__arrow {
     position: absolute;
     bottom: 0;

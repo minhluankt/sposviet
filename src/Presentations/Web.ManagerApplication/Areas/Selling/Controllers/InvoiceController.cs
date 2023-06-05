@@ -331,6 +331,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             _notify.Error(response.Message);
             return Json(new { isValid = false });
+        } 
+        public async Task<ActionResult> GetInvoiceByDayAsync()
+        {
+           
+            return Json(new { isValid = false });
         }
         [HttpPost]
         [EncryptedParameters("secret")]
