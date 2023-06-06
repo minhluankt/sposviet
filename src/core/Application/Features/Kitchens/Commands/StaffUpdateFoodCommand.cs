@@ -1,4 +1,5 @@
-﻿using Application.Enums;
+﻿using Application.Constants;
+using Application.Enums;
 using Application.Hepers;
 using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
@@ -66,7 +67,7 @@ namespace Application.Features.Kitchens.Commands
                 var add = await _NotifyChitkenRepository.StaffUpdateStaus(request.ComId, request.lstIdChiken, request.Cashername, request.Barname,request.IsCancel);
                 if (add.Succeeded)
                 {
-                    return await Result<List<Kitchen>>.SuccessAsync(add.Data);
+                    return await Result<List<Kitchen>>.SuccessAsync(add.Data,HeperConstantss.SUS006);
                 }
                 return Result<List<Kitchen>>.Fail(add.Message);
             }

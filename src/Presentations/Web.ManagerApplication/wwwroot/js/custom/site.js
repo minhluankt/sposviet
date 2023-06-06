@@ -14,7 +14,9 @@
 //        //cancelButton: 'your-cancel-button-class',
 //        footer: 'footer-Swal'
 //},
+var connectionKitchenIndex;
 var handleInterval;
+var dataTableOutInvoicePos;
 var dataTableOut;
 var dataTable;
 var ProductsArrays = "ProductsArrays";
@@ -4165,7 +4167,6 @@ var settingpos = {
         if (typeof getisprintlocaapp == "undefined" || getisprintlocaapp == null) {
             localStorage.setItem("IsPrintApp", false);
         } else if(getisprintlocaapp=="true") {
-            testConnetWebSocket();
             loadcentChitkent.intEvent();
         }
         if (typeof getlienin == "undefined" || getlienin == null) {
@@ -7559,6 +7560,25 @@ var loadcentChitkent = {
             }
         }, 300000);//5 phút
     },
+    loadconnectwss: function () {
+         connectionKitchenIndex = new signalR.HubConnectionBuilder()
+            .withAutomaticReconnect({
+                nextRetryDelayInMilliseconds: retryContext => {
+                    if (retryContext.elapsedMilliseconds < 36000000) { //600 phút nhé là 10 tiếng
+                        console.log("đang conncet");
+                        // If we've been reconnecting for less than 60 seconds so far,
+                        // wait between 0 and 10 seconds before the next reconnect attempt.
+                        //return Math.random() * 3000;
+                        return 1000;
+                    } else {
+                        // If we've been reconnecting for more than 60 seconds so far, stop reconnecting.
+                        return null;
+                    }
+                }
+            })
+            .withUrl('/Signal')
+            .build();
+    },
     loadeventacceptAllnotify: function () {
         $("#next-allneworder").click(function () {
             let lstid = [];
@@ -7713,6 +7733,7 @@ var loadcentChitkent = {
         });
     },
     loadUpdateDataLocaFood: function (id) {
+        debugger
         let getdataloca = localStorage.getItem("dataJsoncancelFood");
         let dataloca = JSON.parse(getdataloca);//lấy từ locas
         let foundIndex = dataloca.findIndex(x => x.Id == id);
@@ -7736,6 +7757,7 @@ var loadcentChitkent = {
                 if (connectionKitchenIndex.state === signalR.HubConnectionState.Connected) {
                     let mess = "Phục vụ " + res[0].StaffName + " đang thao tác món vui lòng không xử lý trùng";
                     connectionKitchenIndex.invoke('FeedbackBepToStaff', listFood[0].IdStaffName, mess, 1);//lấy id của thèn gửi xuống
+                    return;
                 } else {
                     toastrcus.error("Không kết nối được server");
                 }
@@ -7743,6 +7765,7 @@ var loadcentChitkent = {
                 listFood.forEach(function (item, index) {
                     dataloca.push(item);
                 });
+                localStorage.setItem("dataJsoncancelFood", JSON.stringify(dataloca));
             }
         } else {
             localStorage.setItem("dataJsoncancelFood", datajson.data);
@@ -9379,7 +9402,8 @@ var posStaff = {
 
             //}
         })
-    },//xác nhận món đã đưa khách xong
+    },//xử lsy món
+
     loadEventActiveItemFood: function () {
         $(".bodyListKitchenConfirm .list-food li").click(function () {
             $(this).toggleClass("active");
@@ -9415,6 +9439,7 @@ var posStaff = {
                     success: function (res) {
                         if (res.isValid) {
                             $(".bodyListKitchenConfirm .list-food li.active").removeClass("active");
+
                         }
                     },
                     error: function (err) {
@@ -9471,11 +9496,16 @@ var posStaff = {
     loadEventAffterCoutdows: function () {
         $(".container-datacountdownstaff").remove();
         toastrcus.error("Bếp chưa xác nhận, không thể hủy món!");
-    },
+    },//chờ hết thời gian k có phản hồi của bếp
     loadEventAffterSendReject: function (mess) {
-        $(".container-datacountdownstaff").remove();
+        
         toastrcus.error(mess);
-    },
+        setTimeout(function () {
+
+            $(".container-datacountdownstaff").remove();
+            clearInterval(countDownInterval);
+        }, 1000);
+    },//sự kiện béoe từ chối
     loadCountdown: function () {
         setCountDown = (endTime) => {
 
@@ -14340,70 +14370,108 @@ var loadeventPos = {
     eventhandelinvoice: function () {
         $(".handelinvoice").click(function () {
             let html = `
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="">
-                                        <input type="text" name="Name" id="Name" placeholder="Mã hóa đơn......" class="form-control">
+                <div class="bodydatashowAllinvpos">
+                <div class="leftcontentshowinvhide"></div>
+                    <div class="contentbody">
+                        <button class="cancelpopup"><i class="fas fa-times"></i></button>
+                        <div class="card p-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="">
+                                            <input type="text" name="Name" id="Name" placeholder="Mã hóa đơn......" class="form-control">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                   <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
-                                        <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
-                                        <span class="ladda-spinner"></span>
-                                    </button>
+                                    <div class="col-md-3">
+                                       <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+                                            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+                                            <span class="ladda-spinner"></span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div id="viewAll" class="card-body">
+                            <table class="table table-bordered table-striped" style=" " id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Mã hóa đơn</th>
+                                        <th>Thời gian xuất</th>
+                                        <th>Tên khách</th>
+                                        <th>Khu vực</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Giảm giá</th>
+                                        <th>Tổng cộng</th>
+                                        <th>Trạng thái</th>
+                                        <th>Công cụ</th>
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div id="viewAll" class="card-body">
-                        <table class="table table-bordered table-striped" style=" " id="dataTable">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Mã hóa đơn</th>
-                                    <th>Thời gian xuất</th>
-                                    <th>Tên khách</th>
-                                    <th>Khu vực</th>
-                                    <th>Tổng tiền</th>
-                                    <th>Giảm giá</th>
-                                    <th>Tổng cộng</th>
-                                    <th>Trạng thái</th>
-                                    <th>Công cụ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>`;
-            Swal.fire({
-                // icon: 'success',
-                position: 'top-end',
-                showClass: {
-                    popup: `
-                              popup-formcreate
-                               animate__animated
-                              animate__fadeInRight
-                              animate__faster
-                            `
-                },
-                hideClass: {
-                    popup: "popup-formcreate animate__animated animate__fadeOutRight animate__faster"
-                },
-                showCloseButton: true,
-                title: "Danh sách hóa đơn trong ngày",
-                html: html,
-                //footer: "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-cancel'></i>Hủy bỏ</button>",
-                allowOutsideClick: true,
-                showConfirmButton: false,
-                showCancelButton: true,
-                cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
-                didRender: () => {
-                    loadeventPos.eventLoadinvoiceDate();
+                </div>`;
+            $("body").append(html);
+            let widthr = $(".contentbody").width();
+            $(".leftcontentshowinvhide").css("width", "calc(100% - " + widthr + "px)");
+            loadeventPos.eventLoadinvoiceDate();
+            $(search).click(function () {
+                loadLadda();
+                dataTableOut.draw();
+                Ladda.stopAll();
 
+            });
+            $(".cancelpopup").click(function () {
+                $(".bodydatashowAllinvpos").remove();
+                $(".cancelpopup").unbind();
+            })
+            //kích ra ngoài div thì hide
+            $(document).mouseup(function (e) {
+                var container = $(".leftcontentshowinvhide");
+                // if the target of the click isn't the container nor a descendant of the container
+                if (container.is(e.target) && container.has(e.target).length === 0) {
+                    $(".bodydatashowAllinvpos").remove();
                 }
             });
+            //Swal.fire({
+            //    // icon: 'success',
+            //    position: 'top-end',
+            //    showClass: {
+            //        popup: `
+            //                  popup-formcreate
+            //                   animate__animated
+            //                  animate__fadeInRight
+            //                  animate__faster
+            //                `
+            //    },
+            //    customClass: {
+            //        container: 'eventsposshowinvoicedate',
+            //    },
+
+            //    hideClass: {
+            //        popup: "popup-formcreate animate__animated animate__fadeOutRight animate__faster"
+            //    },
+            //    showCloseButton: true,
+            //    title: "Danh sách hóa đơn trong ngày",
+            //    html: html,
+            //    //footer: "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-cancel'></i>Hủy bỏ</button>",
+            //    allowOutsideClick: true,
+            //    showConfirmButton: false,
+            //    showCancelButton: true,
+            //    cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+            //    didRender: () => {
+            //        loadeventPos.eventLoadinvoiceDate();
+            //        $(search).click(function () {
+            //            loadLadda();
+            //            dataTableOutInvoicePos.draw();
+            //            Ladda.stopAll();
+
+            //        });
+            //    }
+            //});
         })
     },
     eventLoadinvoiceDate: function () {
@@ -14418,17 +14486,18 @@ var loadeventPos = {
 
         //    }
         //});
-        dataTableOutInvoicePos = $('#dataTable').DataTable({
-            "responsive": true,
+        dataTableOut = $('#dataTable').DataTable({
+            "responsive": true, "autoWidth": true,
             "processing": true,
             "pagingType": "full_numbers",
             "serverSide": true,
-            "filter": true,
+            "filter": false,//ẩn ô tìm kiếm mặt định
             "rowId": "id",
             "orderMulti": false,
-            "start": 0,
-            "ordering": false,
-            // "order": [[0, "desc"]],
+           // "start": 0,
+            "ordering": true,
+            footer: true,
+             "order": [[0, "desc"]],
             "language": {
                 "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
                 "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
@@ -14446,7 +14515,7 @@ var loadeventPos = {
                 },
             },
             "pageLength": 10,
-            "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+            "lengthMenu": [[10, 25, 50, 100, 200, 500], [10, 25, 50, 100, 200, 500]],
             "buttons": [
                 {
                     text: 'Reload',
@@ -14456,35 +14525,41 @@ var loadeventPos = {
                 }
             ],
             "columnDefs": [
-                {
-                    'targets': 0,
-                    'checkboxes': {
-                        'selectRow': true
-                    }
-                },
+                //{
+                //    'targets': 0,
+                //    'checkboxes': {
+                //        'selectRow': true
+                //    }
+                //},
                 {
                     "targets": [  5,7,6], // your case first column
                     "className": "text-right"
-                }, {
-                    "targets": [0, 1,2,8, -1], // your case first column
+                }, 
+                {
+                    "targets": [2,8, -1], // your case first column
                     "className": "text-center"
-                },
-                { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+                }
+                , {
+                    "targets": [1], // your case first column
+                    "className": "nowrap"
+                }
+                ,
+                { responsivePriority: 4, targets: [-1] },////define hiển thị mặc định column 1
                 {
                     "searchable": false,
                     "orderable": false,
-                    "targets": [-1, 0],
+                    "targets": [-1],
                 },
-                { "width": "100px", "targets": -1 }
+                { "width": "100px", "targets": [1,2] },
+             //   { "width": "50px", "targets": 0 }
             ],
-            'select': {
-                'style': 'multi',
-                 selector: 'td:first-child'
-            },
+            //'select': {
+            //    'style': 'multi',
+            //     selector: 'td:first-child'
+            //},
             ajax: {
                 url: "/Selling/Invoice/LoadAll",
                 type: "POST",
-                start: 0,
                 datatype: "json",
                 data:
                 {
@@ -14610,13 +14685,26 @@ var loadeventPos = {
                     }
                 },
             ],
+            "footerCallback": function (tfoot, data, start, end, display) {
+                var totalQTY = 0;
+                data.forEach(element => {
+                    totalQTY += parseFloat(element.amonut);
+                });debugger
+                var json = dataTableOut.ajax.json();
+                $(this).append("<tfoot><tr><td colspan='6'>Tổng cộng</td><td class='text-right'>" + totalQTY.format0VND(3, 3, "") +" (" + json.totalAmount.format0VND(3,3,"") +")</td><td colspan='7'></td></tr></tfoot>")
+                //debugger
+                //
+                //var api = this.api();
+                //$(api.column(1).footer()).html(json.totalAmount);   
+                //$(tfoot).find('th.amountall').eq(0).html(json.totalAmount);
+            },
             initComplete() {
                 
 
             }
         });
 
-
+        dataTableOut.columns([0]).visible(false);
     },
     eventLoadStaffOrder: function () {
         let idStaff = $("#ul-tab-order a.active").data("idstaff");

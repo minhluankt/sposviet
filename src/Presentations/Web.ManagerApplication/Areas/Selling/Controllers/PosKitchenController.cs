@@ -181,10 +181,14 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 {
                     model.ComId = currentUser.ComId;
                     model.Cashername = currentUser.FullName;
-                    var map = _mapper.Map<StaffUpdateFoodCommand>(model);
-                    var getAll = await _mediator.Send(map);
+                   // var map = _mapper.Map<StaffUpdateFoodCommand>(model);
+                    var getAll = await _mediator.Send(new StaffUpdateFoodCommand() {
+                        ComId = currentUser.ComId,
+                        Cashername = currentUser.FullName,
+                        lstIdChiken = model.lstIdChiken });
                     if (getAll.Succeeded)
                     {
+
                         _notify.Success(GeneralMess.ConvertStatusToString(getAll.Message));
                         return Json(new { isValid = true });
                     }

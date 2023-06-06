@@ -69,11 +69,13 @@
 
     <script type="text/javascript" src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 
+ 
 
     <partial name="Admin/_Scripts" />
     <script src="~/js/custom/sposvietkyso.min.js?time=678"></script>
     <script>
         //testConnetWebSocket();
+        loadcentChitkent.loadconnectwss();
         loadcentChitkent.intEvent();
         document.onreadystatechange = function () {
             var state = document.readyState
@@ -94,23 +96,7 @@
         });
         document.addEventListener('DOMContentLoaded', async function () {
             var interval = null;
-            var connectionKitchenIndex = new signalR.HubConnectionBuilder()
-                .withAutomaticReconnect({
-                    nextRetryDelayInMilliseconds: retryContext => {
-                        if (retryContext.elapsedMilliseconds < 36000000) { //600 phút nhé là 10 tiếng
-                            console.log("đang conncet");
-                            // If we've been reconnecting for less than 60 seconds so far,
-                            // wait between 0 and 10 seconds before the next reconnect attempt.
-                            //return Math.random() * 3000;
-                            return 1000;
-                        } else {
-                            // If we've been reconnecting for more than 60 seconds so far, stop reconnecting.
-                            return null;
-                        }
-                    }
-                })
-                .withUrl('/Signal')
-                .build();
+            
             function start() {
                 try {
                     connectionKitchenIndex.start()

@@ -411,7 +411,8 @@
      
         $('#reload').on('click', function () {
             dataTableOut.ajax.reload(null, false);
-        }); $('input').keyup(function (e) {
+        }); 
+        $('input').keyup(function (e) {
             if (e.keyCode == 13) {
                 dataTableOut.ajax.reload(null, false);
             }

@@ -135,6 +135,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 StatusPublishInvoiceOrder = x.StatusPublishInvoiceOrder,
                 Amonut = x.Amonut
             });
+            decimal amount = datalist.Sum(x => x.Amonut);
             var data = await PaginatedList<Invoice>.ToPagedListAsync(datalist, textSearch.Currentpage, pageSize);
             data.Items.ForEach(x =>
             {
@@ -150,6 +151,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 x.secretEinvoice = secretEinvoice;
                 x.CasherName = _userManager.FindByIdAsync(x.CreatedBy).Result?.FullName;
             });
+            data.TotalAmount = amount;
             return data;
         }
 

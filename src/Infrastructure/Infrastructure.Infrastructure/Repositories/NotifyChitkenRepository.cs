@@ -2308,10 +2308,18 @@ namespace Infrastructure.Infrastructure.Repositories
                 if (IsCancel)
                 {
                     getid.ForEach(x => x.Status = EnumStatusKitchenOrder.CANCEL) ;
+                    // xử lý hủy món
                 }
                 else
                 {
                     getid.ForEach(x => x.Status = EnumStatusKitchenOrder.DONE);
+                    // xử lý done món
+                    var getorder = await _orderitemtableRepository.Entities.Where(x => getid.Select(x => x.IdItemOrder).ToArray().Contains(x.Id)).ToListAsync();
+                    if (getorder.Count()>0)
+                    {
+                        getorder.ForEach(x => x.QuantityNotifyKitchen = x.Quantity);
+                        await _orderitemtableRepository.UpdateRangeAsync(getorder);
+                    }
                 }
                 List<HistoryKitchen> HistoryAutoSendTimer = new List<HistoryKitchen>();
                 DateTime today = DateTime.Now;

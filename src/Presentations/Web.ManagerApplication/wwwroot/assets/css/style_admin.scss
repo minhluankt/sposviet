@@ -3416,6 +3416,82 @@ span.select2-dropdown.selectCustome100 {
         }
     }
 }
+.cancelpopup {
+    padding: 8px 15px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    /* border-radius: 300px; */
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 9;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+.bodydatashowAllinvpos {
+    position: fixed;
+    top: 0;
+    background-color: rgb(0 0 0 / 63%);
+    width: 100%;
+    height: 100vh;
+    z-index: 9;
+    display: flex;
+
+    .leftcontentshowinvhide {
+        height: 100vh;
+    }
+
+    .contentbody {
+        max-width: 1200px;
+        width: 100%;
+        background-color: #fff;
+        height: 100vh;
+        float: right;
+        padding: 10px 0px;
+        overflow: auto;
+        scrollbar-width: auto;
+        scrollbar-color: rgba(0, 0, 0, 0.24) #ffffff;
+        /* Chrome, Edge, and Safari */
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #ffffff;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.24);
+            border-radius: 10px;
+            border: 1px solid #ffffff;
+        }
+    }
+}
+.eventsposshowinvoicedate {
+    .swal2-html-container {
+        font-size: 14px;
+    }
+
+    .swal2-popup.swal2-modal {
+        max-width: 1200px;
+        width: 100%;
+
+        #dataTable {
+            td {
+                font-size: 15px;
+                width: auto !important;
+            }
+
+            th {
+                width: auto !important;
+                font-size: 13px;
+            }
+        }
+    }
+}
 
 .list-area-setting {
     a {

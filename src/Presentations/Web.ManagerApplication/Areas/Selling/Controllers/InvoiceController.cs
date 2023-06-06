@@ -284,7 +284,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 });
                 if (response.Succeeded)
                 {
-                    return Json(new { draw = draw, recordsFiltered = response.Data.TotalItemCount, recordsTotal = response.Data.TotalItemCount, data = response.Data.Items });
+                    return Json(new { draw = draw, recordsFiltered = response.Data.TotalItemCount, totalAmount = response.Data.TotalAmount, recordsTotal = response.Data.TotalItemCount, data = response.Data.Items });
                 }
                 //Returning Json Data  
                 return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = "" });
