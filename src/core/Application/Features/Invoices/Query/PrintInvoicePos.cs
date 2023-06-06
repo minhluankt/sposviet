@@ -96,12 +96,11 @@ namespace Application.Features.Invoices.Query
                         tientruocthue = IsProductVAT ? (InvoiceData.VATAmount + InvoiceData.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider()) : InvoiceData.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         tienthue = InvoiceData.VATAmount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         thuesuat = InvoiceData.VATRate?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
-                        giamgia = (InvoiceData.DiscountAmount + InvoiceData.DiscountOther).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        giamgia = (InvoiceData.DiscountAmount??0 + InvoiceData.DiscountOther??0).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         khachcantra = (InvoiceData.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         khachthanhtoan = InvoiceData.AmountCusPayment?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         tienthuatrakhach = InvoiceData.AmountChangeCus?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                        
-
                     }; 
                     var listitemnew = InvoiceData.InvoiceItems;
                     if (IsProductVAT)//check trường hợp nếu sản phẩm có dòng đơn giá đã gồm thuế

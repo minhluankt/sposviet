@@ -27,6 +27,7 @@ namespace Application.Interfaces.Repositories
         Task<IResult<PublishInvoiceModelView>> SendCQTAsync(int[] lstid, int Comid, string Carsher, string IdCarsher);
         Task SendCQTAutoAsync(List<HistoryAutoSendTimer> history, int[] lstPattern, int Comid, ENumSupplierEInvoice SupplierEInvoice);
         Task<IResult<PublishInvoiceModelView>> SendCQTTokenAsync(int[] lstid, string dataXml, int Comid, string Carsher, string IdCarsher);
+        Task<IResult<PublishInvoiceModelView>> PublishInvoiceByTokenVNPTAsync(string serialCert, string serial, string pattern, string dataxml, string IdCasher, string CasherName);
         Task UpdateAsync(T Entity);
         Task<T> FindByIdAsync(int id, bool asNotracking = false);
         Task CreateRangeAsync(List<T> Entity);
@@ -40,6 +41,8 @@ namespace Application.Interfaces.Repositories
         Task<PaginatedList<T>> GetAllDatatableAsync(int? Comid, InvoiceModel textSearch, string sortColumn, string sortColumnDirection, int pageSize, int skip,EnumTypeProduct enumTypeProduct = EnumTypeProduct.THOITRANG);
         //report
         Task<List<EInvoice>> GetReportMonth(DateTime todate, DateTime enddate, int ComId);
-      
+        Task<IResult<string>> GetHashInvWithTokenVNPTAsync(List<EInvoice> einvoices, SupplierEInvoice company);
+
+
     }
 }

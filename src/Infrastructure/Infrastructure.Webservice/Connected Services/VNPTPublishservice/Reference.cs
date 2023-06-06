@@ -34,8 +34,14 @@ namespace VNPTPublishservice
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ImportAndPublishInv", ReplyAction="*")]
         System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishInvResponse> ImportAndPublishInvAsync(VNPTPublishservice.ImportAndPublishInvRequest request);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ImportAndPublishInvMTT32", ReplyAction="*")]
+        System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishInvMTT32Response> ImportAndPublishInvMTT32Async(VNPTPublishservice.ImportAndPublishInvMTT32Request request);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ImportAndPublishAssignedNo", ReplyAction="*")]
         System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishAssignedNoResponse> ImportAndPublishAssignedNoAsync(VNPTPublishservice.ImportAndPublishAssignedNoRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ImportAndPublishAssignedNoMTT", ReplyAction="*")]
+        System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishAssignedNoMTTResponse> ImportAndPublishAssignedNoMTTAsync(VNPTPublishservice.ImportAndPublishAssignedNoMTTRequest request);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ImportInv", ReplyAction="*")]
         System.Threading.Tasks.Task<VNPTPublishservice.ImportInvResponse> ImportInvAsync(VNPTPublishservice.ImportInvRequest request);
@@ -277,6 +283,9 @@ namespace VNPTPublishservice
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/GetResultsTransaction", ReplyAction="*")]
         System.Threading.Tasks.Task<VNPTPublishservice.GetResultsTransactionResponse> GetResultsTransactionAsync(VNPTPublishservice.GetResultsTransactionRequest request);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ImportInvByPatternCTT", ReplyAction="*")]
+        System.Threading.Tasks.Task<VNPTPublishservice.ImportInvByPatternCTTResponse> ImportInvByPatternCTTAsync(VNPTPublishservice.ImportInvByPatternCTTRequest request);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ImportAndPublishCTT", ReplyAction="*")]
         System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishCTTResponse> ImportAndPublishCTTAsync(VNPTPublishservice.ImportAndPublishCTTRequest request);
         
@@ -297,6 +306,9 @@ namespace VNPTPublishservice
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ImportAndPublishInvMTT", ReplyAction="*")]
         System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishInvMTTResponse> ImportAndPublishInvMTTAsync(VNPTPublishservice.ImportAndPublishInvMTTRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ImportInvByPatternMTT", ReplyAction="*")]
+        System.Threading.Tasks.Task<VNPTPublishservice.ImportInvByPatternMTTResponse> ImportInvByPatternMTTAsync(VNPTPublishservice.ImportInvByPatternMTTRequest request);
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -411,6 +423,114 @@ namespace VNPTPublishservice
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class ImportAndPublishInvMTT32Request
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="ImportAndPublishInvMTT32", Namespace="http://tempuri.org/", Order=0)]
+        public VNPTPublishservice.ImportAndPublishInvMTT32RequestBody Body;
+        
+        public ImportAndPublishInvMTT32Request()
+        {
+        }
+        
+        public ImportAndPublishInvMTT32Request(VNPTPublishservice.ImportAndPublishInvMTT32RequestBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class ImportAndPublishInvMTT32RequestBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string Account;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
+        public string ACpass;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=2)]
+        public string xmlInvData;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=3)]
+        public string username;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=4)]
+        public string password;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=5)]
+        public string pattern;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=6)]
+        public string serial;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(Order=7)]
+        public int convert;
+        
+        public ImportAndPublishInvMTT32RequestBody()
+        {
+        }
+        
+        public ImportAndPublishInvMTT32RequestBody(string Account, string ACpass, string xmlInvData, string username, string password, string pattern, string serial, int convert)
+        {
+            this.Account = Account;
+            this.ACpass = ACpass;
+            this.xmlInvData = xmlInvData;
+            this.username = username;
+            this.password = password;
+            this.pattern = pattern;
+            this.serial = serial;
+            this.convert = convert;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class ImportAndPublishInvMTT32Response
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="ImportAndPublishInvMTT32Response", Namespace="http://tempuri.org/", Order=0)]
+        public VNPTPublishservice.ImportAndPublishInvMTT32ResponseBody Body;
+        
+        public ImportAndPublishInvMTT32Response()
+        {
+        }
+        
+        public ImportAndPublishInvMTT32Response(VNPTPublishservice.ImportAndPublishInvMTT32ResponseBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class ImportAndPublishInvMTT32ResponseBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string ImportAndPublishInvMTT32Result;
+        
+        public ImportAndPublishInvMTT32ResponseBody()
+        {
+        }
+        
+        public ImportAndPublishInvMTT32ResponseBody(string ImportAndPublishInvMTT32Result)
+        {
+            this.ImportAndPublishInvMTT32Result = ImportAndPublishInvMTT32Result;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
     public partial class ImportAndPublishAssignedNoRequest
     {
         
@@ -512,6 +632,114 @@ namespace VNPTPublishservice
         public ImportAndPublishAssignedNoResponseBody(string ImportAndPublishAssignedNoResult)
         {
             this.ImportAndPublishAssignedNoResult = ImportAndPublishAssignedNoResult;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class ImportAndPublishAssignedNoMTTRequest
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="ImportAndPublishAssignedNoMTT", Namespace="http://tempuri.org/", Order=0)]
+        public VNPTPublishservice.ImportAndPublishAssignedNoMTTRequestBody Body;
+        
+        public ImportAndPublishAssignedNoMTTRequest()
+        {
+        }
+        
+        public ImportAndPublishAssignedNoMTTRequest(VNPTPublishservice.ImportAndPublishAssignedNoMTTRequestBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class ImportAndPublishAssignedNoMTTRequestBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string Account;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
+        public string ACpass;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=2)]
+        public string xmlInvData;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=3)]
+        public string username;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=4)]
+        public string password;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=5)]
+        public string pattern;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=6)]
+        public string serial;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(Order=7)]
+        public int convert;
+        
+        public ImportAndPublishAssignedNoMTTRequestBody()
+        {
+        }
+        
+        public ImportAndPublishAssignedNoMTTRequestBody(string Account, string ACpass, string xmlInvData, string username, string password, string pattern, string serial, int convert)
+        {
+            this.Account = Account;
+            this.ACpass = ACpass;
+            this.xmlInvData = xmlInvData;
+            this.username = username;
+            this.password = password;
+            this.pattern = pattern;
+            this.serial = serial;
+            this.convert = convert;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class ImportAndPublishAssignedNoMTTResponse
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="ImportAndPublishAssignedNoMTTResponse", Namespace="http://tempuri.org/", Order=0)]
+        public VNPTPublishservice.ImportAndPublishAssignedNoMTTResponseBody Body;
+        
+        public ImportAndPublishAssignedNoMTTResponse()
+        {
+        }
+        
+        public ImportAndPublishAssignedNoMTTResponse(VNPTPublishservice.ImportAndPublishAssignedNoMTTResponseBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class ImportAndPublishAssignedNoMTTResponseBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string ImportAndPublishAssignedNoMTTResult;
+        
+        public ImportAndPublishAssignedNoMTTResponseBody()
+        {
+        }
+        
+        public ImportAndPublishAssignedNoMTTResponseBody(string ImportAndPublishAssignedNoMTTResult)
+        {
+            this.ImportAndPublishAssignedNoMTTResult = ImportAndPublishAssignedNoMTTResult;
         }
     }
     
@@ -5975,11 +6203,14 @@ namespace VNPTPublishservice
         [System.Runtime.Serialization.DataMemberAttribute(Order=6)]
         public int convert;
         
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=7)]
+        public string serialCert;
+        
         public GetHashInvNoticeErrorsRequestBody()
         {
         }
         
-        public GetHashInvNoticeErrorsRequestBody(string Account, string ACpass, string xml, string username, string password, string pattern, int convert)
+        public GetHashInvNoticeErrorsRequestBody(string Account, string ACpass, string xml, string username, string password, string pattern, int convert, string serialCert)
         {
             this.Account = Account;
             this.ACpass = ACpass;
@@ -5988,6 +6219,7 @@ namespace VNPTPublishservice
             this.password = password;
             this.pattern = pattern;
             this.convert = convert;
+            this.serialCert = serialCert;
         }
     }
     
@@ -8331,6 +8563,114 @@ namespace VNPTPublishservice
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class ImportInvByPatternCTTRequest
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="ImportInvByPatternCTT", Namespace="http://tempuri.org/", Order=0)]
+        public VNPTPublishservice.ImportInvByPatternCTTRequestBody Body;
+        
+        public ImportInvByPatternCTTRequest()
+        {
+        }
+        
+        public ImportInvByPatternCTTRequest(VNPTPublishservice.ImportInvByPatternCTTRequestBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class ImportInvByPatternCTTRequestBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string Account;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
+        public string ACpass;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=2)]
+        public string xmlInvData;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=3)]
+        public string username;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=4)]
+        public string password;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=5)]
+        public string pattern;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=6)]
+        public string serial;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(Order=7)]
+        public int convert;
+        
+        public ImportInvByPatternCTTRequestBody()
+        {
+        }
+        
+        public ImportInvByPatternCTTRequestBody(string Account, string ACpass, string xmlInvData, string username, string password, string pattern, string serial, int convert)
+        {
+            this.Account = Account;
+            this.ACpass = ACpass;
+            this.xmlInvData = xmlInvData;
+            this.username = username;
+            this.password = password;
+            this.pattern = pattern;
+            this.serial = serial;
+            this.convert = convert;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class ImportInvByPatternCTTResponse
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="ImportInvByPatternCTTResponse", Namespace="http://tempuri.org/", Order=0)]
+        public VNPTPublishservice.ImportInvByPatternCTTResponseBody Body;
+        
+        public ImportInvByPatternCTTResponse()
+        {
+        }
+        
+        public ImportInvByPatternCTTResponse(VNPTPublishservice.ImportInvByPatternCTTResponseBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class ImportInvByPatternCTTResponseBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string ImportInvByPatternCTTResult;
+        
+        public ImportInvByPatternCTTResponseBody()
+        {
+        }
+        
+        public ImportInvByPatternCTTResponseBody(string ImportInvByPatternCTTResult)
+        {
+            this.ImportInvByPatternCTTResult = ImportInvByPatternCTTResult;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
     public partial class ImportAndPublishCTTRequest
     {
         
@@ -9095,6 +9435,114 @@ namespace VNPTPublishservice
         }
     }
     
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class ImportInvByPatternMTTRequest
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="ImportInvByPatternMTT", Namespace="http://tempuri.org/", Order=0)]
+        public VNPTPublishservice.ImportInvByPatternMTTRequestBody Body;
+        
+        public ImportInvByPatternMTTRequest()
+        {
+        }
+        
+        public ImportInvByPatternMTTRequest(VNPTPublishservice.ImportInvByPatternMTTRequestBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class ImportInvByPatternMTTRequestBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string Account;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
+        public string ACpass;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=2)]
+        public string xmlInvData;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=3)]
+        public string username;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=4)]
+        public string password;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=5)]
+        public string pattern;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=6)]
+        public string serial;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(Order=7)]
+        public int convert;
+        
+        public ImportInvByPatternMTTRequestBody()
+        {
+        }
+        
+        public ImportInvByPatternMTTRequestBody(string Account, string ACpass, string xmlInvData, string username, string password, string pattern, string serial, int convert)
+        {
+            this.Account = Account;
+            this.ACpass = ACpass;
+            this.xmlInvData = xmlInvData;
+            this.username = username;
+            this.password = password;
+            this.pattern = pattern;
+            this.serial = serial;
+            this.convert = convert;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    public partial class ImportInvByPatternMTTResponse
+    {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Name="ImportInvByPatternMTTResponse", Namespace="http://tempuri.org/", Order=0)]
+        public VNPTPublishservice.ImportInvByPatternMTTResponseBody Body;
+        
+        public ImportInvByPatternMTTResponse()
+        {
+        }
+        
+        public ImportInvByPatternMTTResponse(VNPTPublishservice.ImportInvByPatternMTTResponseBody Body)
+        {
+            this.Body = Body;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://tempuri.org/")]
+    public partial class ImportInvByPatternMTTResponseBody
+    {
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
+        public string ImportInvByPatternMTTResult;
+        
+        public ImportInvByPatternMTTResponseBody()
+        {
+        }
+        
+        public ImportInvByPatternMTTResponseBody(string ImportInvByPatternMTTResult)
+        {
+            this.ImportInvByPatternMTTResult = ImportInvByPatternMTTResult;
+        }
+    }
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.1.0")]
     public interface PublishServiceSoapChannel : VNPTPublishservice.PublishServiceSoap, System.ServiceModel.IClientChannel
     {
@@ -9160,6 +9608,27 @@ namespace VNPTPublishservice
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishInvMTT32Response> VNPTPublishservice.PublishServiceSoap.ImportAndPublishInvMTT32Async(VNPTPublishservice.ImportAndPublishInvMTT32Request request)
+        {
+            return base.Channel.ImportAndPublishInvMTT32Async(request);
+        }
+        
+        public System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishInvMTT32Response> ImportAndPublishInvMTT32Async(string Account, string ACpass, string xmlInvData, string username, string password, string pattern, string serial, int convert)
+        {
+            VNPTPublishservice.ImportAndPublishInvMTT32Request inValue = new VNPTPublishservice.ImportAndPublishInvMTT32Request();
+            inValue.Body = new VNPTPublishservice.ImportAndPublishInvMTT32RequestBody();
+            inValue.Body.Account = Account;
+            inValue.Body.ACpass = ACpass;
+            inValue.Body.xmlInvData = xmlInvData;
+            inValue.Body.username = username;
+            inValue.Body.password = password;
+            inValue.Body.pattern = pattern;
+            inValue.Body.serial = serial;
+            inValue.Body.convert = convert;
+            return ((VNPTPublishservice.PublishServiceSoap)(this)).ImportAndPublishInvMTT32Async(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishAssignedNoResponse> VNPTPublishservice.PublishServiceSoap.ImportAndPublishAssignedNoAsync(VNPTPublishservice.ImportAndPublishAssignedNoRequest request)
         {
             return base.Channel.ImportAndPublishAssignedNoAsync(request);
@@ -9178,6 +9647,27 @@ namespace VNPTPublishservice
             inValue.Body.serial = serial;
             inValue.Body.convert = convert;
             return ((VNPTPublishservice.PublishServiceSoap)(this)).ImportAndPublishAssignedNoAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishAssignedNoMTTResponse> VNPTPublishservice.PublishServiceSoap.ImportAndPublishAssignedNoMTTAsync(VNPTPublishservice.ImportAndPublishAssignedNoMTTRequest request)
+        {
+            return base.Channel.ImportAndPublishAssignedNoMTTAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishAssignedNoMTTResponse> ImportAndPublishAssignedNoMTTAsync(string Account, string ACpass, string xmlInvData, string username, string password, string pattern, string serial, int convert)
+        {
+            VNPTPublishservice.ImportAndPublishAssignedNoMTTRequest inValue = new VNPTPublishservice.ImportAndPublishAssignedNoMTTRequest();
+            inValue.Body = new VNPTPublishservice.ImportAndPublishAssignedNoMTTRequestBody();
+            inValue.Body.Account = Account;
+            inValue.Body.ACpass = ACpass;
+            inValue.Body.xmlInvData = xmlInvData;
+            inValue.Body.username = username;
+            inValue.Body.password = password;
+            inValue.Body.pattern = pattern;
+            inValue.Body.serial = serial;
+            inValue.Body.convert = convert;
+            return ((VNPTPublishservice.PublishServiceSoap)(this)).ImportAndPublishAssignedNoMTTAsync(inValue);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -10203,7 +10693,7 @@ namespace VNPTPublishservice
             return base.Channel.GetHashInvNoticeErrorsAsync(request);
         }
         
-        public System.Threading.Tasks.Task<VNPTPublishservice.GetHashInvNoticeErrorsResponse> GetHashInvNoticeErrorsAsync(string Account, string ACpass, string xml, string username, string password, string pattern, int convert)
+        public System.Threading.Tasks.Task<VNPTPublishservice.GetHashInvNoticeErrorsResponse> GetHashInvNoticeErrorsAsync(string Account, string ACpass, string xml, string username, string password, string pattern, int convert, string serialCert)
         {
             VNPTPublishservice.GetHashInvNoticeErrorsRequest inValue = new VNPTPublishservice.GetHashInvNoticeErrorsRequest();
             inValue.Body = new VNPTPublishservice.GetHashInvNoticeErrorsRequestBody();
@@ -10214,6 +10704,7 @@ namespace VNPTPublishservice
             inValue.Body.password = password;
             inValue.Body.pattern = pattern;
             inValue.Body.convert = convert;
+            inValue.Body.serialCert = serialCert;
             return ((VNPTPublishservice.PublishServiceSoap)(this)).GetHashInvNoticeErrorsAsync(inValue);
         }
         
@@ -10654,6 +11145,27 @@ namespace VNPTPublishservice
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<VNPTPublishservice.ImportInvByPatternCTTResponse> VNPTPublishservice.PublishServiceSoap.ImportInvByPatternCTTAsync(VNPTPublishservice.ImportInvByPatternCTTRequest request)
+        {
+            return base.Channel.ImportInvByPatternCTTAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<VNPTPublishservice.ImportInvByPatternCTTResponse> ImportInvByPatternCTTAsync(string Account, string ACpass, string xmlInvData, string username, string password, string pattern, string serial, int convert)
+        {
+            VNPTPublishservice.ImportInvByPatternCTTRequest inValue = new VNPTPublishservice.ImportInvByPatternCTTRequest();
+            inValue.Body = new VNPTPublishservice.ImportInvByPatternCTTRequestBody();
+            inValue.Body.Account = Account;
+            inValue.Body.ACpass = ACpass;
+            inValue.Body.xmlInvData = xmlInvData;
+            inValue.Body.username = username;
+            inValue.Body.password = password;
+            inValue.Body.pattern = pattern;
+            inValue.Body.serial = serial;
+            inValue.Body.convert = convert;
+            return ((VNPTPublishservice.PublishServiceSoap)(this)).ImportInvByPatternCTTAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<VNPTPublishservice.ImportAndPublishCTTResponse> VNPTPublishservice.PublishServiceSoap.ImportAndPublishCTTAsync(VNPTPublishservice.ImportAndPublishCTTRequest request)
         {
             return base.Channel.ImportAndPublishCTTAsync(request);
@@ -10801,6 +11313,27 @@ namespace VNPTPublishservice
             inValue.Body.serial = serial;
             inValue.Body.convert = convert;
             return ((VNPTPublishservice.PublishServiceSoap)(this)).ImportAndPublishInvMTTAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<VNPTPublishservice.ImportInvByPatternMTTResponse> VNPTPublishservice.PublishServiceSoap.ImportInvByPatternMTTAsync(VNPTPublishservice.ImportInvByPatternMTTRequest request)
+        {
+            return base.Channel.ImportInvByPatternMTTAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<VNPTPublishservice.ImportInvByPatternMTTResponse> ImportInvByPatternMTTAsync(string Account, string ACpass, string xmlInvData, string username, string password, string pattern, string serial, int convert)
+        {
+            VNPTPublishservice.ImportInvByPatternMTTRequest inValue = new VNPTPublishservice.ImportInvByPatternMTTRequest();
+            inValue.Body = new VNPTPublishservice.ImportInvByPatternMTTRequestBody();
+            inValue.Body.Account = Account;
+            inValue.Body.ACpass = ACpass;
+            inValue.Body.xmlInvData = xmlInvData;
+            inValue.Body.username = username;
+            inValue.Body.password = password;
+            inValue.Body.pattern = pattern;
+            inValue.Body.serial = serial;
+            inValue.Body.convert = convert;
+            return ((VNPTPublishservice.PublishServiceSoap)(this)).ImportInvByPatternMTTAsync(inValue);
         }
         
         public virtual System.Threading.Tasks.Task OpenAsync()

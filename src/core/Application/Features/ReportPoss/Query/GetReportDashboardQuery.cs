@@ -42,7 +42,7 @@ namespace Application.Features.ReportPoss.Query
                                 VATAmount = item.Where(x => x.Status == Enums.EnumStatusInvoice.DA_THANH_TOAN || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN_MOT_PHAN).Sum(x => x.VATAmount),
                                 TotalCancel = item.Where(x => x.Status == Enums.EnumStatusInvoice.HUY_BO || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN).Sum(x => x.Amonut),//tiền hủy nên lấy của hóa đơn
                                 Total = item.Sum(x => x.Total),
-                                DiscountAmount = item.Where(x => x.Status == Enums.EnumStatusInvoice.DA_THANH_TOAN || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN_MOT_PHAN).Sum(x => x.DiscountAmount),
+                                DiscountAmount = item.Where(x => x.DiscountAmount.HasValue &&( x.Status == Enums.EnumStatusInvoice.DA_THANH_TOAN || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN_MOT_PHAN)).ToList().Sum(x => x.DiscountAmount)??0,
                                 ServiceChargeAmount = item.Where(x => x.Status == Enums.EnumStatusInvoice.DA_THANH_TOAN || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN_MOT_PHAN).Sum(x => x.ServiceChargeAmount),
                                 CreateDate = item.Key.ToString("dd/MM/yyyy"),
                                 Date = item.Key,

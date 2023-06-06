@@ -74,6 +74,19 @@ namespace HelperLibrary
             string cn = "en-US"; //Vietnamese
             return new CultureInfo(cn);
         }
+        public static bool IsHDDTMayTinhTien(string serial)
+        {
+            try
+            {
+                if (serial[0].ToString().ToUpper() == "C" && serial[3].ToString().ToUpper() == "M")
+                    return true;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         public static string GetNameInvoice(string pattern)
         {
             if (string.IsNullOrEmpty(pattern))

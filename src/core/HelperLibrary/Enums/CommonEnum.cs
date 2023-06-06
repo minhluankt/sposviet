@@ -50,6 +50,8 @@ namespace Application.Enums
         PublishEInvoiceMerge = 7,//phát hành gộp
         DeleteIsMerge = 8,//Xóa các hóa đơn lieine quan đã gộp
         UpdateCustomer = 9,//update khách hàng
+        IsGetHashPublishEInvoice = 10,//lấy hash khi phát ahfnh = token vnpt
+        PublishEInvoiceTokenByHash = 11,//phát hành sau khi lấy hash = token vnpt
     }
     public enum ENumTypeCustomer
     {
@@ -88,6 +90,14 @@ namespace Application.Enums
         BANHANG = 2,
         KHAC = 5,
 
+    } 
+    public enum ENumTypePublishServiceEInvoice//phát hành hóa đơn kiểu
+    {
+        PHATHANH = 0,
+        THAYTHE = 1,
+        DIEUCHINHTANG = 2,
+        DIEUCHINHGIAM = 3,
+        DIEUCHINHTHONGTIN = 4
     }
     public enum ENumTypePublishEinvoice
     {

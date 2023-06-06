@@ -45,6 +45,8 @@ using static System.Data.Entity.Infrastructure.Design.Executor;
 using AspNetCoreHero.Abstractions.Repository;
 using Telegram.Bot.Types;
 using Domain.Identity;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Database;
+using Joker.Contracts.Data;
 
 namespace Infrastructure.Infrastructure.Repositories
 {
@@ -232,6 +234,37 @@ namespace Infrastructure.Infrastructure.Repositories
                 return await Result<string>.FailAsync($"Kết nối thất bại sai tên đăng nhập hoặc mật khẩu {pub}");
             }
         }
+        public async Task<IResult<string>> GetHashInvWithTokenVNPTAsync(List<EInvoice> einvoices, SupplierEInvoice company)
+        {
+            try
+            {
+                string xmlstring = string.Empty;
+                try
+                {
+                    xmlstring = this.GenerateXML32List_VNPT(einvoices);
+                }
+                catch (Exception e)
+                {
+                    _log.LogError($"Mã {string.Join(",", einvoices.Select(x => x.EInvoiceCode))}, {e.Message}, Lỗi sinh XMl khi phát hành hóa đơn điện tử" + e.ToString());
+                    return await Result<string>.FailAsync($"{CommonException.ExceptionXML}Lỗi sinh XMl khi phát hành hóa đơn điện tử {e.Message}");
+                }
+                string gettoken = await _vnptrepository.GetHashInvWithToken(company.DomainName, xmlstring, company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin, company.SerialCert, ENumTypePublishServiceEInvoice.PHATHANH, string.Empty, einvoices.First().Pattern, einvoices.First().Serial);
+                if (gettoken.Contains("ERR:"))
+                {
+                    return await Result<string>.FailAsync($"Lỗi phát hành hóa đơn điện tử {gettoken}");
+                }
+                else if (gettoken.Contains("Invoices"))
+                {
+                    return await Result<string>.SuccessAsync(gettoken);
+                }
+                return await Result<string>.FailAsync($"Lỗi phát hành hóa đơn điện tử không xác định {gettoken}");
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e.ToString());
+                return await Result<string>.FailAsync($"Lỗi phát hành hóa đơn điện tử {e.Message}");
+            }
+        }
         public async Task<IResult<string>> ImportAndPublishInvMTTAsync(EInvoice einvoice, SupplierEInvoice company, string Carsher, string IdCarsher)
         {
             if (einvoice != null)
@@ -253,6 +286,7 @@ namespace Infrastructure.Infrastructure.Repositories
       
         private async Task<IResult<string>> ImportAndPublishInvMTTAsync(EInvoice einvoice, SupplierEInvoice company, string pattern, string serial, string Carsher, string IdCarsher)
         {
+            var checkserial = LibraryCommon.IsHDDTMayTinhTien(serial);
             switch (einvoice.TypeSupplierEInvoice)
             {
                 case ENumSupplierEInvoice.VNPT:
@@ -267,14 +301,31 @@ namespace Infrastructure.Infrastructure.Repositories
                         string xmlData = string.Empty;
                         try
                         {
-                            xmlData = this.GenerateXMLMTT_VNPT(einvoice);
+                            if (checkserial)//là máy tính tiền
+                            {
+                                xmlData = this.GenerateXMLMTT_VNPT(einvoice);
+                            }
+                            else {
+                                xmlData = this.GenerateXML32_VNPT(einvoice);
+                            }
+                                
                         }
                         catch (Exception e)
                         {
                             _log.LogError($"Mã {einvoice.EInvoiceCode}, {e.Message}, Lỗi sinh XMl khi phát hành hóa đơn điện tử" + e.ToString());
                             return await Result<string>.FailAsync($"{CommonException.ExceptionXML}Lỗi sinh XMl khi phát hành hóa đơn điện tử");
                         }
-                        var pub = await _vnptrepository.ImportAndPublishInvMTTAsync(company.DomainName, xmlData, company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin, pattern, serial);
+                        string pub = string.Empty;
+                       
+                        if (checkserial)
+                        {
+                            pub = await _vnptrepository.ImportAndPublishInvMTTAsync(company.DomainName, xmlData, company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin, pattern, serial);
+                        }
+                        else
+                        {
+                            pub = await _vnptrepository.ImportAndPublishInvAsync(company.DomainName, xmlData, company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin, pattern, serial);
+                        }
+                        
                         if (pub.Contains("OK:"))
                         {
                             AddHistori(new HistoryEInvoice() { Carsher = Carsher, StatusEvent = StatusStaffEventEInvoice.PhatHanhHoaDon, IdCarsher = IdCarsher, EInvoiceCode = einvoice.EInvoiceCode, IdEInvoice = einvoice.Id, Name = $"Phát hành hóa đơn VNPT" });
@@ -297,22 +348,336 @@ namespace Infrastructure.Infrastructure.Repositories
 
             }
         }
-        //public async Task<IResult<string>> ImportAndPublishInvMTTAsync(int ComId, int Id, string pattern,string serial, string Carsher, string IdCarsher)
-        //{
+        
+        private string GenerateXML32_VNPT(EInvoice model)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            XmlNode contentDSHDon = xmlDoc.CreateElement("Invoices");
+            xmlDoc.AppendChild(contentDSHDon);
+            this.SerializeToXML32(xmlDoc, contentDSHDon, model);
+            return xmlDoc.InnerXml;
+        }
+        private string GenerateXML32List_VNPT(List<EInvoice> model)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            XmlNode contentDSHDon = xmlDoc.CreateElement("Invoices");
+            xmlDoc.AppendChild(contentDSHDon);
+            foreach (var item in model)
+            {
+                this.SerializeToXML32(xmlDoc, contentDSHDon, item);
+            }
+            return xmlDoc.InnerXml;
+        }
+        private  string SerializeToXML32(XmlDocument xmlDoc, XmlNode xmlDSHD, EInvoice model)
+        {
+            XmlNode contentHd = xmlDoc.CreateElement("Inv");
+            xmlDSHD.AppendChild(contentHd);
 
-        //    var getdata = await _repository.GetByIdAsync(x=>x.Id==Id&&x.ComId==ComId,x=>x.Include(x=>x.EInvoiceItems));
-        //    if (getdata!=null)
-        //    {
-        //        var getcompany = await _supplierEInvoicerepository.GetByIdAsync(getdata.TypeSupplierEInvoice);
-        //        if (getcompany==null)
-        //        {
-        //            return await Result<string>.FailAsync("Chưa cấu hình phát hành hóa đơn");
-        //        }
-        //        return await ImportAndPublishInvMTTAsync(getdata, getcompany, pattern, serial);
-        //    }
-        //    return await Result<string>.FailAsync($"Không tìm thấy hóa đơn cần phát hành");
+            //tao kêy node
+            XmlNode InvNode = xmlDoc.CreateElement("key");
+            InvNode.InnerText = model.FkeyEInvoice;
+            contentHd.AppendChild(InvNode);
 
-        //}
+            XmlNode xmlContentInv = xmlDoc.CreateElement("Invoice");
+            contentHd.AppendChild(xmlContentInv);
+            if (model.ExchangeRate == null)
+            {
+                model.ExchangeRate = 1;
+            }
+            XmlNode xmlExchangeRate = xmlDoc.CreateElement("ExchangeRate");
+            xmlExchangeRate.InnerText = model.ExchangeRate.Value.ToString("N0", LibraryCommon.GetIFormatProvider());
+            xmlContentInv.AppendChild(xmlExchangeRate);
+
+            if (string.IsNullOrEmpty(model.CurrencyUnit))
+            {
+                model.CurrencyUnit = "VND";
+            }
+            XmlNode xmlCurrencyUnit = xmlDoc.CreateElement("CurrencyUnit");
+            xmlCurrencyUnit.InnerText = model.CurrencyUnit;
+            xmlContentInv.AppendChild(xmlCurrencyUnit);
+
+
+            XmlNode xmlCusCode = xmlDoc.CreateElement("CusCode");
+            xmlCusCode.InnerText = model.CusCode;
+            xmlContentInv.AppendChild(xmlCusCode);
+
+            XmlNode xmlCusName = xmlDoc.CreateElement("CusName");
+            xmlCusName.InnerText = model.CusName;
+            xmlContentInv.AppendChild(xmlCusName);
+
+            XmlNode xmlBuyer = xmlDoc.CreateElement("Buyer");
+            xmlBuyer.InnerText = model.Buyer;
+            xmlContentInv.AppendChild(xmlBuyer);
+
+            XmlNode xmlCusAddress = xmlDoc.CreateElement("CusAddress");
+            xmlCusAddress.InnerText = model.Address;
+            xmlContentInv.AppendChild(xmlCusAddress);
+
+            XmlNode xmlCusTaxCode = xmlDoc.CreateElement("CusTaxCode");
+            xmlCusTaxCode.InnerText = model.CusTaxCode;
+            xmlContentInv.AppendChild(xmlCusTaxCode);
+
+            XmlNode xmlPaymentMethod = xmlDoc.CreateElement("PaymentMethod");
+            xmlPaymentMethod.InnerText = model.PaymentMethod;
+            xmlContentInv.AppendChild(xmlPaymentMethod);
+
+
+            if (!string.IsNullOrEmpty(model.CCCD))
+            {
+                XmlNode xmlExtra1 = xmlDoc.CreateElement("CCCD");
+                xmlExtra1.InnerText = model.CCCD;
+                xmlContentInv.AppendChild(xmlExtra1);
+            }
+            if (!string.IsNullOrEmpty(model.EmailDeliver))
+            {
+                XmlNode xmlExtra1 = xmlDoc.CreateElement("EmailDeliver");
+                xmlExtra1.InnerText = model.CCCD;
+                xmlContentInv.AppendChild(xmlExtra1);
+            }
+            //if (model.Customer != null)
+            //{
+            //    XmlNode xmlExtra1 = xmlDoc.CreateElement("Extra1");
+            //    xmlExtra1.InnerText = model.Customer?.Nationality;
+            //    xmlContentInv.AppendChild(xmlExtra1);
+
+            //    XmlNode xmlExtra2 = xmlDoc.CreateElement("Extra2");
+            //    xmlExtra2.InnerText = model.Customer?.Passport;
+            //    xmlContentInv.AppendChild(xmlExtra2);
+
+            //}
+
+
+            //product
+            //van de ve san pham
+            XmlNode xmlProducts = xmlDoc.CreateElement("Products");
+            xmlContentInv.AppendChild(xmlProducts);
+           
+
+            foreach (var el in model.EInvoiceItems)
+            {
+                //<IsSum> Tính chất * (0-Hàng hóa, dịch vụ; 1-Khuyến mại; 2-Chiết khấu thương mại (trong trường hợp muốn thể hiện thông tin chiết khấu theo dòng); 4-Ghi chú/diễn giải)</IsSum>
+                XmlNode xmlProduct = xmlDoc.CreateElement("Product");
+                xmlProducts.AppendChild(xmlProduct);
+
+                //begin product
+                XmlNode xmlProdCode = xmlDoc.CreateElement("Code");
+                xmlProdCode.InnerText = el.ProCode;
+                xmlProduct.AppendChild(xmlProdCode);
+
+                string issum = string.Empty;
+                switch (el.IsSum)
+                {
+                    case TCHHDVuLoai.HHoa:
+                        issum = "0";
+                        break;
+                    case TCHHDVuLoai.KMai:
+                        issum = "1";
+                        break;
+                    case TCHHDVuLoai.CKhau:
+                        issum = "2";
+                        break;
+                    case TCHHDVuLoai.GChu:
+                        issum = "4";
+                        break;
+                    default:
+                        break;
+                }
+                XmlNode xmlIsSum = xmlDoc.CreateElement("IsSum");
+                xmlIsSum.InnerText = issum;
+                xmlProduct.AppendChild(xmlIsSum);
+
+                XmlNode xmlProdName = xmlDoc.CreateElement("ProdName");
+                xmlProdName.InnerText = el.ProName;
+                xmlProduct.AppendChild(xmlProdName);
+
+                XmlNode xmlProdUnit = xmlDoc.CreateElement("ProdUnit");
+                xmlProdUnit.InnerText = el.Unit;
+                xmlProduct.AppendChild(xmlProdUnit);
+
+                XmlNode xmlProdQuantity = xmlDoc.CreateElement("ProdQuantity");
+                xmlProdQuantity.InnerText = el.Quantity.ToString();
+                xmlProduct.AppendChild(xmlProdQuantity);
+
+                if (el.DiscountAmount!=null)
+                {
+                    XmlNode xmlDiscountAmountpro = xmlDoc.CreateElement("DiscountAmount");
+                    xmlDiscountAmountpro.InnerText = el.DiscountAmount.ToString();
+                    xmlProduct.AppendChild(xmlDiscountAmountpro);
+                }
+
+                if (el.Discount != null)
+                {
+                    XmlNode xmlDiscountpro = xmlDoc.CreateElement("Discount");
+                    xmlDiscountpro.InnerText = el.Discount.ToString();
+                    xmlProduct.AppendChild(xmlDiscountpro);
+                }
+
+                XmlNode xmlProdPrice = xmlDoc.CreateElement("ProdPrice");
+                xmlProdPrice.InnerText = el.Price.ToString();
+                xmlProduct.AppendChild(xmlProdPrice);
+
+                XmlNode xmlProdVATRate = xmlDoc.CreateElement("VATRate");
+                xmlProdVATRate.InnerText = el.VATRate.ToString();
+                xmlProduct.AppendChild(xmlProdVATRate);
+
+                XmlNode xmlProdVATAmount = xmlDoc.CreateElement("VATAmount");
+                xmlProdVATAmount.InnerText = el.VATAmount.ToString();
+                xmlProduct.AppendChild(xmlProdVATAmount);
+
+                XmlNode xmlProdTotal = xmlDoc.CreateElement("Total");
+                xmlProdTotal.InnerText = el.Total.ToString();
+                xmlProduct.AppendChild(xmlProdTotal);
+
+                //XmlNode xmlProdRemark = xmlDoc.CreateElement("Remark");
+                //xmlProdRemark.InnerText = el.Remark.ToString();
+                //xmlProduct.AppendChild(xmlProdRemark);
+
+                XmlNode xmlProdAmount = xmlDoc.CreateElement("Amount");
+                xmlProdAmount.InnerText = el.Amount.ToString();
+                xmlProduct.AppendChild(xmlProdAmount);
+              
+            }
+            decimal? GrossValue0 =  model.EInvoiceItems.Where(x => x.VATRate == 0).ToList().Sum(x=>x.Total);
+            decimal? GrossValue5 = model.EInvoiceItems.Where(x => x.VATRate == 5).ToList().Sum(x => x.Total); 
+            decimal? GrossValue8 = model.EInvoiceItems.Where(x => x.VATRate == 8).ToList().Sum(x => x.Total); 
+            decimal? GrossValue10 = model.EInvoiceItems.Where(x => x.VATRate == 10).ToList().Sum(x => x.Total); 
+            decimal? VatAmount0 = model.EInvoiceItems.Where(x => x.VATRate == 0).ToList().Sum(x => x.VATAmount); 
+            decimal? VatAmount5 = model.EInvoiceItems.Where(x => x.VATRate == 5).ToList().Sum(x => x.VATAmount);
+            decimal? VatAmount10 = model.EInvoiceItems.Where(x => x.VATRate == 10).ToList().Sum(x => x.VATAmount);
+            decimal? VatAmount8 = model.EInvoiceItems.Where(x => x.VATRate == 8).ToList().Sum(x => x.VATAmount);
+
+            decimal? _discountAmount = model.EInvoiceItems.Where(x=>x.DiscountAmount.HasValue).ToList().Sum(x => x.DiscountAmount);
+
+            if (GrossValue0!=null && GrossValue0!=0)
+            {
+                XmlNode xmlGrossValue0 = xmlDoc.CreateElement("GrossValue0");
+                xmlGrossValue0.InnerText = GrossValue0.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlGrossValue0);
+            }
+            if (GrossValue5 != null && GrossValue5 != 0)
+            {
+                XmlNode xmlGrossValue0 = xmlDoc.CreateElement("GrossValue5");
+                xmlGrossValue0.InnerText = GrossValue5.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlGrossValue0);
+            }
+            if (GrossValue8 != null && GrossValue8 != 0)
+            {
+                XmlNode xmlGrossValue0 = xmlDoc.CreateElement("GrossValue8");
+                xmlGrossValue0.InnerText = GrossValue8.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlGrossValue0);
+            }
+            if (GrossValue10 != null && GrossValue10 != 0)
+            {
+                XmlNode xmlGrossValue0 = xmlDoc.CreateElement("GrossValue10");
+                xmlGrossValue0.InnerText = GrossValue10.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlGrossValue0);
+            }
+
+            if (VatAmount0 != null && VatAmount0 != 0)
+            {
+                XmlNode xmlVatAmountxxx = xmlDoc.CreateElement("VatAmount0");
+                xmlVatAmountxxx.InnerText = VatAmount0.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlVatAmountxxx);
+            }
+
+              if (VatAmount5 != null && VatAmount5 != 0)
+            {
+                XmlNode xmlVatAmountxxx = xmlDoc.CreateElement("VatAmount5");
+                xmlVatAmountxxx.InnerText = VatAmount5.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlVatAmountxxx);
+            }
+
+              if (VatAmount8 != null && VatAmount8 != 0)
+            {
+                XmlNode xmlVatAmountxxx = xmlDoc.CreateElement("VatAmount8");
+                xmlVatAmountxxx.InnerText = VatAmount8.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlVatAmountxxx);
+            }
+
+              if (VatAmount10 != null && VatAmount10 != 0)
+            {
+                XmlNode xmlVatAmountxxx = xmlDoc.CreateElement("VatAmount10");
+                xmlVatAmountxxx.InnerText = VatAmount10.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlVatAmountxxx);
+            }
+
+            if (_discountAmount!=null && _discountAmount!=0)
+            {
+                _discountAmount = _discountAmount + model.DiscountAmount;
+                XmlNode xmlDiscountAmount = xmlDoc.CreateElement("DiscountAmount");
+                xmlDiscountAmount.InnerText = _discountAmount.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlDiscountAmount);
+            }
+            else
+            {
+                XmlNode xmlDiscountAmount = xmlDoc.CreateElement("DiscountAmount");
+                xmlDiscountAmount.InnerText = model.DiscountAmount.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlDiscountAmount);
+            }
+
+            if (model.Discount!=null && model.Discount!=0)
+            {
+                XmlNode xmlDiscountRate = xmlDoc.CreateElement("DiscountRate");
+                xmlDiscountRate.InnerText = model.Discount.Value.ToString("N1", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlDiscountRate);
+
+            }
+             if (model.DiscountNonTax!=null && model.DiscountNonTax != 0)
+            {
+                XmlNode xmlDiscountRate = xmlDoc.CreateElement("DiscountNonTax");
+                xmlDiscountRate.InnerText = model.DiscountNonTax.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlDiscountRate);
+
+            }
+             if (model.DiscountOther != null && model.DiscountOther != 0)
+            {
+                XmlNode xmlDiscountRate = xmlDoc.CreateElement("DiscountOther");
+                xmlDiscountRate.InnerText = model.DiscountOther.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
+                xmlContentInv.AppendChild(xmlDiscountRate);
+
+            }
+             
+           
+            //tong tien dich vu
+            XmlNode xmlTotal = xmlDoc.CreateElement("Total");
+            xmlTotal.InnerText = model.Total.ToString("F3", LibraryCommon.GetIFormatProvider());
+            xmlContentInv.AppendChild(xmlTotal);
+
+            // tong tien VAT_Amount
+            XmlNode xmlVAT_Amount = xmlDoc.CreateElement("VATAmount");
+            xmlVAT_Amount.InnerText = model.VATAmount.ToString("F3", LibraryCommon.GetIFormatProvider());
+            xmlContentInv.AppendChild(xmlVAT_Amount);
+
+
+            //thue gia tri gia tang  VAT_Rate
+            XmlNode xmlVAT_Rate = xmlDoc.CreateElement("VATRate");
+            xmlVAT_Rate.InnerText = model.VATRate.ToString("N0", LibraryCommon.GetIFormatProvider());
+            xmlContentInv.AppendChild(xmlVAT_Rate);
+
+        
+            //Amount
+            XmlNode xmlamount = xmlDoc.CreateElement("Amount");
+            xmlamount.InnerText = model.Amount.ToString("F3", LibraryCommon.GetIFormatProvider());
+            xmlContentInv.AppendChild(xmlamount);
+
+
+            //hien thi so tien bang chu
+            XmlNode xmlAmountInWords = xmlDoc.CreateElement("AmountInWords");
+            xmlAmountInWords.InnerText = model.AmountInWords;
+            xmlContentInv.AppendChild(xmlAmountInWords);
+
+            if (model.ArisingDate!=null)
+            {
+                //ngay hóa đơn
+                XmlNode xmlArisingDate = xmlDoc.CreateElement("ArisingDate");
+                xmlArisingDate.InnerText = model.ArisingDate.Value.ToString("dd/MM/yyyy");
+                xmlContentInv.AppendChild(xmlArisingDate);
+            }
+
+            //end other
+            //End sanpham
+            return xmlDoc.OuterXml;
+        }
         private string GenerateXMLMTT_VNPT(EInvoice model)
         {
             XmlDocument xmlDocz = new XmlDocument();
@@ -741,16 +1106,22 @@ namespace Infrastructure.Infrastructure.Repositories
                 tgTThue.InnerText = model.VATAmount.ToString(CultureInfo.InvariantCulture);
                 thanhToan.AppendChild(tgTThue);
 
-                if (model.DiscountAmount != null)
+                if (model.DiscountAmount != null && model.DiscountAmount != 0)
                 {
                     XmlNode TTCKTMai = xmlDoc.CreateElement("TTCKTMai");
                     TTCKTMai.InnerText = model.DiscountAmount.Value.ToString(CultureInfo.InvariantCulture);
                     thanhToan.AppendChild(TTCKTMai);
+                } 
+                if (model.DiscountNonTax != null && model.DiscountNonTax != 0)
+                {
+                    XmlNode TTCKTMai = xmlDoc.CreateElement("TGTKCThue");
+                    TTCKTMai.InnerText = model.DiscountNonTax.Value.ToString(CultureInfo.InvariantCulture);
+                    thanhToan.AppendChild(TTCKTMai);
                 }
-                 if (model.DiscountOther != 0)
+                 if (model.DiscountOther != null&&model.DiscountOther != 0)
                 {
                     XmlNode TTCKTMai = xmlDoc.CreateElement("TGTKhac");
-                    TTCKTMai.InnerText = model.DiscountOther.ToString(CultureInfo.InvariantCulture);
+                    TTCKTMai.InnerText = model.DiscountOther.Value.ToString(CultureInfo.InvariantCulture);
                     thanhToan.AppendChild(TTCKTMai);
                 }
 
@@ -1494,7 +1865,7 @@ namespace Infrastructure.Infrastructure.Repositories
             try
             {
                 bool update = false;
-                var getall = await _repository.Entities.Where(x => lst.Contains(x.Id) && x.ComId == ComId).ToListAsync();
+                var getall = await _repository.Entities.AsNoTracking().Where(x => lst.Contains(x.Id) && x.ComId == ComId).ToListAsync();
 
                 foreach (var item in getall)
                 {
@@ -1520,9 +1891,10 @@ namespace Infrastructure.Infrastructure.Repositories
                                 if (company == null)
                                 {
                                     await UpdateStatusPublishInvoice(item.ComId, item.IdInvoice, item.InvoiceCode, EnumStatusPublishInvoiceOrder.NONE);
-                                    item.IsDelete = true;
-                                    item.InvoiceCode = item.InvoiceCode + "-D";
-                                    
+                                    //item.IsDelete = true;
+                                    //item.InvoiceCode = item.InvoiceCode + "-D";
+
+                                    await _repository.DeleteAsync(item);
                                     update = true;
                                     ListDetailInvoice.Add(new DetailInvoice()
                                     {
@@ -1538,8 +1910,9 @@ namespace Infrastructure.Infrastructure.Repositories
                                     if (pub.Equals("ERR:6"))
                                     {
                                         await UpdateStatusPublishInvoice(item.ComId, item.IdInvoice, item.InvoiceCode, EnumStatusPublishInvoiceOrder.NONE);
-                                        item.IsDelete = true;
-                                        item.InvoiceCode = item.InvoiceCode + "-D";
+                                        // item.IsDelete = true;
+                                        //  item.InvoiceCode = item.InvoiceCode + "-D";
+                                        await _repository.DeleteAsync(item);
                                         update = true;
                                         ListDetailInvoice.Add(new DetailInvoice()
                                         {
@@ -1609,8 +1982,9 @@ namespace Infrastructure.Infrastructure.Repositories
                         else
                         {
                             await UpdateStatusPublishInvoice(item.ComId, item.IdInvoice, item.InvoiceCode, EnumStatusPublishInvoiceOrder.NONE);
-                            item.IsDelete = true;
-                            item.InvoiceCode = item.InvoiceCode + "-D";
+                            // item.IsDelete = true;
+                            //item.InvoiceCode = item.InvoiceCode + "-D";
+                            await _repository.DeleteAsync(item);
                             update = true;
                             ListDetailInvoice.Add(new DetailInvoice()
                             {
@@ -2139,6 +2513,11 @@ namespace Infrastructure.Infrastructure.Repositories
                 await _unitOfWork.RollbackAsync();
                 _log.LogError($"Lỗi trong quá trình lưu",e.ToString());
             }
+        }
+
+        public Task<IResult<PublishInvoiceModelView>> PublishInvoiceByTokenVNPTAsync(string serialCert, string serial, string pattern, string dataxml, string IdCasher, string CasherName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

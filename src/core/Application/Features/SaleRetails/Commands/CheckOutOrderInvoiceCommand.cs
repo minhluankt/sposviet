@@ -75,7 +75,7 @@ namespace Application.Features.SaleRetails.Commands
                             tientruocthue = (product.Data.IsProductVAT) ? (product.Data.Invoice.VATAmount + product.Data.Invoice.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider()) : product.Data.Invoice.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                             tienthue = product.Data.Invoice.VATAmount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                             thuesuat = product.Data.Invoice.VATRate?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
-                            giamgia = (product.Data.Invoice.DiscountAmount + product.Data.Invoice.DiscountOther).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            giamgia = (product.Data.Invoice.DiscountAmount??0 + product.Data.Invoice.DiscountOther??0).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                             khachcantra = (product.Data.Invoice.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                             khachthanhtoan = product.Data.Invoice.AmountCusPayment?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                             tienthuatrakhach = product.Data.Invoice.AmountChangeCus?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),

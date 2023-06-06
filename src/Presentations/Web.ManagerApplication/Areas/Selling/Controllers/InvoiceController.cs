@@ -18,6 +18,8 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System.Drawing.Drawing2D;
 using Web.ManagerApplication.Abstractions;
+using System.Reactive.Joins;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -161,7 +163,32 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         [HttpPost]
         [Authorize(Policy = "invoice.publishinvoice")]
-    
+        public async Task<IActionResult> PublishEInvoiceTokenAsync(string serialCert,string serial, string pattern, string dataxml)
+        {
+            if (string.IsNullOrEmpty(serialCert) || string.IsNullOrEmpty(serial)|| string.IsNullOrEmpty(pattern) || string.IsNullOrEmpty(dataxml))
+            {
+                _notify.Error("Dữ liệu truyền vào đã bị thay đổi");
+                return new JsonResult(new { isValid = false });
+            }
+
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var send = await _mediator.Send(new PublishInvoiceCommand()
+            {
+                CasherName = currentUser.FullName,
+                IdCarsher = currentUser.Id,
+                pattern = pattern,
+                serial = serial,
+                serialCert = serialCert,
+                dataxmlhash = dataxml,
+                TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT,
+                TypeEventInvoice = EnumTypeEventInvoice.PublishEInvoiceTokenByHash
+            });
+            
+            _notify.Error(send.Message);
+            return new JsonResult(new { isValid = false });
+        }
+        [HttpPost]
+        [Authorize(Policy = "invoice.publishinvoice")]
         public async Task<IActionResult> PublishEInvoiceAsync(int[] lstid, EnumTypeEventInvoice TypeEventInvoice,float? Vatrate,int idPattern)
         {
             try
@@ -200,8 +227,18 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 });
                 if (send.Succeeded)
                 {
+                    if (send.Data.TypeEventInvoice==EnumTypeEventInvoice.IsGetHashPublishEInvoice)
+                    {
+                        return new JsonResult(new { 
+                            isValid = true,
+                            data = send.Data.XmlByHashValue,
+                            isGetHashToken = true ,
+                            typeSupplierEInvoice = (int)send.Data.TypeSupplierEInvoice,
+                            pattern = send.Data.Pattern ,
+                            serialCert = send.Data.SerialCert , serial = send.Data.Serial});
+                    }
                     var html = await _viewRenderer.RenderViewToStringAsync("PublishEInvoice", send.Data);
-                    return new JsonResult(new { isValid = true,html = html });
+                    return new JsonResult(new { isValid = true,html = html, isGetHashToken = false });
                 }
                 _notify.Error(send.Message);
                 return new JsonResult(new { isValid = false });

@@ -1387,10 +1387,10 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<decimal?>("DiscountAmount")
                         .HasColumnType("decimal(18,3)");
 
-                    b.Property<decimal>("DiscountNonTax")
+                    b.Property<decimal?>("DiscountNonTax")
                         .HasColumnType("decimal(18,3)");
 
-                    b.Property<decimal>("DiscountOther")
+                    b.Property<decimal?>("DiscountOther")
                         .HasColumnType("decimal(18,3)");
 
                     b.Property<string>("EInvoiceCode")
@@ -1830,10 +1830,13 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<float>("Discount")
                         .HasColumnType("real");
 
-                    b.Property<decimal>("DiscountAmount")
+                    b.Property<decimal?>("DiscountAmount")
                         .HasColumnType("decimal(18,3)");
 
-                    b.Property<decimal>("DiscountOther")
+                    b.Property<decimal?>("DiscountNonTax")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal?>("DiscountOther")
                         .HasColumnType("decimal(18,3)");
 
                     b.Property<string>("Email")

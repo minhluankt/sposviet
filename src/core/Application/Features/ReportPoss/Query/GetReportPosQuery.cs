@@ -37,7 +37,7 @@ namespace Application.Features.ReportPoss.Query
                         reportPosModel.InvoiceAll = getdt.Count();
                         reportPosModel.InvoiceCancel = getdt.Where(x=>x.Status==Enums.EnumStatusInvoice.HUY_BO).Count();
                         reportPosModel.Product = getdt.Sum(x => x.Quantity);
-                        reportPosModel.DiscountAmount = getdt.Sum(x => x.DiscountAmount);
+                        reportPosModel.DiscountAmount = getdt.Where(x=> x.DiscountAmount.HasValue).ToList().Sum(x => x.DiscountAmount)??0;
                         reportPosModel.Amount = getdt.Where(x=>x.Status==Enums.EnumStatusInvoice.DA_THANH_TOAN || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN_MOT_PHAN).Sum(x => x.Amonut);
                         // chi tiết theo hóa đơn
                         List<ListItemReport> ListItemReportsByInvoice = new List<ListItemReport>();
@@ -56,7 +56,7 @@ namespace Application.Features.ReportPoss.Query
                                 Amount = item.Amonut,
                                 Total = item.Total,
                                 VATAmount = item.VATAmount,
-                                DiscountAmount = item.DiscountAmount,
+                                DiscountAmount = item.DiscountAmount??0,
                                 ServiceChargeAmount = item.ServiceChargeAmount,
                                 CreateDate = item.CreatedOn.ToString("dd/MM/yyyy HH:mm"),
                                 RankName = LibraryCommon.DateInWeek(item.CreatedOn)
@@ -74,7 +74,7 @@ namespace Application.Features.ReportPoss.Query
                                 VATAmount = item.Where(x => x.Status == Enums.EnumStatusInvoice.DA_THANH_TOAN || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN_MOT_PHAN).Sum(x=>x.VATAmount),
                                 TotalCancel = item.Where(x => x.Status == Enums.EnumStatusInvoice.HUY_BO ||  x.Status == Enums.EnumStatusInvoice.HOAN_TIEN).Sum(x=>x.Amonut),//tiền hủy nên lấy của hóa đơn
                                 Total = item.Sum(x=>x.Total),
-                                DiscountAmount = item.Where(x => x.Status == Enums.EnumStatusInvoice.DA_THANH_TOAN || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN_MOT_PHAN).Sum(x=>x.DiscountAmount),
+                                DiscountAmount = item.Where(x => x.DiscountAmount.HasValue&&( x.Status == Enums.EnumStatusInvoice.DA_THANH_TOAN || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN_MOT_PHAN)).ToList().Sum(x=>x.DiscountAmount)??0,
                                 ServiceChargeAmount = item.Where(x => x.Status == Enums.EnumStatusInvoice.DA_THANH_TOAN || x.Status == Enums.EnumStatusInvoice.HOAN_TIEN_MOT_PHAN).Sum(x=>x.ServiceChargeAmount),
                                 CreateDate = item.Key.ToString("dd/MM/yyyy"),
                                 Date = item.Key,

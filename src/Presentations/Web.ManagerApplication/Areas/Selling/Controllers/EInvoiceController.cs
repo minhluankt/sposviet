@@ -39,7 +39,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [Authorize(Policy = "einvoice.list")]
         public IActionResult Index()
         {
-           
             return View();
         }
         [Authorize]

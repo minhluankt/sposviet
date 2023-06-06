@@ -17,7 +17,12 @@ namespace Domain.ViewModel
         public bool IsError { get; set; }
         public string Note { get; set; }// ghi chú bất kỳ
         public string Hash { get; set; }// chuỗi hash VNPT trả về
+        public string XmlByHashValue { get; set; }// chuỗi xml có hash VNPT trả về
+        public string Pattern { get; set; }// 
+        public string Serial { get; set; }//
+        public string SerialCert { get; set; }//
         public ENumTypeSeri TypeSeri { get; set; }// dạng ký số gì
+        public ENumSupplierEInvoice TypeSupplierEInvoice { get; set; }// phast hafnh hay tap moi
         public EnumTypeEventInvoice TypeEventInvoice { get; set; }// phast hafnh hay tap moi
         public List<DetailInvoice> DetailInvoices { get; set; }
         public PublishInvoiceResponse PublishInvoiceResponse { get; set; }

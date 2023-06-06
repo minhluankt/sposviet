@@ -20,6 +20,10 @@ namespace Application.Features.Invoices.Commands
     {
         public string CasherName { get; set; }//thuế s
         public string IdCarsher { get; set; }//thuế s
+        public string serial { get; set; }//
+        public string pattern { get; set; }//
+        public string dataxmlhash { get; set; }//
+        public string serialCert { get; set; }//
         public int[] lstId { get; set; }
         public int IdManagerPatternEInvoice { get; set; }
         public float VATRate { get; set; }
@@ -45,6 +49,11 @@ namespace Application.Features.Invoices.Commands
 
         public async Task<Result<PublishInvoiceModelView>> Handle(PublishInvoiceCommand command, CancellationToken cancellationToken)
         {
+            if (command.TypeEventInvoice ==EnumTypeEventInvoice.PublishEInvoiceTokenByHash)
+            {
+                return await _Repository.PublishInvoiceModel(model);
+            }
+
             var model = new PublishInvoiceModel()
             {
                 lstid = command.lstId,

@@ -58,7 +58,8 @@ var TypeEventWebSocket = {
     SignEInvoice: 0,//ký hóa đơn
     PrintEInvoice: 1,
     PrintInvoice: 2,
-    PrintBep: 3//thông báo bếp
+    PrintBep: 3,//thông báo bếp
+    SignListEInvoiceToken: 4//lấy chuỗi hash khi ký token
 }
 var EnumTypeValue = {
     BOOL: "BOOL",
@@ -6221,43 +6222,45 @@ var eventInvocie = {
                                             TypeEventInvoice: TypeEventInvoice,
                                         },
                                         success: function (res) {
+                                            if (res.isGetHashToken) {
+                                                eventInvocie.gethashTokenPublishEinvoice(res.typeSupplierEInvoice,res.serialCert, res.serial, res.pattern, res.data);
+                                            } else {
+                                                dataTableOut.ajax.reload(null, false);
+                                                if (res.isValid) {
+                                                    Swal.close();
+                                                    title = "Tạo mới và phát hành hóa đơn điện tử";
+                                                    Swal.fire({
+                                                        // icon: 'success',
+                                                        position: 'center',
+                                                        showClass: {
+                                                            popup: `popup-formcreate eventpublisinvoice`
+                                                        },
 
-                                            dataTableOut.ajax.reload(null, false);
+                                                        showCloseButton: true,
 
-                                            if (res.isValid) {
-                                                Swal.close();
-                                                title = "Tạo mới và phát hành hóa đơn điện tử";
-                                                Swal.fire({
-                                                    // icon: 'success',
-                                                    position: 'center',
-                                                    showClass: {
-                                                        popup: `popup-formcreate eventpublisinvoice`
-                                                    },
+                                                        title: title,
+                                                        html: res.html,
+                                                        //showClass: {
+                                                        //    popup: 'popup-formcreate'
+                                                        //},
 
-                                                    showCloseButton: true,
+                                                        // footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                                                        allowOutsideClick: true,
+                                                        showConfirmButton: false,
+                                                        showCancelButton: true,
+                                                        cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                                                        didRender: () => {
 
-                                                    title: title,
-                                                    html: res.html,
-                                                    //showClass: {
-                                                    //    popup: 'popup-formcreate'
-                                                    //},
+                                                            $(".btn-continue").click(function () {
+                                                                Swal.close();
+                                                            });
+                                                            $("#accordionkqpubinv a.text-dark").click(function () {
+                                                                alert("ok");
+                                                            });
 
-                                                    // footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
-                                                    allowOutsideClick: true,
-                                                    showConfirmButton: false,
-                                                    showCancelButton: true,
-                                                    cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
-                                                    didRender: () => {
-
-                                                        $(".btn-continue").click(function () {
-                                                            Swal.close();
-                                                        });
-                                                        $("#accordionkqpubinv a.text-dark").click(function () {
-                                                            alert("ok");
-                                                        });
-
+                                                        }
+                                                    });
                                                     }
-                                                });
                                             }
                                         },
 
@@ -6805,6 +6808,42 @@ var eventInvocie = {
             error: function () {
                 alert("Error occured!!");
             }
+        });
+    },  
+    publisEinvoiceByToken: function (typeSupplierEInvoice,serialCert, serial, pattern,data) {
+        $.ajax({
+            type: 'POST',
+            url: '/Selling/Invoice/PublishEInvoiceToken',
+           // traditional: true,
+            dataType: "json",
+            data: {
+                serialCert: serialCert,
+                serial: serial,
+                pattern: pattern,
+                data: data,
+            },
+            success: function (res) {
+                if (res.isGetHashToken) {
+                    dataTableOut.ajax.reload(null, false);
+                    loadingStop();
+                }
+            }
+        });
+    },
+    gethashTokenPublishEinvoice: async function (typeSupplierEInvoice, serialCert, serial, pattern, xml) {
+        loadingStart();
+        dataObject = {};
+        dataObject.type = TypeEventWebSocket.SignListEInvoiceToken;
+        dataObject.xmlbyhash = xml;
+        sposvietplugin.sendConnectSocket(listport[0]).then(function () {
+            loadingStart();
+            sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
+                if (data == "-1") {
+                    loadingStop();
+                } else {
+                    eventInvocie.publisEinvoiceByToken(typeSupplierEInvoice,serialCert, serial, pattern, data);
+                }
+            });
         });
     },
     savePublishEInvoiceMeger: function () {

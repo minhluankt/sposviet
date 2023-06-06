@@ -181,7 +181,7 @@ namespace Infrastructure.Infrastructure.HubS
             }
             
         }
-        public async Task một hàm cập nhập dữ liệu
+     //   public async Task một hàm cập nhập dữ liệu
         public async Task PrintbaobepSposViet(int ComId, string data)//dành cho báo  bếp tại máy khashc hàng phương án 2 k cần bật ứng dụng web, chỉ cần tool
         {
             var json = new

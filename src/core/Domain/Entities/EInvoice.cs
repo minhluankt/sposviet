@@ -74,8 +74,8 @@ namespace Domain.Entities
         public decimal Total { get; set; }//
         public float? Discount { get; set; }//
         public decimal? DiscountAmount { get; set; }//chiết khấu
-        public decimal DiscountOther { get; set; }//chiết khấu sau thuế//tiền giảm trừ khác
-        public decimal DiscountNonTax { get; set; }//tiền giảm trừ k chịu thuế
+        public decimal? DiscountOther { get; set; }//chiết khấu sau thuế//tiền giảm trừ khác
+        public decimal? DiscountNonTax { get; set; }//tiền giảm trừ k chịu thuế
         public decimal Amount { get; set; }//tổng tiền
         public decimal VATAmount { get; set; }//tổng tiền
         public float VATRate { get; set; }//thuế s
