@@ -6840,7 +6840,7 @@ var eventInvocie = {
             sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
                 if (data == "-1") {
                     loadingStop();
-                } else {
+                } else { 
                     eventInvocie.publisEinvoiceByToken(typeSupplierEInvoice,serialCert, serial, pattern, data);
                 }
             });

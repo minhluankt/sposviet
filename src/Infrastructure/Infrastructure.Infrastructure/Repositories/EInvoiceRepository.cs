@@ -2517,7 +2517,8 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public Task<IResult<PublishInvoiceModelView>> PublishInvoiceByTokenVNPTAsync(string serialCert, string serial, string pattern, string dataxml, string IdCasher, string CasherName)
         {
-            throw new NotImplementedException();
+
+            var publish = _vnptrepository.PublishInvWithTokenAsync();
         }
     }
 }
