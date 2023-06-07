@@ -189,7 +189,7 @@
             "processing": true,
             "pagingType": "full_numbers",
             "serverSide": true,
-            "filter": true,
+            "filter": false,
             //"rowId": "id",
             "orderMulti": false,
             //"start": 0,
@@ -254,6 +254,7 @@
                 start: 0,
                 datatype: "json",
                 data: {
+                    InvoiceNo: function () { return $('#InvoiceNo').val().trim() },
                     Code: function () { return $('#Name').val().trim() },
                     RangesDate: function () {
                         if ($('#rangesDate').val().trim() == "") {
@@ -340,15 +341,14 @@
                        // let cancelhtml = ` <a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.CancelInvoice('` + full.secret + `',` + EnumTypeEventInvoice.Cancel + `)"><i class="fas fa-power-off mr-2"></i> Hủy hóa đơn</a>`;
                      
                         let html = `<div class="btn-group dropleft">
-                                                                          <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> </button>
-                                                                              <div class="dropdown-menu">
-                                                                                   <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.viewInvoice('/Selling/EInvoice/ViewInvoice?secret=` + full.secret + `')"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
-                                                                                   <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.printInvoice('/Selling/EInvoice/PrintInvoice?secret=` + full.secret + `')"><i class="fas fa-print mr-2"></i> In hóa đơn</a>
-                                                                                   <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.exportPDF('/Selling/EInvoice/ExportPDF?secret=` + full.secret + `')"><i class="far fa-file-pdf mr-2"></i> Xuất PDF</a>
-                                                                                           <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.exportXML('/Selling/EInvoice/ExportXML?secret=` + full.secret + `')"><i class="far fa-file-alt mr-2"></i> Xuất XML</a>
-
-                                                                                </div>
-                                                                          </div>`;
+                         <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> </button>
+                                          <div class="dropdown-menu">
+                                                 <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.viewInvoice('/Selling/EInvoice/ViewInvoice?secret=` + full.secret + `')"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
+                                                  <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.printInvoice('/Selling/EInvoice/PrintInvoice?secret=` + full.secret + `')"><i class="fas fa-print mr-2"></i> In hóa đơn</a>
+                                                   <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.exportPDF('/Selling/EInvoice/ExportPDF?secret=` + full.secret + `')"><i class="far fa-file-pdf mr-2"></i> Xuất PDF</a>
+                                                   <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.exportXML('/Selling/EInvoice/ExportXML?secret=` + full.secret + `')"><i class="far fa-file-alt mr-2"></i> Xuất XML</a>
+                                                     </div>
+                                                </div>`;                                                 
                         return html;
                     }
                 },

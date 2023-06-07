@@ -322,13 +322,40 @@ namespace Infrastructure.Infrastructure.Repositories
                     var publish = await _einvoiceRepository.GetHashInvWithTokenVNPTAsync(lsteinvoice, suplcompany);
                     if (publish.Succeeded)
                     {
-                        lstketqua.XmlByHashValue = publish.Data;
-                        lstketqua.Pattern = lsteinvoice.FirstOrDefault().Pattern;
-                        lstketqua.Serial = lsteinvoice.FirstOrDefault().Serial;
-                        lstketqua.SerialCert = suplcompany.SerialCert;
-                        lstketqua.TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT;
-                        lstketqua.TypeEventInvoice = EnumTypeEventInvoice.IsGetHashPublishEInvoice;
-                        return await Result<PublishInvoiceModelView>.SuccessAsync(lstketqua);
+                        await _unitOfWork.CreateTransactionAsync();
+                        try
+                        {
+                            await _einvoiceRepository.CreateRangeAsync(lsteinvoice, model.CasherName, model.IdCarsher);
+                            foreach (var item in lsteinvoice)
+                            {
+                                var getinvno = await _managerInvNoRepository.UpdateInvNo(item.ComId, ENumTypeManagerInv.EInvoice, false);
+                                var getupđateinvoice = await _invoiceRepository.GetByIdAsync(item.IdInvoice);
+
+                                getupđateinvoice.StatusPublishInvoiceOrder = EnumStatusPublishInvoiceOrder.CREATE;
+                                item.EInvoiceCode = $"EINV{getinvno.ToString("00000000")}";
+
+                                getupđateinvoice.IdEInvoice = item.Id;
+                                await _invoiceRepository.UpdateAsync(getupđateinvoice);
+                            }
+                            await _einvoiceRepository.UpdateRangeAsync(lsteinvoice);
+                            await _unitOfWork.SaveChangesAsync();
+                            await _unitOfWork.CommitAsync();
+
+                            lstketqua.XmlByHashValue = publish.Data;
+                            lstketqua.Pattern = lsteinvoice.FirstOrDefault().Pattern;
+                            lstketqua.Serial = lsteinvoice.FirstOrDefault().Serial;
+                            lstketqua.SerialCert = suplcompany.SerialCert;
+                            lstketqua.TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT;
+                            lstketqua.TypeEventInvoice = EnumTypeEventInvoice.IsGetHashPublishEInvoice;
+                            return await Result<PublishInvoiceModelView>.SuccessAsync(lstketqua);
+                        }
+                        catch (Exception e)
+                        {
+                            _log.LogError(e.ToString());
+                            await _unitOfWork.RollbackAsync();
+                            return await Result<PublishInvoiceModelView>.FailAsync(e.Message);
+                        }
+                        
                     } 
                 }
                 else {
@@ -1575,16 +1602,15 @@ namespace Infrastructure.Infrastructure.Repositories
            
         }
 
-        public Task<Result<PublishInvoiceModelView>> PublishInvoiceByToKen(string serialCert, string serial, string pattern, string dataxml, string IdCasher, string CasherName)
+        public async Task<IResult<PublishInvoiceModelView>> PublishInvoiceByToKen(int Comid, ENumSupplierEInvoice SupplierEInvoice, string serial, string pattern, string dataxml, string IdCasher, string CasherName)
         {
             try
             {
-                var publish = _vnptportalrepository
+                return await _einvoiceRepository.PublishInvoiceByTokenVNPTAsync(Comid, SupplierEInvoice, serial, pattern, dataxml, IdCasher, CasherName);
             }
             catch (Exception e)
             {
-
-                throw;
+                return await Result<PublishInvoiceModelView>.FailAsync(e.Message);
             }
         }
     }

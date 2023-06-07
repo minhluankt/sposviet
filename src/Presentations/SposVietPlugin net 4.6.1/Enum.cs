@@ -20,6 +20,7 @@ namespace SposVietPlugin_net_4._6._1
             PrintEInvoice = 1,//in hóa đon điện tử
             PrintInvoice = 2, //in bill
             PrintBep = 3, //in bill
+            SignListEInvoiceToken = 4, //ký hóa đơn token
         }
     }
 }

@@ -78,8 +78,10 @@
                 </li>
             </ul>
         </div>
+        
     </div>
     <div id="viewAll" class="card-body">
+        <button class="btn btn-primary btn-starcu btn-invoiceshow"><i class="fas fa-star"></i> Tiện ích</button>
         <table class="table table-bordered table-striped" style=" " id="dataTable">
             <thead>
                 <tr>
@@ -102,6 +104,7 @@
 </div>
 @section Scripts
     {
+    <script src="~/js/custom/sposvietkyso.min.js?time=7854"></script>
     <script>
         $(document).ready(function () {
             eventInvocie.loadEventMutiaction();
@@ -168,7 +171,7 @@
             "processing": true,
             "pagingType": "full_numbers",
             "serverSide": true,
-            "filter": true,
+            "filter": false,
             "rowId": "id",
             "orderMulti": false,
             "start": 0,
@@ -408,6 +411,7 @@
 
         });
 
+       // dataTableOut.columns([0]).visible(false);
      
         $('#reload').on('click', function () {
             dataTableOut.ajax.reload(null, false);

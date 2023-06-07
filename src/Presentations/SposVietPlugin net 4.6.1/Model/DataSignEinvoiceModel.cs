@@ -22,6 +22,8 @@ namespace SposVietPlugin_net_4._6._1.Model
             }
         }
         public string hash { get; set; }
+        public string xmlbyhash { get; set; }
+        public string serialCert { get; set; }
         public string html { get; set; }
     }
     public class ResponseModel<T>

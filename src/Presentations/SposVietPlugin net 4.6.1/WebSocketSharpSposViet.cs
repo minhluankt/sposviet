@@ -193,6 +193,35 @@ namespace SposVietPlugin_net_4._6._1
                             }
 
                             break;
+                        case TypeEventWebSocket.SignListEInvoiceToken:
+                            if (string.IsNullOrEmpty(model.xmlbyhash))
+                            {
+                                res.isSuccess = false;
+                                res.Message = "Không tồn tại xmlbyhash truyền vào";
+                                Send(JsonConvert.SerializeObject(res));
+                            }
+                            else
+                            {
+                                EInvoiceService eInvoiceService = new EInvoiceService();
+                                string sign = eInvoiceService.SignHashPublishEInvoiceToken(model.xmlbyhash,model.serialCert);
+                                if (sign == "-1")
+                                {
+                                    res.isSuccess = false;
+                                    res.Message = "-1";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
+                                else
+                                {
+                                    res.isSuccess = true;
+                                    res.Message = "Ký số thành công";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
+
+                            }
+
+                            break;
                         case TypeEventWebSocket.PrintEInvoice:
                             if (string.IsNullOrEmpty(model.html))
                             {

@@ -42,7 +42,7 @@ namespace Infrastructure.Infrastructure.Repositories
         public async Task<SupplierEInvoice> GetByIdAsync(int Comid,ENumSupplierEInvoice TypeSupplierEInvoice)
         {
             //return await _repository.GetByIdAsync(x=>x.TypeSupplierEInvoice== TypeSupplierEInvoice, x=>x.Include(x=>x.ManagerPatternEInvoices));
-            return await _repository.Entities.SingleOrDefaultAsync(x=>x.TypeSupplierEInvoice== TypeSupplierEInvoice && x.ComId== Comid);
+            return await _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x=>x.TypeSupplierEInvoice== TypeSupplierEInvoice && x.ComId== Comid);
         }
 
         public async Task<IResult> UpdateAsync(SupplierEInvoice Entity, int Comid)

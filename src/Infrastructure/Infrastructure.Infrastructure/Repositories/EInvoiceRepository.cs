@@ -105,6 +105,22 @@ namespace Infrastructure.Infrastructure.Repositories
             await _unitOfWork.SaveChangesAsync();
             AddHistori(new HistoryEInvoice() { Carsher = Carsher, StatusEvent = StatusStaffEventEInvoice.TaoMoiHoaDon, IdCarsher = IdCarsher, EInvoiceCode = Entity.EInvoiceCode, IdEInvoice = Entity.Id, Name = $"Tạo mới hóa đơn" });
         }
+        public async Task CreateRangeAsync(List<EInvoice> Entity, string Carsher, string IdCarsher)
+        {
+            await _repository.AddRangeAsync(Entity);
+            await _unitOfWork.SaveChangesAsync();
+            foreach (var item in Entity)
+            {
+                AddHistori(new HistoryEInvoice() { 
+                    Carsher = Carsher,
+                    StatusEvent = StatusStaffEventEInvoice.TaoMoiHoaDon, 
+                    IdCarsher = IdCarsher,
+                    EInvoiceCode = item.EInvoiceCode, 
+                    IdEInvoice = item.Id,
+                    Name = $"Tạo mới hóa đơn" });
+            }
+            
+        }
 
         public async Task<IResult<PublishInvoiceModelView>> CancelEInvoiceAsync(int[] lst, int ComId, string Carsher, string IdCarsher)
         {
@@ -255,7 +271,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 }
                 else if (gettoken.Contains("Invoices"))
                 {
-                    return await Result<string>.SuccessAsync(gettoken);
+                    return await Result<string>.SuccessAsync(gettoken,"Lấy hash thành công");
                 }
                 return await Result<string>.FailAsync($"Lỗi phát hành hóa đơn điện tử không xác định {gettoken}");
             }
@@ -1212,6 +1228,10 @@ namespace Infrastructure.Infrastructure.Repositories
         public async Task UpdateAsync(EInvoice Entity)
         {
             await _repository.UpdateAsync(Entity);
+        }
+         public async Task UpdateRangeAsync(List<EInvoice> Entity)
+        {
+            await _repository.UpdateRangeAsync(Entity);
         }
 
         public async Task<PaginatedList<EInvoice>> GetAllDatatableAsync(int? Comid, InvoiceModel textSearch, string sortColumn, string sortColumnDirection, int pageSize, int skip, EnumTypeProduct enumTypeProduct = EnumTypeProduct.THOITRANG)
@@ -2515,10 +2535,71 @@ namespace Infrastructure.Infrastructure.Repositories
             }
         }
 
-        public Task<IResult<PublishInvoiceModelView>> PublishInvoiceByTokenVNPTAsync(string serialCert, string serial, string pattern, string dataxml, string IdCasher, string CasherName)
+        public async Task<IResult<PublishInvoiceModelView>> PublishInvoiceByTokenVNPTAsync(int Comid,ENumSupplierEInvoice SupplierEInvoice, string serial, string pattern, string dataxml, string IdCasher, string CasherName)
         {
+            PublishInvoiceModelView publishInvoiceModelView =   new PublishInvoiceModelView();
+            SupplierEInvoice company = await _supplierEInvoicerepository.GetByIdAsync(Comid, SupplierEInvoice);
+            if (company == null)
+            {
+               return  Result<PublishInvoiceModelView>.Fail(HeperConstantss.ERR019);
+            }
+            List<DetailInvoice> ListDetailInvoice = new List<DetailInvoice>();
+            var publish = await _vnptrepository.PublishInvWithTokenAsync(company.DomainName,dataxml,company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin, pattern,serial);
+            if (publish.Contains("OK:"))
+            {
+                string[] data = publish.Split("-");
+                string[] datalisteinv = data[1].Split(",");
+                try
+                {
+                    List<string> getlstfkey = new List<string>();
+                    foreach (var item in datalisteinv)
+                    {
+                        string[] newdata = item.Split("_");
+                        string fkey = newdata[0];
+                        string invoiceno = newdata[1];
+                        var einv = await _repository.Entities.SingleOrDefaultAsync(x => x.ComId == Comid && x.FkeyEInvoice == fkey);
+                        if (einv != null)
+                        {
+                            getlstfkey.Add(fkey);
+                            einv.InvoiceNo = int.Parse(invoiceno);
+                            einv.StatusEinvoice = StatusEinvoice.SignedInv;
+                            einv.PublishDate = DateTime.Now;
+                            await _repository.UpdateAsync(einv);
+                            //xử lý bên invoice
+                            var getupđateinvoice = await _Invoicerepository.GetByIdAsync(einv.IdInvoice);
+                            getupđateinvoice.StatusPublishInvoiceOrder = EnumStatusPublishInvoiceOrder.PUBLISH;
 
-            var publish = _vnptrepository.PublishInvWithTokenAsync();
+                            ListDetailInvoice.Add(new DetailInvoice()
+                            {
+                                TypePublishEinvoice = ENumTypePublishEinvoice.PHATHANHOK,
+                                code = getupđateinvoice.InvoiceCode,
+                                note = $"Phát hành thành công hóa đơn điện tử, mẫu số {einv.Pattern}, ký hiệu {einv.Serial},số {einv.InvoiceNo.ToString("00000000")}",
+                            });
+                        }
+
+                    }
+
+                    //---đồng bộ mã cơ quan thuế
+                    _log.LogInformation("đồng bộ lấy kq" + Comid);
+                    var t = new Thread(async () => await CheckStatusEInvoiceSendCQT(getlstfkey.ToArray(), company, pattern, Comid));
+                    t.Start();
+                    //-------
+                    publishInvoiceModelView.DetailInvoices = ListDetailInvoice;
+                    publishInvoiceModelView.TypeEventInvoice = EnumTypeEventInvoice.PublishEInvoice;
+                    await _unitOfWork.SaveChangesAsync();
+                    return await Result<PublishInvoiceModelView>.SuccessAsync(publishInvoiceModelView);
+                }
+                catch (Exception e)
+                {
+                    _log.LogError(e.ToString());
+                    return await Result<PublishInvoiceModelView>.FailAsync(e.Message);
+                }
+                
+            }
+            else
+            {
+                return await Result<PublishInvoiceModelView>.FailAsync(publish);
+            }
         }
     }
 }

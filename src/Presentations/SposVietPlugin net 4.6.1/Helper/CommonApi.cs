@@ -1,12 +1,14 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SposVietPlugin_net_4._6._1.Helper
 {
@@ -86,6 +88,15 @@ namespace SposVietPlugin_net_4._6._1.Helper
             {
                 httpClient.DefaultRequestHeaders.Add(current.Key, current.Value);
             }
+        }
+    }
+    public static class SupportCommont
+    {
+        public static T ConvertXMLToModel<T>(string item)
+        {
+            XmlSerializer deserializer = new XmlSerializer(typeof(T));
+            var data = (T)deserializer.Deserialize(new StringReader(item));
+            return data;
         }
     }
     

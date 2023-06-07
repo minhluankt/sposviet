@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Application.Features.Invoices.Commands
 {
 
-    public partial class PublishInvoiceCommand : IRequest<Result<PublishInvoiceModelView>>
+    public partial class PublishInvoiceCommand : IRequest<IResult<PublishInvoiceModelView>>
     {
         public string CasherName { get; set; }//thuế s
         public string IdCarsher { get; set; }//thuế s
@@ -31,7 +31,7 @@ namespace Application.Features.Invoices.Commands
         public ENumSupplierEInvoice TypeSupplierEInvoice { get; set; }
         public EnumTypeEventInvoice TypeEventInvoice { get; set; }
     }
-    public class PublishInvoiceHandler : IRequestHandler<PublishInvoiceCommand, Result<PublishInvoiceModelView>>
+    public class PublishInvoiceHandler : IRequestHandler<PublishInvoiceCommand, IResult<PublishInvoiceModelView>>
     {
         private readonly IDistributedCache _distributedCache;
         private readonly IInvoicePepository<Invoice> _Repository;
@@ -47,11 +47,11 @@ namespace Application.Features.Invoices.Commands
             _distributedCache = distributedCach;
         }
 
-        public async Task<Result<PublishInvoiceModelView>> Handle(PublishInvoiceCommand command, CancellationToken cancellationToken)
+        public async Task<IResult<PublishInvoiceModelView>> Handle(PublishInvoiceCommand command, CancellationToken cancellationToken)
         {
             if (command.TypeEventInvoice ==EnumTypeEventInvoice.PublishEInvoiceTokenByHash)
             {
-                return await _Repository.PublishInvoiceModel(model);
+                return await _Repository.PublishInvoiceByToKen(command.ComId,command.TypeSupplierEInvoice, command.serial, command.pattern, command.dataxmlhash, command.IdCarsher, command.CasherName);
             }
 
             var model = new PublishInvoiceModel()

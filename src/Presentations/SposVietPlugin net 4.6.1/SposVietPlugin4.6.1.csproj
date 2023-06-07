@@ -263,6 +263,7 @@
     <Compile Include="Model\DataSignEinvoiceModel.cs" />
     <Compile Include="Model\PrintModel.cs" />
     <Compile Include="Model\UserModel.cs" />
+    <Compile Include="Model\XmlInvoice.cs" />
     <Compile Include="PrintServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

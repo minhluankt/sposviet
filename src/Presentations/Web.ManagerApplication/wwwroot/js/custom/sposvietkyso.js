@@ -119,7 +119,7 @@ var sposvietplugin = {
                 var json = JSON.parse(message.data);
                 if (json.isSuccess) {
                     console.log(json.Message);
-                    if (parseInt(json.type) == TypeEventWebSocket.SignEInvoice) {
+                    if (parseInt(json.type) == TypeEventWebSocket.SignEInvoice || parseInt(json.type) == TypeEventWebSocket.SignListEInvoiceToken) {
                         if (json.Data == "") {
                             toastrcus.error("Không ký số được dữ liệu hash");
                             resolve("-1");

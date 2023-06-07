@@ -6820,12 +6820,46 @@ var eventInvocie = {
                 serialCert: serialCert,
                 serial: serial,
                 pattern: pattern,
-                data: data,
+                dataxml: data,
+                typeSupplierEInvoice: typeSupplierEInvoice,
             },
             success: function (res) {
-                if (res.isGetHashToken) {
+                if (res.isValid) {
+                    dataTableOut.columns().checkboxes.deselectAll(true);;
                     dataTableOut.ajax.reload(null, false);
+                    //setTimeout(function () {
+                    //    dataTableOut.columns().checkboxes.deselectAll(true)
+                    //}, 1000);
                     loadingStop();
+                    Swal.close();
+                    title = "Phát hành hóa đơn điện tử";
+                    Swal.fire({
+                        // icon: 'success',
+                        position: 'center',
+                        showClass: {
+                            popup: `popup-formcreate eventpublisinvoice`
+                        },
+
+                        showCloseButton: true,
+
+                        title: title,
+                        html: res.html,
+                        //showClass: {
+                        //    popup: 'popup-formcreate'
+                        //},
+
+                        // footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                        allowOutsideClick: true,
+                        showConfirmButton: false,
+                        showCancelButton: true,
+                        cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                        didRender: () => {
+                          
+                            $(".btn-continue").click(function () {
+                                Swal.close();
+                            });
+                        }
+                    });
                 }
             }
         });
@@ -6835,9 +6869,10 @@ var eventInvocie = {
         dataObject = {};
         dataObject.type = TypeEventWebSocket.SignListEInvoiceToken;
         dataObject.xmlbyhash = xml;
-        sposvietplugin.sendConnectSocket(listport[0]).then(function () {
+        dataObject.serialCert = serialCert;
+       await sposvietplugin.sendConnectSocket(listport[0]).then(async function () {
             loadingStart();
-            sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
+           await  sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
                 if (data == "-1") {
                     loadingStop();
                 } else { 
