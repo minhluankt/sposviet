@@ -23,6 +23,9 @@ using SelectPdf;
 using System;
 using Telegram.Bot.Types.Payments;
 using Web.ManagerApplication.Abstractions;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -39,6 +42,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [Authorize(Policy = "einvoice.list")]
         public IActionResult Index()
         {
+            ViewBag.SelectList = GetEnumTypeObjectStatusEinvoice();
             return View();
         }
         [Authorize]
@@ -360,7 +364,41 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             return Json(new { isValid = response.Succeeded, html = response.Data,mess= response.Message });
         }
-         [EncryptedParameters("secret")]
+        private string GetDisplayName(object value)
+        {
+            var type = value.GetType();
+            if (!type.IsEnum)
+            {
+                throw new ArgumentException(string.Format("Type {0} is not an enum", type));
+            }
+
+            // Get the enum field.
+            var field = type.GetField(value.ToString());
+            if (field == null)
+            {
+                return value.ToString();
+            }
+
+            // Gets the value of the Name property on the DisplayAttribute, this can be null.
+            var attributes = field.GetCustomAttribute<DisplayAttribute>();
+            return attributes != null ? attributes.Name : value.ToString();
+        }
+        private List<SelectListItem> GetEnumTypeObjectStatusEinvoice(StatusEinvoice type = StatusEinvoice.SignedInv)
+        {
+            var select = Enum.GetValues(typeof(StatusEinvoice)).Cast<StatusEinvoice>().OrderBy(x => (Convert.ToInt32(x))).Where(x => (Convert.ToInt32(x)) >= 0).Select(x => new SelectListItem
+            {
+                Text = GetDisplayName(x),
+                Value = Convert.ToInt32(x).ToString(),
+                Selected = x == type
+            }).ToList();
+            select.Insert(0, new SelectListItem()
+            {
+                Text = "",
+                Value = ""
+            });
+            return select;
+        }
+        [EncryptedParameters("secret")]
         public async Task<IActionResult> PrintInvoice(int id)
         {
             if (id == 0)
@@ -415,6 +453,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [Authorize(Policy = "invoice.publishinvoice")]
         public async Task<IActionResult> PublishEInvoiceAsync(int[] lstid)
         {
+            sửa hàm ni GetHashTokenPublishEInvoice
             try
             {
                 if (lstid.Count() == 0)

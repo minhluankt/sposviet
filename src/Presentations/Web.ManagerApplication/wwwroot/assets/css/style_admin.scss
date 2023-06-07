@@ -3431,9 +3431,36 @@ span.select2-dropdown.selectCustome100 {
         cursor: pointer;
     }
 }
+.dropdown-menu-custome {
+    position: relative;
+
+    .list-comlumsCustome {
+        position: absolute;
+        right: 0;
+        background-color: #fff;
+        z-index: 2;
+        top: 37px;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        padding: 20px;
+        border-radius: 8px;
+
+        ul {
+            padding-left: 0px;
+            columns: 2;
+            -webkit-columns: 2;
+            -moz-columns: 2;
+
+            li {
+                list-style: none;
+                margin-bottom: 15px;
+            }
+        }
+    }
+}
 .btn-starcu {
     position: absolute;
     right: 15px;
+    z-index:2
 }
 .bodydatashowAllinvpos {
     position: fixed;

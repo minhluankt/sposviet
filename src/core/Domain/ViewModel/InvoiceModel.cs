@@ -14,6 +14,7 @@ namespace Domain.ViewModel
         public DateTime? Date { get; set; }
         public string RangesDate { get; set; }
         public string Code { get; set; }
+        public StatusEinvoice Status { get; set; }
         public int? InvoiceNo { get; set; }
         public int Currentpage { get; set; }//page trong datatable
     }

@@ -1248,6 +1248,9 @@ namespace Infrastructure.Infrastructure.Repositories
             if (textSearch.InvoiceNo != null)
             {
                 datalist = datalist.Where(m => m.InvoiceNo== textSearch.InvoiceNo);
+            }if (textSearch.Status != StatusEinvoice.Null)
+            {
+                datalist = datalist.Where(m => m.StatusEinvoice== textSearch.Status);
             }
             if (!string.IsNullOrEmpty(textSearch.RangesDate))
             {

@@ -81,20 +81,29 @@
         
     </div>
     <div id="viewAll" class="card-body">
-        <button class="btn btn-primary btn-starcu btn-invoiceshow"><i class="fas fa-star"></i> Tiện ích</button>
-        <table class="table table-bordered table-striped" style=" " id="dataTable">
+        <div class="dropdown-menu-custome">
+             <button class="btn btn-primary btn-starcu btn-invoiceshow"><i class="fas fa-star"></i> Hiển thị</button>
+        </div>
+
+        <table class="table table-bordered table-striped d-none" style=" " id="dataTable">
             <thead>
                 <tr>
-                    <th></th>
-                    <th>Mã hóa đơn</th>
-                    <th>Thời gian xuất</th>
-                    <th>Tên khách</th>
-                    <th>Khu vực</th>
-                    <th>Tổng tiền</th>
-                    <th>Giảm giá</th>
-                    <th>Tổng cộng</th>
-                    <th>Trạng thái</th>
-                    <th>Công cụ</th>
+                    <th data-id="0"></th>
+                    <th data-id="1">Mã hóa đơn</th>
+                    <th data-id="2">Giờ đến</th>
+                    <th data-id="3">Giờ đi</th>
+                    <th data-id="4">Tên khách</th>
+                    <th data-id="5">Địa chỉ</th>
+                    <th data-id="6">Email</th>
+                    <th data-id="7">Điện thoại</th>
+                    <th data-id="8">Phục vụ</th>
+                    <th data-id="9">Thu ngân</th>
+                    <th data-id="10">Khu vực</th>
+                    <th data-id="11">Tổng tiền</th>
+                    <th data-id="12">Giảm giá</th>
+                    <th data-id="13">Tổng cộng</th>
+                    <th data-id="14">Trạng thái</th>
+                    <th data-id="15">Công cụ</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,6 +116,13 @@
     <script src="~/js/custom/sposvietkyso.min.js?time=7854"></script>
     <script>
         $(document).ready(function () {
+            //----------check
+           
+            
+            
+
+
+            eventInvocie.loadActionShowHideColumn();
             eventInvocie.loadEventMutiaction();
             var date = new Date();
             var currentMonth = date.getMonth();
@@ -175,8 +191,8 @@
             "rowId": "id",
             "orderMulti": false,
             "start": 0,
-            "ordering": false,
-            // "order": [[0, "desc"]],
+            "ordering": true,
+             "order": [[0, "desc"]],
             "language": {
                 "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
                 "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
@@ -264,6 +280,17 @@
                     }
                 },
                 {
+                    "data": "purchaseDate", "name": "PurchaseDate",
+                    "render": function (data, type, full, meta) {
+                        // console.log(full.id);
+                        if (full.purchaseDate != null) {
+                            data = moment(full.purchaseDate).format('DD/MM/YYYY HH:mm:ss');
+                            return data;
+                        }
+                        return "";
+                    }
+                },
+                {
                     "data": "buyer", "name": "Buyer", "autoWidth": true,
                      "render": function (data, type, full, meta) {
                         if (full.cusName != null && full.cusName!="") {
@@ -272,6 +299,21 @@
                         }
                         return full.buyer;
                     }
+                },
+                {
+                    "data": "address", "name": "Address", "autoWidth": true
+                },
+                 {
+                    "data": "email", "name": "Email", "autoWidth": true
+                },
+                {
+                    "data": "phoneNumber", "name": "PhoneNumber", "autoWidth": true
+                },
+                 {
+                    "data": "staffName", "name": "StaffName", "autoWidth": true
+                },
+                {
+                    "data": "casherName", "name": "CasherName", "autoWidth": true
                 },
                 {
                     "data": "tableNameArea", "name": "TableNameArea", "autoWidth": true
@@ -366,6 +408,7 @@
                 },
             ],
             initComplete() {
+                $("#dataTable").removeClass("d-none");
                 $("#dataTable tbody").on("click", "td.dt-checkboxes-cell", function () {
                     $(this).parent("tr").toggleClass("selected");
                     let coutncheckbox = 0;
@@ -411,7 +454,7 @@
 
         });
 
-       // dataTableOut.columns([0]).visible(false);
+          eventInvocie.intloadShowHideTable();
      
         $('#reload').on('click', function () {
             dataTableOut.ajax.reload(null, false);

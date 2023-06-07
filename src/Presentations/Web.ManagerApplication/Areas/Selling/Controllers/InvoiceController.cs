@@ -161,7 +161,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             _notify.Error(getinvoice.Message);
             return new JsonResult(new { isValid = false });
         }
-        dataTableOut.columns([0]).visible(false)  ở index invoice thêm tùy biến cột
+        
         [HttpPost]
         [Authorize(Policy = "invoice.publishinvoice")]
         public async Task<IActionResult> PublishEInvoiceTokenAsync(string serialCert,string serial, string pattern, string dataxml)

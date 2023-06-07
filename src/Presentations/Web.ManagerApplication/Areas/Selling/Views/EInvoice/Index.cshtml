@@ -26,10 +26,18 @@
     </div>
     <div class="card-body">
         <div class="row einvoice-row">
-            <div class="col-md-3">
+            <div class="col-md-3 d-none">
                 <div class="">
                   @*  <label>Nhà cung cấp</label>*@
                     <select id="supplereinvoice" class="form-control" data-toggle="tooltip" data-placement="top" title="Nhà cung cấp">
+                    </select>
+                </div>
+            </div> 
+            <div class="col-md-3">
+                <div class="">
+                  @*  <label>Nhà cung cấp</label>*@
+                    <select name="status" id="status" class="form-control select2_form" style="width: 100%;" placeholder="Trạng thái"
+                            aria-hidden="true" asp-items='new SelectList((List<SelectListItem>)ViewBag.SelectList,"Value","Text")'>
                     </select>
                 </div>
             </div>
@@ -119,6 +127,18 @@
     <script src="~/js/custom/sposvietkyso.min.js?time=123"></script>
 
     <script>
+        $('#status').select2({
+            placeholder: {
+                id: '', // the value of the option
+                text: "Chọn trạng thái hóa đơn"
+            },
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "Không tìm thấy dữ liệu";
+                }
+            },
+        })
         testConnetWebSocket();
         //sposvietkyso.connectwebSocket(listport[0], "data");
         $(document).ready(function () {
@@ -254,6 +274,12 @@
                 start: 0,
                 datatype: "json",
                 data: {
+                    Status: function () { 
+                        if ($('#status').val().trim() == "") {
+                           return -1;
+                        } 
+                        return $('#status').val().trim();
+                    },
                     InvoiceNo: function () { return $('#InvoiceNo').val().trim() },
                     Code: function () { return $('#Name').val().trim() },
                     RangesDate: function () {
