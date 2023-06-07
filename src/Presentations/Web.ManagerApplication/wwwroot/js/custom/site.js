@@ -5854,7 +5854,7 @@ var loadeventEinvoice = {
             }
             if (parseInt(checktypesign) == ENumTypeSeri.TOKEN) {
                 url = '/Selling/EInvoice/GetHashToken';
-                loadeventEinvoice.GetHashToken(url);
+                loadeventEinvoice.GetHashTokenPublishEInvoiceIndex(url);
             } else if (parseInt(checktypesign) == ENumTypeSeri.VNPTSmartCA) {
                 url = '/Selling/EInvoice/GetHashSmartCA';
                 Swal.fire({
@@ -5873,6 +5873,28 @@ var loadeventEinvoice = {
           
         });
 
+    },
+    publishEInvoiceToken: function (typeSupplierEInvoice,pattern, serial, serialCert,dataxml) {
+        $.ajax({
+            type: 'POST',
+            async: true,
+            url: '/Selling/EInvoice/PublishEInvoiceToken',
+            data: {
+                typeSupplierEInvoice: typeSupplierEInvoice,
+                pattern: pattern,
+                serial: serial,
+                serialCert: serialCert,
+                dataxml: dataxml,
+            },
+            success: function (res) {
+                if (res.isValid) {
+                  
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
     },
     publishinvoice: function () {
         $.ajax({
@@ -5929,8 +5951,8 @@ var loadeventEinvoice = {
             }
         });
     },
-    GetHashTokenPublishEInvoice: async function (url) {
-        let title = "Bạn có chắc chắn muốn gửi hóa đơn đã chọn lên cơ quản thuế không?";
+    GetHashTokenPublishEInvoiceIndex: async function (url) {//tại màn hình hóa đơn điện tử
+        let title = "Bạn có chắc chắn muốn phát hành hóa đơn không?";
         await Swal.fire({
             icon: 'warning',
             title: title,
@@ -5968,23 +5990,23 @@ var loadeventEinvoice = {
                     data: {
                         lstid: lstid,
                     },
-                    success: function (res) {
+                    success: async function (res) {
 
                         if (res.isValid) {
                             Swal.close();
                             loadingStart();
                             dataObject = {};
-                            dataObject.type = TypeEventWebSocket.SignEInvoice;
+                            dataObject.type = TypeEventWebSocket.SignListEInvoiceToken;
                             dataObject.hash = res.hash;
 
-                            sposvietplugin.sendConnectSocket(listport[0]).then(function () {
+                            await sposvietplugin.sendConnectSocket(listport[0]).then(async function () {
                                 loadingStart();
-                                sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
+                              await  sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
                                     if (data == "-1") {
                                         loadingStop();
                                         //toastrcus.error("Có lỗi xảy ra");
                                     } else {
-                                        loadeventEinvoice.SendCQTToken(lstid, data);
+                                        loadeventEinvoice.publishEInvoiceToken(res.typeSupplierEInvoice,res.pattern, res.serial, res.serialCert,data);
                                     }
                                 });
                             });

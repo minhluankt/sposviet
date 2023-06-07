@@ -39,10 +39,12 @@ namespace Infrastructure.Infrastructure.HubS
         {
             //using (var scope = _serviceProvider.CreateScope())
             {
-               // var _userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetService(typeof(UserManager<ApplicationUser>));
+                // var _userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetService(typeof(UserManager<ApplicationUser>));
                 //var currentUser = await _userManager.GetUserAsync(Context.User);
                 //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-                var currentUser = Context.User.Identity.GetUserClaimLogin();
+
+                var currentUser = _httpcontext.HttpContext.User.Identity.GetUserClaimLogin();
+
                 if (currentUser != null)
                 {
                     isreconncet = true;
@@ -91,9 +93,9 @@ namespace Infrastructure.Infrastructure.HubS
             {
                 var _userManager = (UserManager<ApplicationUser>)scope.ServiceProvider.GetService(typeof(UserManager<ApplicationUser>));
 
-               // var currentUser = await _userManager.GetUserAsync(Context.User);
-               
-                var currentUser = Context.User.Identity.GetUserClaimLogin();
+                // var currentUser = await _userManager.GetUserAsync(Context.User);
+
+                var currentUser = _httpcontext.HttpContext.User.Identity.GetUserClaimLogin();
                 //if (await _userManager.IsInRoleAsync(currentUser, "PHỤC VỤ"))
                 //{
 
@@ -123,7 +125,7 @@ namespace Infrastructure.Infrastructure.HubS
         }
         public async Task Printbaobep(string data,string text= "IN")//dành cho phương án 1
         {
-            var currentUser = Context.User.Identity.GetUserClaimLogin();
+            var currentUser = _httpcontext.HttpContext.User.Identity.GetUserClaimLogin();
             if (currentUser!=null)
             {
                 string _Group = $"{currentUser.ComId}_Printbaobep";
@@ -283,7 +285,7 @@ namespace Infrastructure.Infrastructure.HubS
             // type 1 là yêu cầu trùng vì đã có nhân viên trước đó đã thao tác gửi yêu cầu, chặn k cho 2nguowfi thao tác trên 1 bàn
             // type 2 gủi data xác nhận đồng ý hủy món
             // type 3 gủi data xác nhận từ chối hủy món
-            var currentUser = Context.User.Identity.GetUserClaimLogin();
+            var currentUser = _httpcontext.HttpContext.User.Identity.GetUserClaimLogin();
             if (data == "TEST")
             {
                 string _Group = $"{currentUser.ComId}_FeedbackBepToStaff";

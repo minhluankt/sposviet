@@ -231,6 +231,79 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             
         }
+    
+        [Authorize]
+        public async Task<IActionResult> GetHashTokenPublishEInvoiceIndexAsync(int[] lstid)
+        {
+            try
+            {
+                if (lstid.Count() == 0 || lstid == null)
+                {
+                    _logger.LogError("Vui lòng chọn hóa đơn");
+                    return Json(new { isValid = false });
+                }
+                var currentUser = User.Identity.GetUserClaimLogin();
+                var response = await _mediator.Send(new GetHashTokenQuery()
+                {
+                    IsGetHashPublish=true,
+                    ComId = currentUser.ComId,
+                    lstid = lstid
+                });
+                if (response.Succeeded)
+                {
+                    return new JsonResult(new { isValid = true,
+                        pattern = response.Data.pattern,
+                        serial = response.Data.serial,
+                        serialCert = response.Data.serialCert,
+                        typeSupplierEInvoice = response.Data.TypeSupplierEInvoice,
+                        hash = response.Data.dataxmlhash });
+                }
+                _notify.Error(GeneralMess.ConvertStatusToString(response.Message));
+                return new JsonResult(new { isValid = false });
+            }
+            catch (Exception e)
+            {
+                _notify.Error(e.Message);
+                return new JsonResult(new { isValid = false });
+            }
+            
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> PublishEInvoiceTokenAsync(ENumSupplierEInvoice typeSupplierEInvoice, string pattern,string serial,string serialCert,string dataxmlhash)
+        {
+            try
+            {
+                var currentUser = User.Identity.GetUserClaimLogin();
+                //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+                var send = await _mediator.Send(new PublishEInvoiceCommand()
+                {
+                    Carsher = currentUser.FullName,
+                    IdCarsher = currentUser.Id,
+                    ComId = currentUser.ComId,
+                    pattern = pattern,
+                    serial = serial,
+                    serialCert = serialCert,
+                    dataxmlhash = dataxmlhash,
+                    TypeSupplierEInvoice = typeSupplierEInvoice,
+                    TypeEventInvoice = EnumTypeEventInvoice.PublishEInvoice
+                });
+                if (send.Succeeded)
+                {
+                    var html = await _viewRenderer.RenderViewToStringAsync("PublishEInvoice", send.Data);
+                    return new JsonResult(new { isValid = true, html = html });
+                }
+                _notify.Error(send.Message);
+                return new JsonResult(new { isValid = false });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("PublishEInvoiceAsync");
+                _logger.LogError(e.ToString());
+                _notify.Error(e.Message);
+                return new JsonResult(new { isValid = false });
+            }
+        }
         public async Task<IActionResult> GetHashTokenAsync(int[] lstid)
         {
             try
@@ -248,7 +321,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 });
                 if (response.Succeeded)
                 {
-                    return new JsonResult(new { isValid = true, hash = response.Data });
+                    return new JsonResult(new { isValid = true, hash = response.Data.dataxmlhash });
                 }
                 _notify.Error(GeneralMess.ConvertStatusToString(response.Message));
                 return new JsonResult(new { isValid = false });
@@ -453,7 +526,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [Authorize(Policy = "invoice.publishinvoice")]
         public async Task<IActionResult> PublishEInvoiceAsync(int[] lstid)
         {
-            sửa hàm ni GetHashTokenPublishEInvoice
             try
             {
                 if (lstid.Count() == 0)

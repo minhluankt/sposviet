@@ -17,6 +17,10 @@ namespace Application.Features.EInvoices.Commands
 
     public partial class PublishEInvoiceCommand : IRequest<IResult<PublishInvoiceModelView>>
     {
+        public string dataxmlhash { get; set; }
+        public string serialCert { get; set; }
+        public string serial { get; set; }
+        public string pattern { get; set; }
         public string IdCarsher { get; set; }
         public string Carsher { get; set; }
         public int[] lstId { get; set; }
@@ -42,6 +46,10 @@ namespace Application.Features.EInvoices.Commands
 
         public async Task<IResult<PublishInvoiceModelView>> Handle(PublishEInvoiceCommand command, CancellationToken cancellationToken)
         {
+            if (command.TypeEventInvoice==EnumTypeEventInvoice.PublishEInvoiceTokenByHash)
+            {
+                return await _Repository.PublishInvoiceByTokenVNPTAsync( command.ComId, command.TypeSupplierEInvoice, command.serial, command.pattern, command.dataxmlhash,command.IdCarsher,command.Carsher);
+            }
             return await _Repository.PublishInvoiceAsync(command.lstId, command.ComId, command.Carsher, command.IdCarsher);
         }
     }
