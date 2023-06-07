@@ -40,9 +40,9 @@ namespace Application.Features.EInvoices.Query
                 HashTokenModel hashTokenModel = new HashTokenModel();
                 if (query.IsGetHashPublish)
                 {
-                    var getlist = await _repository.Entities.Where(x=> query.lstid.Contains(x.Id)).ToListAsync();
+                    var getlist = await _repository.Entities.Where(x=> query.lstid.Contains(x.Id)).Include(x=>x.EInvoiceItems).ToListAsync();
                     var checkinv = getlist.Select(x=> x.TypeSupplierEInvoice).Distinct().ToList();
-                    if (checkinv.Count()>0)
+                    if (checkinv.Count()>1|| checkinv.Count()==0)
                     {
                         return await Result<HashTokenModel>.FailAsync(HeperConstantss.ERR052);
                     }
@@ -62,7 +62,7 @@ namespace Application.Features.EInvoices.Query
 
                         return await Result<HashTokenModel>.SuccessAsync(hashTokenModel);
                     }
-                    return await Result<HashTokenModel>.FailAsync();
+                    return await Result<HashTokenModel>.FailAsync(getdata.Message);
                 }
                 var getdatavnpt = await _EInvoicerepository.GetHashTokenVNPTAsync(query.lstid, query.ComId);
                 hashTokenModel.dataxmlhash = getdatavnpt.Data;

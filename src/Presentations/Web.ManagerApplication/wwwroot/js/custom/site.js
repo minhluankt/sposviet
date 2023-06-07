@@ -5853,7 +5853,7 @@ var loadeventEinvoice = {
                 return false;
             }
             if (parseInt(checktypesign) == ENumTypeSeri.TOKEN) {
-                url = '/Selling/EInvoice/GetHashToken';
+                url = '/Selling/EInvoice/GetHashTokenPublishEInvoiceIndex';
                 loadeventEinvoice.GetHashTokenPublishEInvoiceIndex(url);
             } else if (parseInt(checktypesign) == ENumTypeSeri.VNPTSmartCA) {
                 url = '/Selling/EInvoice/GetHashSmartCA';
@@ -5997,11 +5997,12 @@ var loadeventEinvoice = {
                             loadingStart();
                             dataObject = {};
                             dataObject.type = TypeEventWebSocket.SignListEInvoiceToken;
-                            dataObject.hash = res.hash;
+                            dataObject.xmlbyhash = res.hash;
+                            dataObject.serialCert = res.serialCert;
 
-                            await sposvietplugin.sendConnectSocket(listport[0]).then(async function () {
+                             sposvietplugin.sendConnectSocket(listport[0]).then( function () {
                                 loadingStart();
-                              await  sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
+                                sposvietplugin.connectSignatureWebSocket(listport[0], JSON.stringify(dataObject)).then(function (data) {
                                     if (data == "-1") {
                                         loadingStop();
                                         //toastrcus.error("Có lỗi xảy ra");

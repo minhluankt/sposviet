@@ -267,7 +267,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 string gettoken = await _vnptrepository.GetHashInvWithToken(company.DomainName, xmlstring, company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin, company.SerialCert, ENumTypePublishServiceEInvoice.PHATHANH, string.Empty, einvoices.First().Pattern, einvoices.First().Serial);
                 if (gettoken.Contains("ERR:"))
                 {
-                    return await Result<string>.FailAsync($"Lỗi phát hành hóa đơn điện tử {gettoken}");
+                    return await Result<string>.FailAsync($"Lỗi lấy chuỗi hash hóa đơn điện tử thất bại {gettoken}");
                 }
                 else if (gettoken.Contains("Invoices"))
                 {
