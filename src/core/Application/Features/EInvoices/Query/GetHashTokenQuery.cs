@@ -57,7 +57,7 @@ namespace Application.Features.EInvoices.Query
                         hashTokenModel.dataxmlhash = getdata.Data;
                         hashTokenModel.pattern = getlist.FirstOrDefault().Pattern;
                         hashTokenModel.serial = getlist.FirstOrDefault().Serial;
-                        hashTokenModel.serial = getlist.FirstOrDefault().TypeSupplierEInvoice;
+                        hashTokenModel.TypeSupplierEInvoice = getlist.FirstOrDefault().TypeSupplierEInvoice;
                         hashTokenModel.serialCert = getsup.SerialCert;
 
                         return await Result<HashTokenModel>.SuccessAsync(hashTokenModel);
