@@ -113,7 +113,7 @@
 </div>
 @section Scripts
     {
-    <script src="~/js/custom/sposvietkyso.min.js?time=7854"></script>
+    <script src="~/js/custom/sposvietkyso.min.js?time=6666"></script>
     <script>
         $(document).ready(function () {
             //----------check
@@ -239,7 +239,7 @@
                     "orderable": false,
                     "targets": [-1, 0],
                 },
-                { "width": "100px", "targets": -1 }
+                { "width": "50px", "targets": [-1,0] }
             ],
             'select': {
                 'style': 'multi',
@@ -269,11 +269,11 @@
                     "data": "invoiceCode", "name": "InvoiceCode", "autoWidth": true
                 },
                 {
-                    "data": "createdOn", "name": "createdOn",
+                    "data": "arrivalDate", "name": "ArrivalDate",
                     "render": function (data, type, full, meta) {
                         // console.log(full.id);
-                        if (full.createdOn != null) {
-                            data = moment(full.createdOn).format('DD/MM/YYYY HH:mm:ss');
+                        if (full.arrivalDate != null) {
+                            data = moment(full.arrivalDate).format('DD/MM/YYYY HH:mm:ss');
                             return data;
                         }
                         return "";
@@ -338,7 +338,7 @@
                     render: $.fn.dataTable.render.number(',', '.', 0)
                 },
                 {
-                    "data": "status", "name": "Status", "autoWidth": true,
+                    "data": "status", "name": "Status", width: '50px',
                     "render": function (data, type, full, meta) {
                         html="";
                         switch (full.status) {

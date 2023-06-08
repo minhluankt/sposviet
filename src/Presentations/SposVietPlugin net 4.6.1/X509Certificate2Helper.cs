@@ -28,7 +28,8 @@ namespace SposVietPlugin_net_4._6._1
                     x509Certificate2 = certificate;
                 return certificate;
             }
-            if (x509Certificate2==null)
+           
+            if (x509Certificate2==null || selectedCertificates.Count == 0)
             {
                 return null;
             }

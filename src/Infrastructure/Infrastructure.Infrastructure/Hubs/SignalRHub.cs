@@ -312,19 +312,27 @@ namespace Infrastructure.Infrastructure.HubS
         //----------
         private async void checkExitRoomChitchen(string ConnectionId, string _Group)
         {
-            if (Ids.Count()>0)
+            try
             {
-                if (!Ids.Where(x => x.Key == ConnectionId && x.Value == _Group).Any())
+                if (Ids.Count() > 0)
+                {
+                    if (!Ids.Where(x => x.Key == ConnectionId && x.Value == _Group).Any())
+                    {
+                        Ids.Add(new KeyValuePair<string, string>(ConnectionId, _Group));
+                        await Groups.AddToGroupAsync(ConnectionId, _Group);
+                    }
+                }
+                else
                 {
                     Ids.Add(new KeyValuePair<string, string>(ConnectionId, _Group));
                     await Groups.AddToGroupAsync(ConnectionId, _Group);
                 }
             }
-            else
+            catch (Exception e)
             {
-                Ids.Add(new KeyValuePair<string, string>(ConnectionId, _Group));
-                await Groups.AddToGroupAsync(ConnectionId, _Group);
+                _log.LogInformation(e.ToString());
             }
+            
         }
 
     }

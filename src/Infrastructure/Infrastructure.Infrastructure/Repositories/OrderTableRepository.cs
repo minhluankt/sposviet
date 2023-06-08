@@ -515,12 +515,13 @@ namespace Infrastructure.Infrastructure.Repositories
                     await _repository.UpdateAsync(checkOrder);
 
                     var inv = _map.Map<Invoice>(checkOrder);
-                    inv.ArrivalDate = checkOrder.CreatedOn;//giờ vào
+                  
                     var getInv = await _managerInvNorepository.UpdateInvNo(comid, ENumTypeManagerInv.Invoice,false);
 
                     inv.InvoiceCode = $"HD-{getInv.ToString("00000000")}";
                     inv.Id = 0;
                     inv.PurchaseDate = checkOrder.PurchaseDate;//giờ thanh toán
+                    inv.ArrivalDate = checkOrder.CreatedOn;//giờ vào
                     inv.IdPaymentMethod = Idpayment;
                     inv.IdOrderTable = checkOrder.Id;
                     inv.CasherName = Cashername;
@@ -536,7 +537,10 @@ namespace Infrastructure.Infrastructure.Repositories
                         invitem.Amonut = item.Sum(x => x.Amount); // do lỗi trường nên phải làm ri
                         invitem.VATAmount = item.Sum(x => x.VATAmount); // do lỗi trường nên phải làm ri
                         invitem.DiscountAmount = item.Sum(x => x.DiscountAmount); // do lỗi trường nên phải làm ri
-
+                        if (!_item.IsVAT && invitem.PriceNoVAT!= invitem.Price)
+                        {
+                            invitem.PriceNoVAT = invitem.Price;
+                        }
                         if (vat && Vatrate != null && Vatrate != (int)NOVAT.NOVAT && !_item.IsVAT) //sp k có thuế, mà có xuất hóa đơn hoặc có tính thuế
                         {
                             var thue = Vatrate.Value / 100.0m;

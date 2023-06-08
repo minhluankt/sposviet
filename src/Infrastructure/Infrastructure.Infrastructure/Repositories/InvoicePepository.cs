@@ -28,6 +28,8 @@ using System.Linq.Dynamic.Core;
 using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reactive.Joins;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 namespace Infrastructure.Infrastructure.Repositories
 {
@@ -119,7 +121,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 InvoiceCodePatern = x.InvoiceCodePatern,
                 InvoiceCode = x.InvoiceCode,
                 CreatedBy = x.CreatedBy,
-                CreatedOn = x.CreatedOn,
+                ArrivalDate = x.ArrivalDate,
                 PurchaseDate = x.PurchaseDate,
                 IsBringBack = x.IsBringBack,
                 IsMerge = x.IsMerge,
@@ -276,221 +278,226 @@ namespace Infrastructure.Infrastructure.Repositories
                 {
                     return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR049);
                 }
-                foreach (var item in lstinvoiceok)
-                {
-                    this.AddEInvoice(lsteinvoice, item, model, getpattern);
-                }
                 List<DetailInvoice> ListDetailInvoice = new List<DetailInvoice>();
-                
-                var checktypeinv = lsteinvoice.Select(x => x.TypeSupplierEInvoice).Distinct().ToList();
-                if (checktypeinv.Count()>1)
+                if (lstinvoiceok.Count()>0)
                 {
-                    return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR052);
-                }
-                //check kiểm tra có hóa đơn nào k hợp lệ k
-                var listinvvalidcompany = lsteinvoice.Where(x=>x.TypeSupplierEInvoice==ENumSupplierEInvoice.NONE).ToList();
-                if (listinvvalidcompany.Count()>0)
-                {
-                    foreach (var item in listinvvalidcompany)
+                    foreach (var item in lstinvoiceok)
                     {
-                        ListDetailInvoice.Add(new DetailInvoice()
-                        {
-                            TypePublishEinvoice = ENumTypePublishEinvoice.KHONGTONTAINHACUNGCAP,
-                            code = item.InvoiceCode,
-                            note = $"Hóa đơn không tìm thấy nhà cung cấp để phát hành",
-                        });
+                        this.AddEInvoice(lsteinvoice, item, model, getpattern);
                     }
-                    lstketqua.DetailInvoices = ListDetailInvoice;
-                    lstketqua.TypeEventInvoice = model.TypeEventInvoice;
-                    return await Result<PublishInvoiceModelView>.SuccessAsync(lstketqua);
-                }
-                // lấy ra comapy
-                var suplcompany = await _supplierEInvoiceRepository.GetByIdAsync(model.ComId, lsteinvoice.FirstOrDefault().TypeSupplierEInvoice);
-                if (suplcompany == null)
-                {
-                    foreach (var item in lsteinvoice)
+                    var checktypeinv = lsteinvoice.Select(x => x.TypeSupplierEInvoice).Distinct().ToList();
+                    if (checktypeinv.Count() > 1)
                     {
-                        ListDetailInvoice.Add(new DetailInvoice()
-                        {
-                            TypePublishEinvoice = ENumTypePublishEinvoice.KHONGTONTAINHACUNGCAP,
-                            code = item.InvoiceCode,
-                            note = $"Chưa cấu hình nhà cung cấp",
-                        });
+                        return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR052);
                     }
-                    lstketqua.DetailInvoices = ListDetailInvoice;
-                    lstketqua.TypeEventInvoice = model.TypeEventInvoice;
-                    return await Result<PublishInvoiceModelView>.SuccessAsync(lstketqua);
-                }
-                if (suplcompany.TypeSeri==ENumTypeSeri.TOKEN)
-                {
-                    // hóa đơn ký = token
-                    //Bước 1 phải lấy chuỗi hash rồi ký ở hàm khác nhé
-                    var publish = await _einvoiceRepository.GetHashInvWithTokenVNPTAsync(lsteinvoice, suplcompany);
-                    if (publish.Succeeded)
+                    //check kiểm tra có hóa đơn nào k hợp lệ k
+                    var listinvvalidcompany = lsteinvoice.Where(x => x.TypeSupplierEInvoice == ENumSupplierEInvoice.NONE).ToList();
+                    if (listinvvalidcompany.Count() > 0)
                     {
-                        await _unitOfWork.CreateTransactionAsync();
-                        try
+                        foreach (var item in listinvvalidcompany)
                         {
-                            await _einvoiceRepository.CreateRangeAsync(lsteinvoice, model.CasherName, model.IdCarsher);
-                            foreach (var item in lsteinvoice)
+                            ListDetailInvoice.Add(new DetailInvoice()
+                            {
+                                TypePublishEinvoice = ENumTypePublishEinvoice.KHONGTONTAINHACUNGCAP,
+                                code = item.InvoiceCode,
+                                note = $"Hóa đơn không tìm thấy nhà cung cấp để phát hành",
+                            });
+                        }
+                        lstketqua.DetailInvoices = ListDetailInvoice;
+                        lstketqua.TypeEventInvoice = model.TypeEventInvoice;
+                        return await Result<PublishInvoiceModelView>.SuccessAsync(lstketqua);
+                    }
+                    // lấy ra comapy
+                    var suplcompany = await _supplierEInvoiceRepository.GetByIdAsync(model.ComId, lsteinvoice.FirstOrDefault().TypeSupplierEInvoice);
+                    if (suplcompany == null)
+                    {
+                        foreach (var item in lsteinvoice)
+                        {
+                            ListDetailInvoice.Add(new DetailInvoice()
+                            {
+                                TypePublishEinvoice = ENumTypePublishEinvoice.KHONGTONTAINHACUNGCAP,
+                                code = item.InvoiceCode,
+                                note = $"Chưa cấu hình nhà cung cấp",
+                            });
+                        }
+                        lstketqua.DetailInvoices = ListDetailInvoice;
+                        lstketqua.TypeEventInvoice = model.TypeEventInvoice;
+                        return await Result<PublishInvoiceModelView>.SuccessAsync(lstketqua);
+                    }
+                    if (suplcompany.TypeSeri == ENumTypeSeri.TOKEN)
+                    {
+                        // hóa đơn ký = token
+                        //Bước 1 phải lấy chuỗi hash rồi ký ở hàm khác nhé
+                        var publish = await _einvoiceRepository.GetHashInvWithTokenVNPTAsync(lsteinvoice, suplcompany);
+                        if (publish.Succeeded)
+                        {
+                            await _unitOfWork.CreateTransactionAsync();
+                            try
+                            {
+                                await _einvoiceRepository.CreateRangeAsync(lsteinvoice, model.CasherName, model.IdCarsher);
+                                foreach (var item in lsteinvoice)
+                                {
+                                    var getinvno = await _managerInvNoRepository.UpdateInvNo(item.ComId, ENumTypeManagerInv.EInvoice, false);
+                                    var getupđateinvoice = await _invoiceRepository.GetByIdAsync(item.IdInvoice);
+
+                                    getupđateinvoice.StatusPublishInvoiceOrder = EnumStatusPublishInvoiceOrder.CREATE;
+                                    item.EInvoiceCode = $"EINV{getinvno.ToString("00000000")}";
+
+                                    getupđateinvoice.IdEInvoice = item.Id;
+                                    await _invoiceRepository.UpdateAsync(getupđateinvoice);
+                                }
+                                await _einvoiceRepository.UpdateRangeAsync(lsteinvoice);
+                                await _unitOfWork.SaveChangesAsync();
+                                await _unitOfWork.CommitAsync();
+
+                                lstketqua.XmlByHashValue = publish.Data;
+                                lstketqua.Pattern = lsteinvoice.FirstOrDefault().Pattern;
+                                lstketqua.Serial = lsteinvoice.FirstOrDefault().Serial;
+                                lstketqua.SerialCert = suplcompany.SerialCert;
+                                lstketqua.TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT;
+                                lstketqua.TypeEventInvoice = EnumTypeEventInvoice.IsGetHashPublishEInvoice;
+                                return await Result<PublishInvoiceModelView>.SuccessAsync(lstketqua);
+                            }
+                            catch (Exception e)
+                            {
+                                _log.LogError(e.ToString());
+                                await _unitOfWork.RollbackAsync();
+                                return await Result<PublishInvoiceModelView>.FailAsync(e.Message);
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        // hóa đơn ký = HSM
+                        //tạo và phát hành hóa đơn
+                        foreach (var item in lsteinvoice)
+                        {
+                            //await  _unitOfWork.CreateTransactionAsync();
+                            try
                             {
                                 var getinvno = await _managerInvNoRepository.UpdateInvNo(item.ComId, ENumTypeManagerInv.EInvoice, false);
                                 var getupđateinvoice = await _invoiceRepository.GetByIdAsync(item.IdInvoice);
 
-                                getupđateinvoice.StatusPublishInvoiceOrder = EnumStatusPublishInvoiceOrder.CREATE;
+                                if (model.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoice)
+                                {
+                                    getupđateinvoice.StatusPublishInvoiceOrder = EnumStatusPublishInvoiceOrder.PUBLISH;
+                                }
+                                else
+                                {
+                                    getupđateinvoice.StatusPublishInvoiceOrder = EnumStatusPublishInvoiceOrder.CREATE;
+                                }
+
+
                                 item.EInvoiceCode = $"EINV{getinvno.ToString("00000000")}";
 
+                                await _einvoiceRepository.CreateAsync(item, model.CasherName, model.IdCarsher);
                                 getupđateinvoice.IdEInvoice = item.Id;
-                                await _invoiceRepository.UpdateAsync(getupđateinvoice);
-                            }
-                            await _einvoiceRepository.UpdateRangeAsync(lsteinvoice);
-                            await _unitOfWork.SaveChangesAsync();
-                            await _unitOfWork.CommitAsync();
-
-                            lstketqua.XmlByHashValue = publish.Data;
-                            lstketqua.Pattern = lsteinvoice.FirstOrDefault().Pattern;
-                            lstketqua.Serial = lsteinvoice.FirstOrDefault().Serial;
-                            lstketqua.SerialCert = suplcompany.SerialCert;
-                            lstketqua.TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT;
-                            lstketqua.TypeEventInvoice = EnumTypeEventInvoice.IsGetHashPublishEInvoice;
-                            return await Result<PublishInvoiceModelView>.SuccessAsync(lstketqua);
-                        }
-                        catch (Exception e)
-                        {
-                            _log.LogError(e.ToString());
-                            await _unitOfWork.RollbackAsync();
-                            return await Result<PublishInvoiceModelView>.FailAsync(e.Message);
-                        }
-                        
-                    } 
-                }
-                else {
-                    // hóa đơn ký = HSM
-                    //tạo và phát hành hóa đơn
-                    foreach (var item in lsteinvoice)
-                    {
-                        //await  _unitOfWork.CreateTransactionAsync();
-                        try
-                        {
-                            var getinvno = await _managerInvNoRepository.UpdateInvNo(item.ComId, ENumTypeManagerInv.EInvoice, false);
-                            var getupđateinvoice = await _invoiceRepository.GetByIdAsync(item.IdInvoice);
-
-                            if (model.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoice)
-                            {
-                                getupđateinvoice.StatusPublishInvoiceOrder = EnumStatusPublishInvoiceOrder.PUBLISH;
-                            }
-                            else
-                            {
-                                getupđateinvoice.StatusPublishInvoiceOrder = EnumStatusPublishInvoiceOrder.CREATE;
-                            }
-
-
-                            item.EInvoiceCode = $"EINV{getinvno.ToString("00000000")}";
-
-                            await _einvoiceRepository.CreateAsync(item, model.CasherName, model.IdCarsher);
-                            getupđateinvoice.IdEInvoice = item.Id;
-                            if (item.VATRate != getupđateinvoice.VATRate)//nếu bên gốc invoice mà khác thì update lại
-                            {
-                                //tạm đóng lại đã
-                                //getupđateinvoice.VATRate = item.VATRate;
-                                //getupđateinvoice.VATAmount = item.VATAmount;
-                                //getupđateinvoice.Amonut = item.Amount;
-                            }
-
-                            //phát hành hóa đơn diện tử
-                            if (model.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoice)
-                            {
-                                try
+                                if (item.VATRate != getupđateinvoice.VATRate)//nếu bên gốc invoice mà khác thì update lại
                                 {
+                                    //tạm đóng lại đã
+                                    //getupđateinvoice.VATRate = item.VATRate;
+                                    //getupđateinvoice.VATAmount = item.VATAmount;
+                                    //getupđateinvoice.Amonut = item.Amount;
+                                }
 
-                                    var publish = await _einvoiceRepository.ImportAndPublishInvMTTAsync(item, suplcompany, model.CasherName, model.IdCarsher);
-                                    if (publish.Succeeded)
+                                //phát hành hóa đơn diện tử
+                                if (model.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoice)
+                                {
+                                    try
                                     {
-                                        // loại 1 OK:1/001;C23MMT-ABCDEF1000000000t300u6_6_M1-23-41849-00100000006
-                                        // loai 2 OK:1/001;C23MMT-ABCDEF10gfg00000000t300u6_7_M1-23-41849-00100000007,ABCDEF10gfg00000000t300pu6_8_M1-23-41849-00100000008
-                                        string[] getinvoice = publish.Data.Split(';');
-                                        if (getinvoice.Count() < 2)
+
+                                        var publish = await _einvoiceRepository.ImportAndPublishInvMTTAsync(item, suplcompany, model.CasherName, model.IdCarsher);
+                                        if (publish.Succeeded)
+                                        {
+                                            // loại 1 OK:1/001;C23MMT-ABCDEF1000000000t300u6_6_M1-23-41849-00100000006
+                                            // loai 2 OK:1/001;C23MMT-ABCDEF10gfg00000000t300u6_7_M1-23-41849-00100000007,ABCDEF10gfg00000000t300pu6_8_M1-23-41849-00100000008
+                                            string[] getinvoice = publish.Data.Split(';');
+                                            if (getinvoice.Count() < 2)
+                                            {
+                                                ListDetailInvoice.Add(new DetailInvoice()
+                                                {
+                                                    TypePublishEinvoice = ENumTypePublishEinvoice.TAOMOIPHATHANHLOI,
+                                                    code = getupđateinvoice.InvoiceCode,
+                                                    token = publish.Data,
+                                                    note = $"Tạo mới thành công hóa hóa đơn điện tử, phát hành thất bại, mã lỗi từ nhà cung cấp: {publish.Data}",
+                                                });
+                                            }
+                                            else
+                                            {
+                                                string[] getinvoicesplit = getinvoice[1].Split('_');
+                                                string invoiceno = getinvoicesplit[1];
+                                                string MCQT = getinvoicesplit[2];
+                                                item.MCQT = MCQT;
+                                                item.InvoiceNo = int.Parse(invoiceno);
+                                                item.StatusEinvoice = StatusEinvoice.SignedInv;
+                                                item.PublishDate = DateTime.Now;
+
+                                                await _einvoiceRepository.UpdateAsync(item);
+                                                await _unitOfWork.SaveChangesAsync();
+
+                                                ListDetailInvoice.Add(new DetailInvoice()
+                                                {
+                                                    TypePublishEinvoice = ENumTypePublishEinvoice.PHATHANHOK,
+                                                    code = getupđateinvoice.InvoiceCode,
+                                                    note = $"Phát hành thành công hóa đơn điện tử, mẫu số {item.Pattern}, ký hiệu {item.Serial},số {item.InvoiceNo.ToString("00000000")}",
+                                                });
+                                            }
+                                        }
+                                        else
                                         {
                                             ListDetailInvoice.Add(new DetailInvoice()
                                             {
                                                 TypePublishEinvoice = ENumTypePublishEinvoice.TAOMOIPHATHANHLOI,
                                                 code = getupđateinvoice.InvoiceCode,
-                                                token = publish.Data,
-                                                note = $"Tạo mới thành công hóa hóa đơn điện tử, phát hành thất bại, mã lỗi từ nhà cung cấp: {publish.Data}",
-                                            });
-                                        }
-                                        else
-                                        {
-                                            string[] getinvoicesplit = getinvoice[1].Split('_');
-                                            string invoiceno = getinvoicesplit[1];
-                                            string MCQT = getinvoicesplit[2];
-                                            item.MCQT = MCQT;
-                                            item.InvoiceNo = int.Parse(invoiceno);
-                                            item.StatusEinvoice = StatusEinvoice.SignedInv;
-                                            item.PublishDate = DateTime.Now;
-
-                                            await _einvoiceRepository.UpdateAsync(item);
-                                            await _unitOfWork.SaveChangesAsync();
-
-                                            ListDetailInvoice.Add(new DetailInvoice()
-                                            {
-                                                TypePublishEinvoice = ENumTypePublishEinvoice.PHATHANHOK,
-                                                code = getupđateinvoice.InvoiceCode,
-                                                note = $"Phát hành thành công hóa đơn điện tử, mẫu số {item.Pattern}, ký hiệu {item.Serial},số {item.InvoiceNo.ToString("00000000")}",
+                                                note = $"Tạo mới thành công hóa hóa đơn điện tử mã hóa đơn:{item.EInvoiceCode}, phát hành thất bại, mã lỗi từ nhà cung cấp: {publish.Message}",
                                             });
                                         }
                                     }
-                                    else
+                                    catch (Exception e)
                                     {
+                                        _log.LogError($"Tạo mới thành công hóa hóa đơn điện tử nhưng không phát hành được  fkey {item.Fkey} mã lỗi Exception");
+                                        _log.LogError(e.ToString());
                                         ListDetailInvoice.Add(new DetailInvoice()
                                         {
                                             TypePublishEinvoice = ENumTypePublishEinvoice.TAOMOIPHATHANHLOI,
                                             code = getupđateinvoice.InvoiceCode,
-                                            note = $"Tạo mới thành công hóa hóa đơn điện tử mã hóa đơn:{item.EInvoiceCode}, phát hành thất bại, mã lỗi từ nhà cung cấp: {publish.Message}",
+                                            note = $"Tạo mới thành công hóa hóa đơn điện tử mã Fkey:{item.Fkey} nhưng không phát hành được mã lỗi hệ thống {e.ToString()}",
                                         });
+
                                     }
+
                                 }
-                                catch (Exception e)
+                                else
                                 {
-                                    _log.LogError($"Tạo mới thành công hóa hóa đơn điện tử nhưng không phát hành được  fkey {item.Fkey} mã lỗi Exception");
-                                    _log.LogError(e.ToString());
                                     ListDetailInvoice.Add(new DetailInvoice()
                                     {
-                                        TypePublishEinvoice = ENumTypePublishEinvoice.TAOMOIPHATHANHLOI,
+                                        TypePublishEinvoice = ENumTypePublishEinvoice.TAOMOIOK,
                                         code = getupđateinvoice.InvoiceCode,
-                                        note = $"Tạo mới thành công hóa hóa đơn điện tử mã Fkey:{item.Fkey} nhưng không phát hành được mã lỗi hệ thống {e.ToString()}",
+                                        note = $"Đã tạo mới hóa đơn điện tử thành công",
                                     });
-
                                 }
 
+
                             }
-                            else
+                            catch (Exception e)
                             {
+                                _log.LogError("xử ly phát hành hóa đơn" + item.InvoiceCode);
+                                _log.LogError(e.ToString());
                                 ListDetailInvoice.Add(new DetailInvoice()
                                 {
-                                    TypePublishEinvoice = ENumTypePublishEinvoice.TAOMOIOK,
-                                    code = getupđateinvoice.InvoiceCode,
-                                    note = $"Đã tạo mới hóa đơn điện tử thành công",
+                                    TypePublishEinvoice = ENumTypePublishEinvoice.ERROR,
+                                    code = item.InvoiceCode,
+                                    note = $"Dữ liệu lỗi không thể xử lý hóa đơn điện tử",
                                 });
                             }
 
 
                         }
-                        catch (Exception e)
-                        {
-                            _log.LogError("xử ly phát hành hóa đơn" + item.InvoiceCode);
-                            _log.LogError(e.ToString());
-                            ListDetailInvoice.Add(new DetailInvoice()
-                            {
-                                TypePublishEinvoice = ENumTypePublishEinvoice.ERROR,
-                                code = item.InvoiceCode,
-                                note = $"Dữ liệu lỗi không thể xử lý hóa đơn điện tử",
-                            });
-                        }
-
-
                     }
+
                 }
+
                 foreach (var item in lstinvoicecancel)
                 {
                     ListDetailInvoice.Add(new DetailInvoice()
@@ -844,7 +851,7 @@ namespace Infrastructure.Infrastructure.Repositories
             try
             {
                 List<EInvoice> lsteinvoice = new List<EInvoice>();
-                var getpattern = await _managerPatternEInvoicerepository.GetbyIdAsync(model.IdManagerPatternEInvoice);
+                var getpattern = await _managerPatternEInvoicerepository.GetbyIdAsync(model.IdManagerPatternEInvoice,true);
                 if (getpattern == null)
                 {
                     return await Result<PublishInvoiceResponse>.FailAsync(HeperConstantss.ERR049);
@@ -902,6 +909,8 @@ namespace Infrastructure.Infrastructure.Repositories
                             _log.LogError(item.EInvoiceCode);
                             string urlportal = ConvertSupport.ConverDoaminVNPTPortal<string>(suplcompany.DomainName);
 
+                          // hóa đơn mtt gửi hóa đon cuối ngày hoặc gưi thuế ở đây nếu co cấu hình
+
                             //string url = $"Tra cứu hóa đơn điện tử tại: {suplcompany.DomainName.Replace("admindemo.vnpt-invoice.com.vn", ".vnpt-invoice.com.vn").Replace("admin.vnpt-invoice.com.vn", ".vnpt-invoice.com.vn")}, mã tra cứu: {item.FkeyEInvoice.ToUpper()}";
                             var PublishInvoiceResponse = new PublishInvoiceResponse()
                             {
@@ -919,7 +928,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
                     else
                     {
-                        _log.LogError($"Tạo mới thành công hóa hóa đơn điện tử, phát hành thất bại, mã lỗi từ nhà cung cấp: {publish.Data} của mã {getupđateinvoice.InvoiceCode}");
+                        _log.LogError($"Tạo mới thành công hóa hóa đơn điện tử, phát hành thất bại, mã lỗi từ nhà cung cấp: {publish.Message} của mã {getupđateinvoice.InvoiceCode}");
                         _log.LogError(item.EInvoiceCode);
                     }
                 }
@@ -1617,6 +1626,38 @@ namespace Infrastructure.Infrastructure.Repositories
             catch (Exception e)
             {
                 return await Result<PublishInvoiceModelView>.FailAsync(e.Message);
+            }
+        }
+
+        public async Task<Result<string>> DeleteEInvoiceErrorInPublish(int[] lstid, int ComId)
+        {
+            await _unitOfWork.CreateTransactionAsync();
+            try
+            {
+                var get = await _invoiceRepository.Entities.Where(x => lstid.Contains(x.Id) && x.ComId==ComId).ToListAsync();
+                if (get.Count()>0)
+                {
+                    var lstideinv = get.Where(x=>x.IdEInvoice.HasValue).Select(x => x.IdEInvoice.Value).ToArray();
+                    foreach (var item in get)
+                    {
+                        item.IdEInvoice = null;
+                        item.StatusPublishInvoiceOrder = EnumStatusPublishInvoiceOrder.NONE;
+                    }
+                    if (lstideinv != null && lstideinv.Count()>0)
+                    {
+                        await _einvoiceRepository.DeleteEInvoiceAsync(lstideinv, ComId);
+                    }
+                    await _invoiceRepository.UpdateRangeAsync(get);
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitAsync();
+                }
+                return await Result<string>.SuccessAsync(HeperConstantss.SUS006);
+            }
+            catch (Exception e)
+            {
+                _log.LogError("xóa einv khi phát hành token" + e.ToString());
+                await _unitOfWork.RollbackAsync();
+                return await Result<string>.FailAsync(e.Message);
             }
         }
     }

@@ -137,10 +137,15 @@ var sposvietplugin = {
                     }
                     
                 } else {
-                    if (json.Message == "-1" && parseInt(json.type) == TypeEventWebSocket.SignEInvoice) {
+                    if (json.Message == "-1" && (parseInt(json.type) == TypeEventWebSocket.SignEInvoice || parseInt(json.type) == TypeEventWebSocket.SignListEInvoiceToken)) {
                         toastrcus.warning("Người dùng hủy bỏ");
                         resolve("-1");
-                    } else {
+                    }
+                    else if (json.Message == "-2") {
+                        toastrcus.error("Có lỗi trong quá trình ký số dữ liệu");
+                        resolve("-1");
+                    }
+                    else {
                         toastrcus.error(json.Message);
                         resolve("-1");
                     }

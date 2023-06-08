@@ -182,6 +182,13 @@ namespace SposVietPlugin_net_4._6._1
                                     res.Data = sign;
                                     Send(JsonConvert.SerializeObject(res));
                                 }
+                                else if(sign == "-2")
+                                {
+                                    res.isSuccess = false;
+                                    res.Message = "-2";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
                                 else
                                 {
                                     res.isSuccess = true;
@@ -208,6 +215,13 @@ namespace SposVietPlugin_net_4._6._1
                                 {
                                     res.isSuccess = false;
                                     res.Message = "-1";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
+                                else if (sign == "-2")
+                                {
+                                    res.isSuccess = false;
+                                    res.Message = "-2";
                                     res.Data = sign;
                                     Send(JsonConvert.SerializeObject(res));
                                 }

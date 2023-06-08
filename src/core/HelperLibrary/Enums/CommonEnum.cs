@@ -52,6 +52,7 @@ namespace Application.Enums
         UpdateCustomer = 9,//update khách hàng
         IsGetHashPublishEInvoice = 10,//lấy hash khi phát ahfnh = token vnpt
         PublishEInvoiceTokenByHash = 11,//phát hành sau khi lấy hash = token vnpt
+        DeleteEInvoiceErrorInPublish = 12,//xóa các hóa đơn điện tử sau khi người dùng ký token nhưng bấm hủy bỏ k ký
     }
     public enum ENumTypeCustomer
     {

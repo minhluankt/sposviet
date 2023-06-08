@@ -57,6 +57,15 @@ namespace Application.Features.Invoices.Commands
             else if (command.TypeEventInvoice==EnumTypeEventInvoice.UpdateCustomer)
             {
                 return await _Repository.UpdateCustomerInvoice(command.Id.Value, command.ComId, command.IdCustomer.Value, command.CasherName);
+            } 
+            else if (command.TypeEventInvoice==EnumTypeEventInvoice.DeleteEInvoiceErrorInPublish)
+            {
+                var delete = await _Repository.DeleteEInvoiceErrorInPublish(command.lstid, command.ComId);
+                if (delete.Succeeded)
+                {
+                    return await Result<PublishInvoiceModelView>.SuccessAsync(delete.Message);
+                }
+                return await Result<PublishInvoiceModelView>.FailAsync(delete.Message);
             }
             else if(command.lstid!=null && command.lstid.Count()>0)
             {

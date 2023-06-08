@@ -40,6 +40,7 @@ namespace Application.Features.OrderTablePos.Commands
             public int? ManagerPatternEInvoices { get; set; }
         public class CheckOutOrderHandler : IRequestHandler<CheckOutOrderCommand, Result<string>>
         {
+            private readonly IManagerPatternEInvoiceRepository<ManagerPatternEInvoice> _managerPatternEInvoicerepository;
             private readonly ITemplateInvoiceRepository<TemplateInvoice> _templateInvoicerepository;
             private readonly IOrderTableRepository _Repository;
             private readonly ICompanyAdminInfoRepository _companyProductRepository;
@@ -48,7 +49,9 @@ namespace Application.Features.OrderTablePos.Commands
             private readonly IDistributedCache _distributedCache;
             private IUnitOfWork _unitOfWork { get; set; }
 
-            public CheckOutOrderHandler(IRepositoryAsync<Product> ProductRepository, ICompanyAdminInfoRepository companyProductRepository,
+            public CheckOutOrderHandler(IRepositoryAsync<Product> ProductRepository,
+                IManagerPatternEInvoiceRepository<ManagerPatternEInvoice> managerPatternEInvoicerepository,
+                ICompanyAdminInfoRepository companyProductRepository,
                 IOrderTableRepository brandRepository, ITemplateInvoiceRepository<TemplateInvoice> templateInvoicerepository,
 
                 IUnitOfWork unitOfWork, IMapper mapper, IDistributedCache distributedCach)
@@ -57,6 +60,7 @@ namespace Application.Features.OrderTablePos.Commands
                 _companyProductRepository = companyProductRepository;
                 _templateInvoicerepository = templateInvoicerepository;
                 _ProductRepository = ProductRepository;
+                _managerPatternEInvoicerepository = managerPatternEInvoicerepository;
                 _Repository = brandRepository;
                 _unitOfWork = unitOfWork;
                 _mapper = mapper;
@@ -64,6 +68,26 @@ namespace Application.Features.OrderTablePos.Commands
             }
             public async Task<Result<string>> Handle(CheckOutOrderCommand command, CancellationToken cancellationToken)
             {
+                if (command.vat)
+                {
+                    if (command.ManagerPatternEInvoices==null)
+                    {
+                        return await Result<string>.FailAsync(HeperConstantss.ERR049);
+                    }
+                    var getpattern = await _managerPatternEInvoicerepository.GetbyIdAsync(command.ManagerPatternEInvoices.Value, true);
+                    if (getpattern == null)
+                    {
+                        return await Result<string>.FailAsync(HeperConstantss.ERR049);
+                    }
+                    else
+                    {
+                        if (!LibraryCommon.IsHDDTMayTinhTien(getpattern.Serial))
+                        {
+                            return await Result<string>.FailAsync(HeperConstantss.ERR049);
+                        }
+                    }
+                }
+
                 var product = await _Repository.CheckOutOrderAsync(
                     command.ComId,
                     command.Idpayment,

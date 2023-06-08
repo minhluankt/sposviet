@@ -2147,7 +2147,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 await _repository.UpdateRangeAsync(getAll);
                 await _unitOfWork.SaveChangesAsync();
                 var getlstfkey = getAll.Select(x => x.FkeyEInvoice).ToArray();
-                string fkeys = string.Join("_", getlstfkey);
+                //string fkeys = string.Join("_", getlstfkey);
                 //check trạng thái cqt
                 _log.LogInformation("cb lấy kq" + Comid);
                 var t = new Thread(async () => await CheckStatusEInvoiceSendCQT(getlstfkey, company, getfirst.Pattern, Comid));
@@ -2308,15 +2308,15 @@ namespace Infrastructure.Infrastructure.Repositories
             return await Result<PublishInvoiceModelView>.SuccessAsync(PublishInvoiceModelView);
 
         }
-        private async Task CheckStatusEInvoiceSendCQT(string[] lstid, SupplierEInvoice company, string pattern, int Comid)
+        public async Task CheckStatusEInvoiceSendCQT(string[] lstid, SupplierEInvoice company, string pattern, int Comid)
         {
             try
             {
-                Thread.Sleep(30000);//chờ 30s đã gọi
+                Thread.Sleep(50000);//chờ 30s đã gọi
                 _log.LogInformation("Băt đầu lấy kq");
                // if (lstid.Count() > 100)
                // {
-                    var newlst = Common.Split(lstid, 2);
+                    var newlst = Common.Split(lstid, 100);//mỗi lần là 100 hóa đơn
                     foreach (var items in newlst)
                     {
                         string fkeys = string.Join(";", items);
@@ -2602,6 +2602,15 @@ namespace Infrastructure.Infrastructure.Repositories
             else
             {
                 return await Result<PublishInvoiceModelView>.FailAsync(publish);
+            }
+        }
+
+        public async Task DeleteEInvoiceAsync(int[] lst, int ComId)
+        {
+            var getdata = await _repository.Entities.Where(x=>lst.Contains(x.Id) && x.ComId==ComId).ToListAsync();
+            if (getdata.Count()>0)
+            {
+                await _repository.DeleteRangeAsync(getdata);
             }
         }
     }

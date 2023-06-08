@@ -14,6 +14,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<PublishInvoiceModelView>> UpdateCustomerInvoice(Guid IdInvoice,int ComId,int IdCustomer,string CasherName);
         Task<Result<OrderTable>> CloneOrder(Guid IdInvoice, int ComId, string IdCasherName, string CasherName);
         Task<Result<PublishInvoiceModelView>> DeleteIsMergeInvoice(Guid IdInvoice,int ComId,string CasherName);
+        Task<Result<string>> DeleteEInvoiceErrorInPublish(int[] lstid, int ComId);
         Task<Result<PublishInvoiceModelView>> CancelInvoice(int[] lstid,int ComId,string CasherName,string Note, EnumTypeEventInvoice type,bool IsDelete,bool IsDeletePT = false);
         Task<Result<PublishInvoiceModelView>> PublishEInvoiceMerge(PublishInvoiceMergeModel model, int ComId);
         Task<Result<PublishInvoiceModelView>> PublishInvoice(PublishInvoiceModel model);

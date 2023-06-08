@@ -274,6 +274,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(serialCert) || string.IsNullOrEmpty(serial) || string.IsNullOrEmpty(pattern) || string.IsNullOrEmpty(dataxmlhash))
+                {
+                    _notify.Error("Dữ liệu truyền vào đã bị thay đổi");
+                    _notify.Error("dataxmlhash:"+ dataxmlhash);
+                    return new JsonResult(new { isValid = false });
+                }
                 var currentUser = User.Identity.GetUserClaimLogin();
                 //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
                 var send = await _mediator.Send(new PublishEInvoiceCommand()
@@ -286,7 +292,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     serialCert = serialCert,
                     dataxmlhash = dataxmlhash,
                     TypeSupplierEInvoice = typeSupplierEInvoice,
-                    TypeEventInvoice = EnumTypeEventInvoice.PublishEInvoice
+                    TypeEventInvoice = EnumTypeEventInvoice.PublishEInvoiceTokenByHash
                 });
                 if (send.Succeeded)
                 {

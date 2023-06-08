@@ -20,6 +20,7 @@ using System.Drawing.Drawing2D;
 using Web.ManagerApplication.Abstractions;
 using System.Reactive.Joins;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using NStandard.Evaluators;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -38,6 +39,32 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             return View();
         }
+        [Authorize]
+        public async Task<IActionResult> DeleteEInvoiceErrorInPublishAsync(int[] lstid)
+        {
+            if (lstid==null || lstid.Count()==0)
+            {
+                return new JsonResult(new { isValid = false });
+            }
+            else
+            {
+                var currentUser = User.Identity.GetUserClaimLogin();
+                var response = await _mediator.Send(new UpdateInvoiceCommand()
+                {
+                    CasherName = currentUser.FullName,
+                    ComId = currentUser.ComId,
+                    lstid = lstid,
+                    TypeEventInvoice = EnumTypeEventInvoice.DeleteEInvoiceErrorInPublish
+                });
+                if (response.Succeeded)
+                {
+                   // _notify.Success("Hủy bỏ thành công: " + response.Message);
+                    return Json(new { isValid = true });
+                }
+
+                return new JsonResult(new { isValid = true });
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetConfigSellInvoiceAsync()
         {
@@ -49,7 +76,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             return new JsonResult(new { isValid = false });
         }
-       
+        [Authorize]
         public async Task<IActionResult> SuppliersEInvoice(int SaleRetail=0)
         {
             try
@@ -73,7 +100,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return new JsonResult(new { isValid = false });
             }
         }
-     
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> PublishEInvoiceMergeAsync(PublishInvoiceMergeModel model)
         {
@@ -258,6 +285,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
 
         }
+        [Authorize(Policy = "invoice.cloneinvoice")]
         [EncryptedParameters("secret")]
         public async Task<IActionResult> CloneOrder(Guid? id)
         {
@@ -375,11 +403,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             _notify.Error(response.Message);
             return Json(new { isValid = false });
         } 
-        public async Task<ActionResult> GetInvoiceByDayAsync()
-        {
-           
-            return Json(new { isValid = false });
-        }
+
         [HttpPost]
         [EncryptedParameters("secret")]
         [Authorize(Policy = "invoice.cancel")]

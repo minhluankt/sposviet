@@ -38,13 +38,14 @@ namespace Application.Interfaces.Repositories
         //Task<IResult<string>> ImportAndPublishInvMTTAsync(int ComId, int Id, string pattern, string serial, string Carsher, string IdCarsher);
         IQueryable<T> GetAllAsync();
         Task<DashboardEInvoiceModel> GetDashboardAsync(int Comid, DateTime date);
+        Task DeleteEInvoiceAsync(int[] lst, int ComId);
         Task<IResult<PublishInvoiceModelView>> CancelEInvoiceAsync(int[] lst, int ComId, string Carsher, string IdCarsher);
         Task<IResult<PublishInvoiceModelView>> RemoveEInvoiceAsync(int[] lst, int ComId, string Carsher, string IdCarsher);
         Task<PaginatedList<T>> GetAllDatatableAsync(int? Comid, InvoiceModel textSearch, string sortColumn, string sortColumnDirection, int pageSize, int skip,EnumTypeProduct enumTypeProduct = EnumTypeProduct.THOITRANG);
         //report
         Task<List<EInvoice>> GetReportMonth(DateTime todate, DateTime enddate, int ComId);
         Task<IResult<string>> GetHashInvWithTokenVNPTAsync(List<EInvoice> einvoices, SupplierEInvoice company);
-
+        Task CheckStatusEInvoiceSendCQT(string[] lstid, SupplierEInvoice company, string pattern, int Comid);
 
     }
 }

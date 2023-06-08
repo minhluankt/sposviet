@@ -20,7 +20,7 @@ namespace SposVietPlugin_net_4._6._1.Service
             X509Certificate2 certificate = x509Certificate2Helper.GetCertFromStore();
             if (certificate==null)
             {
-                return "-1";
+                return "-1";//người dùng hủy bỏ
             }
             byte[] hashBytes = Convert.FromBase64String(hash);
 
@@ -28,7 +28,7 @@ namespace SposVietPlugin_net_4._6._1.Service
             byte[] signature = x509Certificate2Helper.GetDigitalSignature(hashBytes);
             if (signature==null)
             {
-                return "-1";
+                return "-2";//ký thất bại
             }
             var sSecret = Convert.ToBase64String(signature);
             XmlDocument xmlDoc = new XmlDocument();
@@ -52,7 +52,7 @@ namespace SposVietPlugin_net_4._6._1.Service
             X509Certificate2 certificate = x509Certificate2Helper.GetCertFromStore();
             if (certificate==null)
             {
-                return "-1";
+                return "-1";//người dùng hủy bỏ
             }
             XmlDocument xmlDoc = new XmlDocument();
             XmlNode nVersion = xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
@@ -72,7 +72,7 @@ namespace SposVietPlugin_net_4._6._1.Service
                 byte[] signature = x509Certificate2Helper.GetDigitalSignature(hashBytes);
                 if (signature == null)
                 {
-                    return "-1";
+                    return "-2";//ký thất bại
                 }
                 var sSecret = Convert.ToBase64String(signature);
 
