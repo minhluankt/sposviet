@@ -8070,12 +8070,14 @@ var loadcentChitkent = {
         $(".list-order-food button.btn").click(function () {
             let sel = $(this);
             let idproduct = $(this).data("idproduct");
+          
             let quantity = parseFloat($(this).data("quantity").replaceAll(",","."));
             $.ajax({
                 type: 'POST',
                 url: "/Selling/PosKitchen/UpdateProcessingFood",
                 data: {
                     TypeNotifyKitchenOrder: _TypeNotifyKitchenOrder.UPDATEBYFOOD,
+                
                     IdProduct: idproduct,
                     Quantity: quantity,
                 },
@@ -8097,6 +8099,7 @@ var loadcentChitkent = {
             //});
             let sel = $(this);
             let idChitken = $(this).data("id");
+            let idStaff = $(this).data("idstaff");
             let isProgress = $(this).hasClass("Processing");
             $.ajax({
                 type: 'POST',
@@ -8104,6 +8107,7 @@ var loadcentChitkent = {
                 data: {
                     TypeNotifyKitchenOrder: _TypeNotifyKitchenOrder.Processing,
                     Id: idChitken,
+                    IdStaff: idStaff,
                     IsProgress: isProgress,
                 },
                 dataType: 'json',
@@ -9889,7 +9893,6 @@ var posStaff = {
         toastrcus.error("Bếp chưa xác nhận, không thể hủy món!");
     },//chờ hết thời gian k có phản hồi của bếp
     loadEventAffterSendReject: function (mess) {
-        
         toastrcus.error(mess);
         setTimeout(function () {
 
@@ -9897,6 +9900,24 @@ var posStaff = {
             clearInterval(countDownInterval);
         }, 1000);
     },//sự kiện béoe từ chối
+    loadhighlightItemOrderprogress: function (id,isProgress=true) {
+       
+            if ($(".bodyListKitchenConfirm").length > 0) {
+                $(".bodyListKitchenConfirm .list-food li").map(function () {
+                    let idloca = parseInt($(this).data("iditemorder"));
+                    if (id == parseInt($(this).data("iditemorder"))) {
+                        if (isProgress) {
+                            $(this).addClass("isProcessing");
+                        } else {
+                            $(this).removeClass("isProcessing");
+                        }
+                       
+                        return;
+                    }
+                })
+            }
+       
+    },//load cái món dg làm hoặc hủy
     loadCountdown: function () {
         setCountDown = (endTime) => {
 
@@ -14383,9 +14404,12 @@ var loadeventPos = {
             if (json.IdRoomAndTableGuid == iddata) {
                 if (json.OrderTableItems.length == 0 || json.TypeUpdate == _TypeUpdatePos.RemoveOrder) {
                     $(this).removeClass("CurentOrder");
-                    loadeventPos.loadeventCoutUpTime();
+                    
                 } else if (!$(this).hasClass("CurentOrder")) {
                     $(this).addClass("CurentOrder");
+                    $(this).find(".datetime").data("time", json.TimeNumber);// nếu theem sản phẩm thi active CurentOrder
+                    //check đếm giờ
+                    loadeventPos.loadeventCoutUpTime($(this).find(".datetime"));
                 }
                 if ($(this).hasClass("active")) {//xử lý cho việc get dữ liệu table
                     let GetTable = $(this).find("b").html();
@@ -14449,6 +14473,7 @@ var loadeventPos = {
             $(".tab-content-order").find(".tab-pane.active").attr("data-id", data.IdGuid);
             loadeventPos.loadAmoutAndQuantity(data.Amount, data.Quantity);
             loadeventPos.loadEventClickIconAddAndMinus();//sự kiện kích vào icon
+            
             
             loadeventPos.loadAddOrRemoveCurentClassTable(true, data.TimeNumber);// xem có sản phẩm thì add class curen table
         // console.log(dataObject.IdOrderItem);
@@ -14660,6 +14685,7 @@ var loadeventPos = {
         }
         loadeventPos.eventloadNumberStatusTable();
     },
+
     checkHighlightTableInOrder: function () {
         let isExit = false;
         $("#ul-tab-order li:not(.add-tab)").map(function (ind, ele) {

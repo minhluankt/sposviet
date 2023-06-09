@@ -47,7 +47,7 @@ namespace Infrastructure.Infrastructure.Repositories
             _ordertableRepository = ordertableRepository;
         }
 
-        public async Task<Result<List<NotifyOrderNewModel>>> NotifyOrder(int Comid, Guid Idorder,string Cashername, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC)
+        public async Task<Result<List<NotifyOrderNewModel>>> NotifyOrder(int Comid, Guid Idorder,string Staff, string IdStaff, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC)
         {
             List<NotifyOrderNewModel> notify = new List<NotifyOrderNewModel>();
             await _unitOfWork.CreateTransactionAsync();
@@ -76,7 +76,8 @@ namespace Infrastructure.Infrastructure.Repositories
                                 Unit = item.Unit,
                                 Note = (item.QuantityNotifyKitchen == 0 ? item.Note : string.Empty),
                                 RoomTableName = getorder.IsBringBack ? "Mang về" : getorder.RoomAndTable?.Name,
-                                StaffName = Cashername,
+                                StaffName = Staff,
+                              //  IdStaff = IdStaff,
                                 Quantity = item.Quantity - item.QuantityNotifyKitchen,
                                 Price = item.Price,//giá bán
                                 TypeNotifyOrder = EnumTypeTemplatePrint.IN_BA0_CHE_BIEN
@@ -86,7 +87,7 @@ namespace Infrastructure.Infrastructure.Repositories
                             var his = new HistoryOrder()
                             {
                                 IdOrderTable = getorder.Id,
-                                Carsher = Cashername,
+                                Carsher = Staff,
                                 Code = randowm,
                                 Note = (item.QuantityNotifyKitchen == 0 ? item.Note : string.Empty),
                                 IsNotif = true,
@@ -108,7 +109,8 @@ namespace Infrastructure.Infrastructure.Repositories
                     await _orderitemtableRepository.UpdateRangeAsync(getitem);
                     await _unitOfWork.SaveChangesAsync();
                 }
-                getorder.CasherName = Cashername;
+                getorder.StaffName = Staff;
+                getorder.IdStaff = IdStaff;
                 var getorderchitken = await _kitchenRepository.Entities.Where(x => x.ComId == Comid && x.IdDichVu == IdDichVu && x.IdOrder == Idorder).AsNoTracking().ToListAsync();// phải check tất cả trạng thái 
                 if (getorderchitken.Count() == 0)// chưa có thì thông báo mới
                 {
@@ -180,8 +182,8 @@ namespace Infrastructure.Infrastructure.Repositories
                 kitchen.IdRoomTable = getorder.IdRoomAndTableGuid;
                 kitchen.IsBingBack = getorder.IsBringBack;
                 kitchen.Buyer = getorder.Buyer;
-                kitchen.Cashername = getorder.CasherName;
-                kitchen.IdCashername = getorder.IdCasher;
+                kitchen.Cashername = getorder.StaffName;
+                kitchen.IdCashername = getorder.IdStaff;
                 if (getorder.IsBringBack)
                 {
                     kitchen.RoomTableName = "Mang về";
@@ -2165,6 +2167,7 @@ namespace Infrastructure.Infrastructure.Repositories
                             quantity = kitchen.Quantity,
                             Note = kitchen.Note,
                             orderStaff = kitchen.Cashername,
+                            idStaff = kitchen.IdCashername,
                             idRoomTable = kitchen.IdRoomTable,
                             idOrder = kitchen.IdOrder,
                             IdIntChitKen = kitchen.Id,
@@ -2202,6 +2205,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         idRoomTable = item.Key,
                         idProduct = x.idProduct,
                         idOrder = x.idOrder,
+                        idStaff = x.idStaff,
                         Note = x.Note,
                         createDateFood = x.createDateFood,
                         tableName = x.tableName,

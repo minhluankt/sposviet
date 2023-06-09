@@ -1163,7 +1163,7 @@ namespace Infrastructure.Infrastructure.Repositories
 
                     await _unitOfWork.SaveChangesAsync();
                     await _unitOfWork.CommitAsync();
-                    await _notifyChitkenRepository.NotifyOrder(comid, getBr.IdGuid,CasherName);
+                    await _notifyChitkenRepository.NotifyOrder(comid, getBr.IdGuid,CasherName, IdCasher);
 
                 }
                 else  //tách vào 1 bàn khác một ít

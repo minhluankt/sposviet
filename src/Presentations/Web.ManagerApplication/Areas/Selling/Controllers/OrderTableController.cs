@@ -746,6 +746,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var currentUser = User.Identity.GetUserClaimLogin();
             model.ComId = currentUser.ComId;
             model.Cashername = currentUser.FullName;
+            model.IdStaff = currentUser.Id;
             var createNotifyChitkenCommand = _mapper.Map<CreateNotifyChitkenCommand>(model);
             var send = await _mediator.Send(createNotifyChitkenCommand);
             if (send.Succeeded)

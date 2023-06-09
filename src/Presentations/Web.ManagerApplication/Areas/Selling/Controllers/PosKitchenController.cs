@@ -242,6 +242,20 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 var getAll = await _mediator.Send(map);
                 if (getAll.Succeeded)
                 {
+                    if (model.TypeNotifyKitchenOrder==EnumTypeNotifyKitchenOrder.Processing)
+                    {
+                        if (!string.IsNullOrEmpty(model.IdStaff))
+                        {
+                            var json = new
+                            {
+                                Id = getAll.Data.IdOrderItem,
+                                ProName = getAll.Data.ProName,
+                                IsProgress = !model.IsProgress,
+                            };
+                            await dashboardHub.FeedbackBepToStaff(model.IdStaff, ConvertSupport.ConverObjectToJsonString(json),4);
+                        }
+                    }
+                   
                     _notify.Success(GeneralMess.ConvertStatusToString(getAll.Message));
                     return Json(new { isValid = true });
                 }

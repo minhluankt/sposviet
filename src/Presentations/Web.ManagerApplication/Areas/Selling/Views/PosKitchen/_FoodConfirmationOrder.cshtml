@@ -19,7 +19,7 @@
             </div>
             @foreach (var item in collection)
             {
-                <li data-id="@item.Id" data-status="@((int)item.Status)" data-name="@item.ProName" class="@(item.Status==Application.Enums.EnumStatusKitchenOrder.Processing?"isProcessing":"")">
+                <li data-id="@item.Id"  data-iditemorder="@item.IdItemOrder" data-status="@((int)item.Status)" data-name="@item.ProName" class="@(item.Status==Application.Enums.EnumStatusKitchenOrder.Processing?"isProcessing":"")">
                     <div class="content">
                         <span>
                             @item.ProName <b class="red">(@item.Quantity.ToString("#,0.##"))</b> - <i class="Cashername">@item.Cashername</i>

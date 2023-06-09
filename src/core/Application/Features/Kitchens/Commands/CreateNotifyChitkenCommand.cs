@@ -66,7 +66,7 @@ namespace Application.Features.Kitchens.Commands
                 {
                     return await Result<string>.FailAsync("Không tìm thấy đơn");
                 }
-                var add=  await _NotifyChitkenRepository.NotifyOrder(request.ComId, request.IdOrder.Value,request.Cashername);
+                var add=  await _NotifyChitkenRepository.NotifyOrder(request.ComId, request.IdOrder.Value,request.Cashername,request.IdStaff);
                 if (add.Succeeded)
                 {
                     if (add.Data.Count>0)

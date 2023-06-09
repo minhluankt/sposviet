@@ -285,6 +285,7 @@ namespace Infrastructure.Infrastructure.HubS
             // type 1 là yêu cầu trùng vì đã có nhân viên trước đó đã thao tác gửi yêu cầu, chặn k cho 2nguowfi thao tác trên 1 bàn
             // type 2 gủi data xác nhận đồng ý hủy món
             // type 3 gủi data xác nhận từ chối hủy món
+            // type 4 gủi cho viên là có món vừa được nhận chế biến và hiển thị đổi màu trên màn hình nếu dg ở màn hình xl món
             var currentUser = _httpcontext.HttpContext.User.Identity.GetUserClaimLogin();
             if (data == "TEST")
             {
@@ -294,19 +295,13 @@ namespace Infrastructure.Infrastructure.HubS
             }
             else
             {
-                if (type==1)
+                var json = new
                 {
-                    var json = new
-                    {
-                        IsValid = false,
-                        Mess = data,
-                    };
-                    await Clients.User(userId).SendAsync("FeedbackBepToStaff", Common.ConverModelToJson(json));//StaffAlertBep là hàm ở client nhận method on, gủi cho nhân viên là k dc gửi yêu cầu cùng bàn
-                }
-                else if (type==2)
-                {
-
-                }
+                    Type = type,
+                    IsValid = true,
+                    Mess = data,
+                };
+                await Clients.User(userId).SendAsync("FeedbackBepToStaff", Common.ConverModelToJson(json));//StaffAlertBep là hàm ở client nhận method on, gủi cho nhân viên là k dc gửi yêu cầu cùng bàn
             }
         }
         //----------

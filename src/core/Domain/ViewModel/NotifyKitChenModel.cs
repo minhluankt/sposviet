@@ -7,20 +7,23 @@ namespace Domain.ViewModel
     public class NotifyKitChenModel
     {
         public string Cashername { get; set; }
+        public string IdStaff { get; set; }
         public Guid? IdOrder { get; set; }
         public Guid? idChitken { get; set; }
         public int? Id { get; set; }//id int chitken
+        public string ProName { get; set; }
         public string orderCode { get; set; }
         public int? IdProduct { get; set; }
         public EnumTypeNotifyKitchenOrder TypeNotifyKitchenOrder { get; set; } = EnumTypeNotifyKitchenOrder.NOTIFYCHITKEN;
         public EnumStatusKitchenOrder Status { get; set; } = EnumStatusKitchenOrder.READY;
         public EnumTypeNotifyKitChen TypeNotifyKitChen { get; set; } = EnumTypeNotifyKitChen.NHA_BEP_1;//LOẠI MÀN HÌNH NHÀ BẾP
         public int ComId { get; set; }
+        public int? IdOrderItem { get; set; }
         public int Quantity { get; set; }
         public bool UpdateOne { get; set; }
         public bool UpdateFull { get; set; }
         public bool IsProgress { get; set; }//dg nhận món
-        public bool IsCancel { get; set; }//dg nhận món
+        public bool IsCancel { get; set; }//
         public int[] lstIdChiken { get; set; }
         public Guid[] ListIdChitken { get; set; }//list này để thông báo
     }
@@ -105,6 +108,7 @@ namespace Domain.ViewModel
         public DateTime createDate { get; set; }
         public string createDateTable { get; set; }
         public string orderStaff { get; set; }
+        public string idStaff { get; set; }
         public int? idProduct { get; set; }
         public Guid? idRoomTable { get; set; }
         public string tableName { get; set; }

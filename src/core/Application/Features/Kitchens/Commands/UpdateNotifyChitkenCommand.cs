@@ -73,7 +73,7 @@ namespace Application.Features.Kitchens.Commands
                         {
                             return await Result<NotifyKitChenModel>.FailAsync("Không tìm thấy món");
                         }
-                        if (!request.IsProgress)//nếu là món nhận làm
+                        if (!request.IsProgress)//nếu là món nhận làm do phủ định từ view
                         {
                             request.Status = EnumStatusKitchenOrder.Processing;
                         }
@@ -85,6 +85,8 @@ namespace Application.Features.Kitchens.Commands
                         if (updateProcessing!=null)
                         {
                             NotifyKitChenModel notifyKitChenModel = new NotifyKitChenModel();
+                            notifyKitChenModel.IdOrderItem = updateProcessing.IdItemOrder;
+                            notifyKitChenModel.ProName = updateProcessing.ProName;
                             notifyKitChenModel.IdProduct = updateProcessing.IdProduct;
                             notifyKitChenModel.Id = updateProcessing.Id;
                             notifyKitChenModel.idChitken = updateProcessing.IdKitchen;

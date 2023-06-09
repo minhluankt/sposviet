@@ -288,10 +288,18 @@
                 console.log("Test 3");
             } else {
                 let data = JSON.parse(datas);
-                if (!data.IsValid) {
+                if (data.Type==1) {
                     posStaff.loadEventAffterSendReject(data.Mess);
-                } else {
-
+                } else if (data.Type == 4) {
+                    debugger
+                    let dataitem = JSON.parse(data.Mess);
+                    if (dataitem.IsProgress) {
+                         toastrcus.success("Món " + dataitem.ProName + " đang được bếp chế biến");
+                    }else{
+                        toastrcus.warning("Món " + dataitem.ProName + " đã hủy chế biến");
+                    }
+                   
+                    posStaff.loadhighlightItemOrderprogress(dataitem.Id, dataitem.IsProgress);
                 }
             }
         });
