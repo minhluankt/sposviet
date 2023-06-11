@@ -74,9 +74,7 @@
     <partial name="Admin/_Scripts" />
     <script src="~/js/custom/sposvietkyso.min.js?time=678"></script>
     <script>
-        //testConnetWebSocket();
         loadcentChitkent.loadconnectwss();
-        loadcentChitkent.intEvent();
         document.onreadystatechange = function () {
             var state = document.readyState
             if (state == 'complete') {
@@ -86,6 +84,7 @@
                     document.getElementById('loadingpos');
                     document.getElementById('loadingpos').style.visibility = "hidden";
                 }, 100);
+                loadcentChitkent.intEvent();
             }
         }
 
@@ -102,7 +101,7 @@
                     connectionKitchenIndex.start()
                         .then(function () {
                             connectionKitchenIndex.invoke('Printbaobep', "ok", "TEST");
-                            connectionKitchenIndex.invoke('StaffAlertBep', 1, "TEST");
+                            connectionKitchenIndex.invoke('StaffAlertBep', 1, "TEST", EnumTypeNotifyKitchenBar.TEST);
                             connectionKitchenIndex.invoke('FeedbackBepToStaff', "", "TEST", 0);
                             console.assert(connectionKitchenIndex.state === signalR.HubConnectionState.Connected);
                             console.log("SignalR Connected.");
@@ -139,7 +138,12 @@
             }); 
             connectionKitchenIndex.on('StaffAlertBep', function (data) {
                 if(data!="TEST"){
-                    loadcentChitkent.loadDatacancelFood(data);
+                    let datajson = JSON.parse(data);
+                    if (datajson.Type == EnumTypeNotifyKitchenBar.CANCEL){
+                        loadcentChitkent.loadDatacancelFood(data);//HIỂN thị xác nhận món khi nhân viên bấm hủy món
+                    } else if (datajson.Type == EnumTypeNotifyKitchenBar.DONE){
+                        loadcentChitkent.loadDataDoneFood(data);//cập nhật món khi nhân viên đã bấm chuyển  cho khách
+                    }
                 }else{
                     toastr.success("Kết nối máy chủ thành công")
                 }

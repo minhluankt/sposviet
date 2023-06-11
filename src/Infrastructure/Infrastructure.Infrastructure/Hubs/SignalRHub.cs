@@ -53,10 +53,15 @@ namespace Infrastructure.Infrastructure.HubS
                         string _Groupbep = $"{currentUser.ComId}_CHITCHEN";
                         checkExitRoomChitchen(Context.ConnectionId, _Groupbep);
                     }
-                    if (currentUser.IsPhucVu || currentUser.IsAdmin|| currentUser.IsBep)
+                    if (currentUser.IsAdmin|| currentUser.IsBep)
                     {
                         string _Groupbep = $"{currentUser.ComId}_StaffAlertBep";
                         checkExitRoomChitchen(Context.ConnectionId, _Groupbep);
+                    } 
+                    if (currentUser.IsPhucVu || currentUser.IsAdmin)
+                    {
+                        string _Group = $"{currentUser.ComId}_FeedbackBepToStaff";
+                        checkExitRoomChitchen(Context.ConnectionId, _Group);
                     }
                     if (currentUser.IsThuNgan || currentUser.IsAdmin)
                     {
@@ -254,9 +259,9 @@ namespace Infrastructure.Infrastructure.HubS
             }
         }
         //-------------xử lý cho nhân viên yêu cầu hủy món
-        public async Task StaffAlertBep(int ComId, string data)// tên StaffAlertBep là đùng dể invoke ở client
+        public async Task StaffAlertBep(int ComId, string data, EnumTypeNotifyKitchenBar enumTypeNotifyKitchenBar = EnumTypeNotifyKitchenBar.CANCEL)// tên StaffAlertBep là đùng dể invoke ở client chỉ dành cho nhân viên để gửi bếp
         {
-            if (data == "TEST")
+            if (data == "TEST" || enumTypeNotifyKitchenBar==EnumTypeNotifyKitchenBar.TEST)
             {
                 string _Group = $"{ComId}_StaffAlertBep";
                 checkExitRoomChitchen(Context.ConnectionId, _Group);
@@ -266,7 +271,7 @@ namespace Infrastructure.Infrastructure.HubS
             {
                 var json = new
                 {
-                    //Type = data == "TEST" ? EnumTypePrint.TEST : EnumTypePrint.PrintBaoBep,
+                    Type = (int)enumTypeNotifyKitchenBar,
                     ComId = ComId,
                     data = data,
                 };
@@ -275,33 +280,47 @@ namespace Infrastructure.Infrastructure.HubS
                 checkExitRoomChitchen(Context.ConnectionId, _Group);
                 await Clients.Group(_Group).SendAsync("StaffAlertBep", datajson);//StaffAlertBep là hàm ở client nhận method on
             }
-           
-            
         }
         //---------------
         //------xử lý khi bếp phản hồi lại cho nhân viên phục vụ
-        public async Task FeedbackBepToStaff(string userId, string data, int type)// tên FeedbackBepToStaff là đùng dể invoke ở client
+        public async Task FeedbackBepToStaff(string userId, string data, int type)// tên FeedbackBepToStaff là đùng dể invoke ở client chỉ dành cho bếp gửi đến nhân viên
         {
             // type 1 là yêu cầu trùng vì đã có nhân viên trước đó đã thao tác gửi yêu cầu, chặn k cho 2nguowfi thao tác trên 1 bàn
             // type 2 gủi data xác nhận đồng ý hủy món
             // type 3 gủi data xác nhận từ chối hủy món
             // type 4 gủi cho viên là có món vừa được nhận chế biến và hiển thị đổi màu trên màn hình nếu dg ở màn hình xl món
             var currentUser = _httpcontext.HttpContext.User.Identity.GetUserClaimLogin();
+            string _Group = $"{currentUser.ComId}_FeedbackBepToStaff";
+            checkExitRoomChitchen(Context.ConnectionId, _Group);
             if (data == "TEST")
             {
-                string _Group = $"{currentUser.ComId}_FeedbackBepToStaff";
-                checkExitRoomChitchen(Context.ConnectionId, _Group);
                 await Clients.Group(_Group).SendAsync("FeedbackBepToStaff", data);//FeedbackBepToStaff là hàm ở client nhận method
             }
             else
             {
                 var json = new
                 {
+                    userId = userId,
                     Type = type,
                     IsValid = true,
                     Mess = data,
                 };
-                await Clients.User(userId).SendAsync("FeedbackBepToStaff", Common.ConverModelToJson(json));//StaffAlertBep là hàm ở client nhận method on, gủi cho nhân viên là k dc gửi yêu cầu cùng bàn
+                switch (type)
+                {
+                    case 1:
+                        await Clients.User(userId).SendAsync("FeedbackBepToStaff", Common.ConverModelToJson(json));//StaffAlertBep là hàm ở client nhận method on, gủi cho nhân viên là k dc gửi yêu cầu cùng bàn
+                        break;
+                    case 2:
+                        await Clients.User(userId).SendAsync("FeedbackBepToStaff", Common.ConverModelToJson(json));//StaffAlertBep là hàm ở client nhận method on, gủi cho nhân viên là k dc gửi yêu cầu cùng bàn
+                        break;
+                    case 3:
+                        await Clients.User(userId).SendAsync("FeedbackBepToStaff", Common.ConverModelToJson(json));//StaffAlertBep là hàm ở client nhận method on, gủi cho nhân viên là k dc gửi yêu cầu cùng bàn
+                        break;
+                    default:
+                        await Clients.Group(_Group).SendAsync("FeedbackBepToStaff", Common.ConverModelToJson(json));//dành cho   nhân viên bếp bấm chuyển món cho khách done
+                        break;
+                }
+               
             }
         }
         //----------

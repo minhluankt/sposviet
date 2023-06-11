@@ -88,6 +88,7 @@ namespace Application.Features.Kitchens.Commands
                             notifyKitChenModel.IdOrderItem = updateProcessing.IdItemOrder;
                             notifyKitChenModel.ProName = updateProcessing.ProName;
                             notifyKitChenModel.IdProduct = updateProcessing.IdProduct;
+                            notifyKitChenModel.RoomTableName = updateProcessing.RoomTableName;
                             notifyKitChenModel.Id = updateProcessing.Id;
                             notifyKitChenModel.idChitken = updateProcessing.IdKitchen;
                             return await Result<NotifyKitChenModel>.SuccessAsync(notifyKitChenModel,HeperConstantss.SUS006);

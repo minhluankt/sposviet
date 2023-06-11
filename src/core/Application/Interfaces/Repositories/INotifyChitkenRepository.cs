@@ -21,6 +21,7 @@ namespace Application.Interfaces.Repositories
         Task<KitChenTableModel> GetAllNotifyOrderByTable(int Comid);
         Task<List<Kitchen>> GetAllFoodNewByOrder(int Comid,Guid idOrder);
         Task<List<Kitchen>> GetByListId(int Comid, int[] lstid);
+        Task<List<Kitchen>> GetByListIdItemOrder(int Comid, int[] lstiditemorder);
         Task<Result<List<Kitchen>>> StaffUpdateStaus(int Comid, int[] lstid, string StaffName, string BarName, bool IsCancel = false);
         Task<Kitchen> UpdateNotifyProcessingFood(int Comid,int IdChitKen,string StaffName, EnumStatusKitchenOrder status=EnumStatusKitchenOrder.Processing);
         Task<IResult<List<Kitchen>>> UpdateNotifyDoneByProduct(int Comid, int IdProduct, int Quantity);//Quantity để xác định là người nhấn với số lượng món dg hiển thị khi họ xem check đúng số lượng mới update, vì khi lúc nhân viên chọn báo bếp món mới, trùng với lúc bếp nhấn done thì dễ bị update all sản phẩm đó

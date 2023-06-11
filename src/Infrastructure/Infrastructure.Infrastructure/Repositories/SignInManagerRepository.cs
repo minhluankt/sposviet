@@ -182,7 +182,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         claims.Add(new Claim(ClaimUser.IsBep, "1"));
                     }
-                    else if (item == PermissionUser.nhanvienphucvu && (user.IdDichVu == EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == EnumTypeProduct.BAN_LE || user.IdDichVu == EnumTypeProduct.THOITRANG))
+                    else if (item == PermissionUser.nhanvienphucvu)
                     {
                         claims.Add(new Claim(ClaimUser.IsPhucVu, "1"));
                     }

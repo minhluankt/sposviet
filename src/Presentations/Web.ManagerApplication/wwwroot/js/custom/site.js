@@ -14,6 +14,7 @@
 //        //cancelButton: 'your-cancel-button-class',
 //        footer: 'footer-Swal'
 //},
+let countDownInterval;
 var connectionKitchenIndex;
 var handleInterval;
 var dataTableOutInvoicePos;
@@ -46,6 +47,12 @@ var EnumTypePrint = // loại in
         PrintBaoBep : 1,//báo hủy và chế biến
         RealtimeOrder : 2,//load đơn
 }
+var EnumTypeNotifyKitchenBar =// nhân viên báo cho bếp
+{
+    TEST : 0,//TEST
+        CANCEL : 1,
+        DONE : 2,
+    }
 var EnumStatusPublishInvoiceOrder =
 {
     NONE : 0,//TỌA
@@ -163,6 +170,9 @@ var EnumConfigParameters = //
     AUTOVATINPAYMENT: 4,
     PUBLISHMERGEINVOICE: 5,
     DELETEIPUBLISHMERGEINVOICEAFTER: 6,
+    PRINT_BAO_BEP : 7,
+        PRINT_KET_NOI : 8,
+        CANCEL_FOOD_PENDING_CONFIRM : 9,
 }
 var _TypeUpdatePos = {
 
@@ -7928,14 +7938,16 @@ var commonEventpost = {
 }
 var loadcentChitkent = {
     intEvent: function () {
+      
         eventConfigSaleParameters.getConfig().then(function (data) {
             if (data == true) {
                 localStorage.setItem("IsPrintBepLoca", 1);
                 localStorage.setItem("ReconectPrintLoca", moment().format('DD/MM/YYYY HH:mm:ss'));
                 testConnetWebSocket();
             }
-			loadcentChitkent.setIntervalConnectApp();
+            loadcentChitkent.setIntervalConnectApp();
         });
+        loadcentChitkent.loadDatacancelFood(null, true);
     },
     setIntervalConnectApp: function () {
         handleInterval = setInterval(function () {
@@ -7952,7 +7964,7 @@ var loadcentChitkent = {
         }, 300000);//5 phút
     },
     loadconnectwss: function () {
-         connectionKitchenIndex = new signalR.HubConnectionBuilder()
+        connectionKitchenIndex = new signalR.HubConnectionBuilder()
             .withAutomaticReconnect({
                 nextRetryDelayInMilliseconds: retryContext => {
                     if (retryContext.elapsedMilliseconds < 36000000) { //600 phút nhé là 10 tiếng
@@ -8054,7 +8066,7 @@ var loadcentChitkent = {
                 $(item).html(hour + ":" + minute + ":" + seconds);
                 //---check nếu hơn 10 phút là vàng hơn 15 phút là đỏ
                 if (minute >= 10 && minute < 15 && hour == 0) {
-                    
+
                     if (!$(item).parents("b.header-li").hasClass("tableWraing")) {
                         $(item).parents("b.header-li").addClass("tableWraing");
                     }
@@ -8070,21 +8082,21 @@ var loadcentChitkent = {
         $(".list-order-food button.btn").click(function () {
             let sel = $(this);
             let idproduct = $(this).data("idproduct");
-          
-            let quantity = parseFloat($(this).data("quantity").replaceAll(",","."));
+
+            let quantity = parseFloat($(this).data("quantity").replaceAll(",", "."));
             $.ajax({
                 type: 'POST',
                 url: "/Selling/PosKitchen/UpdateProcessingFood",
                 data: {
                     TypeNotifyKitchenOrder: _TypeNotifyKitchenOrder.UPDATEBYFOOD,
-                
+
                     IdProduct: idproduct,
                     Quantity: quantity,
                 },
                 dataType: 'json',
                 success: function (res) {
                     if (res.isValid) {
-                        
+
                     }
                 },
                 error: function (err) {
@@ -8118,7 +8130,7 @@ var loadcentChitkent = {
                         } else {
                             sel.addClass("Processing");
                         }
-                        
+
                     }
                 },
                 error: function (err) {
@@ -8128,7 +8140,6 @@ var loadcentChitkent = {
         });
     },
     loadUpdateDataLocaFood: function (id) {
-        
         let getdataloca = localStorage.getItem("dataJsoncancelFood");
         let dataloca = JSON.parse(getdataloca);//lấy từ locas
         let foundIndex = dataloca.findIndex(x => x.Id == id);
@@ -8137,37 +8148,104 @@ var loadcentChitkent = {
         }
         localStorage.setItem("dataJsoncancelFood", JSON.stringify(dataloca));
     },
-    loadDatacancelFood: function (data) {
-        
+    loadDataDoneFood: function (data) {
         let datajson = JSON.parse(data);
         let listFood = JSON.parse(datajson.data);
-        //check data loca
-        
+        let lstid = [];
+        listFood.forEach(function (item) {
+
+            lstid.push(item.Id);
+        });
+        $(".list-item-table-food li").map(function () {
+            let id = $(this).data("id");
+            if (lstid.includes(id)) {
+                let ul = $(this).parent("ul");
+                $(this).remove();
+                if (ul.find("li").length == 0) {
+                    ul.parents("li").remove();
+                }
+            }
+        });
+    },
+    loadDatacancelFood: function (data, isReload = false) {//isReload trường hợp nếu true tức là có reload lại page thfi phải kiểm tra còn thì phải hiển thị lên lại
         let getdataloca = localStorage.getItem("dataJsoncancelFood");
-        if (typeof getdataloca != "undefined" && getdataloca != null) {
-            let dataloca = JSON.parse(getdataloca);//lấy từ locas
-            let resultId = listFood.map(a => a.Id);//lấy lst id
-            let res = dataloca.filter(item => resultId.includes(item.Id));//tìm cái có trong data loca
-            if (res.length > 0) {
-                if (connectionKitchenIndex.state === signalR.HubConnectionState.Connected) {
-                    let mess = "Phục vụ " + res[0].StaffName + " đang thao tác món vui lòng không xử lý trùng";
-                    connectionKitchenIndex.invoke('FeedbackBepToStaff', listFood[0].IdStaffName, mess, 1);//lấy id của thèn gửi xuống
-                    return;
+        let listFood;
+        if (!isReload) {
+            let datajson = JSON.parse(data);
+            listFood = JSON.parse(datajson.data);
+            //check data loca
+            if (typeof getdataloca != "undefined" && getdataloca != null) {
+                let dataloca = JSON.parse(getdataloca);//lấy từ locas
+                let resultId = listFood.map(a => a.Id);//lấy lst id
+                let res = dataloca.filter(item => resultId.includes(item.Id));//tìm cái có trong data loca
+                if (res.length > 0) {
+                    listDataError = [];
+                    for (var i = 0; i < res.length; i++) {
+                        let datealert = moment(res[i].Date, "DD/MM/YYYY HH:mm:ss");
+                        let today = moment();
+                        let getdate = today.diff(datealert, 'seconds');//years, months, weeks, days, hours, minutes, and seconds
+                        if (getdate < 30) {//kiểm tra nếu < hon hiện tại 30s tức là đang còn yêu cầu
+                            listDataError.push(res[i]);
+                        }
+                    }
+
+                    if (listDataError.length > 0) {//kiểm tra nếu có là đang còn yêu cầu
+                        if (connectionKitchenIndex.state === signalR.HubConnectionState.Connected) {
+                            let mess = "Phục vụ " + listDataError[0].StaffName + " đang thao tác hủy món " + listDataError[0].Name + " vui lòng không xử lý trùng";
+                            connectionKitchenIndex.invoke('FeedbackBepToStaff', listFood[0].IdStaffName, mess, 1);//lấy id của thèn gửi xuống
+                            return;
+                        } else {
+                            toastrcus.error("Không kết nối được internet, hoặc bị gián đoạn, vui lòng thử lại");
+                        }
+                    } else {
+                        let newdata = dataloca.filter(item => !resultId.includes(item.Id));//tìm cái khac trong data loca
+                        listFood.forEach(function (item, index) {
+                            newdata.push(item);
+                        });
+                        localStorage.setItem("dataJsoncancelFood", JSON.stringify(newdata));
+                    }
                 } else {
-                    toastrcus.error("Không kết nối được server");
+                    listFood.forEach(function (item, index) {
+                        dataloca.push(item);
+                    });
+                    localStorage.setItem("dataJsoncancelFood", JSON.stringify(dataloca));
                 }
             } else {
-                listFood.forEach(function (item, index) {
-                    dataloca.push(item);
-                });
-                localStorage.setItem("dataJsoncancelFood", JSON.stringify(dataloca));
+                localStorage.setItem("dataJsoncancelFood", datajson.data);
             }
-        } else {
-            localStorage.setItem("dataJsoncancelFood", datajson.data);
+
         }
-        let htmlfood = "";
-        listFood.forEach(function (item, index) {
-            htmlfood += ` <li data-id="` + item.Id +`" class="itemfood">
+        else {
+            //trường hợp nếu load lại thì kiểm tra và check lại list
+            if (typeof getdataloca != "undefined" && getdataloca != null) {
+                listFood = JSON.parse(getdataloca);//lấy từ loca
+                let listOK = [];
+                let listERR = [];
+                for (var i = 0; i < listFood.length; i++) {
+                    let datealert = moment(listFood[i].Date, "DD/MM/YYYY HH:mm:ss");
+                    let today = moment();
+                    let getdate = today.diff(datealert, 'seconds');//years, months, weeks, days, hours, minutes, and seconds
+                    if (getdate < 30) {//kiểm tra nếu < hon hiện tại 30s tức là đang còn yêu cầu
+                        listOK.push(listFood[i]);
+                    } else {
+                        listERR.push(listFood[i]);
+                    }
+                }
+                if (listOK.length > 0) {//cái nào ok mới giữ lại
+                    listFood = listOK;
+                    localStorage.setItem("dataJsoncancelFood", JSON.stringify(listOK));
+                }
+            }
+        }
+        
+        if (listFood.length>0) {//phải có dữ liệu mới load
+            let htmlfood = "";
+            listFood.forEach(function (item, index) {
+                let datealert = moment(item.Date, "DD/MM/YYYY HH:mm:ss");
+                let today = moment();
+                let gettimedate = today.diff(datealert, 'seconds');//years, months, weeks, days, hours, minutes, and seconds
+                
+                htmlfood += ` <li data-id="` + item.Id + `" class="itemfood itemnew" data-datenumber="` + gettimedate +`">
                                 <div class="progressshow">
                                     <div id="progress" class="progressfood">
                                       <div id="bar" style="width: 0%;"></div>
@@ -8175,20 +8253,22 @@ var loadcentChitkent = {
                                 </div>
                                 <div class="leftcontent">
                                     <span>`+ item.Name + `</span>
-                                    <i>`+ (item.Note != null ? item.Note:"") + `</i>
+                                    <i>`+ (item.Note != null ? item.Note : "") + `</i>
                                 </div>
+                                <span class="Quantity" data-quantity="`+ item.Quantity + `">` + item.Quantity + `</span> 
                                 <span class="tablename">`+ item.StaffName + `</span> 
                                 <b class="tablename">`+ item.RoomTableName + `</b>
-                                <input type="checkbox" class="icheck" />
+                                <input type="checkbox" name="itemfoodcheck" class="item-check icheck" data-iuser="`+ item.IdStaffName + `" />
                             </li>`
-        })
-        let html = `<div class="dataitemcancelfood">
+            })
+            let html = `<div class="dataitemcancelfood">
                         <ul class="listitem">
                             <li class="first"> 
-                            <b class="text">Món chế biến</b> 
+                                <b class="text">Món chế biến</b> 
+                                <b class="text">S.L</b> 
                                 <b class="text">Phục vụ</b> 
                                 <b class="text">Bàn/phòng</b>
-                                <input type="checkbox" class="checkAll icheck" /> 
+                                <input type="checkbox"  id="check-all"  class="icheck" /> 
                             </li>
                            `+ htmlfood + `
                         </ul>
@@ -8197,6 +8277,23 @@ var loadcentChitkent = {
                             <button class="btnCancel">Từ chối hủy</button>
                         </div>
                     </div>`;
+            let _eledataitemcancelfood = $(".dataitemcancelfood");
+            if (_eledataitemcancelfood.length > 0) {
+                _eledataitemcancelfood.find(".listitem").append(htmlfood);
+                loadEventIcheck();
+                $(".dataitemcancelfood ul.listitem li.itemfood.itemnew").map(function () {
+                    loadcentChitkent.progressbar(30, 30, $(this).find("#progress"));
+                    $(this).removeClass("itemnew");
+                });
+                loadcentChitkent.eventCheckAllIcheckCanleFood();
+            } else {
+                loadcentChitkent.loadShowPopupCancelFood(html, 0, 0);
+            }
+
+        }
+        
+    },
+    loadShowPopupCancelFood: function (html, slafter, lstid) {
         Swal.fire({
             // icon: 'success',
             position: 'top-end',
@@ -8224,26 +8321,59 @@ var loadcentChitkent = {
             cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
             didRender: async () => {
                 loadEventIcheck();
-               
-                $(".dataitemcancelfood ul.listitem li.itemfood").map(function () {
-                    loadcentChitkent.progressbar(30, 30, $(this).find("#progress"));
-                    //const progressBar = $(this).find("#progress");
-                    //let barWidth = 0;
-                    //const animate = () => {
-                    //    barWidth++;
-                    //    progressBar.style.width = `${barWidth}%`;
-                    //    setTimeout(() => {
-                    //       // loadingMsg.innerHTML = `${barWidth}% Completed`;
-                    //    }, 11000);
-                    //};
-                    //let intervalID = setInterval(() => {
-                    //    if (barWidth === 100) {
-                    //        clearInterval(intervalID);
-                    //    } else {
-                    //        animate();
-                    //    }
-                    //}, 1000); //this sets the speed of the animation
+                $(".dataitemcancelfood ul.listitem li.itemfood.itemnew").map(function () {
+                    let totalleft = parseInt($(this).data("datenumber"))+1;
+                    loadcentChitkent.progressbar(30-totalleft, 30, $(this).find("#progress"));
+                    $(this).removeClass("itemnew");
                 });
+
+                loadcentChitkent.eventCheckAllIcheckCanleFood();
+                $(".dataitemcancelfood .btnOk").click(function () {
+                    loadcentChitkent.eventGetdataCheckedInvoke(2);
+
+                });
+                $(".dataitemcancelfood .btnCancel").click(function () {
+                    loadcentChitkent.eventGetdataCheckedInvoke(3);
+                });
+            }
+        });
+    },
+    eventGetdataCheckedInvoke: function (type) {
+        // type 2 gủi data xác nhận đồng ý hủy món
+        // type 3 gủi data xác nhận từ chối hủy món
+        $("input[name='itemfoodcheck']:checked").map(function (item) {
+            let userid = $(this).data("iuser");
+            connectionKitchenIndex.invoke('FeedbackBepToStaff', userid, "", type);
+            loadcentChitkent.loadUpdateDataLocaFood($(this).parents("li.itemfood").data("id"));
+            $(this).parents("li.itemfood").remove();
+            loadcentChitkent.eventCheckItemFoodCancel();
+        })
+    },
+    eventCheckAllIcheckCanleFood: function () {
+        var triggeredByChild = false;
+
+        $('#check-all').on('ifChecked', function (event) {
+            
+            $('.item-check').iCheck('check');
+            triggeredByChild = false;
+        });
+
+        $('#check-all').on('ifUnchecked', function (event) {
+            
+            if (!triggeredByChild) {
+                $('.item-check').iCheck('uncheck');
+            }
+            triggeredByChild = false;
+        });
+        // Removed the checked state from "All" if any checkbox is unchecked
+        $('.item-check').on('ifUnchecked', function (event) {
+            triggeredByChild = true;
+            $('#check-all').iCheck('uncheck');
+        });
+
+        $('.item-check').on('ifChecked', function (event) {
+            if ($('.item-check').filter(':checked').length == $('.item-check').length) {
+                $('#check-all').iCheck('check');
             }
         });
     },
@@ -8886,7 +9016,7 @@ var posStaff = {
                         res.data.OrderTableItems
                             .forEach(function (item, index) {
                                 index = index + 1;
-                                html += `<tr data-id="` + item.IdGuid + `" data-idpro="` + item.IdProduct + `" data-slNotify="` + item.QuantityNotifyKitchen.toString().replaceAll(",", ".") + `" data-sl="` + item.Quantity.toString().replaceAll(",", ".") + `">
+                                html += `<tr data-id="` + item.IdGuid + `" data-iditemint="` + item.Id + `" data-idpro="` + item.IdProduct + `" data-slnotify="` + item.QuantityNotifyKitchen.toString().replaceAll(",", ".") + `" data-sl="` + item.Quantity.toString().replaceAll(",", ".") + `">
                                             <td>
                                                 <div class="leftfood">
                                                     <button class="removerow"><i class="fas fa-trash-alt"></i></button>
@@ -9092,8 +9222,10 @@ var posStaff = {
         });
     },
     loadeventadditemorder: function () {
-        $(".bodybill table tbody tr i.fa-minus").click(function () {
+        $(".bodybill table tbody tr i.fa-minus").click(function () {//giảm
             let IdOrderItem = $(this).parents("tr").data("id");
+            let IdOrderItemInt = $(this).parents("tr").data("iditemint");
+            
             let idTable = $(".topbuton button:first").data("idtable");
             let cusocde = '';
             let slgoc = $(this).parents("tr").data("sl");
@@ -9113,7 +9245,7 @@ var posStaff = {
                                 <span>Bạn có chắc chắn muốn hủy món <b>`+ namepro + `</b> không?</span>
                                 <div class="slminus">
                                     <span>Số lượng hủy/giảm</span>
-                                    <div class="item_action"><i class="fas fa-minus"></i><span data-slhuy="1" class="quantitynew">1</span><span class="quantityold">/`+ slnotify + `</span> <i class="fas fa-plus"></i></div>
+                                    <div class="item_action"><i class="fas fa-minus"></i><span data-slhuy="1" class="quantitynew">1</span><span class="quantityold">/`+ parseFloat(slnotify).format0VND(3,3) + `</span> <i class="fas fa-plus"></i></div>
                                 </div>
                                 <div class="input-note">
                                     <span class="text">Lý do: </span>
@@ -9129,24 +9261,24 @@ var posStaff = {
                         popup: 'popup-formcreate'
                     },
                     footer: "<button class='swal2-cancel swal2-styled btn-cancel mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='swal2-styled btn btn-success btn-save'><i class='icon-cd icon-doneAll icon'></i>Đồng ý</button>",
-                    allowOutsideClick: true,
+                    allowOutsideClick: false,
                     showConfirmButton: false,
                     showCancelButton: false,
                     cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                     didRender: () => {
-                        $('.form-confirmremoveitem select').prepend('<option selected></option>').select2({
+                        //$('.form-confirmremoveitem select').prepend('<option selected></option>').select2({
 
-                            placeholder: {
-                                id: '', // the value of the option
-                                text: "Chọn bàn"
-                            },
-                            allowClear: true,
-                            language: {
-                                noResults: function () {
-                                    return "Không tìm thấy dữ liệu";
-                                }
-                            },
-                        })
+                        //    placeholder: {
+                        //        id: '', // the value of the option
+                        //        text: "Chọn bàn"
+                        //    },
+                        //    allowClear: true,
+                        //    language: {
+                        //        noResults: function () {
+                        //            return "Không tìm thấy dữ liệu";
+                        //        }
+                        //    },
+                        //})
                         $(".form-confirmremoveitem .item_action i:first-child").click(function () {
 
                             let slafter = parseFloat($(this).parent().children(".quantitynew").data("slhuy"));
@@ -9157,7 +9289,7 @@ var posStaff = {
                             }
 
                             if (slafter <= 0) {
-                                toastr.error("Sô lượng hủy/giảm phải lớn hơn 0");
+                                toastrcus.error("Sô lượng hủy/giảm phải lớn hơn 0");
                                 return false;
                             } else {
 
@@ -9169,7 +9301,7 @@ var posStaff = {
                         $(".form-confirmremoveitem .item_action i:last-child").click(function () {
                             let slafter = parseFloat($(this).parent().children(".quantitynew").data("slhuy"));
                             if (slafter >= parseFloat(slnotify)) {
-                                toastr.error("Sô lượng hủy/giảm không vượt quá số lượng gốc");
+                                toastrcus.error("Sô lượng hủy/giảm không vượt quá số lượng gốc");
                                 return false;
                             }
                             else {
@@ -9188,9 +9320,9 @@ var posStaff = {
                             Swal.close();
                         });
                         $(".btn-save").click(function () {
-
                             let slafter = parseFloat($(".form-confirmremoveitem .item_action").children(".quantitynew").data("slhuy"));
                             let noteminus = $(".form-confirmremoveitem").find("#noteminus").val();
+                           
                             var dataObject = {
                                 Note: noteminus,
                                 IsCancel: true,
@@ -9203,9 +9335,44 @@ var posStaff = {
                                 IsBringBack: idTable == "-1" ? true : false,
                                 IdGuid: $("#id-order").data("id")
                             };// giảm số lượng
-
-                            posStaff.orderTable(dataObject);
-                            Swal.close();
+                            let checkconfirm = parseInt(localStorage.getItem("IsCANCELFOODPENDINGCONFIRM"));
+                            if (checkconfirm == 1 && !$(".btn-save").hasClass("pendding")) {
+                             
+                                lstid = [];
+                                lstid.push(IdOrderItemInt);
+                                $.ajax({
+                                    type: 'GET',
+                                    //async: false,
+                                    traditional: true,
+                                    url: '/Selling/PosKitchen/GetKitkenCancel',
+                                    data: {
+                                        Quantity: slafter,
+                                        lstIdItemOrder: lstid
+                                    },
+                                    success: function (res) {
+                                        if (res.isValid) {
+                                            if (res.notityBar) {
+                                                $(".btn-save").addClass("pendding");
+                                                posStaff.loadCountdown();
+                                            } else {
+                                                posStaff.orderTable(dataObject);
+                                                Swal.close();
+                                            }
+                                           
+                                        }
+                                    },
+                                    error: function (err) {
+                                        console.log(err)
+                                    }
+                                });
+                            }
+                            else {
+                                
+                                posStaff.orderTable(dataObject);
+                                Swal.close();
+                            }
+                       
+                           
                         });
 
                     }
@@ -9252,10 +9419,11 @@ var posStaff = {
         });
         //thay đổi
         $(".bodybill table tbody tr input.quantitynew").change(function () {
+            let inputold = $(this);
             let IdOrderItem = $(this).parents("tr").data("id");
             let idTable = $(".topbuton button:first").data("idtable");
             let cusocde = '';
-            let slgoc = $(this).parents("tr").data("sl");
+            let slgoc = parseFloat($(this).parents("tr").data("sl"));
             let slnotify = $(this).parents("tr").data("slnotify");
             let IdCustomer = "";
             let slnew = $(this).val();
@@ -9274,14 +9442,14 @@ var posStaff = {
             }
             if (parseFloat(slnotify) > parseFloat(slnew)) {
                 let slcanuychuabao = parseFloat((parseFloat(slgoc) - parseFloat(slnew)).toFixed(3));//sl góc bao gồm cả thông bsao và chưa báo
-
+                let IdOrderItemInt = $(this).parents("tr").data("iditemint");
                 let namepro = $(this).parents("tr").find(".name").html();
                 let html = `
                             <div class="form-confirmremoveitem">
                                 <span>Bạn có chắc chắn muốn hủy món <b>`+ namepro + `</b> không?</span>
                                 <div class="slminus">
                                     <span>Số lượng hủy/giảm</span>
-                                    <div class="item_action"><i class="fas fa-minus"></i><span data-slhuy="`+ slcanuychuabao + `" class="quantitynew">` + slcanuychuabao + `</span><span class="quantityold">/` + slnotify + `</span> <i class="fas fa-plus"></i></div>
+                                    <div class="item_action"><i class="fas fa-minus"></i><span data-slhuy="`+ slcanuychuabao + `" class="quantitynew">` + slcanuychuabao + `</span><span class="quantityold">/` + parseFloat(slnotify).format0VND(3, 3) + `</span> <i class="fas fa-plus"></i></div>
                                 </div>
                                 <div class="input-note">
                                     <span class="text">Lý do: </span>
@@ -9297,7 +9465,7 @@ var posStaff = {
                         popup: 'popup-formcreate'
                     },
                     footer: "<button class='swal2-cancel swal2-styled btn-cancel mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='swal2-styled btn btn-success btn-save'><i class='icon-cd icon-doneAll icon'></i>Đồng ý</button>",
-                    allowOutsideClick: true,
+                    allowOutsideClick: false,
                     showConfirmButton: false,
                     showCancelButton: false,
                     cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
@@ -9337,10 +9505,8 @@ var posStaff = {
                                 $(this).parent().children(".quantitynew").html(slafter);
                             }
                         });
-
-
                         $(".btn-cancel").click(function () {
-                            $(sel).val(slgoc);
+                            $(inputold).val(slgoc);
                             Swal.close();
                         });
                         $(".btn-save").click(function () {
@@ -9358,8 +9524,44 @@ var posStaff = {
                                 IsBringBack: idTable == "-1" ? true : false,
                                 IdGuid: $("#id-order").data("id")
                             };// giảm số lượng
-                            posStaff.orderTable(dataObject);
-                            Swal.close();
+
+                            let checkconfirm = parseInt(localStorage.getItem("IsCANCELFOODPENDINGCONFIRM"));
+                            if (checkconfirm == 1 && !$(".btn-save").hasClass("pendding")) {
+
+                                lstid = [];
+                                lstid.push(IdOrderItemInt);
+                                $.ajax({
+                                    type: 'GET',
+                                    //async: false,
+                                    traditional: true,
+                                    url: '/Selling/PosKitchen/GetKitkenCancel',
+                                    data: {
+                                        Quantity: slafter,
+                                        lstIdItemOrder: lstid
+                                    },
+                                    success: function (res) {
+                                        if (res.isValid) {
+                                            if (res.notityBar) {
+                                                $(".btn-save").addClass("pendding");
+                                                posStaff.loadCountdown();
+                                            } else {
+                                                luận
+                                                posStaff.orderTable(dataObject);
+                                                Swal.close();
+                                            }
+
+                                        }
+                                    },
+                                    error: function (err) {
+                                        console.log(err)
+                                    }
+                                });
+                            }
+                            else {
+
+                                posStaff.orderTable(dataObject);
+                                Swal.close();
+                            }
                         });
 
                     }
@@ -9397,6 +9599,7 @@ var posStaff = {
         //sự kiện xóa dòng đó luôn
         $(".bodybill table tbody tr .leftfood .removerow").click(function () {
             let IdOrderItem = $(this).parents("tr").data("id");
+            let IdOrderItemInt = $(this).parents("tr").data("iditemint");
             let idTable = $(".topbuton button:first").data("idtable");
             let Quantity = parseFloat($(this).parents("tr").data("sl")) || 0;
             let slgoc = parseFloat($(this).parents("tr").data("sl")) || 0;
@@ -9494,8 +9697,43 @@ var posStaff = {
                                 IdGuid: $("#id-order").data("id")
                             };// giảm số lượng
 
-                            posStaff.orderTable(dataObject);
-                            Swal.close();
+                            let checkconfirm = parseInt(localStorage.getItem("IsCANCELFOODPENDINGCONFIRM"));
+                            if (checkconfirm == 1 && !$(".btn-save").hasClass("pendding")) {
+
+                                lstid = [];
+                                lstid.push(IdOrderItemInt);
+                                $.ajax({
+                                    type: 'GET',
+                                    //async: false,
+                                    traditional: true,
+                                    url: '/Selling/PosKitchen/GetKitkenCancel',
+                                    data: {
+                                        Quantity: slafter,
+                                        lstIdItemOrder: lstid
+                                    },
+                                    success: function (res) {
+                                        if (res.isValid) {
+                                            if (res.notityBar) {
+                                                $(".btn-save").addClass("pendding");
+                                                posStaff.loadCountdown();
+                                            } else {
+                                                posStaff.orderTable(dataObject);
+                                                Swal.close();
+                                            }
+
+                                        }
+                                    },
+                                    error: function (err) {
+                                        console.log(err)
+                                    }
+                                });
+                            }
+                            else {
+
+                                posStaff.orderTable(dataObject);
+                                Swal.close();
+                            }
+
                         });
 
                     }
@@ -9626,17 +9864,20 @@ var posStaff = {
     loadeventUpdatedataidtable: function () {
 
         $('.bodybill table > tbody  > tr').each(function (index, tr) {
+            let iditemint = $(this).data("iditemint");
             let iddata = $(this).data("id");
             let idpro = $(this).data("idpro");
-            let slNotify = $(this).data("slNotify");
+            let slNotify = $(this).data("slnotify");
             let sl = $(this).data("sl");
-            $(this).removeAttr("id");
-            $(this).removeAttr("idpro");
-            $(this).removeAttr("slNotify");
-            $(this).removeAttr("sl");
+            $(this).removeAttr("data-iditemint");
+            $(this).removeAttr("data-id");
+            $(this).removeAttr("data-idpro");
+            $(this).removeAttr("data-slnotify");
+            $(this).removeAttr("data-sl");
+            $(this).data("iditemint", iditemint);
             $(this).data("id", iddata);
             $(this).data("idpro", idpro);
-            $(this).data("slNotify", slNotify);
+            $(this).data("slnotify", slNotify);
             $(this).data("sl", sl);
         });
     },// xử lý xóa data id
@@ -9833,7 +10074,7 @@ var posStaff = {
 
                     success: function (res) {
                         if (res.isValid) {
-                            $(".bodyListKitchenConfirm .list-food li.active").removeClass("active");
+                            $(".bodyListKitchenConfirm .list-food li.active").remove();
 
                         }
                     },
@@ -9890,16 +10131,67 @@ var posStaff = {
     },
     loadEventAffterCoutdows: function () {
         $(".container-datacountdownstaff").remove();
+        $(".btn-save").removeClass("pendding");
         toastrcus.error("Bếp chưa xác nhận, không thể hủy món!");
     },//chờ hết thời gian k có phản hồi của bếp
     loadEventAffterSendReject: function (mess) {
         toastrcus.error(mess);
         setTimeout(function () {
-
-            $(".container-datacountdownstaff").remove();
-            clearInterval(countDownInterval);
+            posStaff.eventRemovedatacountdownstaff();
         }, 1000);
-    },//sự kiện béoe từ chối
+    },//sự kiện trùng nhân viên bấm
+    eventRemovedatacountdownstaff: function () {
+        $(".container-datacountdownstaff").remove();
+        clearInterval(countDownInterval);
+    },
+    loadEventBarConfirm: function (Type, data) {
+
+        if (Type == 4) {
+            let userId = $("#orderstaff").data("iduser");
+            let dataitem = JSON.parse(data.Mess);
+            if ($(".bodyListKitchenConfirm").length > 0 || data.userId == userId) {
+                if (dataitem.IsProgress) {
+                    toastrcus.success("Món " + dataitem.ProName + "  " + dataitem.RoomTableName + " đang được bếp chế biến");
+                } else {
+                    toastrcus.warning("Món " + dataitem.ProName + "  " + dataitem.RoomTableName + " đã hủy chế biến");
+                }
+            }
+
+            posStaff.loadhighlightItemOrderprogress(dataitem.Id, dataitem.IsProgress);
+        } else if (Type == 2) {
+            // type 2 gủi data xác nhận đồng ý hủy món
+            // type 3 gủi data xác nhận từ chối hủy món
+
+            if ($(".btn-save").length > 0) {
+                posStaff.eventRemovedatacountdownstaff();
+                $(".btn-save").trigger('click');
+            } else {
+                toastrcus.warning("Bếp đồng ý hủy món nhưng không tìm thấy xác nhận của bạn!");
+            }
+        } else if (Type == 3) {
+            //toastrcus.error("Bếp từ chối hủy món!");
+            posStaff.eventRemovedatacountdownstaff();
+            Swal.fire({
+                icon: 'error',
+                position: 'center',
+               
+                showCloseButton: true,
+                title: "Bếp từ chối hủy món của bạn!",
+               // html: html,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                didRender: () => {
+                    
+                    $(".btn-continue").click(function () {
+                        Swal.close();
+                    });
+                }
+            });
+
+        }
+    },
     loadhighlightItemOrderprogress: function (id,isProgress=true) {
        
             if ($(".bodyListKitchenConfirm").length > 0) {
@@ -9917,7 +10209,7 @@ var posStaff = {
                 })
             }
        
-    },//load cái món dg làm hoặc hủy
+    },//load cái món dg làm hoặc hủy tức là khi bếp bấm dg làm hoặc hủy làm thì báo lên
     loadCountdown: function () {
         setCountDown = (endTime) => {
 
@@ -9957,7 +10249,7 @@ var posStaff = {
 
         };
 
-        let countDownInterval;
+       
      
         let htmldow = `<div class="container-datacountdownstaff">
                         <div class="body-content">
@@ -10241,37 +10533,31 @@ var posStaff = {
         }
     },
     eventIntwindow: function () {
-        //$(".topbuton button:first").trigger("click");
         $(".bottomFix").remove();
-        
         posStaff.loadDanhSachBan();
-        //loadTableActive();
-        //function loadTableActive() { // load active
-
-        //    if (typeof (Storage) !== "undefined") {
-
-        //        // Store
-        //        var _getActivetable = localStorage.getItem("activeTableStaff");
-        //        if (!isNaN(parseInt(_getActivetable))) {
-        //            _getActivetable = parseInt(_getActivetable) + 1;
-        //            if ($("#lst-roomandtable li").length < _getActivetable) {
-        //                _getActivetable = 1;
-        //            }
-        //            // $("#lst-roomandtable li:nth-child(" + _getActivetable + ")").trigger('click'); // là số thì active cái đó
-        //            let ele = $("#lst-roomandtable li:nth-child(" + _getActivetable + ")"); // là số thì active cái đó
-        //            ele.addClass("active");
-        //            posStaff.getdatataorderbytable(ele.data("id"));
-
-        //        } else {
-        //            //nếu chưa chọn bàn lần nào thì show bàn ra cho chọn
-        //            $(".topbuton button:first").trigger("click");
-        //        }
-        //        // Retrieve
-        //    } else {
-        //        alert("Liên hệ đội ngủ hỗ  trợ lỗi trình duyệt của bạn không hỗ  trợ Storage");
-        //    }
-        //}
+        posStaff.getConfigConfirmCancelFood();
     },
+    getConfigConfirmCancelFood: function () {
+        $.ajax({
+            type: "GET",
+            global: false,
+            url: "/Selling/ConfigSaleParameters/GetConfigSell?key=" + getObjectKey(EnumConfigParameters, EnumConfigParameters.CANCEL_FOOD_PENDING_CONFIRM),
+            success: function (res) {
+                if (res.isValid) {
+                    if (res.data.value == "true") {
+                        localStorage.setItem("IsCANCELFOODPENDINGCONFIRM", 1);
+                    } else {
+                        localStorage.setItem("IsCANCELFOODPENDINGCONFIRM", 0);
+                    }
+                } else {
+                    localStorage.setItem("IsCANCELFOODPENDINGCONFIRM", 0);
+                }
+            },
+            error: function () {
+                alert("Error occured!!");
+            }
+        });
+    },//
     payment: function () {
         $(".btn-paymentactionstaff .btn-payment").click(function () {
             let idOrder = $("#id-order").data("id");

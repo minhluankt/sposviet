@@ -26,7 +26,7 @@
             {
                 @foreach (var item in Model.OrderTable.OrderTableItems)
                 {
-                    <tr data-id="@item.IdGuid" data-idpro="@item.IdProduct" data-slNotify="@item.QuantityNotifyKitchen.ToString().Replace(",",".")" data-sl="@item.Quantity.ToString().Replace(",",".")">
+                    <tr data-id="@item.IdGuid" data-iditemint="@item.Id" data-idpro="@item.IdProduct" data-slNotify="@item.QuantityNotifyKitchen.ToString().Replace(",",".")" data-sl="@item.Quantity.ToString().Replace(",",".")">
                         <td>
                             <div class="leftfood">
                                 <button class="removerow"><i class="fas fa-trash-alt"></i></button>

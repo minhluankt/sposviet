@@ -70,7 +70,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return new JsonResult(new { isValid = false });
             }
         }
-        public async Task<IActionResult> GetConfig()
+        public async Task<IActionResult> GetConfig()// cái này là của bên báo bếp k dùng hàm này cho các yêu cầu khác
         {
             var currentUser = User.Identity.GetUserClaimLogin();
             var _send = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.PRINT_BAO_BEP.ToString()) { ComId = currentUser.ComId });

@@ -42,7 +42,7 @@
     </style>
 </head>
 <body class="bodyorderstaff">
-    <div id="orderstaff">
+    <div id="orderstaff" data-iduser="@userlogin.Id">
         <div class="top-authen">
             <img src="~/images/logo1.png">
             <div class="frofile">
@@ -283,23 +283,20 @@
         };
         // Create a function that the hub can call to broadcast messages.
         connection.on('FeedbackBepToStaff', function (datas) {
-            debugger
+          
             if (datas == "TEST") {
                 console.log("Test 3");
             } else {
                 let data = JSON.parse(datas);
+                // type 1 là yêu cầu gui trùng vì đã có nhân viên trước đó đã thao tác gửi yêu cầu, chặn k cho 2nguowfi thao tác trên 1 bàn
+                // type 2 gủi data xác nhận đồng ý hủy món
+                // type 3 gủi data xác nhận từ chối hủy món
+                // type 4 gủi cho viên là có món vừa được nhận chế biến và hiển thị đổi màu trên màn hình nếu dg ở màn hình xl món
                 if (data.Type==1) {
                     posStaff.loadEventAffterSendReject(data.Mess);
-                } else if (data.Type == 4) {
-                    debugger
-                    let dataitem = JSON.parse(data.Mess);
-                    if (dataitem.IsProgress) {
-                         toastrcus.success("Món " + dataitem.ProName + " đang được bếp chế biến");
-                    }else{
-                        toastrcus.warning("Món " + dataitem.ProName + " đã hủy chế biến");
-                    }
-                   
-                    posStaff.loadhighlightItemOrderprogress(dataitem.Id, dataitem.IsProgress);
+                } 
+                else {
+                    posStaff.loadEventBarConfirm(data.Type,data);
                 }
             }
         });

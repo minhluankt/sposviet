@@ -14,6 +14,7 @@
     string PRINT_KET_NOI = "";
     bool PUBLISHMERGEINVOICE = false;
     bool PRINT_BAO_BEP = false;
+    bool CANCEL_FOOD_PENDING_CONFIRM = false;
     foreach (var item in Model)
     {
         switch (item.Key)
@@ -50,13 +51,19 @@
                 {
                     PRINT_BAO_BEP = true;
                 }
-            break; 
+            break;   
             case nameof(EnumConfigParameters.PRINT_KET_NOI):
                 if (Convert.ToBoolean(item.Value))
                 {
                     PRINT_KET_NOI = "checked";
                 }
             break;
+            case nameof(EnumConfigParameters.CANCEL_FOOD_PENDING_CONFIRM):
+                if (Convert.ToBoolean(item.Value))
+                {
+                    CANCEL_FOOD_PENDING_CONFIRM = true;
+                }
+                break;
             default:
                 break;
         }
@@ -175,7 +182,7 @@
                 <div class="item-col">
                     <div>
                         <span>
-                            In theo phương pháp kết nối gửi lệnh xuống máy in
+                            In theo phương pháp kết nối gửi lệnh xuống phần mềm in
                         </span>
                         <small>Tính năng này cho phép khi nhân viên nhấn thông báo, hệ thống tự kết nối đến máy in đã cài đặt trên máy tính và có cái đặt phần mềm kết nối SposViet</small>
                     </div>
@@ -187,7 +194,23 @@
                     </div>
                 </div>
             </div>
-            <!--end Tính năng cho phép in báo bếp-->
+            <!--Tính năng cho phép khi hủy món chờ bếp xác nhận-->
+            <div class="item-col">
+                <div>
+                    <span>
+                       Tính năng hủy món chờ bếp xác nhận
+                    </span>
+                    <small>Tính năng cho phép khi nhân viên nhấn hủy món, chờ 30s để bếp xác nhận có được hủy hay không, có hiển thị màn hình chờ </small>
+                </div>
+                <div class="check-b">
+                    <label class="switch-custom">
+                        <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()" class="toggleConfigSaleParameter" data-parent="" data-key="@EnumConfigParameters.CANCEL_FOOD_PENDING_CONFIRM.ToString()" @(CANCEL_FOOD_PENDING_CONFIRM ? "checked" : "")>
+                        <span class="slider"></span>
+                    </label>
+
+                </div>
+            </div>
+
         }
        
     </div>

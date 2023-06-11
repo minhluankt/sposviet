@@ -68,7 +68,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             {
                 OrderTableViewModel orderTableViewModel = new OrderTableViewModel();
                 orderTableViewModel.OrderTableCode = update.Message;
-                orderTableViewModel.OrderTable = update.Data.SingleOrDefault();
+                orderTableViewModel.OrderTable = update.Data.FirstOrDefault();
                 var html = await _viewRenderer.RenderViewToStringAsync("_TabLoadOrderStaff", orderTableViewModel);
                 List<CustomerModelViewPos> customerModelViewPos = new List<CustomerModelViewPos>();
                 List<ListNoteOrderModelViewPos> ListNoteOrderModelViewPos = new List<ListNoteOrderModelViewPos>();
@@ -940,6 +940,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             _notify.Error(response.Message);
             return Json(new { isValid = false });
         }
+        testc js luận
         [HttpPost]
         public async Task<IActionResult> PaymentSaleRatailtAsync(string jsonData)
         {

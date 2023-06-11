@@ -11,6 +11,7 @@ namespace Domain.ViewModel
         public Guid? IdOrder { get; set; }
         public Guid? idChitken { get; set; }
         public int? Id { get; set; }//id int chitken
+        public string RoomTableName { get; set; }
         public string ProName { get; set; }
         public string orderCode { get; set; }
         public int? IdProduct { get; set; }

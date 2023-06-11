@@ -222,6 +222,8 @@ namespace Application.Enums
         PRINT_BAO_BEP = 7,
         [Display(Name = "Phương pháp in kết nối Plugin SposViet")]
         PRINT_KET_NOI = 8,
+        [Display(Name = "Tính năng nhân viên hủy món có chờ bếp xác nhận")]
+        CANCEL_FOOD_PENDING_CONFIRM = 9,
     }
     public enum EnumConfigParametersType // loại nào
     {
@@ -424,6 +426,12 @@ namespace Application.Enums
         TEST = 0,//TEST
         PrintBaoBep = 1,//báo hủy và chế biến
         RealtimeOrder = 2,//load đơn
+    }  
+    public enum EnumTypeNotifyKitchenBar // nhân viên báo cho bếp
+    {
+        TEST = 0,//TEST
+        CANCEL = 1,
+        DONE = 2,
     }
     public enum EnumTypeNotifyKitchenOrder // cập nhật thông báo beepslaf đã xong chờ cung ứng
     {

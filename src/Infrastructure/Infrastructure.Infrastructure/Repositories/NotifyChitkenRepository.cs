@@ -569,7 +569,7 @@ namespace Infrastructure.Infrastructure.Repositories
         public async Task UpdateNotifyKitchenCancelAsync(int Comid, Guid IdOrder, int IdItemOrder, decimal Quantity, string CasherName, string IdCasher, bool removeAllfood = false)//update các món hủy đi khi đã thông báo bếp
         {
             //checked điều kiện thêm nếu giả sử hủy nhiều số lượng của món đó, mà đã thông báo nhiều lần
-            var getkitchen = await _kitchenRepository.Entities.Where(x => x.IdItemOrder == IdItemOrder && x.IdOrder == IdOrder && x.Quantity > 0 && x.ComId == Comid && (x.Status == EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.READY || x.Status == EnumStatusKitchenOrder.DONE)).OrderBy(x => x.Status).ThenByDescending(x => x.Id).ToListAsync();
+            var getkitchen = await _kitchenRepository.Entities.Where(x => x.IdItemOrder == IdItemOrder && x.IdOrder == IdOrder && x.Quantity > 0 && x.ComId == Comid && (x.Status !=  EnumStatusKitchenOrder.CANCEL)).OrderBy(x => x.Status).ThenByDescending(x => x.Id).ToListAsync();
             if (getkitchen.Count() > 0)
             {
                 if (getkitchen.FirstOrDefault().Quantity >= (Quantity * -1))// neeus  dòng đầu đã đủ thì thôi
@@ -699,7 +699,7 @@ namespace Infrastructure.Infrastructure.Repositories
         {
             //ghép
             List<DetailtKitchen> lstde = new List<DetailtKitchen>();
-            var getAll = _kitchenRepository.Entities.Where(x => x.ComId == ComId && lstOrderOld.Contains(x.IdOrder) && x.Quantity > 0 && (x.Status == EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.READY)).OrderBy(x => x.Status).ThenByDescending(x => x.Id).ToList();
+            var getAll = _kitchenRepository.Entities.Where(x => x.ComId == ComId && lstOrderOld.Contains(x.IdOrder) && x.Quantity > 0 && (x.Status == EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.Processing || x.Status == EnumStatusKitchenOrder.READY)).OrderBy(x => x.Status).ThenByDescending(x => x.Id).ToList();
             List<HistoryOrder> lsthis = new List<HistoryOrder>();
             string randowm = LibraryCommon.RandomString(8);
             var today = DateTime.Now;
@@ -788,7 +788,7 @@ namespace Infrastructure.Infrastructure.Repositories
             List<DetailtKitchen> lstde = new List<DetailtKitchen>();
             // lấy các sản phẩm còn lại trong đơn cũ là lstorderold
             //var getAll = await _kitchenRepository.Entities.Where(x => x.ComId == ComId && x.IdOrder == OrderOld.IdGuid && lstorderold.Select(z => z.IdProduct).Contains(x.IdProduct) && x.Quantity > 0 && (x.Status == EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.READY || x.Status == EnumStatusKitchenOrder.DONE) && !x.IsCancelAll).OrderBy(x => x.Status).ThenByDescending(x => x.Id).ToListAsync();
-            var getAll = await _kitchenRepository.Entities.Where(x => x.ComId == ComId && x.IdOrder == OrderOld.IdGuid && lstorderold.Select(z => z.Id).Contains(x.IdItemOrder) && x.Quantity > 0 && (x.Status == EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.READY || x.Status == EnumStatusKitchenOrder.DONE) && !x.IsCancelAll).OrderBy(x => x.Status).ThenByDescending(x => x.IdItemOrder).ThenByDescending(x => x.Id).ToListAsync();
+            var getAll = await _kitchenRepository.Entities.Where(x => x.ComId == ComId && x.IdOrder == OrderOld.IdGuid && lstorderold.Select(z => z.Id).Contains(x.IdItemOrder) && x.Quantity > 0 && (x.Status != EnumStatusKitchenOrder.CANCEL ) && !x.IsCancelAll).OrderBy(x => x.Status).ThenByDescending(x => x.IdItemOrder).ThenByDescending(x => x.Id).ToListAsync();
             bool isUpdategetAll = false;
             string randowm = LibraryCommon.RandomString(8);
             var lst = new List<HistoryOrder>();
@@ -1235,7 +1235,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     IdProduct = gcs.First().IdProduct
                 };
                 List<Kitchen> lstrm = new List<Kitchen>();//list dể xóa đi
-                if (Status == EnumStatusKitchenOrder.MOI)
+                if (Status == EnumStatusKitchenOrder.MOI|| Status == EnumStatusKitchenOrder.Processing)
                 {
                     foreach (var item in consolidatedChildren)
                     {
@@ -1259,7 +1259,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
                 }
 
-                if (lstrm.Count() > 0 && Status == EnumStatusKitchenOrder.MOI)
+                if (lstrm.Count() > 0 &&( Status == EnumStatusKitchenOrder.MOI || Status == EnumStatusKitchenOrder.Processing))
                 {
                     var lst = await getAll.Where(x => !lstrm.Select(z => z.IdKitchen).Contains(x.IdKitchen)).ToListAsync();// dnah sách này là lọc cái chưa update trên kia 1.1 để chuyển qua luôn
                     var lstremove = await getAll.Where(x => lstrm.Select(z => z.IdKitchen).Contains(x.IdKitchen)).ToListAsync();//danh sách remove
@@ -1292,7 +1292,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 }
                 else
                 {
-                    if (Status == EnumStatusKitchenOrder.MOI)
+                    if (Status == EnumStatusKitchenOrder.MOI || Status == EnumStatusKitchenOrder.Processing)
                     {
                         var listcheck = getAll.ToList();
                         foreach (var item in listcheck)
@@ -2288,7 +2288,9 @@ namespace Infrastructure.Infrastructure.Repositories
             }
             if (getupdate.Sum(x=>x.Quantity)== Quantity)
             {
-                await _kitchenRepository.DeleteRangeAsync(getupdate);
+                //await _kitchenRepository.DeleteRangeAsync(getupdate);
+                getupdate.ForEach(x => x.Status = EnumStatusKitchenOrder.DONE);
+                await _kitchenRepository.UpdateRangeAsync(getupdate);
                 await _unitOfWork.SaveChangesAsync();
                 return await Result<List<Kitchen>>.SuccessAsync(getupdate);
             }
@@ -2346,7 +2348,11 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public async Task<List<Kitchen>> GetByListId(int Comid, int[] lstid)
         {
-            return await _kitchenRepository.Entities.AsNoTracking().Where(x=>lstid.Contains(x.Id) && x.ComId==Comid).ToListAsync();
+            return await _kitchenRepository.Entities.AsNoTracking().Where(x=>lstid.Contains(x.Id) && x.ComId==Comid && (x.Status==EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.Processing)).OrderByDescending(x => x.Id).ToListAsync();
+        }
+         public async Task<List<Kitchen>> GetByListIdItemOrder(int Comid, int[] lstiditemorder)
+        {
+            return await _kitchenRepository.Entities.AsNoTracking().Where(x=> lstiditemorder.Contains(x.IdItemOrder) && x.ComId== Comid && (x.Status == EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.Processing)).OrderByDescending(x=>x.Id).ToListAsync();
         }
 
         //public Task UpdateNotifyKitchenSpitOrderIsCreateOrderAsync(Guid IdOrder, List<OrderTableItem> lstorderold, int ComId, OrderTable newOrder)

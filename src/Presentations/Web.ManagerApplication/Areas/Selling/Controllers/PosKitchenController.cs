@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Web.ManagerApplication.Abstractions;
+using Spire.Doc;
+using HelperLibrary;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -101,7 +103,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             {
                 isValid = false
             });
-
         }
         [HttpGet]
         public async Task<IActionResult> DataFoodNewAsync()
@@ -123,13 +124,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 isValid = false
             });
         }
-
         [HttpGet]
        // [Authorize(Policy = "posKitchen.order")]
         public async Task<IActionResult> DataFoodReadyAsync()
         {
             var currentUser = User.Identity.GetUserClaimLogin();
-            //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
             var getAll = await _mediator.Send(new GetOrderChitkenQuery() { Comid = currentUser.ComId, Status = EnumStatusKitchenOrder.READY, OrderByDateReady = true });
             if (getAll.Succeeded)
             {
@@ -146,13 +145,60 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 isValid = false
             });
         }
+   
 
+        public async Task<IActionResult>  GetKitkenCancel(int?[] lstIdItemOrder, decimal Quantity)
+        {
+            if (lstIdItemOrder == null ||  lstIdItemOrder.Count()==0)
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString("Vui lòng chọn món!"));
+                return Json(new { isValid = false });
+            } 
+            if (Quantity <= 0)
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString("Số lượng phải lớn hơn 0"));
+                return Json(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var getdata = await _mediator.Send(new GetKitchenListQuery() { IsCancel=true, Comid = currentUser.ComId, lstIdItemOrder = lstIdItemOrder });
+            if (getdata.Succeeded)
+            {
+                if (getdata.Data.Count() == 0)
+                {
+                   // _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR012));
+                    return Json(new { isValid = true, notityBar = false });
+                }
+                decimal _quant = getdata.Data.Sum(x=>x.Quantity);
+                if (_quant< Quantity)
+                {
+                    Quantity = _quant;
+
+                }
+
+                var json = getdata.Data.DistinctBy(x=>x.IdItemOrder).Select(x => new {
+                    Id = x.Id,
+                    Quantity = Quantity.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                    Date = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"),
+                    Name = x.ProName,
+                    Cashername = x.Cashername,
+                    RoomTableName = x.RoomTableName,
+                    Note = x.Note,
+                    StaffName = currentUser.FullName,
+                    IdStaffName = currentUser.Id,
+                }).ToList();
+                await dashboardHub.StaffAlertBep(currentUser.ComId, ConvertSupport.ConverObjectToJsonString(json), EnumTypeNotifyKitchenBar.CANCEL);
+                return Json(new { isValid = true, notityBar = true });
+            }
+            return Json(new { isValid = false, notityBar = false });
+        }
         [HttpPost]
         public async Task<IActionResult> UpdateStatusFoodInStaffAsync(NotifyKitChenModel model)//cho nhân viên phục vụ
         {
-           try {
+           try
+            {
+                var today = DateTime.Now;
                 var currentUser = User.Identity.GetUserClaimLogin();
-                if (model.IsCancel)
+                if (model.IsCancel)//danfh cho hury mons
                 {
                     var getdata = await _mediator.Send(new GetKitchenListQuery() { Comid=currentUser.ComId,lstId=model.lstIdChiken});
                     if (getdata.Succeeded)
@@ -162,7 +208,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                             _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR012));
                             return Json(new { isValid = false, notityBar = false });
                         }
-                        var today= DateTime.Now;
+                      
                         var json= getdata.Data.Select(x=>new {Id = x.Id,
                             Name =x.ProName,
                             Cashername = x.Cashername,
@@ -172,13 +218,13 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                             IdStaffName= currentUser.Id,
                             Date = today.ToString("dd/MM/yyyy HH:mm:ss")
                         });
-                        await dashboardHub.StaffAlertBep(currentUser.ComId, ConvertSupport.ConverObjectToJsonString(json));
+                        await dashboardHub.StaffAlertBep(currentUser.ComId, ConvertSupport.ConverObjectToJsonString(json), EnumTypeNotifyKitchenBar.CANCEL);
                         return Json(new { isValid = true, notityBar = true });
                     }
                     return Json(new { isValid = false, notityBar = false });
                 }
                 else
-                {
+                { //dành cho done món
                     model.ComId = currentUser.ComId;
                     model.Cashername = currentUser.FullName;
                    // var map = _mapper.Map<StaffUpdateFoodCommand>(model);
@@ -188,7 +234,17 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         lstIdChiken = model.lstIdChiken });
                     if (getAll.Succeeded)
                     {
-
+                        var json = getAll.Data.Select(x => new {
+                            Id = x.Id,
+                            Name = x.ProName,
+                            Cashername = x.Cashername,
+                            RoomTableName = x.RoomTableName,
+                            Note = x.Note,
+                            StaffName = currentUser.FullName,
+                            IdStaffName = currentUser.Id,
+                            Date = today.ToString("dd/MM/yyyy HH:mm:ss")
+                        });
+                        await dashboardHub.StaffAlertBep(currentUser.ComId, ConvertSupport.ConverObjectToJsonString(json),EnumTypeNotifyKitchenBar.DONE);
                         _notify.Success(GeneralMess.ConvertStatusToString(getAll.Message));
                         return Json(new { isValid = true });
                     }
@@ -250,6 +306,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                             {
                                 Id = getAll.Data.IdOrderItem,
                                 ProName = getAll.Data.ProName,
+                                RoomTableName = getAll.Data.RoomTableName,
                                 IsProgress = !model.IsProgress,
                             };
                             await dashboardHub.FeedbackBepToStaff(model.IdStaff, ConvertSupport.ConverObjectToJsonString(json),4);
