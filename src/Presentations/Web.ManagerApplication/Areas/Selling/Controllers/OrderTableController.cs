@@ -940,7 +940,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             _notify.Error(response.Message);
             return Json(new { isValid = false });
         }
-        testc js luận
+    
         [HttpPost]
         public async Task<IActionResult> PaymentSaleRatailtAsync(string jsonData)
         {

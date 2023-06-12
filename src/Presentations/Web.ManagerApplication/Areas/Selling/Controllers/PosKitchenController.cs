@@ -46,6 +46,14 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             return View(new KitChenModel());
         }
+        [Authorize]
+        public IActionResult GetInfoByIdAsync(int? Id)
+        {
+            GetInfoById
+        }
+
+
+
         [HttpGet]
         public async Task<IActionResult> GetFoodDataByRoomAsync()
         {

@@ -8089,13 +8089,47 @@ var loadcentChitkent = {
                 url: "/Selling/PosKitchen/UpdateProcessingFood",
                 data: {
                     TypeNotifyKitchenOrder: _TypeNotifyKitchenOrder.UPDATEBYFOOD,
-
                     IdProduct: idproduct,
                     Quantity: quantity,
                 },
                 dataType: 'json',
                 success: function (res) {
                     if (res.isValid) {
+                        $(".list-item-table-food li").map(function () {
+                            let id = $(this).data("idproduct");
+                            if (id == idproduct) {
+                                let ul = $(this).parent("ul");
+                                $(this).remove();
+                                if (ul.find("li").length == 0) {
+                                    ul.parents("li").remove();
+                                }
+                            }
+                        });
+                        sel.parent("li").remove();
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+        });
+        $(".list-item-food li .btn-showhistory").click(function () {
+            let sel = $(this).parent();
+            let idChitken = sel.data("id");
+            $.ajax({
+                type: 'GET',
+                url: "/Selling/PosKitchen/GetInfoById",
+                data: {
+                    Id: idChitken,
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.isValid) {
+                        if (isProgress) {
+                            sel.removeClass("Processing");
+                        } else {
+                            sel.addClass("Processing");
+                        }
 
                     }
                 },
@@ -8104,15 +8138,15 @@ var loadcentChitkent = {
                 }
             })
         });
-        $(".list-item-food li").click(function () {
+        $(".list-item-food li .body").click(function () {
             //let lstid = [];
             //$("#dataOrderReady .tab-pane.active .tab-Priorities li").map(function () {
             //    lstid.push($(this).data("id"));
             //});
-            let sel = $(this);
-            let idChitken = $(this).data("id");
-            let idStaff = $(this).data("idstaff");
-            let isProgress = $(this).hasClass("Processing");
+            let sel = $(this).parent();
+            let idChitken = sel.data("id");
+            let idStaff = sel.data("idstaff");
+            let isProgress = sel.hasClass("Processing");
             $.ajax({
                 type: 'POST',
                 url: "/Selling/PosKitchen/UpdateProcessingFood",
@@ -9545,7 +9579,6 @@ var posStaff = {
                                                 $(".btn-save").addClass("pendding");
                                                 posStaff.loadCountdown();
                                             } else {
-                                                luận
                                                 posStaff.orderTable(dataObject);
                                                 Swal.close();
                                             }

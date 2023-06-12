@@ -14,13 +14,20 @@
                             {
                                 <li 
                                     data-id="@food.IdIntChitKen" 
-                                data-idguid="@food.IdChitKen"
+                                    data-idguid="@food.IdChitKen"
                                     data-idstaff="@food.idStaff"
-                                class="@(food.Status==Application.Enums.EnumStatusKitchenOrder.Processing?"Processing":"")">
-                                    @food.proName <span class="red">(<b class="number3">@food.quantity</b>)</span><br />
-                                    <i class="note">
-                                        @food.Note
-                                    </i>
+                                    data-idproduct="@food.idProduct"
+                                    class="@(food.Status==Application.Enums.EnumStatusKitchenOrder.Processing?"Processing":"")">
+                                    <div class="body">
+
+                                        @food.proName <span class="red">(<b class="number3">@food.quantity</b>)</span><br />
+                                        <i class="note">
+                                            @food.Note
+                                        </i>
+                                    </div>
+                                    <button class="btn-showhistory">
+                                        <i class="fas fa-history"></i>
+                                    </button>
                                 </li>
                             }
                         </ul>
