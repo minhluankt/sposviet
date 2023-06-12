@@ -47,12 +47,32 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             return View(new KitChenModel());
         }
         [Authorize]
-        public IActionResult GetInfoByIdAsync(int? Id)
+        public async Task<IActionResult> GetInfoByIdAsync(int? Id)
         {
-            GetInfoById
+            var currentUser = User.Identity.GetUserClaimLogin();
+            if (Id == null)
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR012));
+                return new JsonResult(new
+                {
+                    isValid = false
+                });
+            }
+            var getAll = await _mediator.Send(new GetKitchenQuery() { Comid = currentUser.ComId,IdKitken=Id.Value});
+            if (getAll.Succeeded)
+            {
+                return new JsonResult(new
+                {
+                    isValid = true,
+                    data = getAll.Data
+                });
+            }
+            _notify.Error(GeneralMess.ConvertStatusToString(getAll.Message));
+            return new JsonResult(new
+            {
+                isValid = false
+            });
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> GetFoodDataByRoomAsync()

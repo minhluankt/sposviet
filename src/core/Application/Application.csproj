@@ -114,6 +114,7 @@
     <Compile Include="Features\Kitchens\Commands\StaffUpdateFoodCommand.cs" />
     <Compile Include="Features\Kitchens\Commands\UpdateNotifyChitkenCommand.cs" />
     <Compile Include="Features\Kitchens\Querys\GetFoodConfirmationOrderQuery.cs" />
+    <Compile Include="Features\Kitchens\Querys\GetKitchenQuery.cs" />
     <Compile Include="Features\Kitchens\Querys\GetKitchenListQuery.cs" />
     <Compile Include="Features\Kitchens\Querys\GetOrderChitkenQuery.cs" />
     <Compile Include="Features\Kitchens\Querys\GetOrderChitkenTableQuery.cs" />

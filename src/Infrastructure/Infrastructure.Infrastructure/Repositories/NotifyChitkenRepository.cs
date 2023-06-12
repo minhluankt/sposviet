@@ -2355,6 +2355,15 @@ namespace Infrastructure.Infrastructure.Repositories
             return await _kitchenRepository.Entities.AsNoTracking().Where(x=> lstiditemorder.Contains(x.IdItemOrder) && x.ComId== Comid && (x.Status == EnumStatusKitchenOrder.MOI || x.Status == EnumStatusKitchenOrder.Processing)).OrderByDescending(x=>x.Id).ToListAsync();
         }
 
+        public async Task<Kitchen> GetByIdAsync(int Comid, int IdKitchen,bool AsNoTracking = true)
+        {
+            if (AsNoTracking)
+            {
+                return await _kitchenRepository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.ComId == Comid && x.Id==IdKitchen);
+            }
+            return await _kitchenRepository.Entities.SingleOrDefaultAsync(x => x.ComId == Comid && x.Id == IdKitchen);
+        }
+
         //public Task UpdateNotifyKitchenSpitOrderIsCreateOrderAsync(Guid IdOrder, List<OrderTableItem> lstorderold, int ComId, OrderTable newOrder)
         //{
         //    var getDonCu = _kitchenRepository.Entities.Where(x => x.ComId == ComId && x.IdOrder == IdOrder && !x.IsCancelAll).ToList();// tất cả thông báo của đơn này

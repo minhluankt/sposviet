@@ -19,6 +19,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<int>> UpdateNotifyOrder(int Comid, Guid? IdOrder, Guid? IdKitchen, int? IdProduct, bool UpdateOne, EnumTypeNotifyKitchenOrder typeupdate, EnumStatusKitchenOrder Status, EnumTypeProduct IdDichVu = EnumTypeProduct.AMTHUC);
         IQueryable<Kitchen> GetAllNotifyOrder(int Comid, EnumStatusKitchenOrder status = EnumStatusKitchenOrder.MOI);
         Task<KitChenTableModel> GetAllNotifyOrderByTable(int Comid);
+        Task<Kitchen> GetByIdAsync(int Comid, int IdKitchen, bool AsNoTracking = true);
         Task<List<Kitchen>> GetAllFoodNewByOrder(int Comid,Guid idOrder);
         Task<List<Kitchen>> GetByListId(int Comid, int[] lstid);
         Task<List<Kitchen>> GetByListIdItemOrder(int Comid, int[] lstiditemorder);

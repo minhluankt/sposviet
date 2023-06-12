@@ -8116,6 +8116,17 @@ var loadcentChitkent = {
         $(".list-item-food li .btn-showhistory").click(function () {
             let sel = $(this).parent();
             let idChitken = sel.data("id");
+            var offset = $(this).offset();
+            //console.log(offset);
+            var getlet = screen.width - offset.left;
+            var getbottom = screen.height - offset.top;
+            let classmoveleft = "";
+            if (getlet < 800) {
+                classmoveleft = " leftstart";
+            }
+            if (getbottom < 500) {
+                classmoveleft += " lefttop";
+            }
             $.ajax({
                 type: 'GET',
                 url: "/Selling/PosKitchen/GetInfoById",
@@ -8125,12 +8136,31 @@ var loadcentChitkent = {
                 dataType: 'json',
                 success: function (res) {
                     if (res.isValid) {
-                        if (isProgress) {
-                            sel.removeClass("Processing");
-                        } else {
-                            sel.addClass("Processing");
+                        let dateProcessing = "";
+                        if (res.data.dateProcessing!=null) {
+                            dateProcessing = `<li><span><i class="fas fa-clock"></i> Giờ nhận món: </span>` + moment(res.data.dateProcessing).format('DD/MM/YYYY HH:mm:ss')  + `</li>`;
                         }
-
+                        let html = `<div class="showhistorykitchen` + classmoveleft +`">
+                                    <div class="index-z"></div>
+                                        <ul class="detailhistoryfood">
+                                            <li><span><i class="fas fa-utensils"></i> Tên món: </span>`+ res.data.proName+`</li>
+                                            <li><span><i class="fas fa-clock"></i> Giờ đặt: </span>`+ moment(res.data.createdOn).format('DD/MM/YYYY HH:mm:ss') +`</li>
+                                            <li class="user"><span><i class="fas fa-user"></i> Phục vụ: </span>`+ res.data.cashername+`</li>
+                                            <li class="red"><span><i class="fas fa-sticky-note"></i> Ghi chú: </span>`+ (res.data.note != null ? res.data.note:"")+`</li>
+                                            <li><span><i class="fas fa-table"></i> Bàn: </span>`+ res.data.roomTableName+`</li>
+                                            <li><span><i class="fas fa-sort-numeric-up-alt"></i> Số lượng: </span>`+ res.data.quantity+`</li>
+                                           `+ dateProcessing+`
+                                        </ul>
+                                    </div>`;
+                        sel.append(html);
+                        $(document).mouseup(function (e) {
+                            //var container = $(".list-comlumsCustome");
+                            var container = $(".detailhistoryfood");
+                            // if the target of the click isn't the container nor a descendant of the container
+                            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                                $(".showhistorykitchen").remove();
+                            }
+                        });
                     }
                 },
                 error: function (err) {
@@ -8444,8 +8474,12 @@ var loadcentChitkent = {
                     loadcentChitkent.loadeventCoutUpTime();
                     loadcentChitkent.loadEventClickItemFood();
                     evetnFormatTextnumber3decimal();
-                    if (onload) {
-                       
+                    //check update lại class css để hiển thị đẹp giao diện
+                    let heightscernn = screen.height;
+                    let topli = $(".list-item-table-food > li:last-child").position().top - 100;
+                    debugger
+                    if (topli < (heightscernn / 2)) {
+                        $(".list-item-table-food").addClass("scrollliactive");
                     }
                 }
             },
