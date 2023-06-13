@@ -240,7 +240,21 @@ namespace Application.Features.OrderTables.Commands
                 orderTableModel.Buyer = updatequantity.Data.Buyer;
                 orderTableModel.Amount = updatequantity.Data.Amonut;
                 orderTableModel.Quantity = updatequantity.Data.OrderTableItems.Sum(x => x.Quantity);
-                orderTableModel.OrderTableItems.AddRange(updatequantity.Data.OrderTableItems.OrderBy(x => x.Id).Select(x => new OrderTableItemModel() { Code = x.Code, Id = x.Id, IdGuid = x.IdGuid, IdProduct = x.IdProduct, Price = x.Price, Quantity = x.Quantity, QuantityNotifyKitchen = x.QuantityNotifyKitchen, IdOrderTable = x.IdOrderTable, Total = x.Amount, Name = x.Name , Note = x.Note, IsVAT = x.IsVAT }));
+                orderTableModel.OrderTableItems.AddRange(updatequantity.Data.OrderTableItems.OrderBy(x => x.Id).Select(x => new OrderTableItemModel() { 
+                    Code = x.Code, 
+                    Id = x.Id,
+                    IdGuid = x.IdGuid,
+                    IdProduct = x.IdProduct, 
+                    Price = x.Price, 
+                    Quantity = x.Quantity, 
+                    QuantityNotifyKitchen = x.QuantityNotifyKitchen,
+                    IdOrderTable = x.IdOrderTable, 
+                    Total = x.Amount,
+                    Name = x.Name ,
+                    IsServiceDate = x.IsServiceDate, 
+                    DateCreateService = x.DateCreateService, 
+                    Note = x.Note, 
+                    IsVAT = x.IsVAT }));
                 // kèm báo bếp
                 if (updatequantity.Data.NotifyOrderNewModels != null)
                 {

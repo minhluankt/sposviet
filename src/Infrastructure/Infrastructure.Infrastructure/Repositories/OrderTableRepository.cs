@@ -187,6 +187,12 @@ namespace Infrastructure.Infrastructure.Repositories
                     }
                     else
                     {
+                        if (getItem.IsServiceDate)
+                        {
+                            return Result<OrderTable>.Fail("Sản phẩm là dịch vụ tính tiền theo giờ chỉ được thêm 1 lần");
+                        }
+
+
                         var checksl  = Math.Round(getItem.Quantity + (Quantity), 3);
                         if (checksl<=0)
                         {
@@ -289,7 +295,10 @@ namespace Infrastructure.Infrastructure.Repositories
                 return Result<OrderTable>.Fail("Không tìm thấy sản phẩm");
                 //throw new Exception("Không tìm thấy sản phẩm");
             }
-
+            if (product.TypeProductCategory==EnumTypeProductCategory.SERVICE && product.IsServiceDate)//nếu là sp tính tiền giờ thì bắt đầu tính luôn
+            {
+                item.DateCreateService = DateTime.Now;
+            }
             if (!IsNewOrder)// đã có order
             {
                 _unitOfWork.CreateTransaction();
@@ -1305,6 +1314,17 @@ namespace Infrastructure.Infrastructure.Repositories
             var get = await _repository.Entities.Include(x => x.OrderTableItems).SingleOrDefaultAsync(x => x.ComId == comid && x.IdGuid == idOrder);
             if (get != null)
             {
+                var getitem = get.OrderTableItems.SingleOrDefault(x => x.IdGuid == idOrderItem);
+                if (getitem==null)
+                {
+                    return Result<OrderTable>.Fail(HeperConstantss.ERR012);
+                }
+                if (getitem.IsServiceDate)
+                {
+                    return Result<OrderTable>.Fail("Sản phẩm là dịch vụ tính tiền theo giờ không thể điều chỉnh số lượng");
+                }
+
+
                 get.OrderTableItems.ForEach(x =>
                 {
                     if (x.IdGuid == idOrderItem)
@@ -1739,6 +1759,11 @@ namespace Infrastructure.Infrastructure.Repositories
                     var getitem = getorder.OrderTableItems.SingleOrDefault(x => x.IdOrderTable == getorder.Id && x.IdGuid == idItem);
                     if (getitem != null)
                     {
+                        if (getitem.IsServiceDate)
+                        {
+                            return Result<OrderTable>.Fail("Sản phẩm là dịch vụ tính tiền theo giờ chỉ được thêm 1 lần");
+                        }
+
                         var newitem = getitem.CloneJson();
                         newitem.Id = 0;
                         newitem.IdGuid = Guid.NewGuid();

@@ -68,5 +68,8 @@ namespace Domain.ViewModel
         public decimal Total { get; set; }
         public float Discount { get; set; } // % ck
         public double DiscountAmount { get; set; } // ck
+        public bool IsServiceDate { get; set; } // là sản phẩm tính tiền giờ
+        public DateTime? DateCreateService { get; set; } // bắt đầu tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
+        public DateTime? DateEndService { get; set; } // dừng tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
     }
 }

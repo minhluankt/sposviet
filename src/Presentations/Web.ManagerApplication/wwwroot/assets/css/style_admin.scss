@@ -1765,6 +1765,10 @@ div#parentautocomplete {
             display: flex;
             align-items: center;
 
+            &.disabled {
+                opacity: 0.2;
+            }
+
             span, input {
                 font-size: 23px;
                 margin: 0px 15px;
@@ -1844,6 +1848,98 @@ div#parentautocomplete {
         div.name {
             flex: 1;
             position: relative;
+            display: flex;
+
+            .ele-foodisservice {
+                position: absolute;
+                background: #fff;
+                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+                padding: 20px;
+                z-index: 6;
+                border-radius: 8px;
+                top: 116%;
+                right: -50%;
+
+                .btncancel {
+                    border: none;
+                    position: absolute;
+                    top: -16px;
+                    left: -13px;
+                    border-radius: 50%;
+                    color: #ffffff;
+                    width: 30px;
+                    height: 30px;
+                    background-color: #568bb9;
+                    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+                }
+                /* &:before {
+                    content: "";
+                    position: absolute;
+                    top: -12px;
+                    right: 20px;
+                    width: 0;
+                    height: 0;
+                    border-style: solid;
+                    border-width: 0 10px 13px 10px;
+                    border-color: transparent transparent #fff transparent;
+                }*/
+
+                .tableinfo-foodisservice {
+                    position: relative;
+                    z-index: 2;
+                    font-weight: 500;
+
+                    .flex {
+                        display: flex;
+                        white-space: nowrap;
+                        gap: 20px;
+                        position: relative;
+
+                        i.fa-clock {
+                            position: absolute;
+                            right: 0;
+                        }
+                    }
+
+                    td {
+                        padding: 5px 10px;
+
+                        .totaltime {
+                            color: #1287aa;
+                        }
+
+                        input.fc-datetimepicker {
+                            width: 139px;
+                            font-size: 14px;
+                            padding: 0px;
+                            padding-right: 22px;
+                        }
+
+                        .lstbtnaction {
+                            text-align: center;
+                            border-top: #ccc solid thin;
+                            padding-top: 15px;
+                            margin-top: 20px;
+                        }
+                    }
+                }
+            }
+
+            .btnServicedate {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                border: none;
+                background: transparent;
+                color: #3f6ad8;
+                font-size: 15px;
+                padding: 0;
+                cursor: pointer;
+
+                i {
+                    background-color: transparent !important;
+                }
+            }
 
             i.fa-percent {
                 background-color: transparent !important;
@@ -5647,7 +5743,7 @@ span.discountAmountItemPro {
             }
 
             padding-bottom: 26px;
-            overflow: hidden;
+           // overflow: hidden;
 
             .btn-remove {
                 display: flex;

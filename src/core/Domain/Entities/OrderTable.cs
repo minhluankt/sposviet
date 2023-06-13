@@ -80,6 +80,7 @@ namespace Domain.Entities
         public string Note { get; set; }//ghi chú đơn
         public bool IsServiceDate { get; set; } // là sản phẩm tính tiền giờ
         public DateTime? DateCreateService { get; set; } // bắt đầu tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
+        public DateTime? DateEndService { get; set; } // dừng tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
         [StringLength(30)]
         public string Code { get; set; }
         public decimal QuantityNotifyKitchen { get; set; }// số lượng món đã thông báo

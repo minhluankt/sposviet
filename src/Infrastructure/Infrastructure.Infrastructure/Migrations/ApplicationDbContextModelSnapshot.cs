@@ -2885,6 +2885,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<DateTime?>("DateCreateService")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateEndService")
+                        .HasColumnType("datetime2");
+
                     b.Property<float>("Discount")
                         .HasColumnType("real");
 

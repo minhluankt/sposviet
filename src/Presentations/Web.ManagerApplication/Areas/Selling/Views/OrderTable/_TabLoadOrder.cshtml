@@ -62,10 +62,20 @@
                 @foreach (var item in items.OrderTableItems)
                 {
 
-                    <li data-id="@item.IdGuid" data-idpro="@item.IdProduct" data-slNotify="@item.QuantityNotifyKitchen.ToString("0.###").Replace(",",".")" data-sl="@item.Quantity.ToString("0.###").Replace(",",".")">
+                    <li 
+                        data-id="@item.IdGuid"
+                        data-isservicedate="@item.IsServiceDate"
+                        data-datecreateservice="@item.DateCreateService"
+                    data-idpro="@item.IdProduct" 
+                    data-slNotify="@item.QuantityNotifyKitchen.ToString("0.###").Replace(",",".")" data-sl="@item.Quantity.ToString("0.###").Replace(",",".")">
                         <div data-idquan="@item.Quantity.ToString().Replace(",",".")" class="btn-remove"><i data-idquan="@item.Quantity.ToString("0.###").Replace(",",".")" class="fas fa-trash-alt"></i></div>
                         <div class="name">
                             <b>@(i++). @item.Name @(item.IsVAT ? Html.Raw("<i class='fas fa-percent'></i>") : "")</b>
+                            @if (item.IsServiceDate)
+                            {
+                                <button class="btnServicedate" data-datecreateservice="@item.DateCreateService"><i class="fas fa-clock"></i> @item.DateCreateService.Value.ToString("HH:mm")</button>
+                            }
+                            
                             <button class="note @(!string.IsNullOrEmpty(item.Note)?"active":"")" data-note="@item.Note">
                                 <i class="far fa-sticky-note"></i>
 
@@ -79,8 +89,11 @@
                                 }
                             </button>
                         </div>
-                        <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="@item.Quantity.ToString("0.###").Replace(",",".")"> <i class="fas fa-plus"></i></div>
-                        <div><input type="text" class="form-control priceFormat" readonly value="@item.Price.ToString("N0")" /></div>
+                        <div class="item_action@(item.IsServiceDate?" disabled":"")">
+                            <i class="fas fa-minus"></i>
+                            <input class="quantity numberformat" @(item.IsServiceDate ? "readonly" : "") value="@item.Quantity.ToString("0.###").Replace(",",".")"> <i class="fas fa-plus"></i>
+                        </div>
+                        <div><input type="text"  class="form-control priceFormat" readonly value="@item.Price.ToString("N0")" /></div>
                         <div class="amount">
                             <b class="priceFormat">@item.Amount.ToString("N0")</b>
                             <button class="CloneItem"><i class="fas fa-plus"></i></button>

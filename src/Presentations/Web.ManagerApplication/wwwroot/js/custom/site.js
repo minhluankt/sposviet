@@ -14797,16 +14797,22 @@ var loadeventPos = {
             data.OrderTableItems
                 .forEach(function (item, index) {
                     htmlvat = "";
+                    htmlservicedate = "";
+                    if (item.IsServiceDate) {
+                        htmlservicedate = `<button class='btnServicedate' data-datecreateservice="` + (item.IsServiceDate ? item.DateCreateService : "") + `"><i class="fas fa-clock"></i> ` + moment(item.DateCreateService).format("HH:mm") +`</button>`;
+                    }
                     if (item.IsVAT) {
                         htmlvat = " <i class='fas fa-percent'></i>";
                     }
                     index = index + 1;
-                    html += ` <li data-id="` + item.IdGuid + `" data-idpro ="` + item.IdProduct + `" data-slNotify=` + item.QuantityNotifyKitchen + ` data-sl=` + item.Quantity + ` >
+                    html += ` <li data-isservicedate="` + (item.IsServiceDate?"1":"0") + `"
+                        data-datecreateservice="` + (item.IsServiceDate ? item.DateCreateService : "") + `" data-id="` + item.IdGuid + `" data-idpro ="` + item.IdProduct + `" data-slNotify=` + item.QuantityNotifyKitchen + ` data-sl=` + item.Quantity + ` >
                                             <div  class="btn-remove" data-idquan="`+ item.Quantity + `"><i data-idquan="` + item.Quantity + `" class="fas fa-trash-alt"></i></div>
                                             <div class="name"><b>` + index + ". " + item.Name + htmlvat + `</b>
+                                            `+ htmlservicedate +`
                                             <button class="note`+ (item.Note != null && item.Note != "" ? " active" : "") + `" data-note="` + (item.Note != null ? item.Note : "") + `"><i class="far fa-sticky-note"></i> <span class="text">` + ((item.note != "" && item.note != null) ? item.note : "Thêm ghi chú") + `</span></button>
                                             </div>
-                                            <div class="item_action"><i class="fas fa-minus"></i><input class="quantity numberformat" value="`+ item.Quantity + `"> <i class="fas fa-plus"></i></div>
+                                            <div class="item_action`+ (item.IsServiceDate ? " disabled" : "") + `"><i class="fas fa-minus"></i><input class="quantity numberformat" ` + (item.IsServiceDate ? "readonly" : "") +` value="`+ item.Quantity + `"> <i class="fas fa-plus"></i></div>
                                             <div><input type="text" class="form-control priceFormat" readonly value="`+ (item.Price) + `" /></div>
                                             <div class="amount"><b class="priceFormat">`+ (item.Total) + `</b><button class="CloneItem"><i class="fas fa-plus"></i></button></div>
                                         </li>`;
@@ -14821,6 +14827,7 @@ var loadeventPos = {
             loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
             loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
             loadeventPos.eventUpdatedataItemMonOrder();//update các data-id...
+            loadeventPos.eventShowInfoFoodService();//kích vào món nếu là dịch vụ tính giờ để xem chi tiết
 
 
             $(".tab-content-order").find(".tab-pane.active").attr("data-id", data.IdGuid);
@@ -14831,9 +14838,49 @@ var loadeventPos = {
             loadeventPos.loadAddOrRemoveCurentClassTable(true, data.TimeNumber);// xem có sản phẩm thì add class curen table
         // console.log(dataObject.IdOrderItem);
         }
-       
-        
-
+    },
+    eventShowInfoFoodService: function () {
+        $("#item-mon .btnServicedate").click(function () {
+            let date = moment($(this).data("datecreateservice"));
+           // let date = moment($(this).data("datecreateservice")).format("HH:mm");
+            let minutes = moment().diff(date, 'minutes');
+            html = `<div class="ele-foodisservice">
+                    <div class="index-z"></div>
+                      <button class="btncancel"><i class="fas fa-times"></i></button>
+                          <table class="tableinfo-foodisservice">
+                            <tbody>
+                                <tr>
+                                    <td><div class="flex">Từ: <input type="text"  value="`+ moment($(this).data("datecreateservice")).format("DD/MM/YYYY HH:mm") +`" class="form-control fc-datetimepicker" /><i class="fas fa-clock"></i></div></td>
+                                    <td><div class="flex">Đến: <input type="text" disabled value="`+ moment().format("DD/MM/YYYY HH:mm") +`" class="form-control fc-datetimepicker" /><i class="fas fa-clock"></i></div></td>
+                                </tr>
+                                <tr>
+                                    <td><div class="flex">Tổng phút: <b class="totaltime">`+ minutes +` phút</b></div></td>
+                                    <td><div class="flex">Tổng tiền: <b class="totalmony"></b></div></td>
+                                </tr>
+                                 <tr>
+                                    <td colspan="2">
+                                        <div class="lstbtnaction">
+                                            <button type="button" class="btn btn-success"><i class="fas fa-stop"></i> Tạm dừng</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>`;
+            $(this).after(html);
+            loaddaterangepicker();
+            $(".btncancel").click(function () {
+                $(this).parent(".ele-foodisservice").remove();
+            })
+            $(document).mouseup(function (e) {
+                var container = $(".ele-foodisservice .index-z");
+                // if the target of the click isn't the container nor a descendant of the container
+                if (container.is(e.target) && container.has(e.target).length === 0) {
+                    //container.remove();
+                    $(".ele-foodisservice").remove();
+                }
+            });
+        });
     },
     eventShowTabProductByCategory: function () {
         $.ajax({
@@ -15084,10 +15131,19 @@ var loadeventPos = {
             let iditem = $(this).data("id");
             let sl = $(this).data("sl");
             let slnotify = $(this).data("slnotify");
+            let isservicedate = $(this).data("isservicedate");
+            let datecreateservice = $(this).data("datecreateservice");
+
+            $(this).removeAttr("data-isservicedate");
+            $(this).removeAttr("data-datecreateservice");
+
             $(this).removeAttr("data-id");
             $(this).removeAttr("data-idpro");
             $(this).removeAttr("data-sl");
             $(this).removeAttr("data-slnotify");
+            $(this).data("isservicedate", isservicedate)
+            $(this).data("datecreateservice", datecreateservice)
+
             $(this).data("idpro", idpro)
             $(this).data("id", iditem)
             $(this).data("sl", sl)
@@ -16776,7 +16832,7 @@ var loadeventPos = {
             loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
             loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
             loadeventPos.eventUpdatedataItemMonOrder();//update lại các data
-          
+            loadeventPos.eventShowInfoFoodService();//kích vào món nếu là dịch vụ tính giờ để xem chi tiết
             if (loadOrder.data.dataCus.length > 0) {
                 ListCusByOrderPos = loadOrder.data.dataCus;
             }
