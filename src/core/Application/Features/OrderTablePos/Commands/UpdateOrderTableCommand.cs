@@ -60,9 +60,27 @@ namespace Application.Features.OrderTables.Commands
 
                 switch (request.TypeUpdate)
                 {
-                    case EnumTypeUpdatePos.UpdateFoodServiceTime:
-                        var upfate = await _orderTableRepository.UpdateFoodServiceTimeAsync(request.ComId,request.IdOrder, request.IdOrderItem.Value, request.IsCancel,request.DateCreateService);
-                        return await Result<OrderTableModel>.SuccessAsync(HeperConstantss.SUS006);
+                    case EnumTypeUpdatePos.UpdateStatusFoodService:
+                        var upfate = await _orderTableRepository.UpdateStatusFoodServiceAsync(request.ComId,request.IdOrder, request.IdOrderItem.Value, request.IsCancel,request.DateCreateService);
+                        if (upfate.Succeeded)
+                        {
+                            return await Result<OrderTableModel>.SuccessAsync(HeperConstantss.SUS006);
+                        }
+                        else
+                        {
+                            return await Result<OrderTableModel>.FailAsync(upfate.Message);
+                        }
+                     case EnumTypeUpdatePos.UpdateDateTimeFoodService:
+                        var upfatetime = await _orderTableRepository.UpdateDateTimeFoodServiceAsync(request.ComId,request.IdOrder, request.IdOrderItem.Value, request.IsStartDate,request.DateCreateService.Value);
+                        if (upfatetime.Succeeded)
+                        {
+                            return await Result<OrderTableModel>.SuccessAsync(HeperConstantss.SUS006);
+                        }
+                        else
+                        {
+                            return await Result<OrderTableModel>.FailAsync(upfatetime.Message);
+                        }
+                        
                     case EnumTypeUpdatePos.UpdateQuantity:
                         updatequantity = await _orderTableRepository.UpdateItemOrderAsync(request.IdCustomer, request.CusCode, request.ComId, request.IdGuid.Value, request.IdOrderItem.Value, request.IdRoomAndTableGuid, request.IsBringBack, request.Quantity, request.CasherName, request.IdCasher, request.Note,  isRemoveRow, request.IsCancel);
                         break;
@@ -256,6 +274,7 @@ namespace Application.Features.OrderTables.Commands
                     Name = x.Name ,
                     IsServiceDate = x.IsServiceDate, 
                     DateCreateService = x.DateCreateService, 
+                    DateEndService = x.DateEndService, 
                     Note = x.Note, 
                     IsVAT = x.IsVAT }));
                 // kèm báo bếp

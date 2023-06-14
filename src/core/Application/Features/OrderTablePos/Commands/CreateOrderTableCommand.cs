@@ -165,6 +165,7 @@ namespace Application.Features.OrderTablePos.Commands
                     Note = x.Note,
                     IsServiceDate = x.IsServiceDate,
                     DateCreateService = x.DateCreateService,
+                    DateEndService = x.DateEndService,
                     IsVAT = x.IsVAT }));
 
                 return Result<OrderTableModel>.Success(orderTableModel);

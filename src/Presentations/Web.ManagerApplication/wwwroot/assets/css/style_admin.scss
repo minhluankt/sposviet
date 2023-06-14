@@ -1904,9 +1904,11 @@ div#parentautocomplete {
                     td {
                         padding: 5px 10px;
 
-                        .totaltime {
+                        .totaltime, .totalmony {
                             color: #1287aa;
                         }
+
+                    
 
                         input.fc-datetimepicker {
                             width: 139px;

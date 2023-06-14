@@ -2024,7 +2024,7 @@ namespace Infrastructure.Infrastructure.Repositories
             }
         }
 
-        public async Task<Result<OrderTable>> UpdateFoodServiceTimeAsync(int ComId, int idOrder, Guid idItem, bool IsStop, DateTime? timestop)
+        public async Task<Result<OrderTable>> UpdateStatusFoodServiceAsync(int ComId, int idOrder, Guid idItem, bool IsStop, DateTime? timestop)
         {
             var getorder = await _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == idOrder && x.ComId == ComId);
             if (getorder == null)
@@ -2032,6 +2032,10 @@ namespace Infrastructure.Infrastructure.Repositories
                 return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
             }
             var getitem = await _OrderTableItemrepository.Entities.SingleOrDefaultAsync(x => x.IdOrderTable == idOrder && x.IdGuid == idItem);
+            if (getitem == null)
+            {
+                return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
+            }
             if (IsStop)
             {
                 getitem.DateEndService = timestop?? DateTime.Now;
@@ -2039,6 +2043,31 @@ namespace Infrastructure.Infrastructure.Repositories
             else
             {
                 getitem.DateEndService = null;
+            }
+            await _OrderTableItemrepository.UpdateAsync(getitem);
+            await _unitOfWork.SaveChangesAsync();
+            return await Result<OrderTable>.SuccessAsync(HeperConstantss.SUS006);
+        }
+
+        public async Task<Result<OrderTable>> UpdateDateTimeFoodServiceAsync(int ComId, int idOrder, Guid idItem, bool IsStart, DateTime datetime)
+        {
+            var getorder = await _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == idOrder && x.ComId == ComId);
+            if (getorder == null)
+            {
+                return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
+            }
+            var getitem = await _OrderTableItemrepository.Entities.SingleOrDefaultAsync(x => x.IdOrderTable == idOrder && x.IdGuid == idItem);
+            if (getitem == null)
+            {
+                return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
+            }
+            if (IsStart)
+            {
+                getitem.DateCreateService = datetime;
+            }
+            else
+            {
+                getitem.DateEndService = datetime;
             }
             await _OrderTableItemrepository.UpdateAsync(getitem);
             await _unitOfWork.SaveChangesAsync();

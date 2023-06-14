@@ -25,8 +25,8 @@ namespace Domain.ViewModel
         public string ProductCode { get; set; }// id của sản phẩm
         public string TableName { get; set; }// tên bàn/phòng
         public bool IsBringBack { get; set; }// mag về
-        public bool IsRetailCustomer { get; set; } // là khách lẻ
         public bool IsCancel { get; set; } // là hủy món
+        public bool IsStartDate { get; set; } // là dành cho update ngày giờ bắt đầu tính tiền cho sp có tính giờ
         public bool IsRemoveCustomer { get; set; } // là xóa khách hàng
         public string CusCode { get; set; }// khách hàng
         public int? IdRoomAndTable { get; set; } // bàn/phòng

@@ -28,6 +28,8 @@ using System.Globalization;
 using System.Web;
 using Web.ManagerApplication.Abstractions;
 using Web.ManagerApplication.Areas.Selling.Models;
+using Library;
+using HelperLibrary;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -942,7 +944,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
     
         [HttpPost]
-        public async Task<IActionResult> UpdateFoodServiceTimeAsync(int? IdOrder,Guid? IdItemOrder,bool IsTop)
+        public async Task<IActionResult> UpdateFoodServiceStatusAsync(int? IdOrder,Guid? IdItemOrder,bool IsTop)
         {
             if (IdOrder == null)
             {
@@ -950,9 +952,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return Json(new { isValid = false });
             }
 
-            //var currentUser = User.Identity.GetUserClaimLogin();
+            var currentUser = User.Identity.GetUserClaimLogin();
             OrderTableModel orderTableModel = new OrderTableModel();
-            orderTableModel.TypeUpdate = EnumTypeUpdatePos.UpdateFoodServiceTime;
+            orderTableModel.TypeUpdate = EnumTypeUpdatePos.UpdateStatusFoodService;
+            orderTableModel.ComId = currentUser.ComId;
             orderTableModel.IdOrder = IdOrder.Value;
             orderTableModel.IdOrderItem = IdItemOrder;
             orderTableModel.IsCancel = IsTop;
@@ -962,7 +965,43 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             if (_send.Succeeded)
             {
                // tính tổng tiền và giảm giá trên từng món: hàm 
-                return Json(new { isValid = true,date= orderTableModel.DateCreateService.Value.ToString("dd/MM/yyyy HH:mm") });
+                return Json(new { isValid = true,date= orderTableModel.DateCreateService });
+            }
+            else
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString(_send.Message));
+                return Json(new { isValid = false });
+            }
+        } 
+        [HttpPost]
+        public async Task<IActionResult> UpdateDateTimeFoodServiceAsync(int? IdOrder,Guid? IdItemOrder,bool IsStartDate,string date)
+        {
+            tạm tính và thanh toán đơn nhé.
+            if (IdOrder == null)
+            {
+                _notify.Error("Không tìm thấy đơn!");
+                return Json(new { isValid = false });
+            }
+            var DateCreateService = LibraryCommon.ConvertStringToDateTime(date, "dd/MM/yyyy HH:mm");
+            if (!DateCreateService.HasValue)
+            {
+                _notify.Error("Thời gian bạn chọn không hợp lệ, vui lòng chọn lại!");
+                return Json(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            OrderTableModel orderTableModel = new OrderTableModel();
+            orderTableModel.TypeUpdate = EnumTypeUpdatePos.UpdateDateTimeFoodService;
+            orderTableModel.ComId = currentUser.ComId;
+            orderTableModel.IdOrder = IdOrder.Value;
+            orderTableModel.IdOrderItem = IdItemOrder;
+            orderTableModel.IsStartDate = IsStartDate;
+            orderTableModel.DateCreateService = DateCreateService;//dùng lấy giờ 
+            var ipdateOrderTableCommand = _mapper.Map<UpdateOrderTableCommand>(orderTableModel);
+            var _send= await _mediator.Send(ipdateOrderTableCommand);
+            if (_send.Succeeded)
+            {
+               // tính tổng tiền và giảm giá trên từng món: hàm 
+                return Json(new { isValid = true,date= orderTableModel.DateCreateService });
             }
             else
             {
