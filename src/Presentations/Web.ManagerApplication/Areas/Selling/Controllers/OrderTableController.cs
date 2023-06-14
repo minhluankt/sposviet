@@ -961,7 +961,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var _send= await _mediator.Send(ipdateOrderTableCommand);
             if (_send.Succeeded)
             {
-                tính tổng tiền và giảm giá trên từng món: hàm 
+               // tính tổng tiền và giảm giá trên từng món: hàm 
                 return Json(new { isValid = true,date= orderTableModel.DateCreateService.Value.ToString("dd/MM/yyyy HH:mm") });
             }
             else

@@ -14862,7 +14862,7 @@ var loadeventPos = {
                                  <tr>
                                     <td colspan="2">
                                         <div class="lstbtnaction">
-                                            <button type="button" class="btn btn-success btn-actiontime">`+ ((isservicedate == 1 && datecreateservice!=null)  ? `<i class="fas fa-stop"></i> Dừng tính giờ` :`<i class="fas fa-play"></i> Tiếp tục`)+`</button>
+                                            <button type="button" class="btn btn-success btn-actiontime">`+ ((isservicedate == 1 && datecreateservice != null) ? `<i class="fas fa-pause"></i> Dừng tính giờ` :`<i class="fas fa-play"></i> Tiếp tục`)+`</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -14909,14 +14909,14 @@ var loadeventPos = {
             success: async function (res) {
                 if (res.isValid) {
                     
-                    if (isStop) {
+                    if (!isStop) {
                         let html = `<i class="fas fa-play"></i> Tiếp tục`;
                         $(".btn-actiontime").html(html);
                         $(".enddate").removeAttr("disabled", "disabled");
                         $(".enddate").val(res.date);
 
                     } else {
-                        let html = `<i class="fas fa-stop"></i> Dừng tính giờ`;
+                        let html = `<i class="fas fa-pause"></i> Dừng tính giờ`;
                         $(".btn-actiontime").html(html);
                         $(".enddate").attr("disabled", "disabled");
                         $(".enddate").val(res.date);
