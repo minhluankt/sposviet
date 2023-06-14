@@ -62,9 +62,10 @@
                 @foreach (var item in items.OrderTableItems)
                 {
 
-                    <li 
+                    <li class="itemorder"
                         data-id="@item.IdGuid"
-                        data-isservicedate="@item.IsServiceDate"
+                        data-idorder="@item.IdOrderTable"
+                        data-isservicedate="@(item.IsServiceDate?1:0)"
                         data-datecreateservice="@item.DateCreateService"
                     data-idpro="@item.IdProduct" 
                     data-slNotify="@item.QuantityNotifyKitchen.ToString("0.###").Replace(",",".")" data-sl="@item.Quantity.ToString("0.###").Replace(",",".")">

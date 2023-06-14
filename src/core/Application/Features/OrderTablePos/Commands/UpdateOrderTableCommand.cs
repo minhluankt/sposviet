@@ -60,6 +60,9 @@ namespace Application.Features.OrderTables.Commands
 
                 switch (request.TypeUpdate)
                 {
+                    case EnumTypeUpdatePos.UpdateFoodServiceTime:
+                        var upfate = await _orderTableRepository.UpdateFoodServiceTimeAsync(request.ComId,request.IdOrder, request.IdOrderItem.Value, request.IsCancel,request.DateCreateService);
+                        return await Result<OrderTableModel>.SuccessAsync(HeperConstantss.SUS006);
                     case EnumTypeUpdatePos.UpdateQuantity:
                         updatequantity = await _orderTableRepository.UpdateItemOrderAsync(request.IdCustomer, request.CusCode, request.ComId, request.IdGuid.Value, request.IdOrderItem.Value, request.IdRoomAndTableGuid, request.IsBringBack, request.Quantity, request.CasherName, request.IdCasher, request.Note,  isRemoveRow, request.IsCancel);
                         break;

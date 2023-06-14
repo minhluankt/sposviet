@@ -2023,5 +2023,26 @@ namespace Infrastructure.Infrastructure.Repositories
                 return await Result<PublishInvoiceResponse>.FailAsync(e.ToString());
             }
         }
+
+        public async Task<Result<OrderTable>> UpdateFoodServiceTimeAsync(int ComId, int idOrder, Guid idItem, bool IsStop, DateTime? timestop)
+        {
+            var getorder = await _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == idOrder && x.ComId == ComId);
+            if (getorder == null)
+            {
+                return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
+            }
+            var getitem = await _OrderTableItemrepository.Entities.SingleOrDefaultAsync(x => x.IdOrderTable == idOrder && x.IdGuid == idItem);
+            if (IsStop)
+            {
+                getitem.DateEndService = timestop?? DateTime.Now;
+            }
+            else
+            {
+                getitem.DateEndService = null;
+            }
+            await _OrderTableItemrepository.UpdateAsync(getitem);
+            await _unitOfWork.SaveChangesAsync();
+            return await Result<OrderTable>.SuccessAsync(HeperConstantss.SUS006);
+        }
     }
 }

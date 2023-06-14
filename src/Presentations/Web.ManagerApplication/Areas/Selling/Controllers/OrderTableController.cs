@@ -942,6 +942,35 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
     
         [HttpPost]
+        public async Task<IActionResult> UpdateFoodServiceTimeAsync(int? IdOrder,Guid? IdItemOrder,bool IsTop)
+        {
+            if (IdOrder == null)
+            {
+                _notify.Error("Không tìm thấy đơn!");
+                return Json(new { isValid = false });
+            }
+
+            //var currentUser = User.Identity.GetUserClaimLogin();
+            OrderTableModel orderTableModel = new OrderTableModel();
+            orderTableModel.TypeUpdate = EnumTypeUpdatePos.UpdateFoodServiceTime;
+            orderTableModel.IdOrder = IdOrder.Value;
+            orderTableModel.IdOrderItem = IdItemOrder;
+            orderTableModel.IsCancel = IsTop;
+            orderTableModel.DateCreateService = DateTime.Now;//dùng lấy giờ dừng
+            var ipdateOrderTableCommand = _mapper.Map<UpdateOrderTableCommand>(orderTableModel);
+            var _send= await _mediator.Send(ipdateOrderTableCommand);
+            if (_send.Succeeded)
+            {
+                tính tổng tiền và giảm giá trên từng món: hàm 
+                return Json(new { isValid = true,date= orderTableModel.DateCreateService.Value.ToString("dd/MM/yyyy HH:mm") });
+            }
+            else
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString(_send.Message));
+                return Json(new { isValid = false });
+            }
+        }
+        [HttpPost]
         public async Task<IActionResult> PaymentSaleRatailtAsync(string jsonData)
         {
             OrderInvoicePaymentSaleRetailModel model = Common.ConverJsonToModel<OrderInvoicePaymentSaleRetailModel>(jsonData);

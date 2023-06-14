@@ -8477,7 +8477,7 @@ var loadcentChitkent = {
                     //check update lại class css để hiển thị đẹp giao diện
                     let heightscernn = screen.height;
                     let topli = $(".list-item-table-food > li:last-child").position().top - 100;
-                    debugger
+                    
                     if (topli < (heightscernn / 2)) {
                         $(".list-item-table-food").addClass("scrollliactive");
                     }
@@ -14805,8 +14805,8 @@ var loadeventPos = {
                         htmlvat = " <i class='fas fa-percent'></i>";
                     }
                     index = index + 1;
-                    html += ` <li data-isservicedate="` + (item.IsServiceDate?"1":"0") + `"
-                        data-datecreateservice="` + (item.IsServiceDate ? item.DateCreateService : "") + `" data-id="` + item.IdGuid + `" data-idpro ="` + item.IdProduct + `" data-slNotify=` + item.QuantityNotifyKitchen + ` data-sl=` + item.Quantity + ` >
+                    html += ` <li class='itemorder' data-isservicedate="` + (item.IsServiceDate?"1":"0") + `"
+                        data-datecreateservice="` + (item.IsServiceDate ? item.DateCreateService : "") + `" data-id="` + item.IdGuid + `" data-idorder="` + item.IdOrderTable + `" data-idpro ="` + item.IdProduct + `" data-slNotify=` + item.QuantityNotifyKitchen + ` data-sl=` + item.Quantity + ` >
                                             <div  class="btn-remove" data-idquan="`+ item.Quantity + `"><i data-idquan="` + item.Quantity + `" class="fas fa-trash-alt"></i></div>
                                             <div class="name"><b>` + index + ". " + item.Name + htmlvat + `</b>
                                             `+ htmlservicedate +`
@@ -14842,6 +14842,8 @@ var loadeventPos = {
     eventShowInfoFoodService: function () {
         $("#item-mon .btnServicedate").click(function () {
             let date = moment($(this).data("datecreateservice"));
+            let isservicedate = $(this).parents("li").data("isservicedate");
+            let datecreateservice = $(this).parents("li").data("datecreateservice");
            // let date = moment($(this).data("datecreateservice")).format("HH:mm");
             let minutes = moment().diff(date, 'minutes');
             html = `<div class="ele-foodisservice">
@@ -14850,8 +14852,8 @@ var loadeventPos = {
                           <table class="tableinfo-foodisservice">
                             <tbody>
                                 <tr>
-                                    <td><div class="flex">Từ: <input type="text"  value="`+ moment($(this).data("datecreateservice")).format("DD/MM/YYYY HH:mm") +`" class="form-control fc-datetimepicker" /><i class="fas fa-clock"></i></div></td>
-                                    <td><div class="flex">Đến: <input type="text" disabled value="`+ moment().format("DD/MM/YYYY HH:mm") +`" class="form-control fc-datetimepicker" /><i class="fas fa-clock"></i></div></td>
+                                    <td><div class="flex">Từ: <input type="text"  value="`+ moment($(this).data("datecreateservice")).format("DD/MM/YYYY HH:mm") +`" class="form-control fc-datetimepicker startdate" /><i class="fas fa-clock"></i></div></td>
+                                    <td><div class="flex">Đến: <input type="text" disabled value="`+ moment().format("DD/MM/YYYY HH:mm") +`" class="form-control fc-datetimepicker enddate" /><i class="fas fa-clock"></i></div></td>
                                 </tr>
                                 <tr>
                                     <td><div class="flex">Tổng phút: <b class="totaltime">`+ minutes +` phút</b></div></td>
@@ -14860,7 +14862,7 @@ var loadeventPos = {
                                  <tr>
                                     <td colspan="2">
                                         <div class="lstbtnaction">
-                                            <button type="button" class="btn btn-success"><i class="fas fa-stop"></i> Tạm dừng</button>
+                                            <button type="button" class="btn btn-success btn-actiontime">`+ ((isservicedate == 1 && datecreateservice!=null)  ? `<i class="fas fa-stop"></i> Dừng tính giờ` :`<i class="fas fa-play"></i> Tiếp tục`)+`</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -14872,6 +14874,17 @@ var loadeventPos = {
             $(".btncancel").click(function () {
                 $(this).parent(".ele-foodisservice").remove();
             })
+            $(".btn-actiontime").click(function () {
+                iditemorder = $(this).parents("li.active").data("id");
+                idorder = $(this).parents("li.active").data("idorder");
+                isStop = true;
+                if ($(this).hasClass("stop")) {//nếu có tức là  chừ bỏ đi để tiếp tục
+                    //tiếp tục tính giờ
+                    isStop = false;
+                }
+                loadeventPos.eventUpdatetimeFoodService(idorder, iditemorder, isStop);//cập nhật db
+                $(this).toggleClass("stop");
+            })
             $(document).mouseup(function (e) {
                 var container = $(".ele-foodisservice .index-z");
                 // if the target of the click isn't the container nor a descendant of the container
@@ -14880,6 +14893,36 @@ var loadeventPos = {
                     $(".ele-foodisservice").remove();
                 }
             });
+        });
+    },
+    eventUpdatetimeFoodService: function (idorder,iditemorder, isStop) {
+        $.ajax({
+            type: 'POST',
+            url: '/Selling/OrderTable/UpdateFoodServiceTime',
+            dataType: 'json',
+            data: {
+                IdOrder: idorder,
+                IdItemOrder: iditemorder,
+                IsTop: isStop,
+            },
+            // traditional: true,
+            success: async function (res) {
+                if (res.isValid) {
+                    
+                    if (isStop) {
+                        let html = `<i class="fas fa-play"></i> Tiếp tục`;
+                        $(".btn-actiontime").html(html);
+                        $(".enddate").removeAttr("disabled", "disabled");
+                        $(".enddate").val(res.date);
+
+                    } else {
+                        let html = `<i class="fas fa-stop"></i> Dừng tính giờ`;
+                        $(".btn-actiontime").html(html);
+                        $(".enddate").attr("disabled", "disabled");
+                        $(".enddate").val(res.date);
+                    }
+                }
+            }
         });
     },
     eventShowTabProductByCategory: function () {
@@ -15128,6 +15171,7 @@ var loadeventPos = {
         let checkShowNotify = false;
         $("#container-tableOder ul#item-mon").children("li").map(function () {
             let idpro = $(this).data("idpro");
+            let idorder = $(this).data("idorder");
             let iditem = $(this).data("id");
             let sl = $(this).data("sl");
             let slnotify = $(this).data("slnotify");
@@ -15138,13 +15182,15 @@ var loadeventPos = {
             $(this).removeAttr("data-datecreateservice");
 
             $(this).removeAttr("data-id");
+            $(this).removeAttr("data-idorder");
             $(this).removeAttr("data-idpro");
             $(this).removeAttr("data-sl");
             $(this).removeAttr("data-slnotify");
+
             $(this).data("isservicedate", isservicedate)
             $(this).data("datecreateservice", datecreateservice)
-
             $(this).data("idpro", idpro)
+            $(this).data("idorder", idorder)
             $(this).data("id", iditem)
             $(this).data("sl", sl)
             $(this).data("slnotify", slnotify)

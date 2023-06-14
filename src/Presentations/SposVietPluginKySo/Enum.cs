@@ -18,8 +18,9 @@ namespace SposVietPluginKySo
             SendTestConnect = -1,//ký hóa đơn
             SignEInvoice = 0,//ký hóa đơn
             PrintEInvoice = 1,//in hóa đon điện tử
-            PrintInvoice = 2, //in bill
-            PrintBep = 3, //in bill
+            PrintInvoice = 2,
+            PrintBep = 3, 
+            SignListEInvoiceToken = 4, //ký hóa đơn token
         }
     }
 }

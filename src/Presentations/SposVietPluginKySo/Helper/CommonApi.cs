@@ -8,6 +8,7 @@ using System.Net.Http.Json;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SposVietPluginKySo.Helper
 {
@@ -89,5 +90,14 @@ namespace SposVietPluginKySo.Helper
             }
         }
     }
-    
+    public static class SupportCommont
+    {
+        public static T ConvertXMLToModel<T>(string item)
+        {
+            XmlSerializer deserializer = new XmlSerializer(typeof(T));
+            var data = (T)deserializer.Deserialize(new StringReader(item));
+            return data;
+        }
+    }
+
 }

@@ -150,7 +150,7 @@ namespace SposVietPluginKySo
                 var res = new ResponseModel<string>();
                 string messageToFatima = e.Data;
                 var model = JsonConvert.DeserializeObject<DataSignEinvoiceModel>(e.Data);
-                
+
                 if (model != null)
                 {
                     res.type = (int)model.TypeEventWebSocket;
@@ -169,13 +169,21 @@ namespace SposVietPluginKySo
                                 res.Message = "Không tồn tại hash";
                                 Send(JsonConvert.SerializeObject(res));
                             }
-                            else {
+                            else
+                            {
                                 EInvoiceService eInvoiceService = new EInvoiceService();
                                 string sign = eInvoiceService.SignHashEInvoiceToken(model.hash);
-                                if (sign=="-1")
+                                if (sign == "-1")
                                 {
                                     res.isSuccess = false;
                                     res.Message = "-1";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
+                                else if (sign == "-2")
+                                {
+                                    res.isSuccess = false;
+                                    res.Message = "-2";
                                     res.Data = sign;
                                     Send(JsonConvert.SerializeObject(res));
                                 }
@@ -186,9 +194,45 @@ namespace SposVietPluginKySo
                                     res.Data = sign;
                                     Send(JsonConvert.SerializeObject(res));
                                 }
-                              
+
                             }
-                            
+
+                            break;
+                        case TypeEventWebSocket.SignListEInvoiceToken:
+                            if (string.IsNullOrEmpty(model.xmlbyhash))
+                            {
+                                res.isSuccess = false;
+                                res.Message = "Không tồn tại xmlbyhash truyền vào";
+                                Send(JsonConvert.SerializeObject(res));
+                            }
+                            else
+                            {
+                                EInvoiceService eInvoiceService = new EInvoiceService();
+                                string sign = eInvoiceService.SignHashPublishEInvoiceToken(model.xmlbyhash, model.serialCert);
+                                if (sign == "-1")
+                                {
+                                    res.isSuccess = false;
+                                    res.Message = "-1";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
+                                else if (sign == "-2")
+                                {
+                                    res.isSuccess = false;
+                                    res.Message = "-2";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
+                                else
+                                {
+                                    res.isSuccess = true;
+                                    res.Message = "Ký số thành công";
+                                    res.Data = sign;
+                                    Send(JsonConvert.SerializeObject(res));
+                                }
+
+                            }
+
                             break;
                         case TypeEventWebSocket.PrintEInvoice:
                             if (string.IsNullOrEmpty(model.html))
@@ -205,7 +249,7 @@ namespace SposVietPluginKySo
                                 Send(JsonConvert.SerializeObject(res));
                             }
 
-                            break; 
+                            break;
                         case TypeEventWebSocket.PrintBep:
                             if (string.IsNullOrEmpty(model.html))
                             {

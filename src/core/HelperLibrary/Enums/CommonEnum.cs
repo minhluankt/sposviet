@@ -563,6 +563,7 @@ namespace Application.Enums
         UpdateNoteAndTopping = 13,// cập nhật note và món thêm của 1 item trong order
         CloneItemOrder = 14,// clone item order
         UpdateStaffOrder = 15,// cập nhật nhân viên cho đơn
+        UpdateFoodServiceTime = 16,// cập nhật là dừng hay tiếp tục tính giờ cho hàng hóa là dịch vụ tính tiền theo giờ
     }
     public enum EnumTypeSpitOrder
     {

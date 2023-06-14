@@ -22,6 +22,8 @@ namespace SposVietPluginKySo.Model
             }
         }
         public string hash { get; set; }
+        public string xmlbyhash { get; set; }
+        public string serialCert { get; set; }
         public string html { get; set; }
     }
     public class ResponseModel<T>
