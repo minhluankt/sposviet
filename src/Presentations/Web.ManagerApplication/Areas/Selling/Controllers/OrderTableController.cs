@@ -800,6 +800,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [HttpGet]
         public async Task<IActionResult> Payment(EnumTypeUpdatePos TypeUpdate, Guid IdOrder,bool vat)
         {
+            Đơn hàng có hàng hóa đang tính giờ
             if (TypeUpdate == EnumTypeUpdatePos.Payment)
             {
                 var currentUser = User.Identity.GetUserClaimLogin();
@@ -976,7 +977,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateDateTimeFoodServiceAsync(int? IdOrder,Guid? IdItemOrder,bool IsStartDate,string date)
         {
-            tạm tính và thanh toán đơn nhé.
+          
             if (IdOrder == null)
             {
                 _notify.Error("Không tìm thấy đơn!");

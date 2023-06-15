@@ -14853,7 +14853,10 @@ var loadeventPos = {
         let _rhours = Math.floor(_hours);
         let _minutes = (_hours - _rhours) * 60;
         let _rminutes = Math.round(_minutes);
-        return Math.round((_rhours * price) + (_rminutes * price / 60));
+        let quantity = _rhours + parseFloat((_rminutes / 60).toFixed(2));
+
+        //return Math.round((_rhours * price) + (_rminutes * price / 60)); cách tính 1
+        return Math.round(quantity * price);
     },
     updateTotalIsFoodByService: function () {
         var amountall = 0;
@@ -14891,7 +14894,18 @@ var loadeventPos = {
                 
                 //tính ra bao nhiêu phút rồi
                 let timeDiff = enddatenew.diff(date, 'minutes');//years, months, weeks, days, hours, minutes, and seconds
-                let mony = loadeventPos.getTotalServiceByTime(timeDiff, price);//lấy tổng tiền theo phút trên
+
+
+                //tính tiền và số lượng
+                let _hours = (timeDiff / 60);
+                let _rhours = Math.floor(_hours);
+                let _minutes = (_hours - _rhours) * 60;
+                let _rminutes = Math.round(_minutes);
+                let quantity = _rhours + parseFloat((_rminutes / 60).toFixed(2));
+
+                let mony = Math.round(quantity * price);//lấy tổng tiền theo phút trên
+                //let mony = loadeventPos.getTotalServiceByTime(timeDiff, price);//lấy tổng tiền theo phút trên
+                $(this).find(".quantity").val(quantity.format0VND(3, 3));
                 $(this).find(".valueamount").html(mony.format0VND(3, 3));
                 if ($(this).find(".tableinfo-foodisservice").length > 0) {
                     $(this).find(".tableinfo-foodisservice").find(".totalmony").html(mony.format0VND(3, 3));
@@ -14937,8 +14951,23 @@ var loadeventPos = {
            // let date = moment($(this).data("datecreateservice")).format("HH:mm");
             let timeDiff = enddatenew.diff(date, 'minutes');//years, months, weeks, days, hours, minutes, and seconds
 
-            let mony = loadeventPos.getTotalServiceByTime(timeDiff, price);
+            //let mony = loadeventPos.getTotalServiceByTime(timeDiff, price);
 
+            //tính tiền và số lượng
+            let _hours = (timeDiff / 60);
+            let _rhours = Math.floor(_hours);
+            let _minutes = (_hours - _rhours) * 60;
+            let _rminutes = Math.round(_minutes);
+            let quantity = _rhours + parseFloat((_rminutes / 60).toFixed(2));
+            let mony = Math.round(quantity * price);
+            //kiểm tra nếu khác với dữ liệu hiện tại thì update luôn, do interval chạy chưa tới
+            if (parseFloat($(this).parents("li.itemorder").find(".quantity").val()) != quantity) {
+                loadeventPos.eventUpdateTotalProductByService().then(function (data) {
+                    if (data) {//nếu có dịch vụ thì tính tiền lại
+                        loadeventPos.updateTotalIsFoodByService();
+                    }
+                });//tính tiền
+            }
 
             html = `<div class="ele-foodisservice">
                     <div class="index-z"></div>
@@ -14989,18 +15018,26 @@ var loadeventPos = {
                         toastrcus.error("Thời gian bắt đầu không được lớn hơn thời gian kết thúc");
                         return false;
                     }
-                    start = true;
+                    start = true;//tức là điều chỉnh cho input start, là ngày bắt đầu
                 } else {
                     //dành cho cập nhập end date
-                    let startdate = moment($(ele).parents("li.isServiceDate").data("datecreateservice"));
-                    let minutes = picker.startDate.diff(startdate, 'minutes');//years, months, weeks, days, hours, minutes, and seconds
-                    if (minutes <= 0) {
-                        toastrcus.error("Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu");
+                    if ($(".tableinfo-foodisservice .btn-actiontime").hasClass("stop")) {//chỉ cho update khi đang dừng tính giờ
+                        let startdate = moment($(ele).parents("li.isServiceDate").data("datecreateservice"));
+                        let minutes = picker.startDate.diff(startdate, 'minutes');//years, months, weeks, days, hours, minutes, and seconds
+                        if (minutes <= 0) {
+                            toastrcus.error("Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu");
+                            let oldvalue = $(".enddate").data("value");
+                            loadeventPos.updateEndDateFoodservice($(".enddate"), oldvalue);
+                            return false;
+                        }
+                    } else {
+                        toastrcus.error("Thời gian kết thúc không được chỉnh sửa khi vẫn đang tính giờ");
                         let oldvalue = $(".enddate").data("value");
-                        loadeventPos.updateEndDateFoodservice($(".enddate") ,oldvalue);
+                        loadeventPos.updateEndDateFoodservice($(".enddate"), oldvalue);
                         return false;
                     }
-                    start = false;
+                    
+                    start = false;//ngược lại là kết thúc
                 }
 
                 loadeventPos.eventUpdateDateTimeServiceFood(idorder, iditemorder, datestart, start).then(function (data) {
@@ -17610,10 +17647,7 @@ var loadeventPos = {
         return Isprint;
     },
     eventPayment: function () {
-        //$(".btn-notif").click(function () {
-        //    loadeventPos.NotifyChitken();
-        //});
-        // thông báo cho bếp
+
         $(".btn-payment").click(function () {
             let idOder = $("#ul-tab-order > li").find("a.active").data("id");
             // let vat = $(".paymentvatmtt").is(':checked');
@@ -17621,6 +17655,41 @@ var loadeventPos = {
             if (localStorage.getItem("VATMTT") == "true") {
                 vat = true;
             }
+            if ($("#item-mon li.isServiceDate").length == 0) {
+                payment(vat, idOder);
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Đơn hàng có hàng hóa đang tính giờ. Bạn có chắc chắn muốn dừng tính giờ để thanh toán không?',
+                    // showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Đồng ý thanh toán',
+                    cancelButtonText: 'Hủy bỏ thanh toán',
+                    // denyButtonText: `Don't save`,
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+
+                        iditemorder = $("#item-mon li.isServiceDate").data("id");
+                        idorder = $("#item-mon li.isServiceDate").data("idorder");
+                        isStop = true;
+                        loadeventPos.eventUpdateStatusFoodService(idorder, iditemorder, isStop).then(function (data) {
+                            if (data != null) {
+                                if (isStop) {
+                                    clearInterval(countuptimeFoodService);//nếu dừng thì xóa đi k chạy nữa
+                                } else {
+                                    loadeventPos.eventStartServiceDateFood();
+                                }
+                            }
+                            payment(vat, idOder);
+                        });//cập nhật db
+
+                       
+                    }
+                })
+            }
+        });
+        function payment(vat, idOder) {
             $.ajax({
                 type: 'GET',
                 //global: false,
@@ -17676,7 +17745,7 @@ var loadeventPos = {
                                 $('select#Vatrate').on('change', function () {
                                     if (parseInt($("#errVATrate").val()) > 0 && parseFloat($(this).val()) != parseFloat($("#errVATrate").data("vatrate"))) {
                                         toastrcus.error("Giá trị thuế suất bạn chọn không phù hợp với thuế suất trong chi tiết đơn");
-                                        $("#Vatrate option[value='" + parseFloat($("#errVATrate").data("vatrate")) +"']").prop("selected", "selected");
+                                        $("#Vatrate option[value='" + parseFloat($("#errVATrate").data("vatrate")) + "']").prop("selected", "selected");
                                         return;
                                     } else {
                                         loadeventPos.eventLoadCongThucTien();//load lại công thức
@@ -17719,7 +17788,7 @@ var loadeventPos = {
                                                     </div>
                                                 </div>`;
                                     $("#discountPayment").after(html);
-                                 
+
                                     loadeventPos.showPopupSelectDiscount();
                                     evetnFormatnumber3(false);
                                 });
@@ -17774,8 +17843,8 @@ var loadeventPos = {
                                             loadeventPos.CheckOutOrder();
                                         }
                                     }
-                                   
-                                   
+
+
                                 }); // thanh toán hóa đơn
 
 
@@ -17788,8 +17857,7 @@ var loadeventPos = {
                     console.log(err)
                 }
             });
-
-        });
+        }
     },
     showPopupSelectDiscount: function () {
 

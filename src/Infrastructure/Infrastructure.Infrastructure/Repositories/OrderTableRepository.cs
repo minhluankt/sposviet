@@ -2026,16 +2026,18 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public async Task<Result<OrderTable>> UpdateStatusFoodServiceAsync(int ComId, int idOrder, Guid idItem, bool IsStop, DateTime? timestop)
         {
-            var getorder = await _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == idOrder && x.ComId == ComId);
+            var getorder = await _repository.Entities.Include(x => x.OrderTableItems).SingleOrDefaultAsync(x => x.Id == idOrder && x.ComId == ComId);
             if (getorder == null)
             {
                 return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
             }
-            var getitem = await _OrderTableItemrepository.Entities.SingleOrDefaultAsync(x => x.IdOrderTable == idOrder && x.IdGuid == idItem);
+
+            var getitem = getorder.OrderTableItems.SingleOrDefault(x => x.IdGuid == idItem);
             if (getitem == null)
             {
                 return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
             }
+
             if (IsStop)
             {
                 getitem.DateEndService = timestop?? DateTime.Now;
@@ -2044,19 +2046,29 @@ namespace Infrastructure.Infrastructure.Repositories
             {
                 getitem.DateEndService = null;
             }
-            await _OrderTableItemrepository.UpdateAsync(getitem);
+
+            //tính tiền lại cho sản phẩm đó
+            UpdateTotalInUpdateFoodService(getitem);
+            // cách 1 tính thành tiền var mony = Math.Round((rhours * getitem.Price) + (rminutes * getitem.Price / 60),MidpointRounding.AwayFromZero);
+
+
+            getorder.Amonut = getorder.OrderTableItems.Sum(x => x.Amount);
+
+            await _repository.UpdateAsync(getorder);
             await _unitOfWork.SaveChangesAsync();
+
             return await Result<OrderTable>.SuccessAsync(HeperConstantss.SUS006);
         }
 
         public async Task<Result<OrderTable>> UpdateDateTimeFoodServiceAsync(int ComId, int idOrder, Guid idItem, bool IsStart, DateTime datetime)
         {
-            var getorder = await _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == idOrder && x.ComId == ComId);
+            var getorder = await _repository.Entities.Include(x=>x.OrderTableItems).SingleOrDefaultAsync(x => x.Id == idOrder && x.ComId == ComId);
             if (getorder == null)
             {
                 return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
             }
-            var getitem = await _OrderTableItemrepository.Entities.SingleOrDefaultAsync(x => x.IdOrderTable == idOrder && x.IdGuid == idItem);
+
+            var getitem = getorder.OrderTableItems.SingleOrDefault(x=>x.IdGuid== idItem);
             if (getitem == null)
             {
                 return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
@@ -2069,9 +2081,31 @@ namespace Infrastructure.Infrastructure.Repositories
             {
                 getitem.DateEndService = datetime;
             }
-            await _OrderTableItemrepository.UpdateAsync(getitem);
+            //tính tiền lại cho sản phẩm đó
+            UpdateTotalInUpdateFoodService(getitem);
+            getorder.Amonut = getorder.OrderTableItems.Sum(x => x.Amount);
+
+            await _repository.UpdateAsync(getorder);
             await _unitOfWork.SaveChangesAsync();
             return await Result<OrderTable>.SuccessAsync(HeperConstantss.SUS006);
+        }
+        private void UpdateTotalInUpdateFoodService(OrderTableItem getitem)
+        {
+            DateTime enddate = getitem.DateEndService ?? DateTime.Now;
+            var timespan = enddate.Subtract(getitem.DateCreateService.Value);
+
+            //var hours = (decimal)(timespan.TotalMinutes / 60);
+            //var rhours = Math.Floor(hours);
+            //var minutes = (hours - rhours) * 60;
+            //var rminutes = Math.Round(minutes);
+
+            getitem.Quantity = timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
+
+            getitem.Total = getitem.Quantity * (getitem.IsVAT ? getitem.PriceNoVAT : getitem.Price);
+            getitem.VATAmount = getitem.IsVAT ? getitem.Total * (getitem.VATRate / 100) : 0;
+            getitem.Amount = getitem.VATAmount + getitem.Total;
+            // cách 1 tính thành tiền var mony = Math.Round((rhours * getitem.Price) + (rminutes * getitem.Price / 60),MidpointRounding.AwayFromZero);
+
         }
     }
 }

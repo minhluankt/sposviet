@@ -105,6 +105,17 @@ namespace Application.Features.OrderTablePos.Querys
                         {
                             IsProductVAT = true;
                         }
+
+                        // xử lý hàng hóa khi có dịch vụ là san phẩm tính tiền theo giờ,
+                        if (_item.IsServiceDate)
+                        {
+                            DateTime enddate = _item.DateEndService ?? DateTime.Now;
+                            var timespan = enddate.Subtract(_item.DateCreateService.Value);
+                            _item.Quantity = timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
+                            _item.Total = _item.Quantity * (_item.IsVAT ? _item.PriceNoVAT : _item.Price);
+                            _item.VATAmount = _item.IsVAT ? _item.Total * (_item.VATRate / 100.0M) : 0;
+                            _item.Amount = _item.VATAmount + _item.Total;
+                        }
                         neworderitem.Add(_item);
                     }
                     if (query.vat)
