@@ -154,9 +154,20 @@
                 <tbody>
                     @foreach (var item in Model.InvoiceItems)
                     {
+                        string totaldate = string.Empty;
+                        if (item.IsServiceDate)
+                        {
+                            totaldate = Math.Round((item.DateEndService.Value.Subtract(item.DateCreateService.Value)).TotalMinutes, MidpointRounding.AwayFromZero) + "phút";
+                        }
                         <tr>
                             <td>@item.Code</td>
-                            <td>@item.Name</td>
+                            <td>
+                                @item.Name <b>@totaldate</b>
+                                @if (item.IsServiceDate)
+                                {
+                                    <br /> <i>Từ @item.DateCreateService.Value.ToString("dd/MM/yyyy HH:mm"), đến @item.DateEndService.Value.ToString("dd/MM/yyyy HH:mm")</i>
+                                }
+                            </td>
                             <td class="text-center number3">@item.Quantity</td>
                          @*   <td class="text-right number3">@item.EntryPrice</td>*@
                             <td class="text-right number3">

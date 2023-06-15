@@ -87,6 +87,7 @@ namespace Application.Features.OrderTablePos.Querys
                     };
 
                     bool IsProductVAT = false;
+                    bool IsServiceDate = false;
                    
                     var neworderitem = new List<OrderTableItem>();
                     foreach (var item in product.OrderTableItems.GroupBy(x=>x.IdProduct))
@@ -106,18 +107,30 @@ namespace Application.Features.OrderTablePos.Querys
                             IsProductVAT = true;
                         }
 
-                        // xử lý hàng hóa khi có dịch vụ là san phẩm tính tiền theo giờ,
-                        if (_item.IsServiceDate)
+                        // xử lý hàng hóa khi có dịch vụ là san phẩm tính tiền theo giờ mà vẫn đang tính giờ chưa dừng
+                        if (_item.IsServiceDate && _item.DateEndService==null)
                         {
+                            IsServiceDate = true;
                             DateTime enddate = _item.DateEndService ?? DateTime.Now;
                             var timespan = enddate.Subtract(_item.DateCreateService.Value);
                             _item.Quantity = timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
                             _item.Total = _item.Quantity * (_item.IsVAT ? _item.PriceNoVAT : _item.Price);
                             _item.VATAmount = _item.IsVAT ? _item.Total * (_item.VATRate / 100.0M) : 0;
                             _item.Amount = _item.VATAmount + _item.Total;
+                            if (_item.DateEndService==null)
+                            {
+                                _item.DateEndService = DateTime.Now;
+                            }
                         }
                         neworderitem.Add(_item);
                     }
+                    if (IsServiceDate)//xử lý tổng tiền trước nếu có tính dịch vụ
+                    {
+                        product.Amonut= neworderitem.Sum(x => x.Amount);
+                        templateInvoiceParameter.tientruocthue = product.Amonut.ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                        templateInvoiceParameter.khachcantra = (product.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                    }
+
                     if (query.vat)
                     {
                         templateInvoiceParameter.thuesuat = query.VATRate.ToString();

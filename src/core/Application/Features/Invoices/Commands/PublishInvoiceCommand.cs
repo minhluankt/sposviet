@@ -53,6 +53,10 @@ namespace Application.Features.Invoices.Commands
             {
                 return await _Repository.PublishInvoiceByToKen(command.ComId,command.TypeSupplierEInvoice, command.serial, command.pattern, command.dataxmlhash, command.IdCarsher, command.CasherName);
             }
+            else if (command.TypeEventInvoice ==EnumTypeEventInvoice.PublishEInvoieDraft)
+            {
+                return await _Repository.PublishInvoiceByToKen(command.ComId,command.TypeSupplierEInvoice, command.serial, command.pattern, command.dataxmlhash, command.IdCarsher, command.CasherName);
+            }
 
             var model = new PublishInvoiceModel()
             {

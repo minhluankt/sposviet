@@ -51,5 +51,11 @@ namespace Infrastructure.Webservice.Repository.VNPT
             var rs = await WebServiceHelper.PublishService(url).getHashInvWithTokenAsync(useradmin, passadmin, xml, userservice, passservice, serialCert, (int)type,invToken, pattern, serial, convert);
             return rs.Body.getHashInvWithTokenResult;
         }
+
+        public async Task<string> ImportInvByPatternAsync(string url, string xml, string userservice, string passservice, string useradmin, string passadmin, string pattern, string serial)
+        {
+            var rs = await WebServiceHelper.PublishService(url).ImportInvByPatternAsync(useradmin, passadmin, xml, userservice, passservice,pattern, serial, 0);
+            return rs.Body.ImportInvByPatternResult;
+        }
     }
 }

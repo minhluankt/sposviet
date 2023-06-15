@@ -24,6 +24,7 @@ namespace Application.Features.OrderTablePos.Querys
         public bool IsBringback { get; set; }
         public bool IncludeItem { get; set; } = true;
         public bool OutRoom { get; set; } = true;
+        public bool IsStopService { get; set; }
 
         public class GetOrderOneQueryHandler : IRequestHandler<GetOrderOneQuery, Result<OrderTable>>
         {
@@ -57,7 +58,6 @@ namespace Application.Features.OrderTablePos.Querys
                 {
                     product = product.Where(x => x.IdGuid == query.IdOrder);
                 }
-                
                 return await Result<OrderTable>.SuccessAsync(await product.SingleOrDefaultAsync());
             }
         }

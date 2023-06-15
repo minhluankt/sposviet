@@ -299,7 +299,71 @@ namespace Infrastructure.Infrastructure.Repositories
             return await Result<string>.FailAsync($"Không tìm thấy hóa đơn cần phát hành");
 
         }
-      
+        //tạo mói hóa đon nháp
+        public async Task<IResult<string>> ImportInvDraftAsync(EInvoice einvoice, SupplierEInvoice company, string pattern, string serial)
+        {
+            var checkserial = LibraryCommon.IsHDDTMayTinhTien(serial);
+            switch (einvoice.TypeSupplierEInvoice)
+            {
+                case ENumSupplierEInvoice.NONE:
+                    break;
+                case ENumSupplierEInvoice.VNPT:
+                    try
+                    {
+                        if (einvoice.EInvoiceItems.Count() == 0)
+                        {
+                            return await Result<string>.FailAsync("Sản phẩm không được trống khi phát hành hóa đơn điện tử");
+                        }
+
+                        string xmlData = string.Empty;
+                        try
+                        {
+                            if (checkserial)//là máy tính tiền
+                            {
+                                xmlData = this.GenerateXMLMTT_VNPT(einvoice);
+                            }
+                            else//là hóa đơn thông thường
+                            {
+                                xmlData = this.GenerateXML32_VNPT(einvoice);
+                            }
+
+                        }
+                        catch (Exception e)
+                        {
+                            _log.LogError($"Mã {einvoice.EInvoiceCode}, {e.Message}, Lỗi sinh XMl khi phát hành hóa đơn điện tử" + e.ToString());
+                            return await Result<string>.FailAsync($"{CommonException.ExceptionXML}Lỗi sinh XMl khi phát hành hóa đơn điện tử");
+                        }
+                        string pub = string.Empty;
+                        if (checkserial)
+                        {
+                            pub = await _vnptrepository.ImportInvByPatternMTTAsync(company.DomainName, xmlData, company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin, pattern, serial);
+                        }
+                        else
+                        {
+                            pub = await _vnptrepository.ImportInvByPatternAsync(company.DomainName, xmlData, company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin, pattern, serial);
+                        }
+
+                        if (pub.Contains("OK:"))
+                        {
+                            return await Result<string>.SuccessAsync(pub, HeperConstantss.SUS006);
+                        }
+                        else
+                        {
+                            _log.LogError($"Lỗi phát hành hóa đơn đến nhà cung cấp VNPT -> {pub}");
+                            _log.LogError($"XML VNPT -> {xmlData}");
+                            return await Result<string>.FailAsync($"{pub}");
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        return await Result<string>.FailAsync($"{CommonException.Exception} Lỗi phát hành hóa đơn đến nhà cung cấp VNPT -> {e.Message}");
+                    }
+                default:
+                    return await Result<string>.FailAsync($"Không tìm thấy nhà cung cấp");
+            }
+            return await Result<string>.FailAsync($"Không tìm thấy nhà cung cấp");
+        }
         private async Task<IResult<string>> ImportAndPublishInvMTTAsync(EInvoice einvoice, SupplierEInvoice company, string pattern, string serial, string Carsher, string IdCarsher)
         {
             var checkserial = LibraryCommon.IsHDDTMayTinhTien(serial);

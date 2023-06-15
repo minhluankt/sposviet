@@ -19,6 +19,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<PublishInvoiceModelView>> PublishEInvoiceMerge(PublishInvoiceMergeModel model, int ComId);
         Task<Result<PublishInvoiceModelView>> PublishInvoice(PublishInvoiceModel model);
         Task<IResult<PublishInvoiceModelView>> PublishInvoiceByToKen(int Comid, ENumSupplierEInvoice SupplierEInvoice, string serial, string pattern, string dataxml, string IdCasher, string CasherName);
+        Task<IResult<PublishInvoiceModelView>> PublishEInvoieDraft(int Comid, Guid IdInvoice, PublishInvoiceModel model);
         Task<Result<PublishInvoiceResponse>> PublishInvoice(T Invoice, PublishInvoiceModel model, int ComId, string IdCasher, string CasherName);
         Task AddAsync(T entity);
         Task JobDeleteInvoiceAsync();

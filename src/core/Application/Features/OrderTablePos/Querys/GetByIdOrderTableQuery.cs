@@ -25,6 +25,7 @@ namespace Application.Features.OrderTablePos.Querys
         public bool IncludeCustomer { get; set; } = true;
         public bool OutInvNo { get; set; } = true;
         public bool OutRoom { get; set; }
+        public bool IsStopService { get; set; }
         public EnumStatusOrderTable Status { get; set; } = EnumStatusOrderTable.DANG_DAT;
         public EnumTypeProduct TypeProduct { get; set; } = EnumTypeProduct.AMTHUC;
 

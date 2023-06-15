@@ -32,6 +32,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<OrderTable>> UpdateAllQuantityOrderTable(int comid, Guid idOrder, Guid idOrderItem, decimal quantity);
         Task<Result<OrderTable>> AddOrUpdateOrderTable(bool IsNewOrder, OrderTable model, OrderTableItem item);
         Task<OrderTable> GetByIdAsync(int id);
+        Task<Result<OrderTable>> UpdateFoodServiceInPaymentAsync(int ComId, Guid IdOrder);
         IQueryable<OrderTable> GetOrderByBringback(int ComId, EnumStatusOrderTable enumStatusOrderTable, EnumTypeProduct enumTypeProduct);
         IQueryable<OrderTable> GetOrderInvoiceRetail(int ComId, EnumStatusOrderTable enumStatusOrderTable, EnumTypeProduct enumTypeProduct = EnumTypeProduct.BAN_LE);
     }

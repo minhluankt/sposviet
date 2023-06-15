@@ -6,6 +6,7 @@ using AspNetCoreHero.Results;
 using AutoMapper;
 using Domain.Entities;
 using Domain.ViewModel;
+using Domain.XmlDataModel;
 using Hangfire.Logging;
 using HelperLibrary;
 using Joker.Extensions;
@@ -444,6 +445,10 @@ namespace Infrastructure.Infrastructure.Repositories
             item.DateCreateService = DateCreateService;
             item.Code = product.Code;
             item.Unit = product.UnitType?.Name;
+            if (product.IsServiceDate)
+            {
+                item.QuantityNotifyKitchen = item.Quantity;
+            }
             return item;
         }
 
@@ -2100,12 +2105,43 @@ namespace Infrastructure.Infrastructure.Repositories
             //var rminutes = Math.Round(minutes);
 
             getitem.Quantity = timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
-
+            getitem.QuantityNotifyKitchen = getitem.Quantity;
             getitem.Total = getitem.Quantity * (getitem.IsVAT ? getitem.PriceNoVAT : getitem.Price);
             getitem.VATAmount = getitem.IsVAT ? getitem.Total * (getitem.VATRate / 100) : 0;
             getitem.Amount = getitem.VATAmount + getitem.Total;
             // cách 1 tính thành tiền var mony = Math.Round((rhours * getitem.Price) + (rminutes * getitem.Price / 60),MidpointRounding.AwayFromZero);
 
+        }
+
+        public async Task<Result<OrderTable>> UpdateFoodServiceInPaymentAsync(int ComId, Guid IdOrder)
+        {
+            var getdata = await _repository.Entities.Where(x=>x.ComId==ComId&&x.IdGuid==IdOrder)
+                .Include(x=>x.OrderTableItems)
+                .Include(x=>x.Customer)
+                .SingleOrDefaultAsync();
+            if (getdata==null)
+            {
+                return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
+            }
+            foreach (var getitem in getdata.OrderTableItems)
+            {
+                if (getitem.IsServiceDate && getitem.DateCreateService!=null && getitem.DateEndService==null)//chỉ  tính các dịch vụ mà đang còn chạy
+                {
+                    DateTime enddate = DateTime.Now;
+                    var timespan = enddate.Subtract(getitem.DateCreateService.Value);
+
+                    getitem.Quantity = timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
+                    getitem.QuantityNotifyKitchen = getitem.Quantity;
+                    getitem.Total = getitem.Quantity * (getitem.IsVAT ? getitem.PriceNoVAT : getitem.Price);
+                    getitem.VATAmount = getitem.IsVAT ? getitem.Total * (getitem.VATRate / 100) : 0;
+                    getitem.Amount = getitem.VATAmount + getitem.Total;
+                    getitem.DateEndService = DateTime.Now;
+                }
+            }
+            getdata.Amonut = getdata.OrderTableItems.Sum(x => x.Amount);
+            await _repository.UpdateAsync(getdata);
+            await _unitOfWork.SaveChangesAsync();
+            return await Result<OrderTable>.SuccessAsync(getdata);
         }
     }
 }

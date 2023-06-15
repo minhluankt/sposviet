@@ -121,6 +121,9 @@ namespace Domain.Entities
         public decimal Price { get; set; }
         public decimal PriceNoVAT { get; set; } // giá trước thuế
         public decimal Total { get; set; }
+        public bool IsServiceDate { get; set; } // là sản phẩm tính tiền giờ
+        public DateTime? DateCreateService { get; set; } // bắt đầu tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
+        public DateTime? DateEndService { get; set; } // dừng tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
         public EnumTypeProductCategory TypeProductCategory { get; set; }
         public float Discount { get; set; } // % ck
         public decimal DiscountAmount { get; set; } // ck

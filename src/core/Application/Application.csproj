@@ -144,6 +144,7 @@
     <Compile Include="Features\OrderTablePos\Commands\DeleteOrderTableCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\SplitOrderCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\UpdateOrderTableCommand.cs" />
+    <Compile Include="Features\OrderTablePos\Commands\UpdateServiceFoodByPaymentCommand.cs" />
     <Compile Include="Features\ReportPoss\Query\GetRepostEInvoiceQuery.cs" />
     <Compile Include="Features\SaleRetails\Commands\CheckOutOrderInvoiceCommand.cs" />
     <Compile Include="Features\Kitchens\Commands\CreateNotifyChitkenCommand.cs" />

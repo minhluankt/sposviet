@@ -954,7 +954,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 ComId = ComId,
                 TypeSupplierEInvoice = model.TypeSupplierEInvoice,
             };
-            var getpattern = await _managerPatternEInvoicerepository.GetbyIdAsync(model.ManagerPatternEInvoices);
+            var getpattern = await _managerPatternEInvoicerepository.GetbyIdAsync(model.ManagerPatternEInvoices,true);
             if (getpattern == null)
             {
                 return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR049);
@@ -1659,6 +1659,52 @@ namespace Infrastructure.Infrastructure.Repositories
                 await _unitOfWork.RollbackAsync();
                 return await Result<string>.FailAsync(e.Message);
             }
+        }
+
+        public async Task<IResult<PublishInvoiceModelView>> PublishEInvoieDraft(int Comid, Guid IdInvoice, PublishInvoiceModel model)
+        { testc phát hành tạo mới
+            PublishInvoiceModelView publishInvoiceModelView = new PublishInvoiceModelView();
+            List<DetailInvoice> ListDetailInvoice = new List<DetailInvoice>();
+            var getinvoice = await _invoiceRepository.Entities.AsNoTracking().Include(x=>x.InvoiceItems).Include(x=>x.Customer).Include(x=>x.PaymentMethod).SingleOrDefaultAsync(x => x.IdGuid == IdInvoice &&x.ComId==Comid);
+            if (getinvoice!=null)
+            {
+                // lấy ra comapy
+                var suplcompany = await _supplierEInvoiceRepository.GetByIdAsync(Comid, ENumSupplierEInvoice.VNPT);
+                if (suplcompany == null)
+                {
+                    ListDetailInvoice.Add(new DetailInvoice()
+                    {
+                        TypePublishEinvoice = ENumTypePublishEinvoice.KHONGTONTAINHACUNGCAP,
+                        code = getinvoice.InvoiceCode,
+                        note = $"Chưa cấu hình nhà cung cấp",
+                    });
+                    publishInvoiceModelView.DetailInvoices = ListDetailInvoice;
+                    publishInvoiceModelView.TypeEventInvoice = EnumTypeEventInvoice.PublishEInvoieDraft;
+                    return await Result<PublishInvoiceModelView>.SuccessAsync(publishInvoiceModelView);
+                }
+                var getpattern = await _managerPatternEInvoicerepository.GetbyIdAsync(model.IdManagerPatternEInvoice,true);
+                if (getpattern == null)
+                {
+                    return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR049);
+                }
+                List<EInvoice> lsteinvoice = new List<EInvoice>();
+                this.AddEInvoice(lsteinvoice, getinvoice, model, getpattern);
+                var getinvoicefirst = lsteinvoice.First();
+                getinvoicefirst.FkeyEInvoice= getinvoice.IdGuid.ToString(); 
+                var importeinv = await _einvoiceRepository.ImportInvDraftAsync(lsteinvoice.First(), suplcompany, getpattern.Pattern, getpattern.Serial);
+                if (importeinv.Succeeded) {
+                    ListDetailInvoice.Add(new DetailInvoice()
+                    {
+                        TypePublishEinvoice = ENumTypePublishEinvoice.TAOMOIOK,
+                        code = getinvoice.InvoiceCode,
+                        note = $"Tạo mới hóa đơn điện tử thành công!",
+                    });
+                }
+                publishInvoiceModelView.DetailInvoices = ListDetailInvoice;
+                publishInvoiceModelView.TypeEventInvoice = EnumTypeEventInvoice.PublishEInvoieDraft;
+                return await Result<PublishInvoiceModelView>.SuccessAsync(publishInvoiceModelView);
+            }
+            return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR012);
         }
     }
 }

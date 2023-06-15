@@ -1988,6 +1988,12 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("DateCreateService")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateEndService")
+                        .HasColumnType("datetime2");
+
                     b.Property<float>("Discount")
                         .HasColumnType("real");
 
@@ -2002,6 +2008,9 @@ namespace Infrastructure.Infrastructure.Migrations
 
                     b.Property<int?>("IdProduct")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsServiceDate")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");

@@ -451,7 +451,16 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             _notify.Error(GeneralMess.ConvertStatusToString(response.Message));
             return Json(new { isValid = false });
         }
-        
+
+       
+        [EncryptedParameters("secret")]
+        [Authorize(Policy = "invoice.publishinvoiedraft")]
+        [HttpPost]
+        public async Task<ActionResult> PublishEInvoieDraftAsync(Guid? id)
+        {
+
+        }
+
         [HttpPost]
         public async Task<ActionResult> UpdateCustomerAsync(Guid? id,int? idCus)
         {

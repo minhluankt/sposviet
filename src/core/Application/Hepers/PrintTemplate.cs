@@ -31,7 +31,18 @@ namespace Application.Hepers
                 foreach (var item in orderTableItems)
                 {
                     //https://www.csharp-examples.net/string-format-double/
-                    tableProduct += result.Replace("{tenhanghoa}", item.Name)
+                    string servicetime = string.Empty;
+                    string totaldate = string.Empty;
+                    if (item.IsServiceDate)
+                    {
+                        TimeSpan timeSpan = item.DateEndService.Value.Subtract(item.DateCreateService.Value);
+                        totaldate = $"{Math.Round(timeSpan.TotalMinutes, MidpointRounding.AwayFromZero)} phút";
+                        servicetime = $"Từ {item.DateCreateService.Value.ToString("dd/MM/yyyy HH:mm")}, đến {item.DateEndService.Value.ToString("dd/MM/yyyy HH:mm")}";
+                    }
+                    tableProduct += result
+                        .Replace("{tenhanghoa}", item.Name)
+                        .Replace("{tonggio}", totaldate)//tổng giờ
+                        .Replace("{thoigiangio}", servicetime)//thời gian giờ từ a đến b
                         .Replace("{donvitinh}", item.Unit)
                         .Replace("{dongia}", String.Format(LibraryCommon.GetIFormatProvider(), "{0:#,0.##}", item.Price))//item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider()).TrimEnd('0', ',')
                         
@@ -74,7 +85,18 @@ namespace Application.Hepers
             {
                 foreach (var item in InvoiceItems)
                 {
+                    string servicetime=string.Empty;
+                    string totaldate = string.Empty;
+                    if (item.IsServiceDate)
+                    {
+                        TimeSpan timeSpan = item.DateEndService.Value.Subtract(item.DateCreateService.Value);
+                        totaldate = $"{Math.Round(timeSpan.TotalMinutes,MidpointRounding.AwayFromZero)} phút";
+                        servicetime = $"Từ {item.DateCreateService.Value.ToString("dd/MM/yyyy HH:mm")}, đến {item.DateEndService.Value.ToString("dd/MM/yyyy HH:mm")}";
+                    }
+
                     tableProduct += result.Replace("{tenhanghoa}", item.Name)
+                        .Replace("{tonggio}", totaldate)//tổng giờ
+                        .Replace("{thoigiangio}", servicetime)//thời gian giờ từ a đến b
                         .Replace("{donvitinh}", item.Unit)
                         .Replace("{dongia}", item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider()))
                         .Replace("{thanhtien}", item.Amonut.ToString("#,0.##", LibraryCommon.GetIFormatProvider()))

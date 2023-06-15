@@ -71,9 +71,20 @@
                     }
                     @foreach (var item in Model.OrderTable.OrderTableItems.GroupBy(x=>x.IdProduct))
                     {
+                        string totaldate = string.Empty;
+                        if (item.First().IsServiceDate)
+                        {
+                            totaldate = Math.Round((item.First().DateEndService.Value.Subtract(item.First().DateCreateService.Value)).TotalMinutes,MidpointRounding.AwayFromZero) + "phút";
+                        }
                         <tr>
                             <td class="text-rcenter">@(i++)</td>
-                            <td>@item.First().Name @(item.First().IsVAT ? Html.Raw("<i class='fas fa-percent productpercent'></i>") : "")</td>
+                            <td>
+                                @item.First().Name @(item.First().IsVAT ? Html.Raw("<i class='fas fa-percent productpercent'></i>") : "") <b>@totaldate</b>
+                                @if (item.First().IsServiceDate)
+                                {
+                                   <br/> <i>Từ @item.First().DateCreateService.Value.ToString("dd/MM/yyyy HH:mm"), đến @item.First().DateEndService.Value.ToString("dd/MM/yyyy HH:mm")</i>
+                                }
+                            </td>
                             <td class="text-center">@string.Format("{0:0.##}",item.Sum(x=>x.Quantity)).Replace(",",".")</td>
                             @if (item.First().IsVAT)
                             {

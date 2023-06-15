@@ -12,6 +12,7 @@ namespace Application.EInvoices.Interfaces.VNPT
         Task<string> ImportAndPublishInvAsync(string url, string xml, string userservice, string passservice, string useradmin, string passadmin, string pattern, string serial);
         Task<string> ImportAndPublishInvMTT32Async(string url, string xml, string userservice, string passservice, string useradmin, string passadmin, string pattern, string serial);
         Task<string> ImportInvByPatternMTTAsync(string url, string xml, string userservice, string passservice, string useradmin, string passadmin, string pattern, string serial);
+        Task<string> ImportInvByPatternAsync(string url, string xml, string userservice, string passservice, string useradmin, string passadmin, string pattern, string serial);
          Task<string> GetMCCQThueByFkeys(string Account, string ACpass, string username, string password, string pattern, string fkeys, string url);
          Task<string> ImportAndPublishInvMTTAsync(string url,string xml, string userservice, string passservice,string useradmin, string passadmin,string pattern,string serial);
         Task<string> PublishInvWithTokenAsync(string url, string xml, string userservice, string passservice, string useradmin, string passadmin, string pattern, string serial);

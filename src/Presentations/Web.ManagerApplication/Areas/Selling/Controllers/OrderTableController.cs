@@ -30,6 +30,7 @@ using Web.ManagerApplication.Abstractions;
 using Web.ManagerApplication.Areas.Selling.Models;
 using Library;
 using HelperLibrary;
+using System.Drawing.Drawing2D;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -798,27 +799,64 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             return Json(new { isValid = false });
         }
         [HttpGet]
-        public async Task<IActionResult> Payment(EnumTypeUpdatePos TypeUpdate, Guid IdOrder,bool vat)
+        public async Task<IActionResult> Payment(EnumTypeUpdatePos TypeUpdate, Guid IdOrder,bool vat,bool isStopService)
         {
-            Đơn hàng có hàng hóa đang tính giờ
-            if (TypeUpdate == EnumTypeUpdatePos.Payment)
+            try
             {
-                var currentUser = User.Identity.GetUserClaimLogin();
-                var update = await _mediator.Send(new GetByIdOrderTableQuery() { TypeProduct = currentUser.IdDichVu, Comid = currentUser.ComId, IdOrder = IdOrder, OutInvNo = false, OutRoom = true });
-                if (update.Succeeded)
+                if (TypeUpdate == EnumTypeUpdatePos.Payment)
                 {
+                    var _orderTable = new OrderTable();
+                    var currentUser = User.Identity.GetUserClaimLogin();
+                    if (isStopService)//nếu có sản phẩm nào là hàng hóa tính giờ
+                    {
+                        var get = await _mediator.Send(new UpdateServiceFoodByPaymentCommand()
+                        {
+                            ComId = currentUser.ComId,
+                            IdOrder = IdOrder,
+                        });
+                        if (get.Succeeded)
+                        {
+                            _orderTable = get.Data;
+                        }
+                        else
+                        {
+                            _notify.Error(GeneralMess.ConvertStatusToString(get.Message));
+                            return Json(new { isValid = false });
+                        }
+                    }
+                    else
+                    {
+                        var get = await _mediator.Send(new GetByIdOrderTableQuery()
+                        {
+                            TypeProduct = currentUser.IdDichVu,
+                            Comid = currentUser.ComId,
+                            IdOrder = IdOrder,
+                            IsStopService = isStopService,
+                            OutInvNo = false,
+                            OutRoom = true
+                        });
+                        if (get.Succeeded)
+                        {
+                            _orderTable = get.Data?.FirstOrDefault();
+                        }
+                        else
+                        {
+                            _notify.Error(GeneralMess.ConvertStatusToString(get.Message));
+                            return Json(new { isValid = false });
+                        }
+                    }
                     var _send = await _mediator.Send(new GetAllSupplierEInvoiceQuery() { Comid = currentUser.ComId, IsManagerPatternEInvoices = true });
                     PaymentModelView paymentModelView = new PaymentModelView();
-                    paymentModelView.PaymentMethods = _payment.GetAll(currentUser.ComId, true).ToList() ;
+                    paymentModelView.PaymentMethods = _payment.GetAll(currentUser.ComId, true).ToList();
                     paymentModelView.SupplierEInvoiceModel = _send.Data?.FirstOrDefault();
-                    paymentModelView.OrderTable = update.Data?.SingleOrDefault();
+                    paymentModelView.OrderTable = _orderTable;
                     paymentModelView.VatMTT = vat;
                     if (paymentModelView.OrderTable == null)
                     {
                         _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR043));
                         return Json(new { isValid = false });
                     }
-                    if (paymentModelView.OrderTable.OrderTableItems.Where(x=>x.IsVAT).Select(x=>x.VATRate).Distinct().Count()>1)
+                    if (paymentModelView.OrderTable.OrderTableItems.Where(x => x.IsVAT).Select(x => x.VATRate).Distinct().Count() > 1)
                     {
                         _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR050));
                     }
@@ -830,12 +868,17 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         IdOrder = IdOrder,
                         title = $"Phiếu thanh toán {paymentModelView.OrderTable.OrderTableCode} {(paymentModelView.OrderTable.RoomAndTable != null ? paymentModelView.OrderTable.RoomAndTable.Name : "")}"
                     });
-
                 }
-                _notify.Error(GeneralMess.ConvertStatusToString(update.Message));
-
+                _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR001));
+                return Json(new { isValid = false });
             }
-            return Json(new { isValid = false });
+            catch (Exception e)
+            {
+                _logger.LogError(e.ToString());
+                _notify.Error(e.Message);
+                return Json(new { isValid = false });
+            }
+           
         }
         [HttpGet]
         public async Task<IActionResult> GetHistoryOrder(Guid IdOrder)
