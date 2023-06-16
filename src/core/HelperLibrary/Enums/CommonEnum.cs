@@ -54,6 +54,7 @@ namespace Application.Enums
         PublishEInvoiceTokenByHash = 11,//phát hành sau khi lấy hash = token vnpt
         DeleteEInvoiceErrorInPublish = 12,//xóa các hóa đơn điện tử sau khi người dùng ký token nhưng bấm hủy bỏ k ký
         PublishEInvoieDraft = 13,//Phát hành nháp hóa đơn tạo mới
+        DeleteEInvoieDraft = 14,//Xóa hóa đơn  nháp hóa đơn tạo mới
     }
     public enum ENumTypeCustomer
     {

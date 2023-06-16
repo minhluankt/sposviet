@@ -1419,6 +1419,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     Code = x.Code,
                     Name = x.Name,
                     Quantity = x.Quantity,
+                    PriceNoVAT = x.PriceNoVAT,
                     Price = x.PriceNew,
                     Unit = x.Unit,
                     Total = x.Total,
@@ -1429,10 +1430,23 @@ namespace Infrastructure.Infrastructure.Repositories
                     Discount = x.Discount,
                     DiscountAmount = x.DiscountAmount,
                 };
+               
                 if (iteminvoice.VATRate.HasValue && iteminvoice.VATRate > (int)NOVAT.NOVAT)
                 {
+                   // iteminvoice.VATRate = (float)model.VATRate;
+                    iteminvoice.VATAmount = iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100);
+                    iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
+                }
+                else if(model.VATRate!= (int)NOVAT.NOVAT && (!iteminvoice.VATRate.HasValue || iteminvoice.VATRate== (int)NOVAT.NOVAT))
+                {
                     iteminvoice.VATRate = (float)model.VATRate;
-                    iteminvoice.VATAmount = iteminvoice.Total * (Convert.ToDecimal(model.VATRate) / 100);
+                    iteminvoice.VATAmount = iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100);
+                    iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
+
+                }
+                else
+                {
+                    iteminvoice.VATAmount = 0;
                     iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
                 }
                 data.Add(iteminvoice);
@@ -1473,13 +1487,14 @@ namespace Infrastructure.Infrastructure.Repositories
                             x.VATRate = item.VATRate;
                             x.IsVAT = item.IsVAT;
                             x.RetailPrice = item.RetailPrice;
-                            //x.Price = item.Price;
+                            x.Price = item.Price;
+
                             //if (x.IsVAT)// nếu sp có thuế
                             //{
                             //    x.Total = x.Quantity * x.PriceNoVAT;
                             //    x.VATAmount = x.Total * (x.VATRate / 100.0M);
                             //}
-                            //else if(model.VATMTT &&!x.IsVAT)//nếu hóa đơn có thuế sp k thuếthì updatelaij total và tính lại amount
+                            //else if (model.VATMTT && !x.IsVAT)//nếu hóa đơn có thuế sp k thuếthì updatelaij total và tính lại amount
                             //{
                             //    x.Total = x.Amount;
                             //    x.VATAmount = x.Total * (model.VATRate.Value / 100.0M);
@@ -1512,6 +1527,10 @@ namespace Infrastructure.Infrastructure.Repositories
                 inv.Status = EnumStatusInvoice.DA_THANH_TOAN;
                 inv.DiscountAmount = model.DiscountAmount;
                 inv.Discount = (float)model.Discount;
+                if (true)
+                {
+                    đây tính lại total, vatamouont, nếu hàng hóa là sp có thuế, để khi xuất hóa đơn cho đúng, tính lại cả ở view
+                }
                 inv.Total = model.Total;// tong tien chưa giam, gán amount bởi vì là giá trị gốc của hóa đơn ban đầu
                 inv.VATRate = (float)model.VATRate;//
                 inv.VATAmount = model.VATAmount;//

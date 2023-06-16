@@ -30,6 +30,8 @@ namespace Application.Interfaces.Repositories
         Task<IResult<PublishInvoiceModelView>> SendCQTTokenAsync(int[] lstid, string dataXml, int Comid, string Carsher, string IdCarsher);
         Task<IResult<PublishInvoiceModelView>> PublishInvoiceByTokenVNPTAsync(int Comid, ENumSupplierEInvoice SupplierEInvoice, string serial, string pattern, string dataxml, string IdCasher, string CasherName);
         Task<IResult<string>> ImportInvDraftAsync(EInvoice einvoice, SupplierEInvoice company, string pattern, string serial);
+        Task<Result<string>> ViewEInvoieDraft(int ComId, string fkey, ENumSupplierEInvoice SupplierEInvoice);
+        Task<IResult<string>> DeleteEInvoieDraft(int Comid, string fkey, ENumSupplierEInvoice SupplierEInvoice);
         Task UpdateAsync(T Entity);
         Task UpdateRangeAsync(List<EInvoice> Entity);
         Task<T> FindByIdAsync(int id, bool asNotracking = false);

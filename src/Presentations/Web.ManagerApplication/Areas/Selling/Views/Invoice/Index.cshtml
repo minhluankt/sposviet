@@ -388,14 +388,21 @@
                          
                             htmleinvoice =`<a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.viewInvoice('/Selling/EInvoice/ViewInvoice?secret=` + full.secretEinvoice + `')"><i class="fas fa-info-circle mr-2"></i> Xem hóa đơn điện tử</a>
                                           <a class="dropdown-item" href="javascript:void(0)" onclick="loadeventEinvoice.printInvoice('/Selling/EInvoice/PrintInvoice?secret=` + full.secretEinvoice + `')"><i class="fas fa-print mr-2"></i> In hóa đơn điện tử</a>`;
-                                        
+
+                        } 
+                        else if (!full.isImportInvDraft) {
+                            htmleinvoice+=`<a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.PublishEInvoieDraft('` + full.idGuid + `')"><i class="fas fa-edit mr-2"></i> Tạo mới hóa đơn điện tử nháp</a>`;
+                        }
+                        if (full.isImportInvDraft) {
+                            htmleinvoice += `<a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.ViewEInvoieDraft('` + full.secret + `')"><i class="fas fa-info mr-2"></i> Xem hóa đơn điện tử nháp</a>`;
+                            htmleinvoice += `<a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.DeletePublishEInvoieDraft('` + full.idGuid + `')"><i class="fas fa-trash-alt mr-2"></i> Xóa hóa đơn điện tử nháp</a>`;
                         }
                        let html = `
                                     <div class="btn-group dropleft">
                                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-vertical"></i> </button>
                                        <div class="dropdown-menu">
                                           <a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.viewInvoice('/Selling/Invoice/details?secret=` + full.secret + `')"><i class="fas fa-info-circle mr-2"></i> Xem chi tiết</a>
-                                                          <a class="dropdown-item" href="javascript:void(0)" data-id="`+ full.idEInvoice + `" onclick="eventInvocie.CloneToOrder('/Selling/Invoice/CloneOrder?secret=` + full.secret + `')"><i class="fas fa-clone mr-2"></i> Sao chép đơn</a>
+                                          <a class="dropdown-item" href="javascript:void(0)" data-id="`+ full.idEInvoice + `" onclick="eventInvocie.CloneToOrder('/Selling/Invoice/CloneOrder?secret=` + full.secret + `')"><i class="fas fa-clone mr-2"></i> Sao chép đơn</a>
                                           <a class="dropdown-item" href="javascript:void(0)" onclick="eventInvocie.printInvoice('/Selling/Invoice/PrintInvoice?secret=` + full.secret + `')"><i class="fas fa-print mr-2"></i> In hóa đơn</a>
                                           `+ cancelhtml + `
                                           `+ htmleinvoice + `

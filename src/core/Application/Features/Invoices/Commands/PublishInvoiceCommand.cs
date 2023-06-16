@@ -1,4 +1,5 @@
 ﻿
+using Application.Constants;
 using Application.Enums;
 using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
@@ -28,6 +29,7 @@ namespace Application.Features.Invoices.Commands
         public int IdManagerPatternEInvoice { get; set; }
         public float VATRate { get; set; }
         public int ComId { get; set; }
+        public Guid? IdInvoice { get; set; }
         public ENumSupplierEInvoice TypeSupplierEInvoice { get; set; }
         public EnumTypeEventInvoice TypeEventInvoice { get; set; }
     }
@@ -49,13 +51,34 @@ namespace Application.Features.Invoices.Commands
 
         public async Task<IResult<PublishInvoiceModelView>> Handle(PublishInvoiceCommand command, CancellationToken cancellationToken)
         {
-            if (command.TypeEventInvoice ==EnumTypeEventInvoice.PublishEInvoiceTokenByHash)
+            if (command.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoiceTokenByHash)
             {
-                return await _Repository.PublishInvoiceByToKen(command.ComId,command.TypeSupplierEInvoice, command.serial, command.pattern, command.dataxmlhash, command.IdCarsher, command.CasherName);
+                return await _Repository.PublishInvoiceByToKen(command.ComId, command.TypeSupplierEInvoice, command.serial, command.pattern, command.dataxmlhash, command.IdCarsher, command.CasherName);
             }
-            else if (command.TypeEventInvoice ==EnumTypeEventInvoice.PublishEInvoieDraft)
+            else if (command.TypeEventInvoice == EnumTypeEventInvoice.PublishEInvoieDraft)
             {
-                return await _Repository.PublishInvoiceByToKen(command.ComId,command.TypeSupplierEInvoice, command.serial, command.pattern, command.dataxmlhash, command.IdCarsher, command.CasherName);
+                PublishInvoiceModel publishInvoiceModel = new PublishInvoiceModel();
+                publishInvoiceModel.TypeSupplierEInvoice = command.TypeSupplierEInvoice;
+                publishInvoiceModel.VATRate = command.VATRate;
+                publishInvoiceModel.IdManagerPatternEInvoice = command.IdManagerPatternEInvoice;
+                return await _Repository.PublishEInvoieDraft(command.ComId, command.IdInvoice.Value, publishInvoiceModel);
+            }
+            else if (command.TypeEventInvoice == EnumTypeEventInvoice.DeleteEInvoieDraft)
+            {
+                PublishInvoiceModel publishInvoiceModel = new PublishInvoiceModel();
+                publishInvoiceModel.TypeSupplierEInvoice = command.TypeSupplierEInvoice;
+                publishInvoiceModel.VATRate = command.VATRate;
+                publishInvoiceModel.IdManagerPatternEInvoice = command.IdManagerPatternEInvoice;
+                var publish = await _Repository.DeleteEInvoieDraft(command.ComId, command.IdInvoice.Value);
+                if (publish.Succeeded)
+                {
+                    return await Result<PublishInvoiceModelView>.SuccessAsync();
+                }
+                else
+                {
+                    return await Result<PublishInvoiceModelView>.FailAsync(publish.Message);
+                }
+               
             }
 
             var model = new PublishInvoiceModel()

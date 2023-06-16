@@ -1732,6 +1732,15 @@ div#parentautocomplete {
         display: grid;
         grid-template-columns: 50px auto 140px 100px 120px;
 
+        &.topevent {
+            .name {
+                .ele-foodisservice {
+                    bottom: 116%;
+                    top:auto
+                }
+            }
+        }
+
         &:last-child {
             border-bottom: none;
         }
@@ -1908,7 +1917,7 @@ div#parentautocomplete {
                             color: #1287aa;
                         }
 
-                    
+
 
                         input.fc-datetimepicker {
                             width: 139px;

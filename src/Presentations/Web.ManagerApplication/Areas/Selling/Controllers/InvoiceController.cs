@@ -456,11 +456,94 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [EncryptedParameters("secret")]
         [Authorize(Policy = "invoice.publishinvoiedraft")]
         [HttpPost]
-        public async Task<ActionResult> PublishEInvoieDraftAsync(Guid? id)
+        public async Task<ActionResult> PublishEInvoieDraftAsync(Guid? id,int idPattern, EnumTypeEventInvoice TypeEventInvoice ,float? Vatrate)
         {
+            if (idPattern == 0)
+            {
+                _notify.Error("Vui lòng chọn mẫu số ký hiệu");
+                return new JsonResult(new { isValid = false });
+            }
+            if (Vatrate == null)
+            {
+                _notify.Error("Vui lòng chọn thuế xuất");
+                return new JsonResult(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var send = await _mediator.Send(new PublishInvoiceCommand()
+            {
+                CasherName = currentUser.FullName,
+                IdCarsher = currentUser.Id,
+                IdInvoice = id,
+                VATRate = Vatrate.Value,
+                IdManagerPatternEInvoice = idPattern,
+                ComId = currentUser.ComId,
+                TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT,
+                TypeEventInvoice = TypeEventInvoice
+            }); 
+            if (send.Succeeded)
+            {
+                var html = await _viewRenderer.RenderViewToStringAsync("PublishEInvoice", send.Data);
+                return new JsonResult(new { isValid = true, html = html});
+            }
+
+            _notify.Error(GeneralMess.ConvertStatusToString(send.Message));
+            return Json(new { isValid = false });
+        }
+     
+        [Authorize(Policy = "invoice.publishinvoiedraft")]
+        [HttpPost]
+        public async Task<ActionResult> DeleteEInvoieDraftAsync(Guid? id,EnumTypeEventInvoice TypeEventInvoice)
+        {
+            if (id == null)
+            {
+                _notify.Error("Vui lòng chọn hóa đơn");
+                return Json(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var send = await _mediator.Send(new PublishInvoiceCommand()
+            {
+                CasherName = currentUser.FullName,
+                IdCarsher = currentUser.Id,
+                IdInvoice = id,
+                ComId = currentUser.ComId,
+                TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT,
+                TypeEventInvoice = TypeEventInvoice
+            });
+            if (send.Succeeded)
+            {
+                _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS007));
+                return new JsonResult(new { isValid = true});
+            }
+
+            _notify.Error(GeneralMess.ConvertStatusToString(send.Message));
+            return Json(new { isValid = false });
 
         }
+        [EncryptedParameters("secret")]
+        [Authorize(Policy = "invoice.publishinvoiedraft")]
+        [HttpGet]
+        public async Task<ActionResult> ViewEInvoieDraftAsync(Guid? id)
+        {
+            if (id==null)
+            {
+                _notify.Error("Vui lòng chọn hóa đơn");
+                return Json(new { isValid = false });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var send = await _mediator.Send(new ViewEInvoiceQuery()
+            {
+                IdInvoice = id.Value,
+                ComId = currentUser.ComId,
+            });
+            if (send.Succeeded)
+            {
+                return new JsonResult(new { isValid = true,html = send.Data});
+            }
 
+            _notify.Error(GeneralMess.ConvertStatusToString(send.Message));
+            return Json(new { isValid = false });
+
+        }
         [HttpPost]
         public async Task<ActionResult> UpdateCustomerAsync(Guid? id,int? idCus)
         {

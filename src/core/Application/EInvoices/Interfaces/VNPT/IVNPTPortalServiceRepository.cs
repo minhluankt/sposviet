@@ -12,6 +12,7 @@ namespace Application.EInvoices.Interfaces.VNPT
         Task<string> downloadInvFkeyNoPayAsync(string fkey, string userservice, string passservice, string url);
         Task<string> getCusAsync(string cusCode, string userservice, string passservice, string url);
         Task<string> getInvViewFkeyNoPayAsync(string fkey, string userservice, string passservice, string url);
+        Task<string> getNewInvViewFkeyAsync(string fkey, string userservice, string passservice, string url);
         Task<string> listInvByCusAsync(string cuscode, string fromdate, string todate, string userservice, string passservice, string url);
         Task<string> listInvByCusFkeyAsync(string fkey, string fromdate, string todate, string userservice, string passservice, string url);
     }

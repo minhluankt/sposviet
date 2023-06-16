@@ -1,6 +1,7 @@
 ﻿using Application.EInvoices.Interfaces.VNPT;
 using Application.Enums;
 using Infrastructure.Webservice.Webservice.VNPT;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +57,12 @@ namespace Infrastructure.Webservice.Repository.VNPT
         {
             var rs = await WebServiceHelper.PublishService(url).ImportInvByPatternAsync(useradmin, passadmin, xml, userservice, passservice,pattern, serial, 0);
             return rs.Body.ImportInvByPatternResult;
+        }
+
+        public async Task<string> deleteInvoiceByFkey(string url, string lstFkey, string userservice, string passservice, string useradmin, string passadmin)
+        {
+            var rs = await WebServiceHelper.PublishService(url).deleteInvoiceByFkeyAsync(lstFkey,userservice, passservice, useradmin, passadmin);
+            return rs.Body.deleteInvoiceByFkeyResult;
         }
     }
 }

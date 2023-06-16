@@ -15,11 +15,13 @@ namespace Application.Interfaces.Repositories
         Task<Result<OrderTable>> CloneOrder(Guid IdInvoice, int ComId, string IdCasherName, string CasherName);
         Task<Result<PublishInvoiceModelView>> DeleteIsMergeInvoice(Guid IdInvoice,int ComId,string CasherName);
         Task<Result<string>> DeleteEInvoiceErrorInPublish(int[] lstid, int ComId);
+        Task<Result<string>> ViewEInvoieDraft(int ComId, Guid IdInvoice);
         Task<Result<PublishInvoiceModelView>> CancelInvoice(int[] lstid,int ComId,string CasherName,string Note, EnumTypeEventInvoice type,bool IsDelete,bool IsDeletePT = false);
         Task<Result<PublishInvoiceModelView>> PublishEInvoiceMerge(PublishInvoiceMergeModel model, int ComId);
         Task<Result<PublishInvoiceModelView>> PublishInvoice(PublishInvoiceModel model);
         Task<IResult<PublishInvoiceModelView>> PublishInvoiceByToKen(int Comid, ENumSupplierEInvoice SupplierEInvoice, string serial, string pattern, string dataxml, string IdCasher, string CasherName);
         Task<IResult<PublishInvoiceModelView>> PublishEInvoieDraft(int Comid, Guid IdInvoice, PublishInvoiceModel model);
+        Task<IResult<string>> DeleteEInvoieDraft(int Comid, Guid IdInvoice);
         Task<Result<PublishInvoiceResponse>> PublishInvoice(T Invoice, PublishInvoiceModel model, int ComId, string IdCasher, string CasherName);
         Task AddAsync(T entity);
         Task JobDeleteInvoiceAsync();

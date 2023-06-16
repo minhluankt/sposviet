@@ -1885,6 +1885,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<bool>("IsDeleteMerge")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("IsImportInvDraft")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsMerge")
                         .HasColumnType("bit");
 

@@ -2677,5 +2677,33 @@ namespace Infrastructure.Infrastructure.Repositories
                 await _repository.DeleteRangeAsync(getdata);
             }
         }
+
+        public async Task<Result<string>> ViewEInvoieDraft(int ComId, string fkey, ENumSupplierEInvoice SupplierEInvoice)
+        {
+            SupplierEInvoice company = await _supplierEInvoicerepository.GetByIdAsync(ComId, SupplierEInvoice);
+            var gethtml = await _vnptportalrepository.getNewInvViewFkeyAsync(fkey,company.UserNameService, company.PassWordService, company.DomainName);
+            if (gethtml.Contains("ERR:"))
+            {
+                return await Result<string>.FailAsync(gethtml);
+            }
+            else
+            {
+                return await Result<string>.SuccessAsync(gethtml,HeperConstantss.SUS006);
+            }
+        }
+
+        public async Task<IResult<string>> DeleteEInvoieDraft(int Comid, string fkey, ENumSupplierEInvoice SupplierEInvoice)
+        {
+            SupplierEInvoice company = await _supplierEInvoicerepository.GetByIdAsync(Comid, SupplierEInvoice);
+            var gethtml = await _vnptrepository.deleteInvoiceByFkey(company.DomainName,fkey, company.UserNameService, company.PassWordService, company.UserNameAdmin, company.PassWordAdmin);
+            if (gethtml.Contains("ERR:"))
+            {
+                return await Result<string>.FailAsync(gethtml);
+            }
+            else
+            {
+                return await Result<string>.SuccessAsync(gethtml, HeperConstantss.SUS006);
+            }
+        }
     }
 }

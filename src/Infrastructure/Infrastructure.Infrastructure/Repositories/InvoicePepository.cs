@@ -126,6 +126,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 IsBringBack = x.IsBringBack,
                 IsMerge = x.IsMerge,
                 IsDeleteMerge = x.IsDeleteMerge,
+                IsImportInvDraft = x.IsImportInvDraft,
                 Buyer = x.Buyer,
                 Address = x.Address,
                 PhoneNumber = x.PhoneNumber,
@@ -147,6 +148,10 @@ namespace Infrastructure.Infrastructure.Repositories
             var data = await PaginatedList<Invoice>.ToPagedListAsync(datalist, textSearch.Currentpage, pageSize);
             data.Items.ForEach(x =>
             {
+                if (x.IsImportInvDraft==null)
+                {
+                    x.IsImportInvDraft = false;
+                }
                 if (x.IdCustomer != null)
                 {
                     x.Buyer = _repositoryCusomer.GetByIdAsync(x.IdCustomer.Value).Result?.Name;
@@ -1662,10 +1667,10 @@ namespace Infrastructure.Infrastructure.Repositories
         }
 
         public async Task<IResult<PublishInvoiceModelView>> PublishEInvoieDraft(int Comid, Guid IdInvoice, PublishInvoiceModel model)
-        { testc phát hành tạo mới
+        { 
             PublishInvoiceModelView publishInvoiceModelView = new PublishInvoiceModelView();
             List<DetailInvoice> ListDetailInvoice = new List<DetailInvoice>();
-            var getinvoice = await _invoiceRepository.Entities.AsNoTracking().Include(x=>x.InvoiceItems).Include(x=>x.Customer).Include(x=>x.PaymentMethod).SingleOrDefaultAsync(x => x.IdGuid == IdInvoice &&x.ComId==Comid);
+            var getinvoice = await _invoiceRepository.Entities.Include(x=>x.InvoiceItems).Include(x=>x.Customer).Include(x=>x.PaymentMethod).SingleOrDefaultAsync(x => x.IdGuid == IdInvoice &&x.ComId==Comid);
             if (getinvoice!=null)
             {
                 // lấy ra comapy
@@ -1690,9 +1695,14 @@ namespace Infrastructure.Infrastructure.Repositories
                 List<EInvoice> lsteinvoice = new List<EInvoice>();
                 this.AddEInvoice(lsteinvoice, getinvoice, model, getpattern);
                 var getinvoicefirst = lsteinvoice.First();
-                getinvoicefirst.FkeyEInvoice= getinvoice.IdGuid.ToString(); 
-                var importeinv = await _einvoiceRepository.ImportInvDraftAsync(lsteinvoice.First(), suplcompany, getpattern.Pattern, getpattern.Serial);
+
+                getinvoicefirst.FkeyEInvoice= getinvoice.IdGuid.ToString();
+
+                var importeinv = await _einvoiceRepository.ImportInvDraftAsync(getinvoicefirst, suplcompany, getpattern.Pattern, getpattern.Serial);
                 if (importeinv.Succeeded) {
+                    getinvoice.IsImportInvDraft = true;
+                    await _invoiceRepository.UpdateAsync(getinvoice);
+                    await _unitOfWork.SaveChangesAsync();
                     ListDetailInvoice.Add(new DetailInvoice()
                     {
                         TypePublishEinvoice = ENumTypePublishEinvoice.TAOMOIOK,
@@ -1700,11 +1710,57 @@ namespace Infrastructure.Infrastructure.Repositories
                         note = $"Tạo mới hóa đơn điện tử thành công!",
                     });
                 }
+                else
+                {
+                    return await Result<PublishInvoiceModelView>.FailAsync(importeinv.Message);
+                }
                 publishInvoiceModelView.DetailInvoices = ListDetailInvoice;
                 publishInvoiceModelView.TypeEventInvoice = EnumTypeEventInvoice.PublishEInvoieDraft;
                 return await Result<PublishInvoiceModelView>.SuccessAsync(publishInvoiceModelView);
             }
             return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR012);
+        }
+
+        public async Task<Result<string>> ViewEInvoieDraft(int ComId, Guid IdInvoice)
+        {
+            var getinv = await _invoiceRepository.Entities.AsNoTracking().SingleOrDefaultAsync(x=>x.ComId==ComId&&x.IdGuid==IdInvoice);  
+            if (getinv == null)
+            {
+                return await Result<string>.FailAsync(HeperConstantss.ERR014);
+            }
+            var importeinv = await _einvoiceRepository.ViewEInvoieDraft(ComId, IdInvoice.ToString(), ENumSupplierEInvoice.VNPT);
+            if (importeinv.Succeeded)
+            {
+                return await Result<string>.SuccessAsync(importeinv.Data,HeperConstantss.SUS006);
+            }
+            else
+            {
+                return await Result<string>.FailAsync(importeinv.Message);
+            }
+        }
+
+        public async Task<IResult<string>> DeleteEInvoieDraft(int Comid, Guid IdInvoice)
+        {
+            var getinv = await _invoiceRepository.Entities.SingleOrDefaultAsync(x => x.ComId == Comid && x.IdGuid == IdInvoice);
+            if (getinv == null)
+            {
+                return await Result<string>.FailAsync(HeperConstantss.ERR014);
+            }
+           
+            var importeinv = await _einvoiceRepository.DeleteEInvoieDraft(Comid, IdInvoice.ToString(), ENumSupplierEInvoice.VNPT);
+            if (importeinv.Succeeded)
+            {
+                getinv.IsImportInvDraft = false;
+                await _invoiceRepository.UpdateAsync(getinv);
+                await _unitOfWork.SaveChangesAsync();
+                return await Result<string>.SuccessAsync(importeinv.Data, HeperConstantss.SUS007);
+            }
+
+            else
+            {
+                return await Result<string>.FailAsync(importeinv.Message);
+            }
+
         }
     }
 }

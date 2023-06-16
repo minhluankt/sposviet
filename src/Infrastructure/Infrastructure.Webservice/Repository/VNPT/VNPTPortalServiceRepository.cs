@@ -12,6 +12,11 @@ namespace Infrastructure.Webservice.Repository.VNPT
     public class VNPTPortalServiceRepository : IVNPTPortalServiceRepository
     {
 
+        public async Task<string> getNewInvViewFkeyAsync(string fkey, string userservice, string passservice, string url)
+        {
+            var rs = await WebServiceHelper.PortalService(url).getNewInvViewFkeyAsync(fkey, userservice, passservice);
+            return rs.Body.getNewInvViewFkeyResult;
+        } 
         public async Task<string> getInvViewFkeyNoPayAsync(string fkey, string userservice, string passservice, string url)
         {
             var rs = await WebServiceHelper.PortalService(url).getInvViewFkeyNoPayAsync(fkey, userservice, passservice);

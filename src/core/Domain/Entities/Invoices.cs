@@ -44,6 +44,7 @@ namespace Domain.Entities
         public int? IdOrderTable { get; set; }// mã đặt hàng/mã đặt bàn
         public int? IdCustomer { get; set; }// khách hàng
         public bool IsDelete { get; set; }// là xóa bỏ khỏi hệ thống
+        public bool? IsImportInvDraft { get; set; }// là phát hành tạo mới hóa đơn
 
         public int? IdRoomAndTable { get; set; } // bàn/phòng
         public bool IsRetailCustomer { get; set; } // là khách lẻ
