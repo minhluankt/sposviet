@@ -2701,7 +2701,10 @@ var eventConfigSaleParameters = {
 
             if (!$(this).prop('checked')) {
                 //tắt
-
+                if ($(this).parents(".check-b").find(".link-settingfunction").length > 0) {
+                    $(this).parents(".check-b").find(".link-settingfunction").toggleClass("disabled");
+                    $(this).parents(".check-b").find(".link-settingfunction").attr("href","javascript:void(0)");
+                }
                 switch (getValueKey) {
                     case EnumConfigParameters.DELETEINVOICENOPAYMENT:// Cho phép xóa đơn khi chưa xuất VAT
 
@@ -2738,6 +2741,13 @@ var eventConfigSaleParameters = {
                 eventConfigSaleParameters.updatedatachange($(this), ConfigSaleParametersItems);
             } else {
                 //bật
+                if ($(this).parents(".check-b").find(".link-settingfunction").length > 0) {
+                    let href = $(this).parents(".check-b").find(".link-settingfunction").data("href");
+                    $(this).parents(".check-b").find(".link-settingfunction").toggleClass("disabled");
+                    $(this).parents(".check-b").find(".link-settingfunction").attr("href", href);
+                }
+
+
                 ConfigSaleParametersItem.Key = key;
                 ConfigSaleParametersItem.TypeValue = typevalue;
                 ConfigSaleParametersItem.Type = type;
@@ -6762,6 +6772,7 @@ var eventInvocie = {
                                             if (res.isGetHashToken) {
                                                 eventInvocie.gethashTokenPublishEinvoice(lstid,res.typeSupplierEInvoice,res.serialCert, res.serial, res.pattern, res.data);
                                             } else {
+                                                dataTableOut.columns().checkboxes.deselectAll(true);
                                                 dataTableOut.ajax.reload(null, false);
                                                 if (res.isValid) {
                                                     Swal.close();
@@ -7032,6 +7043,7 @@ var eventInvocie = {
                                 },
                                 success: function (res) {
                                     if (res.isValid) {
+                                        dataTableOut.columns().checkboxes.deselectAll(true);
                                         dataTableOut.ajax.reload(null, false);
                                         Swal.close();
                                         title = "Hủy hóa đơn";
@@ -8348,10 +8360,11 @@ var loadcentChitkent = {
             let sel = $(this).parent();
             let idChitken = sel.data("id");
             var offset = $(this).offset();
-            //console.log(offset);
+          
             var getlet = screen.width - offset.left;
             var getbottom = screen.height - offset.top;
             let classmoveleft = "";
+            console.log(getlet);
             if (getlet < 800) {
                 classmoveleft = " leftstart";
             }
@@ -8464,7 +8477,7 @@ var loadcentChitkent = {
     },
     loadDatacancelFood: function (data, isReload = false) {//isReload trường hợp nếu true tức là có reload lại page thfi phải kiểm tra còn thì phải hiển thị lên lại
         let getdataloca = localStorage.getItem("dataJsoncancelFood");
-        let listFood;
+        let listFood=[];
         if (!isReload) {
             let datajson = JSON.parse(data);
             listFood = JSON.parse(datajson.data);
@@ -12735,11 +12748,11 @@ var eventBanle = {
         let totalsaudiscount = (parseFloat(totalPayment) - parseFloat(discountPayment)) || 0;
         let vatamount = 0;
         if ($("#Vatrate").length > 0) {
-            vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
+            vatamount = parseFloat((totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100)).toFixed(3));
             $(".VATAmount").val(vatamount.format0VND(0, 3, ""));
         } else {
         }
-        let khachtra = totalsaudiscount + vatamount;
+        let khachtra = Math.round(totalsaudiscount + vatamount);
         $(".cuspayment").html(khachtra.format0VND(0, 3, ""));
         let cuspay = $(".cussendamount").val().replaceAll(",", "") || 0;
         if ($(".cussendamount").data("select") == 1) {
@@ -12768,9 +12781,11 @@ var eventBanle = {
                 if (foundIndex != -1) {
                     let VATAmount = 0;
                     let VATRate = 0;
-                    if ($("#Vatrate").length > NOVATRate) {
+                    if ($("#Vatrate").length > 0) {
                         VATAmount = parseFloat($(".VATAmount").val().replaceAll(",", ""));
                         VATRate = parseFloat($("#Vatrate").val());
+                    } else {
+                        VATRate = NOVATRate;
                     }
                     let getdata = datas[foundIndex];
                     getdata.VATAmount = VATAmount;
@@ -12845,8 +12860,11 @@ var eventBanle = {
                     let foundIndex = datas.findIndex(x => x.Id == getidhoadon);
                     if (foundIndex != -1) {
                         let getdata = datas[foundIndex];
+                        if (getdata.IsProductVAT) {
+                            getdata.Total = getdata.TotalIsVatPro;
+                        }
                         getdata.CusSendAmount = cuspayAmount;//tiền khashc đưa
-                        getdata.AmountChangeCus = amoutchange;//tiền thừa
+                        getdata.Amoutchange = amoutchange;//tiền thừa
                         loadingStart();
                         if (getdata.VATMTT) {
                             $.ajax({
@@ -13346,10 +13364,12 @@ var eventBanle = {
         ProductsArray = {};
         Products = [];
         var totals = 0;
+        var totalIsVatPro = 0;
         var totalsaudiscount = 0;
         var Vatrate = NOVATRate;
         var vatamount = 0;
         var amounts = 0;
+        var IsProductVAT = false;
         var amountchange = 0;//tiền trả khách
         if ($("ul#item-mon").find("li").length == 0) {
             html = `<div role="tabpanel">
@@ -13379,12 +13399,16 @@ var eventBanle = {
             } else {
                 localStorage.setItem("ProductsArrays", "[]");
             }
-        } else {
+        }
+        else {
             let getidhoadon = $("ul.action-inv li.active").data("id");
             $("ul#item-mon").find("li").map(function (index, ele) {
                 product = {};
                 let id = $(this).data("idpro");
                 let code = $(this).data("code");
+                let isvat = $(this).data("isvat");
+                let pricenovat = parseFloat($(this).data("pricenovat")) || 0;
+                let vatrate = parseFloat($(this).data("vatrate")) || NOVATRate;
                 let name = $(this).find(".name").data("name");
                 let quantity = parseFloat($(this).find(".quantity").val()) || 0;
                 let price = parseFloat($(this).find(".price").data("price")) || 0;
@@ -13396,6 +13420,9 @@ var eventBanle = {
                 let amount = parseFloat($(this).find(".total").find("b").data("total")) || 0;
                 product.Id = id;
                 product.Code = code;
+                product.PriceNoVAT = pricenovat;
+                product.Vatrate = vatrate;
+                product.IsVAT = isvat;
                 product.Name = name;
                 product.Price = price;
                 product.PriceNew = pricenew;
@@ -13407,34 +13434,41 @@ var eventBanle = {
                 product.Amount = amount;
                 Products.push(product);
                 totals += amount;
+                debugger
+                if (isvat) {
+                    IsProductVAT = true;
+                    totalIsVatPro += quantity * parseFloat(pricenovat);
+                } else {
+                    totalIsVatPro += amount;
+                }
             });
             //--------------tính tiền------------
-            $(".fullamount").html(totals.format0VND(3, 3));
+            
             let discountamount = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
             let discount = parseFloat($(".discountamount").data("discount")) || 0;
+            $(".discountamount").val(discountamount);
             //------------
-            if (discountamount > 0) {
-                totalsaudiscount = totals - discountamount;
-            } else {
-                $(".discountamount").val(0);
-                totalsaudiscount = totals;
-            }
+            
             if ($("#Vatrate").length > 0) {
+
+                totalsaudiscount = IsProductVAT ? totalIsVatPro - discountamount : totals - discountamount;
+
                 Vatrate = parseFloat($("#Vatrate").val());
-                vatamount = totalsaudiscount * parseFloat(Vatrate / 100).toFixed(2);
+                vatamount = totalsaudiscount * parseFloat(Vatrate / 100).toFixed(3);
                 $(".VATAmount").val(vatamount.format0VND(3, 3));
-            } 
-            amounts = vatamount + totalsaudiscount;
+                //-------tính lại nếu sản phẩm có thuế
+                $(".fullamount").html(totalIsVatPro.format0VND(3, 3));//dòng tổng tiền hàng khi có thuế
+            } else {
+                totalsaudiscount = totals - discountamount;
+                $(".fullamount").html(totals.format0VND(3, 3));//dòng tổng tiền hàng
+            }
+
+            eventBanle.addAttrFulltotal(totals, totalIsVatPro, IsProductVAT);
+         
+
+            amounts = Math.round(vatamount + totalsaudiscount);
             $(".cuspayment").html(amounts.format0VND(3, 3));
-            //let cussendamount = parseFloat($("ul.action-inv li.active").data("cussendamount")) || 0;
-            //if (cussendamount > 0) {
-            //    let kkhacthanhtoan = parseFloat($(".cussendamount").val().replaceAll(",", "")) || 0;
-            //    amountchange = amounts - kkhacthanhtoan;
-            //    $(".amoutchange").val(amountchange.format0VND(0, 3, ""));
-            //} else {
-            //    $(".cussendamount").val(amounts.format0VND(0, 3, ""));
-            //    $(".amoutchange").val(0);
-            //}
+
             $(".cussendamount").val(amounts.format0VND(0, 3, ""));
             $(".amoutchange").val(0);
             //--------------add khách hàng----------//
@@ -13442,11 +13476,11 @@ var eventBanle = {
             let IdCustomer = "";
             if (cusocde.trim() != "") {
                 cusocde = cusocde.split(" ")[0];
-                name = cusocde.split(" ")[1];
+                cusname = cusocde.split(" ")[1];
                 IdCustomer = $(".search-customer").data("id");
                 Customer = {};
                 Customer.Id = IdCustomer;
-                Customer.Name = name;
+                Customer.Name = cusname;
                 Customer.CusCode = cusocde;
 
             } else {
@@ -13464,6 +13498,8 @@ var eventBanle = {
             ProductsArray.Customer = Customer;//add khách ahfng
             ProductsArray.Items = Products;//sản phẩm
 
+            ProductsArray.IsProductVAT = IsProductVAT;
+            ProductsArray.TotalIsVatPro = totalIsVatPro;
             ProductsArray.Total = totals;
             ProductsArray.DiscountAmount = discountamount;
             ProductsArray.Discount = discount;
@@ -13577,13 +13613,18 @@ var eventBanle = {
             }
         });
         return isValid;
-    },
-    eventselectProductCompelteOffline: async function (id, price, retailPrice, code, name) {
+    }, 
+    eventselectProductCompelteOffline: async function (id, price, retailPrice, code, name, isVAT, priceNoVAT, vatrate) {
         var checkcode = await eventBanle.loadEventCheckCodeItem(code);
         if (!checkcode) {
             let html = `<ul id="item-mon"> `;
             let htmlli = "";
-            htmlli += `<li data-code="` + code + `" data-idpro ="` + id + `" data-sl=` + 1 + `>
+            htmlli += `<li 
+            data-code="` + code + `" 
+            data-isvat="` + isVAT + `" 
+            data-pricenovat="` + priceNoVAT + `" 
+            data-vatrate="` + vatrate + `" 
+            data-idpro ="` + id + `" data-sl=` + 1 + `>
                             <div  class="btn-remove" data-idquan="1"><i data-idquan="1" class="fas fa-trash-alt"></i></div>
                             <div class="name" data-name="`+ name + `"><b>` + name + `</b></div>
                             <div class="item_action"><i class="fas fa-minus"></i><input data-quantity="1" class="quantity number3" value="1"><i class="fas fa-plus"></i></div>
@@ -13594,13 +13635,17 @@ var eventBanle = {
             html += `</ul>`;
             if ($("ul#item-mon").length > 0) {
                 $("ul#item-mon li:last-child").after(htmlli);
+                
             } else {
 
                 $(".action-inv").find("li.active").removeAttr("data-id");
                 $(".action-inv").find("li.active").data("id", GUID());// add id vào
                 $("#container-tableOder").html(html);
             }
+            eventBanle.loadUpdatedataAttrItem($("ul#item-mon li:last-child"));//xóa các id data attr
         }
+
+        
         eventBanle.loadeventchangeclickprice();//kích vào giá
         eventBanle.loadChangeItemOrderLoca();
         evetnFormatTextnumber3();
@@ -13609,6 +13654,34 @@ var eventBanle = {
             eventBanle.updateCustomerOrderOffline(0);//update khách hàng
         }
     },
+    eventUpdateAllDataAttrProduct: function () {
+        $("#item-mon li").map(function () {
+            eventBanle.loadUpdatedataAttrItem($(this));
+        });
+    },
+    loadUpdatedataAttrItem: function (ele) {
+        let code = $(ele).data("code");
+        let isvat = $(ele).data("isvat");
+        let pricenovat = $(ele).data("pricenovat");
+        let vatrate = $(ele).data("vatrate");
+        let idpro = $(ele).data("idpro");
+        let sl = $(ele).data("sl");
+
+        $(ele).removeAttr("data-code");
+        $(ele).removeAttr("data-isvat");
+        $(ele).removeAttr("data-pricenovat");
+        $(ele).removeAttr("data-vatrate");
+        $(ele).removeAttr("data-idpro");
+        $(ele).removeAttr("data-sl");
+
+        $(ele).data("code", code);
+        $(ele).data("isvat", isvat);
+        $(ele).data("pricenovat", pricenovat);
+        $(ele).data("vatrate", vatrate);
+        $(ele).data("idpro", idpro);
+        $(ele).data("sl", sl);
+
+    },//xóa các id data
     loadEventClickIconAddAndMinusoffline: function () {
         $("#item-mon  li .item_action").find("input.quantity").unbind();
         $("#item-mon  li .item_action").find("input.quantity").change(function () {
@@ -14056,7 +14129,16 @@ var eventBanle = {
                                         htmltonkho + "</div></div></a>";
                                     return {
                                         //label: html, value: item.code + " " + item.name, idProduct: item.id
-                                        label: html, value: item.code, idProduct: item.id, code: item.code, name: item.name, retailPrice: item.retailPrice, price: item.price
+                                        label: html,
+                                        value: item.code,
+                                        idProduct: item.id,
+                                        code: item.code,
+                                        name: item.name,
+                                        retailPrice:item.retailPrice,
+                                        vatrate: item.vatrate,
+                                        priceNoVAT: item.priceNoVAT,
+                                        isVAT: item.isVAT,
+                                        price: item.price
                                     };
                                 }))
                                 return { label: request.term, value: request.term };
@@ -14073,6 +14155,9 @@ var eventBanle = {
                         $(this).data("retailPrice", parseFloat(ui.item.retailPrice));
                         $(this).data("code", ui.item.code);
                         $(this).data("name", ui.item.name);
+                        $(this).data("isvat", ui.item.isVAT);
+                        $(this).data("pricenovat", ui.item.priceNoVAT);
+                        $(this).data("vatrate", ui.item.vatrate);
                         $(this).select();
                         // _varIdGuidSelectproductAutocomplete = ui.item.idProduct;
                         idProductAutocom = ui.item.idProduct;
@@ -14082,7 +14167,10 @@ var eventBanle = {
                             parseFloat(ui.item.price),
                             parseFloat(ui.item.retailPrice),
                             ui.item.code,
-                            ui.item.name);
+                            ui.item.name,
+                            ui.item.isVAT,
+                            ui.item.priceNoVAT,
+                            ui.item.vatrate);
                     },
                     response: function () {
                         // $(this).select()
@@ -14211,18 +14299,34 @@ var eventBanle = {
 
     },//sự kiện autocomple sản phẩm và khách hàng, và select chọn sản phẩm
     eventLoadTFullAmount: async function () {
-        let fullamount = parseFloat($(".fullamount").text().replaceAll(",", "")) || 0;
+        let isvatpro = $(".fullamount").data("isproductvat") || false;
+        let totalfull = parseFloat($(".fullamount").data("totalfull")) || 0;
+        let totalisvatpro = parseFloat($(".fullamount").data("totalisvatpro")) || 0;
+        debugger
+        let fullamount = 0;
+        if (isvatpro && $("#Vatrate").length>0) {
+            fullamount = totalisvatpro;
+        } else {
+            fullamount = totalfull;
+        }
+        $(".fullamount").html(fullamount.format0VND(3, 3, ""));
 
         let discountamount = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
         $(".discountamount").val(discountamount.format0VND(3, 3, ""));
         let Total = fullamount - discountamount;
 
         let Vatrate = parseFloat($("#Vatrate").val()) || 0;
+
         let VATAmount = parseFloat($(".VATAmount").data("VATAmount")) || 0;
         if (VATAmount == 0) {
-            VATAmount = Math.round((Total) * (Vatrate / 100));
+            VATAmount = ((Total) * (Vatrate / 100));
+            if (isvatpro) {
+                VATAmount = parseFloat(VATAmount.toFixed(3));
+            } else {
+                VATAmount = Math.round(VATAmount);
+            }
         }
-        let Amount = Total + VATAmount;
+        let Amount = Math.round(Total + VATAmount);
         $(".VATAmount").val(VATAmount.format0VND(3, 3, ""));
         $(".cuspayment").html(Amount.format0VND(3, 3, ""));
 
@@ -14465,12 +14569,16 @@ var eventBanle = {
                 if (foundIndex != -1) {
                     let getdata = datas[foundIndex];
                     getdata.VATMTT = VATMTT;
+                    getdata.Total = parseFloat($(".fullamount").html().replaceAll(",", ""));
                     if (VATMTT) {
                         getdata.VATRate = parseInt($("#Vatrate").val());
                         getdata.VATAmount = parseFloat($(".VATAmount").val().replaceAll(",", ""));
+                        getdata.Amount = parseFloat($(".cuspayment").html().replaceAll(",", ""));
+                       
                     } else {
                         getdata.VATRate = NOVATRate;//
                         getdata.VATAmount = 0;
+                        getdata.Amount = getdata.Total;
                     }
                     datas[foundIndex] = getdata;
                     localStorage.setItem("ProductsArrays", JSON.stringify(datas));
@@ -15171,6 +15279,12 @@ var eventBanle = {
         }
 
     },
+    addAttrFulltotal: function (totals, totalIsVatPro, IsProductVAT) {
+        
+        $(".fullamount").data("totalfull", totals);
+        $(".fullamount").data("totalisvatpro", totalIsVatPro);
+        $(".fullamount").data("isproductvat", IsProductVAT);
+    },
     loadHtmloffline: async function (json) {
         let product = json.Items;
         let html = `<ul id="item-mon"> `;
@@ -15184,7 +15298,13 @@ var eventBanle = {
                     htmldiscount = "<span class='discountAmountItemPro'>" + (ele.DiscountAmount * -1).format0VND(0, 3) + "</span>"
                 }
             }
-            html += `<li data-code="` + ele.Code + `" data-idpro ="` + ele.Id + `" data-sl=` + ele.Quantity + `>
+            html += `<li 
+            data-isvat="` + ele.IsVAT + `" 
+            data-pricenovat="` + ele.PriceNoVAT + `" 
+            data-vatrate="` + ele.Vatrate + `" 
+            data-code="` + ele.Code + `" 
+            data-idpro ="` + ele.Id + `" 
+            data-sl=` + ele.Quantity + `>
                             <div  class="btn-remove" data-idquan="1"><i data-idquan="1" class="fas fa-trash-alt"></i></div>
                             <div class="name" data-name="`+ ele.Name + `"><b>` + (index + 1) + `.` + ele.Name + `</b></div>
                             <div class="item_action"><i class="fas fa-minus"></i><input data-quantity="`+ ele.Quantity + `" class="quantity number3" value="` + ele.Quantity + `"><i class="fas fa-plus"></i></div>
@@ -15195,9 +15315,12 @@ var eventBanle = {
         });
         html += `</ul>`;
         $("#container-tableOder").html(html);
-        $(".fullamount").text(json.Total.format0VND(3, 3));
-        $(".discountamount").val(json.DiscountAmount.format0VND(3, 3));
+        eventBanle.eventUpdateAllDataAttrProduct();//update toàn bộ attr data-id
 
+        $(".fullamount").text(json.Total.format0VND(3, 3));
+        eventBanle.addAttrFulltotal(json.Total, json.TotalIsVatPro, json.IsProductVAT);//load data fullamount
+
+        $(".discountamount").val(json.DiscountAmount.format0VND(3, 3));
         $(".discountamount").data("discount", json.Discount);
         if (json.Discount > 0) {
             $(".discountamount").data("value", json.Discount)
@@ -15210,6 +15333,7 @@ var eventBanle = {
 
         //$("ul.action-inv li.active").data("discountamount", json.DiscountAmount)
         //------
+       
         eventBanle.loadeventchangeclickprice();//kích vào giá
         evetnFormatTextnumber3();
         eventBanle.loadEventClickIconAddAndMinusoffline();

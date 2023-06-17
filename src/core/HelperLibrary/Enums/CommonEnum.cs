@@ -11,6 +11,14 @@ namespace Application.Enums
         Company = 1
     } 
  
+    public enum EnumTypeSericeOrder
+    {
+       DON_DAT_BAN = 0,
+       DON_AN_TAI_BAN = 1,
+       DON_MANG_DI =2,
+       DON_GIAO_HANG = 3,
+    } 
+ 
 
     public enum EnumTypeSyncEInvoice
     {
@@ -225,7 +233,9 @@ namespace Application.Enums
         [Display(Name = "Phương pháp in kết nối Plugin SposViet")]
         PRINT_KET_NOI = 8,
         [Display(Name = "Tính năng nhân viên hủy món có chờ bếp xác nhận")]
-        CANCEL_FOOD_PENDING_CONFIRM = 9,
+        CANCEL_FOOD_PENDING_CONFIRM = 9, 
+        [Display(Name = "Tính năng mặc định hàng hóa khi tạo đơn")]
+        DEFAULT_FOOD_CREATE_ORDER = 10,
     }
     public enum EnumConfigParametersType // loại nào
     {

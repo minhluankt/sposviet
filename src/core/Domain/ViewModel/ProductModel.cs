@@ -441,6 +441,8 @@ namespace Model
     {
         public int typeProductCategory { get; set; }
         public int Length { get; set; }
+        public string Vatrate { get; set; }
+        public string PriceNoVAT { get; set; }
         public string Price { get; set; }
         public string RetailPrice { get; set; }
         public string Quantity { get; set; }//số lượng tồn
@@ -448,6 +450,7 @@ namespace Model
         public string Code { get; set; }
         public string Name { get; set; }
         public string Img { get; set; }
+        public bool IsVAT { get; set; }
         public bool IsInventory { get; set; }
     }
 }

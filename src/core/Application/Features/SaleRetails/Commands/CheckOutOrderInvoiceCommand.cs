@@ -81,6 +81,35 @@ namespace Application.Features.SaleRetails.Commands
                             tienthuatrakhach = product.Data.Invoice.AmountChangeCus?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                           
                         };
+
+                        var listitemnew = product.Data.Invoice.InvoiceItems;
+                        if (product.Data.IsProductVAT)//check trường hợp nếu sản phẩm có dòng đơn giá đã gồm thuế
+                        {
+                            if (product.Data.Invoice.VATRate != (float)NOVAT.NOVAT)//nếu hóa đơn có thuế thì hiển thị tiền trước thuế phải là tiền trước thuế của sản phẩm có và k có thuế
+                            {
+                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                            }
+                            else
+                            {
+                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                            }
+                        }
+                        else
+                        {
+                            if (product.Data.Invoice.VATRate != (float)NOVAT.NOVAT)//nếu hóa đơn có thuế
+                            {
+                                foreach (var item in listitemnew)
+                                {
+                                    if (item.PriceNoVAT == 0)//là sp đơn giá không có thuế
+                                    {
+                                        item.Amonut = item.Total;//update lại amount để hiển thị lên bill cho đúng là tiền trước thuế của sp đó
+                                    }
+                                }
+                            }
+                        }
+
+
+
                         if (product.Data.IsSuccess)
                         {
                             templateInvoiceParameter.kyhieuhoadon = GetEInvoiceNoFormat.get_kyhieu(product.Data.Pattern, product.Data.Serial);
@@ -91,77 +120,10 @@ namespace Application.Features.SaleRetails.Commands
                             templateInvoiceParameter.linktracuu = product.Data.UrlDomain;
                             templateInvoiceParameter.matracuu = product.Data.Fkey;
                             templateInvoiceParameter.macoquanthue = product.Data.MCQT;
-
-
-                    
                         }
 
-                        //string tableProduct = string.Empty;
-                        //foreach (var item in product.Data.Invoice.InvoiceItems)
-                        //{
-                        //    tableProduct += $"<tr>" +
-                        //                        $"<td colspan=\"4\"><span style=\"display: block;font-size: 11px\">{item.Name}</span></td>" +
-                        //                    "</tr>" +
-                        //                    "<tr style='border-botom-style: dotted;border-width: 0.3px'>" +
-                        //                        $"<td><span style=\"display: block;  text-align: left;font-size: 11px\">{item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
-                        //                        $"<td style='text-align: right'><span style=\"display: block; font-size: 11px\">{item.Quantity.ToString("#,0.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
-                        //                        $"<td><span style=\"display: block; text-align: center;font-size: 11px\">{item.Unit}</span></td>" +
-                        //                        $"<td><span style=\"display: block; text-align: right;font-size: 11px\">{item.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
-                        //                    "</tr>";
 
-                        //}
 
-                        //string thongtinthue = string.Empty;
-                        //if (product.Data.Invoice.VATRate!= (int)VATRateInv.KHONGVAT && product.Data.Invoice.VATRate!= (int)NOVAT.NOVAT)
-                        //{
-                        //    thongtinthue =  $"<tr style='font-size: 11px; text-align: left'>" +
-                        //                    $"<td colspan=\"3\">Tiền thuế: {templateInvoiceParameter.thuesuat}%</td>\r\n\t\t\t<td style=\"text-align: right;\">{templateInvoiceParameter.tienthue}</td>" +
-                        //                    $"</tr>";
-
-                        //}
-                        //templateInvoiceParameter.tableProduct = tableProduct;
-                        //string thongtintracuuhoadon = string.Empty;
-
-                        //if (!product.Data.IsSuccess)
-                        //{
-                        //    //đoạn này là xóa đi vì chưa phát hành hóa đơn điện tử dc
-                        //    string regex = @"<.*?{kyhieuhoadon}.*?>";
-                        //     Regex rg = new Regex(regex);
-                        //     var match = rg.Match(templateInvoice.Template);
-                        //   // MatchCollection coll = Regex.Matches(templateInvoice.Template, regex);
-                        //    //String result = coll[0].Groups[1].Value;
-                        //    String result = match.Groups[0].Value;
-                        //    if (!string.IsNullOrEmpty(result))
-                        //    {
-                        //        templateInvoice.Template = templateInvoice.Template.Replace(result, "");
-                        //    }
-                        //    string regexsohoadon = @"<.*?{sohoadon}.*?>";
-                        //    rg = new Regex(regexsohoadon);
-                        //    match = rg.Match(templateInvoice.Template);
-                        //    result = match.Groups[0].Value;
-                        //    if (!string.IsNullOrEmpty(result))
-                        //    {
-                        //        templateInvoice.Template = templateInvoice.Template.Replace(result, "");
-                        //    }
-                        //}
-                        //else
-                        //{
-
-                        //    if (!string.IsNullOrEmpty(product.Data.Fkey))
-                        //    {
-                        //        string url = InfoSeachInvCons.thong_tin_tra_cuu(product.Data.UrlDomain, product.Data.Fkey, product.Data.MCQT);
-                        //        thongtintracuuhoadon = $"<hr />" +
-                        //                                $"<table style='margin-top: 0mm;width: 100%;'>" +
-                        //                                $"<tr style='width: 100%;'>" +
-                        //                                $"<td style='text-align: center; font-size: 11px;'>" +
-                        //                                $"<span style='display: block;'>{url}</span>" +
-                        //                                $"</td>" +
-                        //                                $"</tr>" +
-                        //                                $"</table>";
-                        //    }
-                        //}
-                        //templateInvoiceParameter.thongtinthue = thongtinthue;
-                        //templateInvoiceParameter.thongtintracuuhoadon = thongtintracuuhoadon;
                         try
                         {
                             string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, product.Data.Invoice.InvoiceItems.ToList(), templateInvoice.Template);

@@ -36,6 +36,7 @@ namespace Infrastructure.Infrastructure.DbContexts
         public IDbConnection Connection => throw new NotImplementedException();
         public bool HasChanges => ChangeTracker.HasChanges();
         public DbSet<TemplateInvoice> TemplateInvoice { get; set; }
+        public DbSet<DefaultFoodOrder> DefaultFoodOrder { get; set; }
         public DbSet<Post> Post { get; set; }
         public DbSet<Unit> Unit { get; set; }
         public DbSet<Product> Product { get; set; }
@@ -109,6 +110,7 @@ namespace Infrastructure.Infrastructure.DbContexts
         public DbSet<OrderTableItem> OrderTableItem { get; set; }
         public DbSet<HistoryOrder> HistoryOrder { get; set; }
         public DbSet<Kitchen> Kitchen { get; set; }
+        public DbSet<BarAndKitchen> BarAndKitchen { get; set; }
         public DbSet<PurchaseOrder> PurchaseOrder { get; set; }
         public DbSet<ItemPurchaseOrder> ItemPurchaseOrder { get; set; }
         public DbSet<Suppliers> Suppliers { get; set; }
@@ -158,6 +160,8 @@ namespace Infrastructure.Infrastructure.DbContexts
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            // quan hệ 1-1 https://learn.microsoft.com/en-us/ef/core/modeling/relationships/one-to-one
             foreach (var property in builder.Model.GetEntityTypes()
             .SelectMany(t => t.GetProperties())
             .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
@@ -194,7 +198,22 @@ namespace Infrastructure.Infrastructure.DbContexts
             {
                 entity.HasIndex(p => new { p.VFkey }).IsUnique();
             });
+            builder.Entity<DefaultFoodOrder>(entity =>
+            {
+                // Tạo Index Unique trên 1 cột
+                entity.HasIndex(p => p.ComId );
+                entity.HasIndex(p => p.IdProduct);
+                entity.HasOne(e => e.Product)
+                .WithOne(e => e.DefaultFoodOrder)
+                .HasForeignKey<DefaultFoodOrder>(e => e.IdProduct)
+                .IsRequired();
+            }); 
             builder.Entity<TemplateInvoice>(entity =>
+            {
+                // Tạo Index Unique trên 1 cột
+                entity.HasIndex(p => new { p.Slug, p.ComId }).IsUnique();
+            });  
+            builder.Entity<BarAndKitchen>(entity =>
             {
                 // Tạo Index Unique trên 1 cột
                 entity.HasIndex(p => new { p.Slug, p.ComId }).IsUnique();
@@ -234,11 +253,11 @@ namespace Infrastructure.Infrastructure.DbContexts
             builder.Entity<OrderTable>(entity =>
            {
                // Tạo Index Unique trên 1 cột
-               entity.HasIndex(p => new { p.TypeInvoice});
-               entity.HasIndex(p => new { p.TypeProduct });
-               entity.HasIndex(p => new { p.ComId });
+               entity.HasIndex(p =>  p.TypeInvoice);
+               entity.HasIndex(p =>  p.TypeProduct );
+               entity.HasIndex(p => p.ComId);
                entity.HasIndex(p => new { p.OrderTableCode, p.ComId }).IsUnique();
-               entity.HasIndex(p => new { p.IdGuid }).IsUnique();
+               entity.HasIndex(p =>  p.IdGuid).IsUnique();
                entity.HasMany(x => x.OrderTableItems).WithOne(x => x.OrderTable).HasForeignKey(x => x.IdOrderTable).OnDelete(deleteBehavior: DeleteBehavior.Cascade);
                entity.HasMany(x => x.HistoryOrders).WithOne(x => x.OrderTable).HasForeignKey(x => x.IdOrderTable).OnDelete(deleteBehavior: DeleteBehavior.Cascade);
                entity.HasOne(x => x.Customer).WithMany(x => x.OrderTables).HasForeignKey(x => x.IdCustomer);
@@ -260,7 +279,7 @@ namespace Infrastructure.Infrastructure.DbContexts
             });
             builder.Entity<ToppingsOrder>(entity =>
             {
-                entity.HasIndex(p => new { p.Id }).IsUnique();
+                entity.HasIndex(p =>  p.Id ).IsUnique();
                 // Tạo Index Unique trên 1 cột
                 entity.HasOne(x => x.OrderTableItem).WithMany(x => x.ToppingsOrders).HasForeignKey(x => x.IdOrderTableItem);
             });
@@ -306,7 +325,7 @@ namespace Infrastructure.Infrastructure.DbContexts
                 //entity.HasIndex(p => new { p.IdGuid, p.ComId }).IsUnique();
                 entity.HasIndex(p => new { p.TypeInvoice });
                 entity.HasIndex(p => new {  p.TypeProduct});
-                entity.HasIndex(p => new {  p.ComId });
+                entity.HasIndex(p =>   p.ComId );
                 // Tạo Index Unique trên 1 cột
                 entity.HasIndex(p => new { p.ComId, p.InvoiceCode }).IsUnique();
                 entity.HasMany(x => x.InvoiceItems).WithOne(x => x.Invoice).HasForeignKey(x => x.IdInvoice).OnDelete(deleteBehavior: DeleteBehavior.Cascade);
@@ -403,6 +422,7 @@ namespace Infrastructure.Infrastructure.DbContexts
 
             builder.Entity<Order>(entity =>
             {
+               
                 // Tạo Index Unique trên 1 cột
                 entity.HasIndex(p => new { p.OrderCode })
                           .IsUnique();

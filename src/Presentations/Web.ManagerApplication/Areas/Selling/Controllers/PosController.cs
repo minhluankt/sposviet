@@ -38,7 +38,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 posModel = _get.Data;
             }
             return View(posModel);
-        }
+        } 
+     
         public async Task<IActionResult> SearchProductPos(string text, bool iSsell,  EnumTypeProductCategory type = EnumTypeProductCategory.PRODUCT)
         {
             var user = User.Identity.GetUserClaimLogin();

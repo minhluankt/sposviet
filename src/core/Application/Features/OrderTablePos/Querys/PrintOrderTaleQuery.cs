@@ -113,7 +113,7 @@ namespace Application.Features.OrderTablePos.Querys
                             IsServiceDate = true;
                             DateTime enddate = _item.DateEndService ?? DateTime.Now;
                             var timespan = enddate.Subtract(_item.DateCreateService.Value);
-                            _item.Quantity = timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
+                            _item.Quantity = (timespan.Days*24) + timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
                             _item.Total = _item.Quantity * (_item.IsVAT ? _item.PriceNoVAT : _item.Price);
                             _item.VATAmount = _item.IsVAT ? _item.Total * (_item.VATRate / 100.0M) : 0;
                             _item.Amount = _item.VATAmount + _item.Total;

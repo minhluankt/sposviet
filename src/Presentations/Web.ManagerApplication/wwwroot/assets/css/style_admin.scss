@@ -294,20 +294,73 @@ table body tr td {
 }
 
 .ConfigSaleParameter {
+    background-color: transparent;
+    box-shadow: none;
+
+    .item-row {
+        margin-bottom: 20px;
+        border-bottom: #dfdfdf solid thin;
+        padding-bottom: 15px;
+    }
+
     .item-col + .item-col {
         border-bottom: 1px solid #f0f0f0;
     }
 
     .childrenconfig {
         border-top: 1px solid #f0f0f0;
-        margin-left: 50px;
+        //margin-left: 50px;
+        .item-col {
+            > div {
+                padding-left: 50px;
+            }
+        }
     }
 
     .item-col {
         padding: 10px;
-        display: flex;
         justify-content: space-between;
+        display: grid;
+        grid-template-columns: 30% 70%;
 
+        .check-b {
+            text-align: right;
+            padding: 10px;
+            box-shadow: 0 0.75rem 1.5rem rgb(18 38 63 / 3%);
+            box-shadow: 0 0.46875rem 2.1875rem rgba(4,9,20,0.03), 0 0.9375rem 1.40625rem rgba(4,9,20,0.03), 0 0.25rem 0.53125rem rgba(4,9,20,0.05), 0 0.125rem 0.1875rem rgba(4,9,20,0.03);
+            background-color: #fff;
+            border-radius: 8px;
+            margin-left: 100px;
+            padding-left: 20px !important;
+            height: max-content;
+
+            .infotab {
+                text-align: left;
+                border-top: dashed #ccc thin;
+                padding-top: 10px;
+                margin-top: 5px;
+                font-style: italic;
+
+                .link-settingfunction {
+                    &.disabled{
+                        opacity:0.6
+                    }
+                }
+            }
+
+            .content {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                display: flex;
+
+                span.title {
+                    font-size: 15px;
+                    font-weight: 500;
+                }
+            }
+        }
 
         > div {
             display: flex;
@@ -2186,7 +2239,7 @@ body#sellting-chitken-skin1 {
                             &.leftstart {
                                 // left: 104%;
                                 right: 0;
-
+                                top:100%;
                                 &:before {
                                     top: -10px;
                                     right: 10px;

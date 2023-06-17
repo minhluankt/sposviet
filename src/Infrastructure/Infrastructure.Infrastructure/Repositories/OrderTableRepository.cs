@@ -1413,6 +1413,19 @@ namespace Infrastructure.Infrastructure.Repositories
         {
             foreach (var x in model.Items)
             {
+                decimal price = x.Price;
+                if (x.DiscountAmount !=0 && (x.DiscountAmount+ x.PriceNew) == x.Price)//tức là chiết khấu trên giá bán thì k update lại giá bán
+                {
+                    price = x.Price;
+                }
+                else if (x.DiscountAmount == 0 && x.PriceNew != x.Price)//nếu có đổi giá  bán thì update
+                {
+                    price = x.PriceNew;
+                }
+                else // nếu có ck và có sửa giá bán
+                {
+                    price = x.PriceNew;
+                }
                 var iteminvoice = new InvoiceItem()
                 {
                     IdProduct = x.Id,
@@ -1420,9 +1433,9 @@ namespace Infrastructure.Infrastructure.Repositories
                     Name = x.Name,
                     Quantity = x.Quantity,
                     PriceNoVAT = x.PriceNoVAT,
-                    Price = x.PriceNew,
+                    Price = price,
                     Unit = x.Unit,
-                    Total = x.Total,
+                    Total = x.Amount,
                     VATRate = (float)x.VATRate,
                     VATAmount = x.VATAmount,
                     Amonut = x.Amount,
@@ -1431,16 +1444,17 @@ namespace Infrastructure.Infrastructure.Repositories
                     DiscountAmount = x.DiscountAmount,
                 };
                
-                if (iteminvoice.VATRate.HasValue && iteminvoice.VATRate > (int)NOVAT.NOVAT)
+               // if (iteminvoice.VATRate.HasValue && iteminvoice.VATRate > (int)NOVAT.NOVAT)
+                if (iteminvoice.VATRate.HasValue && x.IsVAT)//nếu sp có thuế thì phải update lại total = trước thuế, còn amoutn ngoài view chính là amount sp
                 {
-                   // iteminvoice.VATRate = (float)model.VATRate;
-                    iteminvoice.VATAmount = iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100);
-                    iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
+                    iteminvoice.Total = (x.Quantity* x.PriceNoVAT) - x.DiscountAmount;
+                    iteminvoice.VATAmount = Math.Round(iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100.0M),MidpointRoundingCommon.Three);
+                    //iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
                 }
                 else if(model.VATRate!= (int)NOVAT.NOVAT && (!iteminvoice.VATRate.HasValue || iteminvoice.VATRate== (int)NOVAT.NOVAT))
                 {
                     iteminvoice.VATRate = (float)model.VATRate;
-                    iteminvoice.VATAmount = iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100);
+                    iteminvoice.VATAmount = Math.Round(iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100.0M), MidpointRoundingCommon.Three);
                     iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
 
                 }
@@ -1474,6 +1488,8 @@ namespace Infrastructure.Infrastructure.Repositories
                     return await Result<PublishInvoiceResponse>.FailAsync($"Không tìm thấy các sản phẩm {string.Join(",", getsp)}");
                 }
                 //----------duyệt sản phẩm update list
+                bool IsProductVAT = false;
+                
                 foreach (var item in getlstproduct)
                 {
                     model.Items.ForEach(x =>
@@ -1488,7 +1504,10 @@ namespace Infrastructure.Infrastructure.Repositories
                             x.IsVAT = item.IsVAT;
                             x.RetailPrice = item.RetailPrice;
                             x.Price = item.Price;
-
+                            if (x.IsVAT)
+                            {
+                                IsProductVAT = true;
+                            }
                             //if (x.IsVAT)// nếu sp có thuế
                             //{
                             //    x.Total = x.Quantity * x.PriceNoVAT;
@@ -1508,7 +1527,15 @@ namespace Infrastructure.Infrastructure.Repositories
                         }
                     });
                 }
-
+                var checkVatrate = model.Items.Where(x=>x.VATRate!=(int)NOVAT.NOVAT).Select(x => x.VATRate).Distinct().ToList();
+                if (checkVatrate.Count()>1)
+                {
+                    return await Result<PublishInvoiceResponse>.FailAsync($"Có nhiều hàng hóa có các thuế suất khác nhau không thể phát hành");
+                }
+                if (IsProductVAT && checkVatrate.FirstOrDefault() != model.VATRate && model.VATMTT)
+                {
+                    return await Result<PublishInvoiceResponse>.FailAsync($"Thuế suất bạn chọn không khớp với thuế suất của sản phẩm");
+                }
                 var inv = new Invoice();
                 inv.ArrivalDate = DateTime.Now;
                 var getInv = await _managerInvNorepository.UpdateInvNo(model.ComId, ENumTypeManagerInv.Invoice, false);
@@ -1527,13 +1554,21 @@ namespace Infrastructure.Infrastructure.Repositories
                 inv.Status = EnumStatusInvoice.DA_THANH_TOAN;
                 inv.DiscountAmount = model.DiscountAmount;
                 inv.Discount = (float)model.Discount;
-                if (true)
+                inv.VATRate = (float)model.VATRate;// luôn luôn lấy từ bên ngoài vào khách chọn hay k
+                inv.Total = model.Total;//vì ở ngoài view đã tính hết rồi k dc tính lại trong này dẫn đến sai lệch
+                inv.VATAmount = model.VATAmount;
+                if (IsProductVAT && model.VATRate==(int)NOVAT.NOVAT)
                 {
-                    đây tính lại total, vatamouont, nếu hàng hóa là sp có thuế, để khi xuất hóa đơn cho đúng, tính lại cả ở view
+                    //đây tính lại total, vatamouont, nếu hàng hóa là sp có thuế, để khi xuất hóa đơn cho đúng, tính lại cả ở view
+                   // inv.Total = inv.InvoiceItems.Sum(x => x.Total);// tong tien chưa giam, gán amount bởi vì là giá trị gốc của hóa đơn ban đầu
+                    inv.VATAmount = inv.InvoiceItems.Sum(x => x.VATAmount);//
                 }
-                inv.Total = model.Total;// tong tien chưa giam, gán amount bởi vì là giá trị gốc của hóa đơn ban đầu
-                inv.VATRate = (float)model.VATRate;//
-                inv.VATAmount = model.VATAmount;//
+                //else
+                //{
+                //    inv.Total = model.Total;// tong tien chưa giam, gán amount bởi vì là giá trị gốc của hóa đơn ban đầu
+                //    inv.VATAmount = model.VATAmount;//
+                //}
+
                 inv.Amonut = model.Amount;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
                 inv.AmountCusPayment = model.CusSendAmount;// tieefn khasch đưa
                 inv.AmountChangeCus = model.Amoutchange;// tiền thừa khách
@@ -1649,7 +1684,6 @@ namespace Infrastructure.Infrastructure.Repositories
               
                 string token = string.Empty;
                 PublishInvoiceResponse publishInvoiceResponse = new PublishInvoiceResponse();
-
                 if (model.VATMTT)
                 {
                     try
@@ -1677,6 +1711,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         _log.LogError(e.ToString());
                     }
                 }
+                publishInvoiceResponse.IsProductVAT = IsProductVAT;
                 publishInvoiceResponse.Invoice = inv;
                 return await Result<PublishInvoiceResponse>.SuccessAsync(publishInvoiceResponse);
             }
@@ -2123,7 +2158,7 @@ namespace Infrastructure.Infrastructure.Repositories
             //var minutes = (hours - rhours) * 60;
             //var rminutes = Math.Round(minutes);
 
-            getitem.Quantity = timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
+            getitem.Quantity = (timespan.Days * 24) + timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
             getitem.QuantityNotifyKitchen = getitem.Quantity;
             getitem.Total = getitem.Quantity * (getitem.IsVAT ? getitem.PriceNoVAT : getitem.Price);
             getitem.VATAmount = getitem.IsVAT ? getitem.Total * (getitem.VATRate / 100) : 0;
@@ -2149,10 +2184,10 @@ namespace Infrastructure.Infrastructure.Repositories
                     DateTime enddate = DateTime.Now;
                     var timespan = enddate.Subtract(getitem.DateCreateService.Value);
 
-                    getitem.Quantity = timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
+                    getitem.Quantity = (timespan.Days * 24) + timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
                     getitem.QuantityNotifyKitchen = getitem.Quantity;
                     getitem.Total = getitem.Quantity * (getitem.IsVAT ? getitem.PriceNoVAT : getitem.Price);
-                    getitem.VATAmount = getitem.IsVAT ? getitem.Total * (getitem.VATRate / 100) : 0;
+                    getitem.VATAmount = getitem.IsVAT ? getitem.Total * (getitem.VATRate / 100.0M) : 0;
                     getitem.Amount = getitem.VATAmount + getitem.Total;
                     getitem.DateEndService = DateTime.Now;
                 }

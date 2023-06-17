@@ -33,18 +33,25 @@ namespace Application.Hepers
                     //https://www.csharp-examples.net/string-format-double/
                     string servicetime = string.Empty;
                     string totaldate = string.Empty;
+                    string dongiachietkhau = string.Empty;
                     if (item.IsServiceDate)
                     {
                         TimeSpan timeSpan = item.DateEndService.Value.Subtract(item.DateCreateService.Value);
                         totaldate = $"{Math.Round(timeSpan.TotalMinutes, MidpointRounding.AwayFromZero)} phút";
                         servicetime = $"Từ {item.DateCreateService.Value.ToString("dd/MM/yyyy HH:mm")}, đến {item.DateEndService.Value.ToString("dd/MM/yyyy HH:mm")}";
                     }
+                    if (item.DiscountAmount != 0)
+                    {
+                        dongiachietkhau = item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                        item.Price = item.Price - item.DiscountAmount;
+                    }
                     tableProduct += result
                         .Replace("{tenhanghoa}", item.Name)
+                        .Replace("{dongiachietkhau}", dongiachietkhau)
                         .Replace("{tonggio}", totaldate)//tổng giờ
                         .Replace("{thoigiangio}", servicetime)//thời gian giờ từ a đến b
                         .Replace("{donvitinh}", item.Unit)
-                        .Replace("{dongia}", String.Format(LibraryCommon.GetIFormatProvider(), "{0:#,0.##}", item.Price))//item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider()).TrimEnd('0', ',')
+                        .Replace("{dongia}",String.Format(LibraryCommon.GetIFormatProvider(), "{0:#,0.##}", item.Price))//item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider()).TrimEnd('0', ',')
                         
                         .Replace("{thanhtien}", item.Amount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()))//item.Amount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()).TrimEnd('0', ',')
                         .Replace("{soluong}", item.Quantity.ToString("#,0.##", LibraryCommon.GetIFormatProvider()));
@@ -87,14 +94,20 @@ namespace Application.Hepers
                 {
                     string servicetime=string.Empty;
                     string totaldate = string.Empty;
+                    string dongiachietkhau = string.Empty;
                     if (item.IsServiceDate)
                     {
                         TimeSpan timeSpan = item.DateEndService.Value.Subtract(item.DateCreateService.Value);
                         totaldate = $"{Math.Round(timeSpan.TotalMinutes,MidpointRounding.AwayFromZero)} phút";
                         servicetime = $"Từ {item.DateCreateService.Value.ToString("dd/MM/yyyy HH:mm")}, đến {item.DateEndService.Value.ToString("dd/MM/yyyy HH:mm")}";
                     }
-
+                    if (item.DiscountAmount!=0)
+                    {
+                        dongiachietkhau = item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                        item.Price = item.Price - item.DiscountAmount;
+                    }
                     tableProduct += result.Replace("{tenhanghoa}", item.Name)
+                        .Replace("{dongiachietkhau}", dongiachietkhau)
                         .Replace("{tonggio}", totaldate)//tổng giờ
                         .Replace("{thoigiangio}", servicetime)//thời gian giờ từ a đến b
                         .Replace("{donvitinh}", item.Unit)

@@ -65,6 +65,7 @@ namespace Domain.Entities
         /// <summary>
         /// ///
         /// </summary>
+        public bool IsEnterInOrder { get; set; } // nhập giá khi bán
         public bool IsKitchen { get; set; } // Hàng hóa không cần báo chế biến
         public bool IsInventory { get; set; } // cho phép không quản lý tồn kho
         public bool IsServiceDate { get; set; } // sản phẩm tính tiền giờ
@@ -113,6 +114,7 @@ namespace Domain.Entities
 
         [ForeignKey("IdCustomer")]
         public Customer Customer { get; set; } // danh sách các phụ kiến đính kèm
+        public DefaultFoodOrder DefaultFoodOrder { get; set; } // danh sách các phụ kiến đính kèm
         //[ForeignKey("IdKitchen")]
         //public Kitchen Kitchen { get; set; } // thuộc bếp/bar nào
         public virtual ICollection<UploadImgProduct> UploadImgProducts { get; set; }

@@ -312,6 +312,45 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.ToTable("Banner");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BarAndKitchen", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ComId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Slug")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug", "ComId")
+                        .IsUnique()
+                        .HasFilter("[Slug] IS NOT NULL");
+
+                    b.ToTable("BarAndKitchen");
+                });
+
             modelBuilder.Entity("Domain.Entities.Brand", b =>
                 {
                     b.Property<int>("Id")
@@ -1165,6 +1204,48 @@ namespace Infrastructure.Infrastructure.Migrations
                         .HasFilter("[Code] IS NOT NULL AND [Comid] IS NOT NULL");
 
                     b.ToTable("Customer");
+                });
+
+            modelBuilder.Entity("Domain.Entities.DefaultFoodOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ComId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("IdItem")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("IdProduct")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComId");
+
+                    b.HasIndex("IdProduct")
+                        .IsUnique();
+
+                    b.ToTable("DefaultFoodOrder");
                 });
 
             modelBuilder.Entity("Domain.Entities.DeliveryCompany", b =>
@@ -3304,6 +3385,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<bool>("IsBarcode")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsEnterInOrder")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsInventory")
                         .HasColumnType("bit");
 
@@ -4555,6 +4639,17 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Navigation("Ward");
                 });
 
+            modelBuilder.Entity("Domain.Entities.DefaultFoodOrder", b =>
+                {
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithOne("DefaultFoodOrder")
+                        .HasForeignKey("Domain.Entities.DefaultFoodOrder", "IdProduct")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Domain.Entities.DetailtKitchen", b =>
                 {
                     b.HasOne("Domain.Entities.Kitchen", "Kitchen")
@@ -5154,6 +5249,8 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Navigation("ComponentProducts");
 
                     b.Navigation("ContentPromotionProducts");
+
+                    b.Navigation("DefaultFoodOrder");
 
                     b.Navigation("OptionsDetailtProducts");
 

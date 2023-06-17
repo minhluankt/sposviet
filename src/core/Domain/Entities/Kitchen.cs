@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
-    public class Kitchen : AuditableEntity // bar/bếp
+    public class Kitchen : AuditableEntity //thông báo bar/bếp
     {
         public Kitchen()
         {

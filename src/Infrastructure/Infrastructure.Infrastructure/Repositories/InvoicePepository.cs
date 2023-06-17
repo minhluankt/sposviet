@@ -710,15 +710,16 @@ namespace Infrastructure.Infrastructure.Repositories
                     if (checkprovat.Count()== eInvoiceItems.Count())//tức là nếu tất cả sản phẩm đã có thuế thì k cần tính lại lấy nguyên giá trị qua
                     {
                         newmodel.Total = invoice.Total;
-                        newmodel.VATAmount = Math.Round(eInvoiceItems.Sum(x=>x.VATAmount), MidpointRounding.AwayFromZero);
-                        newmodel.Amount = eInvoiceItems.Sum(x=>x.Amount) - (newmodel.DiscountOther??0);
+                       // newmodel.VATAmount = Math.Round(eInvoiceItems.Sum(x=>x.VATAmount), MidpointRounding.AwayFromZero);
+                        newmodel.VATAmount = eInvoiceItems.Sum(x=>x.VATAmount);
+                        newmodel.Amount = Math.Round(eInvoiceItems.Sum(x=>x.Amount) - (newmodel.DiscountOther??0), MidpointRounding.AwayFromZero);
                     }
                     else
                     {
-                        newmodel.Total = Math.Round(invoice.InvoiceItems.ToList().Sum(x => x.Total), MidpointRounding.AwayFromZero);
+                        newmodel.Total = invoice.InvoiceItems.ToList().Sum(x => x.Total);
                         float vatr = (model.VATRate < 0 ? 0 : model.VATRate) / 100;
-                        newmodel.VATAmount = Math.Round(newmodel.Total * Convert.ToDecimal(vatr), MidpointRounding.AwayFromZero);
-                        newmodel.Amount = newmodel.VATAmount + newmodel.Total;
+                        newmodel.VATAmount = Math.Round(newmodel.Total * Convert.ToDecimal(vatr), MidpointRoundingCommon.Three);
+                        newmodel.Amount = Math.Round(newmodel.VATAmount + newmodel.Total, MidpointRounding.AwayFromZero); ;
                     }
                     newmodel.AmountInWords = LibraryCommon.So_chu(newmodel.Amount);
                 }
@@ -726,8 +727,8 @@ namespace Infrastructure.Infrastructure.Repositories
                 {
                     newmodel.VATRate = model.VATRate;
                     float vatr = (model.VATRate < 0 ? 0 : model.VATRate) / 100;
-                    newmodel.VATAmount = (invoice.Total - (invoice.DiscountAmount??0)) * Convert.ToDecimal(vatr);
-                    newmodel.Amount = newmodel.VATAmount + newmodel.Total;
+                    newmodel.VATAmount = Math.Round((invoice.Total - (invoice.DiscountAmount??0)) * Convert.ToDecimal(vatr), MidpointRoundingCommon.Three);
+                    newmodel.Amount = Math.Round(newmodel.VATAmount + newmodel.Total, MidpointRounding.AwayFromZero);
                     newmodel.AmountInWords = LibraryCommon.So_chu(newmodel.Amount);
                 }
             }

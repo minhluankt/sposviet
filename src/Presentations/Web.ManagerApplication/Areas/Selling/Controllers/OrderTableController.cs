@@ -1088,6 +1088,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             model.ComId = currentUser.ComId;
             model.IdCasher = currentUser.Id;
             model.Cashername = currentUser.FullName;
+            if (!model.VATMTT)
+            {
+                model.VATRate = (int)NOVAT.NOVAT;
+            }
             var _map = _mapper.Map<CheckOutOrderInvoiceCommand>(model);
             var update = await _mediator.Send(_map);
             if (update.Succeeded)
