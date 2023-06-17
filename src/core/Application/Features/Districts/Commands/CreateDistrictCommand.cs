@@ -37,7 +37,7 @@ namespace Application.Features.Districts.Commands
         public async Task<Result<int>> Handle(CreateDistrictCommand request, CancellationToken cancellationToken)
         {
             request.Code = Common.ConvertToSlug(request.Name);
-          //  request.Slug = request.Code;
+            //  request.Slug = request.Code;
             var fidn = _Repository.Entities.Where(m => m.Code == request.Code).SingleOrDefault();
             if (fidn != null)
             {

@@ -47,7 +47,7 @@ namespace Application.Features.Districts.Commands
             {
                 District.Name = command.Name;
                 District.Code = Common.ConvertToSlug(command.Name);
-               // District.Slug = command.Code;
+                // District.Slug = command.Code;
                 var checkcode = _Repository.Entities.Count(predicate: m => m.Code == District.Code && m.Id != District.Id);
                 if (checkcode > 0)
                 {

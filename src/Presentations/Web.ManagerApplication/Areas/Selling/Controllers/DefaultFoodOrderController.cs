@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Features.DefaultFoodOrders.Query;
+using Application.Features.Invoices.Query;
+using Application.Hepers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.ManagerApplication.Abstractions;
 
@@ -12,8 +15,9 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             return View();
         }
+        lưu các mặt hàng mặc định hàm DefaultFoodOrder btn save
         [HttpPost]
-        public async Task<IActionResult> LoadAll(string name)
+        public async Task<IActionResult> LoadAll(string Name,int? IdCategory)
         {
             var draw = HttpContext.Request.Form["draw"].FirstOrDefault();
             try
@@ -42,20 +46,17 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
 
                 var currentUser = User.Identity.GetUserClaimLogin();
                 int currentPage = skip >= 0 ? skip / pageSize : 0;
-                model.Currentpage = currentPage + 1;
+                currentPage = currentPage + 1;
                 // getting all Customer data
-                var response = await _mediator.Send(new GetAllInvoiceQuery(currentUser.ComId)
+                var response = await _mediator.Send(new GetPaginatedDefaultFoodOrderQuery(currentPage, pageSize)
                 {
-                    invoiceModel = model,
-                    TypeProduct = currentUser.IdDichVu,
-                    sortColumn = sortColumn,
-                    sortColumnDirection = sortColumnDirection,
-                    pageSize = pageSize,
-                    skip = skip
+                   ComId= currentUser.ComId,
+                    IdCategory = IdCategory,
+                    Name = Name,
                 });
                 if (response.Succeeded)
                 {
-                    return Json(new { draw = draw, recordsFiltered = response.Data.TotalItemCount, totalAmount = response.Data.TotalAmount, recordsTotal = response.Data.TotalItemCount, data = response.Data.Items });
+                    return Json(new { draw = draw, recordsFiltered = response.Data.TotalCount, recordsTotal = response.Data.TotalCount, data = response.Data.Data });
                 }
                 //Returning Json Data  
                 return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = "" });

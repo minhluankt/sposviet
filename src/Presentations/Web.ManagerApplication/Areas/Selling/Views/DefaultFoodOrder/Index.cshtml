@@ -1,1 +1,238 @@
-﻿
+﻿<style>
+    .pagination {
+        float: right;
+    }
+</style>
+
+  
+    <div class="container">
+    <div class="row">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/selling/restaurantsetting">< Trở lại thiết lập nhà hàng</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Quản lý mẫu hóa đơn</li>
+            </ol>
+        </nav>
+        <div class="col-md-12">
+            
+            <h3>Thiết lập mặc định các hàng hóa khi tạo đơn <button class="btn btn-success adddefaultfood" type="button" data-style="expand-left">Thêm hàng hóa</button></h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card  mb-2">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="">
+                                <label for="" >Danh mục sản phẩm</label>
+                                <select class="form-control idCategory" id="IdCategoryIndex" name="idCategory">
+                                    <opiton></opiton>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-9 pl-lg-0">
+                            <div class="">
+                                <label>Tên hàng hóa</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="Nhập tên hàng hóa" id="NameIndex" aria-describedby="basic-addon2">
+                                    <div class="input-group-append">
+                                        <button class="ladda-button btn btn-primary" id="btnSearch" type="button" data-style="expand-left"><span class="ladda-label">Tìm kiếm</span><span class="ladda-spinner"></span></button>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+
+            </div>  <div class="card">
+                <div class="card-body">
+                 
+                        <table class="table table-striped" id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Danh mục</th>
+                                    <th>Mặt hàng</th>
+                                    <th>Số lượng</th>
+                                    <th>Giá bán</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+
+
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 left-info">
+            <div class="card">
+                <div class="card-body">
+                    <h3>Loại hình phục vụ</h3>
+                    <p>Áp dụng với tất cả loại hình phục vụ</p>
+                    <ul class="lsttypeservice">
+                        <li> Đơn đặt bàn</li>
+                        <li>  Đơn ăn tại bàn</li>
+                        <li>  Đơn mang đi</li>
+                        <li>  Đơn giao hàng</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+</div>
+@section Scripts
+{
+    <script>
+        
+        loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", ".idCategory", 0, "Tất cả");
+        DefaultFoodOrder.addDefaultFood();
+        dataTableOut = $('#dataTable').DataTable({
+            "responsive": true,
+            "processing": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "filter": false,
+            "rowId": "id",
+            "orderMulti": false,
+            "start": 0,
+            "ordering": true,
+            "order": [[0, "desc"]],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                "zeroRecords": "Không tìm thấy dữ liệu nào",
+                "emptyTable": "Không có dữ liệu",
+                "search": "Tìm kiếm:",
+                "processing": "Đang xử lý...",
+                "lengthMenu": "Hiển thị _MENU_ dòng",
+                "loadingRecords": "Vui lòng chờ...",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Tiếp theo",
+                    "previous": "Về trước"
+                },
+            },
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, 200, 500], [10, 25, 50, 100, 200, 500]],
+            "buttons": [
+                {
+                    text: 'Reload',
+                    action: function (e, dt, node, config) {
+                        dataTableOut.ajax.reload();
+                    }
+                }
+            ],
+            "columnDefs": [
+                {
+                    'targets': 0,
+                    'checkboxes': {
+                        'selectRow': true
+                    }
+                },
+                {
+                    "targets": [-1], // your case first column
+                    "className": "text-right"
+                }, {
+                    "targets": [0, 1, 2], // your case first column
+                    "className": "text-center"
+                },
+                { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [-1, 0],
+                },
+                { "width": "50px", "targets": [-1, 0] }
+            ],
+            'select': {
+                'style': 'multi',
+                selector: 'td:first-child'
+            },
+            ajax: {
+                url: "/Selling/DefaultFoodOrder/LoadAll",
+                type: "POST",
+                start: 0,
+                datatype: "json",
+                data:
+                {
+                    Name: function () { return $('#NameIndex').val().trim() },
+                    IdCategory: function () { return $('#IdCategoryIndex').val() },
+                 
+                }
+            },
+            "columns": [
+                {
+                    "data": "id", "name": "Id", "autoWidth": true
+                },
+                {
+                    "data": "categoryName", "name": "CategoryName", "autoWidth": true
+                },
+                {
+                    "data": "proName", "name": "ProName", "autoWidth": true
+                },
+                //{
+                //    "data": "arrivalDate", "name": "ArrivalDate",
+                //    "render": function (data, type, full, meta) {
+                //        // console.log(full.id);
+                //        if (full.arrivalDate != null) {
+                //            data = moment(full.arrivalDate).format('DD/MM/YYYY HH:mm:ss');
+                //            return data;
+                //        }
+                //        return "";
+                //    }
+                //},
+                {
+                    "data": "quantity", "name": "Quantity", "autoWidth": true,
+                    "render": function (data, type, full, meta) {
+                        html = `<div class="m-width" style="display: inline-flex;">
+                                <span class="ui-button--link-mod-danger m-auto-bt">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.5" fill="white" stroke="#A2A7B7"></circle><line x1="4" y1="10" x2="16" y2="10" stroke="#A2A7B7" stroke-width="2"></line></svg>
+                                </span>
+                                <span class="ml-10 mr-10">
+                                        <input type="text" value="`+ full.quantity+ `" style="width: 60px; height: 32px; text-align: center;">
+                                </span>
+                                <span class="m-auto-bt"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.5" fill="white" stroke="#0088FF"></circle><path fill-rule="evenodd" clip-rule="evenodd" d="M9.16669 10.8332V15.8332H11.1667V10.8332H15.8334V8.83317H11.1667V4.1665H9.16669V8.83317H4.16669V10.8332H9.16669Z" fill="#0088FF"></path></svg>
+                                </span>
+                                </div>`;
+                        return html;
+                    }
+                },
+                {
+                    "data": "price", "name": "Price", "autoWidth": true,
+                    //render: $.fn.dataTable.render.number('.', ',', 0)
+                    "render": function (data, type, full, meta) {
+                        render: $.fn.dataTable.render.number(',', '.', 0)
+                    }
+                }, 
+                {
+                    "data": null, "name": null, "autoWidth": true,
+                    "render": function (data, type, full, meta) {
+                        return '<i class="fas fa-trash-alt"></i>';
+                    }
+                },
+            ],
+            initComplete() {
+              
+
+            }
+        });
+
+
+        $('#reload').on('click', function () {
+            dataTableOut.ajax.reload(null, false);
+        });
+        $('input').keyup(function (e) {
+            if (e.keyCode == 13) {
+                dataTableOut.ajax.reload(null, false);
+            }
+        });
+    </script>
+}

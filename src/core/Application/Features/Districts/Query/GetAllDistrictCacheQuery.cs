@@ -17,7 +17,7 @@ namespace Application.Features.Districts.Query
 {
     public class GetAllDistrictCacheQuery : IRequest<Result<List<District>>>
     {
-        public bool GetCache { get; set; }  
+        public bool GetCache { get; set; }
         public GetAllDistrictCacheQuery()
         {
         }

@@ -2799,6 +2799,164 @@ var eventConfigSaleParameters = {
         })
     }
 }
+btnadddefaultfood = $(".adddefaultfood");
+var DefaultFoodOrder = {
+    addDefaultFood: function () {
+        btnadddefaultfood.click(function () {
+            var lstid = new Array();
+            var rows_selected = dataTableOut.column(0).data();
+            
+            rows_selected.each(function (index, elem) {
+                lstid.push(parseInt(index));
+            });
+            $.ajax({
+                type: 'GET',
+                //global: false,
+                url: '/Selling/Product/GetProductJson',
+                // data: fomrdata,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.isValid) {
+                        htmllistitem = "";
+                        //optionhtml = `<select class="form-control idCategory" id="IdCategory">`;
+                        
+                        //res.jsoncate.forEach(function (item, index) {
+                        //    optionhtml += `<option value="` + item.id + `">` + item.name + `</option>`;
+                        //}); optionhtml += "</select>";
+                        
+                        res.jsonPro.forEach(function (item, index) {
+                            htmlimg = "./images/no-img.png";
+                            if (item.img != "" && item.img !=null) {
+                                htmlimg = "../" + item.img;
+                            }
+                            htmllistitem += `<tr>
+                                                <td><input type="checkbox" class="icheck" data-category="`+ item.idCategory+`" value="`+ item.id +`" /></td>
+                                               
+                                                <td><img src="../`+ htmlimg +`"/></td>
+                                                 <td>`+ item.nameCategory +`</td>
+                                                <td><san class="name">`+ item.name + `</name></td>
+                                                <td>`+ item.retailPrice.format0VND(3,3) +`</td>
+                                            </tr>`;
+                        });
+
+                        html = `<div class="elecontainerselectfood">
+                                    <div class="input-group mb-3">
+                                   
+                                        <div class="input-group-append">
+                                              <select class="form-control idCategory" id="IdCategory" style="min-width:200px">  </select>
+                                        </div>
+                                             <input type="text" autocomplete="off"  class="form-control" placeholder="Nhập tên hàng hóa" id="Name" aria-describedby="basic-addon2">
+                                    </div>
+                               <div class="gridtable">
+                                <table class="table table-condensed table-striped tablefood">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                              <th>Ảnh</th>
+                                            <th>Danh mục</th>
+                                          
+                                            <th>Mặt hàng</th>
+                                            <th>Giá bán</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="BI_tablebody">
+                                       `+ htmllistitem +`
+                                    </tbody>
+                                </table></div> </div>`;
+                        Swal.fire({
+                            // icon: 'success',
+                            title: "Chọn mặt hàng cần thêm",
+                            html: html,
+                            position: 'top-end',
+                            showClass: {
+                                popup: `
+                              popup-formcreate
+                              popup-lg
+                               animate__animated
+                              animate__fadeInRight
+                              animate__faster
+                            `
+                            },
+                            customClass: {
+                                container: 'selectfoodpopup',
+                                footer: 'footerselectfoodpopup'
+                            },
+                            hideClass: {
+                                popup: "popup-formcreate popup-lg animate__animated animate__fadeOutRight animate__faster"
+                            },
+                            showCloseButton: true,
+                            footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: 'Lưu',
+                            cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+
+                            didRender: () => {
+                                loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#IdCategory",0, "Chọn thực đơn");
+                                loadEventIcheck();
+                                //end
+                                $(".btn-continue").click(function () {
+                                    Swal.close();
+                                });
+                                $("#Name").keyup(function () {
+                                    value = $(this).val().toLocaleLowerCase();
+                                    valuecategory = $('select#IdCategory').val();
+                                    DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
+                                });
+                                $('select#IdCategory').on('change', function () {
+                                    valuecategory = this.value;
+                                    value = $("#Name").val().toLocaleLowerCase();
+                                    DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
+                                });
+
+                                $(".btn-save").click(function () {
+                                   
+                                });
+                            }
+                        })
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            });
+        })
+    },
+    eventSearchInPopup: function (value, valuecategory) {
+        $(".tablefood tbody tr").filter(function () {
+            let proname = $(this).find(".name").html().toLocaleLowerCase().trim()
+            let idcategory = $(this).find("input[type='checkbox']").data("category");
+            if (value == "" || value == null) {
+                if (valuecategory == "" || valuecategory == null) {
+                    $(this).show();
+                } else {
+                    if (idcategory == valuecategory) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                }
+            } else {
+                if (proname.includes(value)) {
+                    if (valuecategory == "" || valuecategory == null) {
+                        $(this).show();
+                    } else {
+                        if (idcategory == valuecategory) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    }
+                } else {
+                    $(this).hide();
+                }
+            }
+
+        });
+    }
+}
 var Product = {
     eventbtnAddProduct: function () {
         $(".lst-action-addproduct a:nth-child(1)").click(function () {
@@ -11090,7 +11248,7 @@ var posStaff = {
                                 htmlcate = `<ul id="lstfood" class="ul-nonestyle">`;
                                 res.jsonPro.forEach(function (item, index) {
                                     htmlimg = "./images/no-img.png";
-                                    if (item.img != "") {
+                                    if (item.img != "" && item.img != null) {
                                         htmlimg = "../" + item.img;
                                     }
                                     htmlcate += ` <li class="" style="display: flex;"  data-id="` + item.id + `" data-idcategory="` + item.idCategory + `">

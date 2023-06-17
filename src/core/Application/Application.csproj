@@ -86,6 +86,10 @@
     <Compile Include="Features\ConfigSystems\Commands\UpdateConfigSystemCommand.cs" />
     <Compile Include="Features\ConfigSystems\Query\GetByKeyConfigSystemQuery.cs" />
     <Compile Include="Features\Customers\Query\SearchCustomerQuery.cs" />
+    <Compile Include="Features\DefaultFoodOrders\Commands\DeleteDefaultFoodOrderCommand.cs" />
+    <Compile Include="Features\DefaultFoodOrders\Commands\UpdateDefaultFoodOrderCommand.cs" />
+    <Compile Include="Features\DefaultFoodOrders\Query\GetPaginatedDefaultFoodOrderQuery.cs" />
+    <Compile Include="Features\DefaultFoodOrders\Query\GetByIdDefaultFoodOrdertQuery.cs" />
     <Compile Include="Features\Districts\Commands\CreateDistrictCommand.cs" />
     <Compile Include="Features\Districts\Commands\DeleteDistrictCommand.cs" />
     <Compile Include="Features\Districts\Commands\UpdateDistrictCommand.cs" />
