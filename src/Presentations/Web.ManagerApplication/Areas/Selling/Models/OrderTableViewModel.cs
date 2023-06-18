@@ -26,6 +26,8 @@ namespace Web.ManagerApplication.Areas.Selling.Models
             this.PaymentMethods = new List<PaymentMethod>();
         }
         public bool VatMTT { get; set; }
+        public bool IsDISCOUNT_PRICE_AFTER_TAX { get; set; }
+        public bool IsDiscountAfterTax { get; set; }
         public OrderTable OrderTable { get; set; }
         public List<PaymentMethod> PaymentMethods { get; set; }
         public SupplierEInvoiceModel SupplierEInvoiceModel { get; set; }

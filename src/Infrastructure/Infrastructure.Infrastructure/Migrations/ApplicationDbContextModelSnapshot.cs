@@ -1138,7 +1138,6 @@ namespace Infrastructure.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1194,10 +1193,6 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.HasIndex("IdDistrict");
 
                     b.HasIndex("IdWard");
-
-                    b.HasIndex("ProviderKey")
-                        .IsUnique()
-                        .HasFilter("[ProviderKey] IS NOT NULL");
 
                     b.HasIndex("Code", "Comid")
                         .IsUnique()

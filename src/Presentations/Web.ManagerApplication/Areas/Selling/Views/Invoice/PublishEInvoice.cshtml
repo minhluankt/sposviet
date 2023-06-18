@@ -11,10 +11,14 @@
     var DAPHATHANHROI = new List<DetailInvoice>();
     var PHATHANHLOI = new List<DetailInvoice>();
     var ERROR = new List<DetailInvoice>();
+    var GET_HASH_PUBLISH_FAIL = new List<DetailInvoice>();
     foreach (var item in gr)
     {
         switch (item.Key)
         {
+            case ENumTypePublishEinvoice.GET_HASH_PUBLISH_FAIL:
+                GET_HASH_PUBLISH_FAIL = item.ToList();
+                break;
             case ENumTypePublishEinvoice.PHATHANHOK:
                 lstdatphathanh = item.ToList();
                 break;
@@ -77,6 +81,24 @@
                             <a href="#" class="text-blue">@item.code</a>
                             <span class="mr-2">-</span>
                             <span>@item.note</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+    @if (GET_HASH_PUBLISH_FAIL.Count() > 0)
+    {
+        <div class="col-grouppublish">
+            <a class="text-dark" href="#"><h5 class="m-0 text-danger"><i class="fas fa-chevron-down mr-2"></i>Lấy chuỗi hash từ nhà cung cấp thất bại <span class="text-muted font-14">(@GET_HASH_PUBLISH_FAIL.Count())</span></h5></a>
+            <div class="body-data">
+                <ul>
+                    @foreach (var item in GET_HASH_PUBLISH_FAIL)
+                    {
+                        <li>
+                            <a href="#" class="text-blue">@item.code</a>
+                            <span class="mr-2">-</span>
+                            <span class="red">@item.note</span>
                         </li>
                     }
                 </ul>

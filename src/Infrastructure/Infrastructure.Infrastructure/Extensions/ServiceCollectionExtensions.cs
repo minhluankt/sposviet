@@ -113,6 +113,7 @@ namespace Infrastructure.Infrastructure.Extensions
             services.AddTransient<IManagerInvNoRepository, ManagerInvNoRepository>();
             services.AddTransient<ITemplateInvoiceRepository<TemplateInvoice>, TemplateInvoiceRepository>();
             services.AddTransient<IHistoryOrderRepository<HistoryOrder>, HistoryOrderRepository>();
+            services.AddTransient<IDefaultFoodOrderRepository<DefaultFoodOrder>, DefaultFoodOrderRepository>();
 
             services.AddTransient<IPostRepository<Post>, PostRepository>();
             services.AddTransient<IPagePostRepository<PagePost>, PagePostRepository>();
@@ -121,7 +122,7 @@ namespace Infrastructure.Infrastructure.Extensions
             services.AddTransient<ICommentProductRepository<Comment>, CommentProductRepository>();
 
             services.AddSingleton<SignalRHub>();
-            services.AddSingleton<SubscribeProductTableDependency>();
+            //services.AddSingleton<SubscribeProductTableDependency>();
             // services.AddSingleton<ISubscribeTableDependency>();
 
 

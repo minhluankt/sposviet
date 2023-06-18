@@ -1,8 +1,12 @@
-﻿using Application.Features.DefaultFoodOrders.Query;
+﻿using Application.Enums;
+using Application.Features.DefaultFoodOrders.Commands;
+using Application.Features.DefaultFoodOrders.Query;
 using Application.Features.Invoices.Query;
 using Application.Hepers;
+using Library;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Web.ManagerApplication.Abstractions;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
@@ -15,7 +19,24 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             return View();
         }
-        lưu các mặt hàng mặc định hàm DefaultFoodOrder btn save
+        public async Task<IActionResult> GetListJsonId()
+        {
+            try
+            {
+                var currentUser = User.Identity.GetUserClaimLogin();
+                var get = await _mediator.Send(new GetAllDefaultFoodOrderQuery() { ComId = currentUser.ComId });
+                if (get.Succeeded)
+                {
+                    return Json(new { isValid = true, data = ConvertSupport.ConverModelToJson(get.Data.Select(x => x.IdProduct).ToArray()) });
+                }
+                return new JsonResult(new { isValid = false });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.ToString());
+                return new JsonResult(new { isValid = false });
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> LoadAll(string Name,int? IdCategory)
         {
@@ -69,6 +90,25 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return Json(new { draw = draw, recordsFiltered = 0, recordsTotal = 0, data = "" });
             }
 
+        }
+        [Authorize(Policy = "defaultfoodorder.update")]
+        [HttpPost]
+        public async Task<IActionResult> UpdateAsync(int[] lstid,Guid? idguid,decimal? quantity, EnumTypeUpdateDefaultFoodOrder enumTypeUpdateDefaultFoodOrder)
+        {
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var _send = await _mediator.Send(new UpdateDefaultFoodOrderCommand() {
+                ComId = currentUser.ComId,
+                Quantity = quantity,
+                Id = idguid,
+                TypeUpdateDefaultFoodOrder= enumTypeUpdateDefaultFoodOrder,
+                ListId = lstid });
+            if (_send.Succeeded)
+            {
+                _notify.Success(GeneralMess.ConvertStatusToString(_send.Message));
+                return new JsonResult(new { isValid = true });
+            }
+            _notify.Error(GeneralMess.ConvertStatusToString(_send.Message));
+            return new JsonResult(new { isValid = false });
         }
     }
 }

@@ -21,6 +21,7 @@ using Web.ManagerApplication.Abstractions;
 using System.Reactive.Joins;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using NStandard.Evaluators;
+using Library;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -222,7 +223,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         [HttpPost]
         [Authorize(Policy = "invoice.publishinvoice")]
-        public async Task<IActionResult> PublishEInvoiceAsync(int[] lstid, EnumTypeEventInvoice TypeEventInvoice,float? Vatrate,int idPattern)
+        public async Task<IActionResult> PublishEInvoiceAsync(int[] lstid, EnumTypeEventInvoice TypeEventInvoice,float? Vatrate,int idPattern, string ArisingDate)
         {
             try
             {
@@ -246,6 +247,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     _notify.Error("Vui lòng chọn thuế xuất");
                     return new JsonResult(new { isValid = false });
                 }
+                DateTime? date = null;
+                if (!string.IsNullOrEmpty(ArisingDate))
+                {
+                    date = Common.ConvertStringToDateTime(ArisingDate);
+                }
                 var currentUser = User.Identity.GetUserClaimLogin();
                 var send = await _mediator.Send(new PublishInvoiceCommand()
                 {
@@ -255,6 +261,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     VATRate = Vatrate.Value,
                     IdManagerPatternEInvoice = idPattern,
                     ComId = currentUser.ComId,
+                    ArisingDate = date,
                     TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT,
                     TypeEventInvoice = TypeEventInvoice
                 });
@@ -456,10 +463,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [EncryptedParameters("secret")]
         [Authorize(Policy = "invoice.publishinvoiedraft")]
         [HttpPost]
-        public async Task<ActionResult> PublishEInvoieDraftAsync(Guid? id,int idPattern, EnumTypeEventInvoice TypeEventInvoice ,float? Vatrate)
+        public async Task<ActionResult> PublishEInvoieDraftAsync(Guid? id,int idPattern, EnumTypeEventInvoice TypeEventInvoice ,float? Vatrate ,string ArisingDate)
         {
             if (idPattern == 0)
-            {
+            { 
                 _notify.Error("Vui lòng chọn mẫu số ký hiệu");
                 return new JsonResult(new { isValid = false });
             }
@@ -467,6 +474,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             {
                 _notify.Error("Vui lòng chọn thuế xuất");
                 return new JsonResult(new { isValid = false });
+            }
+            DateTime? date = null;
+            if (!string.IsNullOrEmpty(ArisingDate))
+            {
+                date = Common.ConvertStringToDateTime(ArisingDate);
             }
             var currentUser = User.Identity.GetUserClaimLogin();
             var send = await _mediator.Send(new PublishInvoiceCommand()
@@ -476,6 +488,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 IdInvoice = id,
                 VATRate = Vatrate.Value,
                 IdManagerPatternEInvoice = idPattern,
+                ArisingDate = date,
                 ComId = currentUser.ComId,
                 TypeSupplierEInvoice = ENumSupplierEInvoice.VNPT,
                 TypeEventInvoice = TypeEventInvoice

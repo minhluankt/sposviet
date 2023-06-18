@@ -683,12 +683,12 @@ namespace Infrastructure.Infrastructure.Repositories
 
             if (_discountAmount!=null && _discountAmount!=0)
             {
-                _discountAmount = _discountAmount + model.DiscountAmount;
+                _discountAmount = _discountAmount + model.DiscountAmount??0;
                 XmlNode xmlDiscountAmount = xmlDoc.CreateElement("DiscountAmount");
                 xmlDiscountAmount.InnerText = _discountAmount.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
                 xmlContentInv.AppendChild(xmlDiscountAmount);
             }
-            else
+            else if(model.DiscountAmount!=null&& model.DiscountAmount>0)
             {
                 XmlNode xmlDiscountAmount = xmlDoc.CreateElement("DiscountAmount");
                 xmlDiscountAmount.InnerText = model.DiscountAmount.Value.ToString("F3", LibraryCommon.GetIFormatProvider());
@@ -2130,7 +2130,7 @@ namespace Infrastructure.Infrastructure.Repositories
             {
                 return await Result<string>.FailAsync(HeperConstantss.ERR000);
             }
-            var getall = _repository.Entities.Where(x => lstid.Contains(x.Id) && x.ComId == Comid && x.StatusEinvoice==StatusEinvoice.SignedInv).ToList().GroupBy(x => x.TypeSupplierEInvoice);
+            var getall = _repository.Entities.AsNoTracking().Where(x => lstid.Contains(x.Id) && x.ComId == Comid && x.StatusEinvoice==StatusEinvoice.SignedInv).ToList().GroupBy(x => x.TypeSupplierEInvoice);
             if (getall.Count() == 0)
             {
                 _log.LogError($"Không tìm thấy hóa đơn gửi CQT");

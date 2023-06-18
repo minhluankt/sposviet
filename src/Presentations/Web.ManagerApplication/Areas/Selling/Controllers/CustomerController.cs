@@ -242,8 +242,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             else
             {
-                var html = await _viewRenderer.RenderViewToStringAsync("_CreateOrEdit", model);
-                return new JsonResult(new { isValid = false, html = html });
+                var message = string.Join(" | ", ModelState.Values
+                                            .SelectMany(v => v.Errors)
+                                            .Select(e => e.ErrorMessage));
+
+                _notify.Error(message);
+                return new JsonResult(new { isValid = false });
             }
 
         }

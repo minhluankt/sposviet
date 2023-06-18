@@ -20,6 +20,7 @@ namespace Domain.ViewModel
         public decimal VATAmount { get; set; }
         public decimal Total { get; set; }
         public decimal? VATRate { get; set; }
+        public string ArisingDate { get; set; }
         public decimal Discount { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal CusSendAmount { get; set; }//tiền khách đưa

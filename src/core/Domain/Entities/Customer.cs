@@ -23,7 +23,7 @@ namespace Domain.Entities
         public string UserName { get; set; }
         public string Password { get; set; }
         public DateTime? BirthDate { get; set; }
-        [Required]
+        
         [StringLength(500)]
         public string Name { get; set; }
         [StringLength(100)]

@@ -2,6 +2,7 @@
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +51,8 @@ namespace Domain.ViewModel
        
         public float VATRate { get; set; }//thuế s
         public decimal VATAmount { get; set; }//
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ArisingDate { get; set; }//
         public decimal Amount { get; set; }//
         public string CasherName { get; set; }//thuế s
         public string IdCarsher { get; set; }//thuế s

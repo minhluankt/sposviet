@@ -25,6 +25,12 @@ namespace Application.Enums
         TRANG_THAI_HOA_DON = 0,
         TRANG_THAI_CQT = 1
     }
+    public enum EnumTypeUpdateDefaultFoodOrder
+    {
+        UPDATE_FOOD = 0,//CẬP NHẬT MẶT HÀNG ABC
+        UPDATE_QUANTITY_FOOD = 1,//CẬP NHẬT SỐ LƯỢNG CỦA MẶT HÀNG ĐÓ
+        DELETE_FOOD = 2//CẬP NHẬT SỐ LƯỢNG CỦA MẶT HÀNG ĐÓ
+    }
     public enum AutocompleteTypeCustomer
     {
         NONE = 0,
@@ -137,6 +143,7 @@ namespace Application.Enums
         SentInvOK = 21,//hóa đơn đã gửi thuế
         UnSentInv = 22,//hóa đơn chưa gửi thuế
         SendCQT = 23,//hóa đơn đã gửi thuế
+        GET_HASH_PUBLISH_FAIL = 24,//LẤY CHUỖI HASH ĐỂ KÝ TOKEN THẤT BẠI
     }
     public enum TCHHDVuLoai
     {
@@ -235,7 +242,9 @@ namespace Application.Enums
         [Display(Name = "Tính năng nhân viên hủy món có chờ bếp xác nhận")]
         CANCEL_FOOD_PENDING_CONFIRM = 9, 
         [Display(Name = "Tính năng mặc định hàng hóa khi tạo đơn")]
-        DEFAULT_FOOD_CREATE_ORDER = 10,
+        DEFAULT_FOOD_CREATE_ORDER = 10, 
+        [Display(Name = "Tính chiết khấu theo giá sau thuế")]
+        DISCOUNT_PRICE_AFTER_TAX = 11,
     }
     public enum EnumConfigParametersType // loại nào
     {

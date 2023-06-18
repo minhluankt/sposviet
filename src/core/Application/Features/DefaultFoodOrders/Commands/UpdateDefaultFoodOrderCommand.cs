@@ -1,5 +1,6 @@
 ﻿using Application.CacheKeys;
 using Application.Constants;
+using Application.Enums;
 using Application.Hepers;
 using Application.Interfaces.Repositories;
 using AspNetCoreHero.Abstractions.Repository;
@@ -18,17 +19,21 @@ using System.Threading.Tasks;
 namespace Application.Features.DefaultFoodOrders.Commands
 {
 
-    public partial class UpdateDefaultFoodOrderCommand : DefaultFoodOrder, IRequest<Result<int>>
+    public partial class UpdateDefaultFoodOrderCommand : IRequest<Result<int>>
     {
-
+        public Guid? Id { get; set; }
+        public int ComId { get; set; }
+        public int[] ListId { get; set; }
+        public decimal? Quantity { get; set; }
+        public EnumTypeUpdateDefaultFoodOrder TypeUpdateDefaultFoodOrder { get; set; }
     }
     public class UpdateDefaultFoodOrderHandler : IRequestHandler<UpdateDefaultFoodOrderCommand, Result<int>>
     {
     
-        private readonly IRepositoryAsync<DefaultFoodOrder> _Repository;
+        private readonly IDefaultFoodOrderRepository<DefaultFoodOrder> _Repository;
         private IUnitOfWork _unitOfWork { get; set; }
 
-        public UpdateDefaultFoodOrderHandler(IRepositoryAsync<DefaultFoodOrder> DefaultFoodOrderRepository,
+        public UpdateDefaultFoodOrderHandler(IDefaultFoodOrderRepository<DefaultFoodOrder> DefaultFoodOrderRepository,
             IUnitOfWork unitOfWork)
         {
             _Repository = DefaultFoodOrderRepository;
@@ -37,17 +42,50 @@ namespace Application.Features.DefaultFoodOrders.Commands
 
         public async Task<Result<int>> Handle(UpdateDefaultFoodOrderCommand command, CancellationToken cancellationToken)
         {
-            var DefaultFoodOrder = await _Repository.GetByIdAsync(command.Id);
-            if (DefaultFoodOrder == null)
+      
+            if (command.TypeUpdateDefaultFoodOrder==EnumTypeUpdateDefaultFoodOrder.UPDATE_FOOD)
             {
-                return await Result<int>.FailAsync(HeperConstantss.ERR012);
+            
+                if (command.ListId==null|| command.ListId.Count()==0)
+                {
+                    return await Result<int>.FailAsync(HeperConstantss.ERR000);
+                }
+                var up=  await _Repository.UpdateFoodAsync(command.ListId, command.ComId);
+                if (up.Succeeded)
+                {
+                    return await Result<int>.SuccessAsync(up.Message);
+                }
+                return await Result<int>.FailAsync(up.Message);
+            }
+            else if (command.TypeUpdateDefaultFoodOrder==EnumTypeUpdateDefaultFoodOrder.DELETE_FOOD)
+            {
+                if (!command.Id.HasValue)
+                {
+                    return await Result<int>.FailAsync(HeperConstantss.ERR000);
+                }
+                var up=  await _Repository.DeleteFoodAsync(command.Id.Value, command.ComId);
+                if (up.Succeeded)
+                {
+                    return await Result<int>.SuccessAsync(up.Message);
+                }
+                return await Result<int>.FailAsync(up.Message);
             }
             else
             {
-                DefaultFoodOrder.Quantity = command.Quantity;
-                await _Repository.UpdateAsync(DefaultFoodOrder);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-                return Result<int>.Success(DefaultFoodOrder.Id);
+                if (!command.Quantity.HasValue)
+                {
+                    return await Result<int>.FailAsync(HeperConstantss.ERR000);
+                }
+                if (!command.Id.HasValue)
+                {
+                    return await Result<int>.FailAsync(HeperConstantss.ERR000);
+                }
+                var up = await _Repository.UpdateQuantityFoodAsync(command.Id.Value, command.ComId, command.Quantity.Value);
+                if (up.Succeeded)
+                {
+                    return await Result<int>.SuccessAsync(up.Message);
+                }
+                return await Result<int>.FailAsync(up.Message);
             }
         }
     }

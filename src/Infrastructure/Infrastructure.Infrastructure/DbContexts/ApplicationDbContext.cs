@@ -525,7 +525,7 @@ namespace Infrastructure.Infrastructure.DbContexts
             {
                 // Tạo Index Unique trên 1 cột
                 entity.HasIndex(p => new { p.Id });
-                entity.HasIndex(p => new { p.ProviderKey }).IsUnique();
+                //entity.HasIndex(p => new { p.ProviderKey }).IsUnique();
                 entity.HasIndex(p => new { p.Code,p.Comid }).IsUnique();
                 entity.HasMany(m => m.Comments).WithOne(m => m.Customer).HasForeignKey(m => m.IdCustomer).OnDelete(deleteBehavior: DeleteBehavior.NoAction);
             });

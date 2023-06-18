@@ -16,12 +16,16 @@
     bool PRINT_BAO_BEP = false;
     bool CANCEL_FOOD_PENDING_CONFIRM = false;
     bool DEFAULT_FOOD_CREATE_ORDER = false;
+    bool DISCOUNT_PRICE_AFTER_TAX = false;
     foreach (var item in Model)
     {
         switch (item.Key)
         {
             case nameof(EnumConfigParameters.DEFAULT_FOOD_CREATE_ORDER):
                 DEFAULT_FOOD_CREATE_ORDER = Convert.ToBoolean(item.Value);
+                break; 
+            case nameof(EnumConfigParameters.DISCOUNT_PRICE_AFTER_TAX):
+                DISCOUNT_PRICE_AFTER_TAX = Convert.ToBoolean(item.Value);
                 break;
             case nameof(EnumConfigParameters.DELETEINVOICENOPAYMENT):
                 DELETEINVOICENOPAYMENT = Convert.ToBoolean(item.Value);
@@ -287,11 +291,11 @@
                         <div class="infotab">
                             @if (DEFAULT_FOOD_CREATE_ORDER)
                             {
-                                <a href="/Selling/Pos/DefaultFoodOrder" data-url="/Selling/Pos/DefaultFoodOrder" class="link-settingfunction">Đi đến thiết lập các mặt hàng > </a>
+                                <a href="/Selling/Pos/DefaultFoodOrder" data-url="/Selling/DefaultFoodOrder" class="link-settingfunction">Đi đến thiết lập các mặt hàng > </a>
                             }
                             else
                             {
-                                <a href="javascript:void(0)" data-url="" class="disabled link-settingfunction">Đi đến thiết lập các mặt hàng > </a>
+                                <a href="javascript:void(0)"  data-url="/Selling/DefaultFoodOrder" class="disabled link-settingfunction">Đi đến thiết lập các mặt hàng > </a>
                             }
                         </div>
                     </div>
@@ -299,7 +303,28 @@
             </div>
 
         }
-
+        <!--Tính năng cho phép chiết khấu hàng hóa của sau thuế-->
+        <div class="item-row">
+            <div class="item-col">
+                <div>
+                    <span>
+                        Tính chiết khấu hóa đơn theo giá sau thuế
+                    </span>
+                    <small>Khi có chiết khấu hàng hóa, hệ thống dựa vào giá sau thuế để trừ chiết khấu</small>
+                </div>
+                <div class="check-b">
+                    <div class="content">
+                        <span class="title">
+                            Sử dụng tính năng tính chiết khấu hóa đơn theo giá sau thuế
+                        </span>
+                        <label class="switch-custom">
+                            <input type="checkbox" data-typevalue="BOOL" data-type="@EnumConfigParametersType.SELLINVOICE.ToString()" class="toggleConfigSaleParameter" data-parent="" data-key="@EnumConfigParameters.DISCOUNT_PRICE_AFTER_TAX.ToString()" @(DISCOUNT_PRICE_AFTER_TAX ? "checked" : "")>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

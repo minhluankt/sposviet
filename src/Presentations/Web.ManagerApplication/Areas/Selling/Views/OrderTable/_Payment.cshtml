@@ -37,6 +37,7 @@
     var checkvatproduct = getVATrate.Count();
 }
 <input type="hidden" id="errVATrate" data-vatrate="@VATRateDef" value="@getVATrate.Count()" />
+<input type="hidden" id="IsDiscountAfterTax" value="@(Model.IsDiscountAfterTax?1:0)" />
 <div class="payment-view">
     <div class="row">
         <div class="col-md-8">

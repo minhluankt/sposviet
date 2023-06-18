@@ -845,12 +845,21 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                             return Json(new { isValid = false });
                         }
                     }
-                    var _send = await _mediator.Send(new GetAllSupplierEInvoiceQuery() { Comid = currentUser.ComId, IsManagerPatternEInvoices = true });
                     PaymentModelView paymentModelView = new PaymentModelView();
+                    //---------lấy config có tính chiết khấu sau thuế không
+                    var _sendDISCOUNT_PRICE_AFTER_TAX = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.DISCOUNT_PRICE_AFTER_TAX.ToString()) { ComId = currentUser.ComId });
+                    if (_sendDISCOUNT_PRICE_AFTER_TAX.Succeeded)
+                    {
+                        paymentModelView.IsDiscountAfterTax = (_sendDISCOUNT_PRICE_AFTER_TAX.Data.Value=="true");
+                    }
+                    //-----------
+                    var _send = await _mediator.Send(new GetAllSupplierEInvoiceQuery() { Comid = currentUser.ComId, IsManagerPatternEInvoices = true });
+                  
                     paymentModelView.PaymentMethods = _payment.GetAll(currentUser.ComId, true).ToList();
                     paymentModelView.SupplierEInvoiceModel = _send.Data?.FirstOrDefault();
                     paymentModelView.OrderTable = _orderTable;
-                    paymentModelView.VatMTT = vat;
+                    paymentModelView.VatMTT = vat; 
+
                     if (paymentModelView.OrderTable == null)
                     {
                         _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR043));
@@ -1088,6 +1097,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             model.ComId = currentUser.ComId;
             model.IdCasher = currentUser.Id;
             model.Cashername = currentUser.FullName;
+
             if (!model.VATMTT)
             {
                 model.VATRate = (int)NOVAT.NOVAT;
@@ -1108,8 +1118,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         [HttpPost]
         public async Task<IActionResult> CheckOutOrder(EnumTypeUpdatePos TypeUpdate, Guid? IdOrder,
-            decimal discountPayment, decimal discount, decimal? cuspayAmount, int Idpayment,bool vat,
-            int? Vatrate,int? ManagerPatternEInvoices,decimal VATAmount,decimal Amount)
+            decimal discountPayment, decimal discount, decimal discountOther, decimal? cuspayAmount, int Idpayment,bool vat,
+            int? Vatrate,int? ManagerPatternEInvoices,decimal VATAmount,decimal Amount,decimal Total)
         {
             if (TypeUpdate == EnumTypeUpdatePos.CheckOutOrder)
             {
@@ -1140,11 +1150,13 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     TypeUpdate = enumType,
                     IdOrder = IdOrder.Value,
                     discountPayment = discountPayment,
+                    discountOther = discountOther,
                     discount = discount,
                     vat = vat,
                     Vatrate = Vatrate,
                     VATAmount = VATAmount,
                     Amount = Amount,
+                    Total = Total,
                     ManagerPatternEInvoices = ManagerPatternEInvoices,
                     cuspayAmount = cuspayAmount
                 });

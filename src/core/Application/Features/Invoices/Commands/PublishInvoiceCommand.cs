@@ -28,6 +28,7 @@ namespace Application.Features.Invoices.Commands
         public int[] lstId { get; set; }
         public int IdManagerPatternEInvoice { get; set; }
         public float VATRate { get; set; }
+        public DateTime? ArisingDate { get; set; }
         public int ComId { get; set; }
         public Guid? IdInvoice { get; set; }
         public ENumSupplierEInvoice TypeSupplierEInvoice { get; set; }
@@ -60,6 +61,7 @@ namespace Application.Features.Invoices.Commands
                 PublishInvoiceModel publishInvoiceModel = new PublishInvoiceModel();
                 publishInvoiceModel.TypeSupplierEInvoice = command.TypeSupplierEInvoice;
                 publishInvoiceModel.VATRate = command.VATRate;
+                publishInvoiceModel.ArisingDate = command.ArisingDate;
                 publishInvoiceModel.IdManagerPatternEInvoice = command.IdManagerPatternEInvoice;
                 return await _Repository.PublishEInvoieDraft(command.ComId, command.IdInvoice.Value, publishInvoiceModel);
             }
@@ -83,6 +85,7 @@ namespace Application.Features.Invoices.Commands
 
             var model = new PublishInvoiceModel()
             {
+                ArisingDate = command.ArisingDate,
                 lstid = command.lstId,
                 ComId = command.ComId,
                 IdManagerPatternEInvoice = command.IdManagerPatternEInvoice,

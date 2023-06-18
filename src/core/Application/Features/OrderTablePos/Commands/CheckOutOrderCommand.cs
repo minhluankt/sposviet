@@ -25,9 +25,11 @@ namespace Application.Features.OrderTablePos.Commands
     {
         public EnumTypeProduct TypeUpdate { get; set; }
         public Guid IdOrder { get; set; }
+        public decimal discountOther { get; set; }
         public decimal discountPayment { get; set; }
         public decimal discount { get; set; }
         public decimal? cuspayAmount { get; set; }
+        public decimal Total { get; set; }
         public decimal Amount { get; set; }
         public decimal VATAmount { get; set; }
         public bool removeOrder { get; set; }
@@ -94,7 +96,9 @@ namespace Application.Features.OrderTablePos.Commands
                     command.IdOrder,
                     command.discountPayment,
                     command.discount,
+                    command.discountOther,
                     command.cuspayAmount,
+                    command.Total,
                     command.Amount,
                     command.VATAmount,
                     command.Cashername,

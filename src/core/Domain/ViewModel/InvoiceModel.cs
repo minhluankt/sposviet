@@ -56,6 +56,9 @@ namespace Domain.ViewModel
         public decimal? VATRate { get; set; } // tổng tiền khách trả dã giảm
         public decimal VATAmount { get; set; } // tổng tiền khách trả dã giảm
         public int Quantity { get; set; } // tổng số lượng
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ArisingDate { get; set; } // giờ đến
         public DateTime? ArrivalDate { get; set; } // giờ đến
         public DateTime? PurchaseDate { get; set; } // giờ xuất đơn tính tiền
         public List<PublishInvoiceItemModel> PublishInvoiceItemModel { get

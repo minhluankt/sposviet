@@ -371,6 +371,19 @@ namespace Infrastructure.Infrastructure.Repositories
                             }
 
                         }
+                        else
+                        {
+                            foreach (var item in lsteinvoice)
+                            {
+                                ListDetailInvoice.Add(new DetailInvoice()
+                                {
+                                    TypePublishEinvoice = ENumTypePublishEinvoice.GET_HASH_PUBLISH_FAIL,
+                                    code = item.InvoiceCode,
+                                    note = $"{publish.Message}",
+                                });
+                            }
+                           
+                        }
                     }
                     else
                     {
@@ -589,7 +602,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 PaymentMethod = invoice.PaymentMethod?.Name,
                 Pattern = getpattern.Pattern,
                 Serial = getpattern.Serial,
-                ArisingDate = DateTime.Now,
+                ArisingDate = model.ArisingDate?? invoice.PurchaseDate,
                 PublishDate = DateTime.Now,
                 CurrencyUnit = "VND",
                 Discount = invoice.Discount,
@@ -643,6 +656,8 @@ namespace Infrastructure.Infrastructure.Repositories
                     Price = (item.VATRate.Value != (int)NOVAT.NOVAT&& item.PriceNoVAT>0) ? item.PriceNoVAT : item.Price,
                     Total = item.Total,
                     VATAmount = item.VATAmount,
+                    //Discount = item.Discount,
+                    //DiscountAmount = item.DiscountAmount,
                     VATRate = (item.VATRate.Value!= (int)NOVAT.NOVAT? item.VATRate.Value: (int)NOVAT.NOVAT),//để novat vì xuống dưới check
                     Amount = item.Amonut
                 };
@@ -679,19 +694,6 @@ namespace Infrastructure.Infrastructure.Repositories
                     itemeinvoice.Amount = item.Amonut;
                 }
 
-                //if (isGTGT && (ENumTypeEInvoice)typeinv == ENumTypeEInvoice.GTGT && itemeinvoice.VATRate != model.VATRate &&  itemeinvoice.VATRate >(int)NOVAT.NOVAT)
-                //{
-                //    itemeinvoice.VATRate = model.VATRate;
-                //    itemeinvoice.VATAmount = itemeinvoice.Total * Convert.ToDecimal((model.VATRate < 0 ? 0 : model.VATRate) / 100);
-                //    itemeinvoice.Amount = itemeinvoice.Total + itemeinvoice.VATAmount;
-                //}
-                //else if(!isGTGT)
-                //{
-                //    itemeinvoice.VATRate = (int)VATRateInv.KHONGVAT;
-                //    itemeinvoice.VATAmount = 0;
-                //    itemeinvoice.Amount = item.Amonut;
-                //}
-
                 eInvoiceItems.Add(itemeinvoice);
             }
             newmodel.EInvoiceItems = eInvoiceItems;
@@ -702,6 +704,7 @@ namespace Infrastructure.Infrastructure.Repositories
             }
             if (model.VATRate != invoice.VATRate.Value && model.VATRate > (int)NOVAT.NOVAT && invoice.VATRate.Value == (int)NOVAT.NOVAT)
             {
+                đơn vừa có số thuế vừa k, thì nên lấy từ tiền từ bên ngoài vào, phần khách hàng hiển thị tên
                 var checkprovat = invoice.InvoiceItems.Where(x=>x.VATRate!= (int)NOVAT.NOVAT).ToList();
                 if (checkprovat.Count()>0)//th các sản phẩm giá đã có thuế thfi phải tính lại total tiền trucosw thuế khác
                 {
@@ -710,21 +713,24 @@ namespace Infrastructure.Infrastructure.Repositories
                     if (checkprovat.Count()== eInvoiceItems.Count())//tức là nếu tất cả sản phẩm đã có thuế thì k cần tính lại lấy nguyên giá trị qua
                     {
                         newmodel.Total = invoice.Total;
-                       // newmodel.VATAmount = Math.Round(eInvoiceItems.Sum(x=>x.VATAmount), MidpointRounding.AwayFromZero);
-                        newmodel.VATAmount = eInvoiceItems.Sum(x=>x.VATAmount);
-                        newmodel.Amount = Math.Round(eInvoiceItems.Sum(x=>x.Amount) - (newmodel.DiscountOther??0), MidpointRounding.AwayFromZero);
+                       // newmodel.VATAmount = eInvoiceItems.Sum(x=>x.VATAmount);
+                        newmodel.VATAmount = invoice.VATAmount;
+                        //newmodel.Amount = Math.Round(eInvoiceItems.Sum(x=>x.Amount) - (newmodel.DiscountOther??0), MidpointRounding.AwayFromZero);
+                        newmodel.Amount = invoice.Amonut;
                     }
                     else
                     {
                         newmodel.Total = invoice.InvoiceItems.ToList().Sum(x => x.Total);
                         float vatr = (model.VATRate < 0 ? 0 : model.VATRate) / 100;
-                        newmodel.VATAmount = Math.Round(newmodel.Total * Convert.ToDecimal(vatr), MidpointRoundingCommon.Three);
-                        newmodel.Amount = Math.Round(newmodel.VATAmount + newmodel.Total, MidpointRounding.AwayFromZero); ;
+                        newmodel.VATAmount = Math.Round((newmodel.Total - newmodel.DiscountAmount ?? 0) * Convert.ToDecimal(vatr), MidpointRoundingCommon.Three);
+                        //do tính lại mới từ đi DiscountOther nhé, vì checkout đã tính rồi nên các trường hợp khác  là lấy ý nguyên
+                        newmodel.Amount = Math.Round((newmodel.VATAmount + newmodel.Total) - (newmodel.DiscountOther ?? 0), MidpointRounding.AwayFromZero) ;
                     }
                     newmodel.AmountInWords = LibraryCommon.So_chu(newmodel.Amount);
                 }
                 else// th k có sp nào có thuế thì làm như bt lấy đúng với order
                 {
+                    //trường hợp này amount k trừu DiscountOther vì k có thuế nên khi tính ở đơn là truyền vào DiscountAmount
                     newmodel.VATRate = model.VATRate;
                     float vatr = (model.VATRate < 0 ? 0 : model.VATRate) / 100;
                     newmodel.VATAmount = Math.Round((invoice.Total - (invoice.DiscountAmount??0)) * Convert.ToDecimal(vatr), MidpointRoundingCommon.Three);
@@ -1411,7 +1417,7 @@ namespace Infrastructure.Infrastructure.Repositories
             invoice.VATAmount = model.VATAmount;
             invoice.Amonut = model.Amount;
             invoice.Total = model.Total;
-            invoice.ArrivalDate = DateTime.Now;
+            invoice.ArrivalDate = model.ArisingDate??DateTime.Now;
             invoice.PurchaseDate = invoice.ArrivalDate;
             invoice.DiscountAmount = model.DiscountAmount;
             invoice.StaffName = model.CasherName;

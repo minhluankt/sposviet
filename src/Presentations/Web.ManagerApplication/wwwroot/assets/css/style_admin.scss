@@ -382,6 +382,16 @@ table body tr td {
         }
     }
 }
+.eleupdatequantity {
+    display: flex;
+    align-items: center;
+
+    input {
+        border: none;
+        background-color: transparent;
+        border-bottom: #ccc solid thin;
+    }
+}
 .elecontainerselectfood {
     table {
         img {
@@ -520,10 +530,66 @@ ul.lsttypeservice {
 }
 
 div#popupselectDiscount {
-    position: absolute;
-    width: max-content;
-    right: 0;
-    top: 117%;
+
+    &.popupselectDiscountdefault {
+        position: absolute;
+        width: max-content;
+        right: 0;
+        top: 117%;
+
+        .overlazy {
+            position: fixed;
+            background-color: #0d0d0d08;
+            height: 100%;
+            width: 100%;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+    }
+
+    &.popup-change-price {
+        position: absolute;
+        width: max-content;
+        right: 0;
+        top: 117%;
+
+        .overlazy {
+            position: fixed;
+            background-color: #0d0d0d08;
+            height: 100%;
+            width: 100%;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+    }
+
+    &.bydiscountinvoice {
+        position: fixed;
+        width: max-content;
+        right: 20px;
+        // top: 234px;
+        bottom: 0;
+        z-index: 6;
+        height: max-content;
+
+        .overlazy {
+            position: fixed;
+            background-color: rgb(13 13 13 / 13%);
+            height: 100%;
+            width: 100%;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 2;
+        }
+    }
+
+
+
 
     &:before {
         content: " ";
@@ -537,16 +603,6 @@ div#popupselectDiscount {
         z-index: 3;
     }
 
-    .overlazy {
-        position: fixed;
-        background-color: #0d0d0d08;
-        height: 100%;
-        width: 100%;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        z-index: 1;
-    }
 
     .ele-discount {
         background-color: #fff;
@@ -2184,7 +2240,7 @@ div#popupselectDiscount .ele-discount.ele-SaleRetail {
         background-color: #fff !important;
         display: grid;
         grid-template-columns: 120px auto;
-        margin-top: 10px !important;
+        margin-top: 0px !important;
         padding: 0px !important;
         gap: 16px;
 
@@ -2200,6 +2256,7 @@ div#popupselectDiscount .ele-discount.ele-SaleRetail {
             margin-top: 0px;
             display: flex;
             gap: 10px;
+            padding: 0;
         }
     }
 }
@@ -2984,6 +3041,7 @@ button.btnfullScreen {
     // max-width: 1100px;
     height: calc(100vh - 20px);
     display: block !important;
+    overflow: auto;
 
     .swal2-footer {
         width: calc(100% - 40px);
@@ -3006,7 +3064,6 @@ button.btnfullScreen {
 
     td, th {
         font-size: 16px;
-
     }
 
     .table-info-pay {
@@ -4633,6 +4690,7 @@ span.discountAmountItemPro {
         border-top-left-radius: 8px;
         border-bottom-left-radius: 8px;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        overflow: auto;
 
         .cashier-payment-info-top {
             display: flex;
@@ -4657,7 +4715,7 @@ span.discountAmountItemPro {
 
             .lst-amount-paycus {
                 background-color: #eff2f5;
-                padding: 0.6rem 0.4rem 0rem 1rem;
+                padding: 0.6rem 0.4rem 0rem 0.3rem;
                 border-radius: 8px;
                 min-height: 8.2rem;
 
@@ -7845,6 +7903,13 @@ img#Imgdata {
 }
 
 @media (min-width: 1200px) and (max-width: 1399.8px) {
+    #sellting-pos {
+        #item-mon li {
+            .btn-remove {
+                padding: 6px 6px;
+            }
+        }
+    }
     #item-mon li {
         grid-template-columns: 30px auto 123px 100px 100px;
 

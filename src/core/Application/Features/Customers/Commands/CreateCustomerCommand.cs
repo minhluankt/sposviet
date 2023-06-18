@@ -51,7 +51,7 @@ namespace Application.Features.Customers.Commands
 
                 if (!string.IsNullOrEmpty(request.PhoneNumber))
                 {
-                    var fidn = _Repository.Entities.AsNoTracking().Where(m => m.PhoneNumber == request.PhoneNumber && m.Comid == request.Comid).SingleOrDefault();
+                    var fidn = _Repository.Entities.AsNoTracking().Where(m => m.PhoneNumber == request.PhoneNumber && m.Comid == request.Comid).FirstOrDefaultAsync();
                     if (fidn != null)
                     {
                         _log.LogError("CreateCustomerCommand Create: Đã tồn tại PhoneNumber " + request.PhoneNumber);
@@ -61,7 +61,7 @@ namespace Application.Features.Customers.Commands
 
                 if (!string.IsNullOrEmpty(request.Email))
                 {
-                    var fidnmail = _Repository.Entities.AsNoTracking().Where(m => m.Email == request.Email && m.Comid == request.Comid).SingleOrDefault();
+                    var fidnmail = _Repository.Entities.AsNoTracking().Where(m => m.Email == request.Email && m.Comid == request.Comid).FirstOrDefaultAsync();
                     if (fidnmail != null)
                     {
                         _log.LogError("CreateCustomerCommand Create: Đã tồn tại email " + request.Email);

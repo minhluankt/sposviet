@@ -91,10 +91,20 @@
                     </div>
                 </div>
                
-                <button type="button" disabled class="btn btn-secondary btn-printeinvoice">In hóa đơn</button>
+             @*   <button type="button" disabled class="btn btn-secondary btn-printeinvoice">In hóa đơn</button>
                 <button type="button" disabled class="btn btn-info btn-printeinvoice">In hóa đơn chuyển đổi</button>
                 <button type="button" disabled class="btn btn-danger btn-cancelinvoice" data-toggle="tooltip" data-placement="top" title="Ghi chú: hủy hóa đơn điện tử từ nhà cung cấp">Hủy hóa đơn</button>
                 <button type="button" disabled class="btn btn-danger btn-removeinvoice" data-toggle="tooltip" data-placement="top" title="Ghi chú: xóa hóa đơn có trạng thái tạo mới, khi chưa phát hành lên nhà cung cấp">Xóa hóa đơn tạo mới</button>
+*@
+                <div class="dropdowncusomer dropbutonright">
+                    <button type="button" disabled class="btn btn-warning ml-3 productaddbtn"><i class="fas fa-ellipsis-v"></i></button>
+                    <div class="dropdown-menu-custom lst-action-synchronize d-none" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item btn-printeinvoice" data-type="0" href="javascript:void(0)"><i class="fas fa-plus mr-2"></i> In hóa đơn</a>
+                        <a class="dropdown-item btn-printeinvoice" data-type="1" href="javascript:void(0)"><i class="fas fa-plus mr-2"></i> In hóa đơn chuyển đổi</a>
+                        <a class="dropdown-item btn-cancelinvoice" data-type="2" href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Ghi chú: hủy hóa đơn điện tử từ nhà cung cấp"><i class="fas fa-plus mr-2"></i> Hủy hóa đơn</a>
+                        <a class="dropdown-item btn-removeinvoice" data-type="3" href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Ghi chú: xóa hóa đơn có trạng thái tạo mới, khi chưa phát hành lên nhà cung cấp"><i class="fas fa-plus mr-2"></i> Xóa hóa đơn tạo mới</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

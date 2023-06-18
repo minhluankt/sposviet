@@ -507,8 +507,8 @@ namespace Infrastructure.Infrastructure.Repositories
         }
 
         public async Task<Result<PublishInvoiceResponse>> CheckOutOrderAsync(int comid, int Idpayment, Guid idOrder,
-            decimal discountPayment,  decimal discount, decimal? AmountCusPayment,
-            decimal Amount, decimal VATAmount, string Cashername,
+            decimal discountPayment, decimal discount, decimal? discountOther, decimal? AmountCusPayment,
+            decimal Total,  decimal Amount, decimal VATAmount, string Cashername,
             string IdCasher, bool vat, int? Vatrate, int? ManagerPatternEInvoices, EnumTypeProduct enumType = EnumTypeProduct.AMTHUC)
         {
             await _unitOfWork.CreateTransactionAsync();
@@ -551,9 +551,9 @@ namespace Infrastructure.Infrastructure.Repositories
                         invitem.Amonut = item.Sum(x => x.Amount); // do lỗi trường nên phải làm ri
                         invitem.VATAmount = item.Sum(x => x.VATAmount); // do lỗi trường nên phải làm ri
                         invitem.DiscountAmount = item.Sum(x => x.DiscountAmount); // do lỗi trường nên phải làm ri
-                        if (!_item.IsVAT && invitem.PriceNoVAT!= invitem.Price)
+                        if (!_item.IsVAT && invitem.PriceNoVAT!= invitem.Price && invitem.PriceNoVAT>0 &&invitem.VATRate>0)//do có lần lỗi là cập nhật giá mà chưa lưu biến IsVAT
                         {
-                            invitem.PriceNoVAT = invitem.Price;
+                            _item.IsVAT=true;
                         }
                         if (vat && Vatrate != null && Vatrate != (int)NOVAT.NOVAT && !_item.IsVAT) //sp k có thuế, mà có xuất hóa đơn hoặc có tính thuế
                         {
@@ -575,25 +575,21 @@ namespace Infrastructure.Infrastructure.Repositories
                         invitem.Id = 0;
                         newlistitem.Add(invitem);
                     }
-                    //check item order và map
-                    //var invitem = _map.Map<List<InvoiceItem>>(newlistitem);
-                    //invitem.ForEach(x => x.Id = 0);
-                    
-
                     inv.InvoiceItems = newlistitem;
                     inv.Status = EnumStatusInvoice.DA_THANH_TOAN;
-                  
-                    if (checkOrder.OrderTableItems.Where(x=>x.IsVAT).Count()>0)
-                    {
-                        inv.DiscountOther = discountPayment;//nếu là sản phẩm đã có thuế thì phải giảm giá sau thuế
-                    }
-                    else
-                    {
-                        inv.DiscountAmount = discountPayment;//ngược lại là giá sau thuế
-                    }
+                    //if (checkOrder.OrderTableItems.Where(x=>x.IsVAT).Count()>0)
+                    //{
+                    //    inv.DiscountOther = discountPayment;//nếu là sản phẩm đã có thuế thì phải giảm giá sau thuế
+                    //}
+                    //else
+                    //{
+                    //    inv.DiscountAmount = discountPayment;//ngược lại là giá sau thuế
+                    //}
+                    inv.DiscountOther = discountOther;
+                    inv.DiscountAmount = discountPayment;
                     inv.Discount = (float)discount;
-                    inv.Total = Math.Round(newlistitem.Sum(x=>x.Total), MidpointRounding.AwayFromZero);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
-                    inv.VATAmount = Math.Round(newlistitem.Sum(x=>x.VATAmount), MidpointRounding.AwayFromZero);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+                    inv.Total = Math.Round(newlistitem.Sum(x=>x.Total), MidpointRoundingCommon.Three);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+                    inv.VATAmount = Math.Round(newlistitem.Sum(x=>x.VATAmount), MidpointRoundingCommon.Three);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
                                                                                                                // lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
 
                     inv.Amonut = Amount;//inv.Amonut - discountPayment;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
@@ -601,6 +597,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     inv.AmountCusPayment = AmountCusPayment.HasValue ? AmountCusPayment.Value : 0;// tieefn khasch đưa
                     if (vat && Vatrate!=null && Vatrate>0)
                     {
+                        inv.Total = Total;
                         inv.VATAmount = VATAmount;
                         inv.Amonut = Amount;
                         inv.VATRate = Vatrate;

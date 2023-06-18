@@ -68,6 +68,7 @@ namespace Application.Features.DefaultFoodOrders.Query
             {
                 productList = productList.Where(x=>x.IdCategory== request.IdCategory);
             }
+
             var list = await productList.ToPaginatedListAsync(request.PageNumber, request.PageSize);
             return await Result<PaginatedResult<DefaultFoodOrderModel>>.SuccessAsync(list);
         }

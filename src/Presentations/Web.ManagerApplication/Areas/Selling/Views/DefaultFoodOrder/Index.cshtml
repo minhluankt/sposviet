@@ -69,7 +69,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3 left-info">
+        <div class="col-md-3 left-info pl-lg-0">
             <div class="card">
                 <div class="card-body">
                     <h3>Loại hình phục vụ</h3>
@@ -138,10 +138,10 @@
                     }
                 },
                 {
-                    "targets": [-1], // your case first column
+                    "targets": [4], // your case first column
                     "className": "text-right"
                 }, {
-                    "targets": [0, 1, 2], // your case first column
+                    "targets": [0, 1, -1], // your case first column
                     "className": "text-center"
                 },
                 { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
@@ -192,14 +192,14 @@
                 {
                     "data": "quantity", "name": "Quantity", "autoWidth": true,
                     "render": function (data, type, full, meta) {
-                        html = `<div class="m-width" style="display: inline-flex;">
-                                <span class="ui-button--link-mod-danger m-auto-bt">
+                        html = `<div class="eleupdatequantity" style="display: inline-flex;">
+                                <span class="minus">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.5" fill="white" stroke="#A2A7B7"></circle><line x1="4" y1="10" x2="16" y2="10" stroke="#A2A7B7" stroke-width="2"></line></svg>
                                 </span>
-                                <span class="ml-10 mr-10">
-                                        <input type="text" value="`+ full.quantity+ `" style="width: 60px; height: 32px; text-align: center;">
-                                </span>
-                                <span class="m-auto-bt"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.5" fill="white" stroke="#0088FF"></circle><path fill-rule="evenodd" clip-rule="evenodd" d="M9.16669 10.8332V15.8332H11.1667V10.8332H15.8334V8.83317H11.1667V4.1665H9.16669V8.83317H4.16669V10.8332H9.16669Z" fill="#0088FF"></path></svg>
+                               
+                                <input type="text" class="txtquantity" data-quantity="`+ full.quantity+`" data-iditem="`+ full.idItem+`" value="`+ full.quantity+ `" style="width: 60px; height: 32px; text-align: center;">
+                              
+                                <span class="add"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.5" fill="white" stroke="#0088FF"></circle><path fill-rule="evenodd" clip-rule="evenodd" d="M9.16669 10.8332V15.8332H11.1667V10.8332H15.8334V8.83317H11.1667V4.1665H9.16669V8.83317H4.16669V10.8332H9.16669Z" fill="#0088FF"></path></svg>
                                 </span>
                                 </div>`;
                         return html;
@@ -207,21 +207,20 @@
                 },
                 {
                     "data": "price", "name": "Price", "autoWidth": true,
-                    //render: $.fn.dataTable.render.number('.', ',', 0)
-                    "render": function (data, type, full, meta) {
-                        render: $.fn.dataTable.render.number(',', '.', 0)
-                    }
+                    render: $.fn.dataTable.render.number(',', '.', 0)
                 }, 
                 {
                     "data": null, "name": null, "autoWidth": true,
                     "render": function (data, type, full, meta) {
-                        return '<i class="fas fa-trash-alt"></i>';
+                        return '<i class="fas fa-trash-alt btndelete" data-iditem="'+ full.idItem+'" ></i>';
                     }
                 },
-            ],
+            ], 
+            "drawCallback": function (settings) {
+                DefaultFoodOrder.initCompleteTable();
+            },
             initComplete() {
-              
-
+                DefaultFoodOrder.initCompleteTable();
             }
         });
 

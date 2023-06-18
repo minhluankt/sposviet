@@ -1,9 +1,11 @@
 ﻿using Domain.Entities;
 using FluentValidation;
+using FluentValidation.Validators;
 using Model;
 
 namespace Web.ManagerApplication.Areas.Admin.Validators
 {
+    //https://docs.fluentvalidation.net/en/latest/conditions.html
     public class ProductModelViewValidator : AbstractValidator<ProductModelView>
     {
         public ProductModelViewValidator()
@@ -22,10 +24,19 @@ namespace Web.ManagerApplication.Areas.Admin.Validators
         [Obsolete]
         public CustomerModelValidator()
         {
-            //  RuleFor(p => p.Email).EmailAddress(EmailValidationMode.Net4xRegex)
+            RuleFor(p => p.Email).EmailAddress(EmailValidationMode.Net4xRegex)
+                .When(customer => !string.IsNullOrEmpty(customer.Email), ApplyConditionTo.CurrentValidator)
+                .WithMessage("Email không đúng định dạng");
             RuleFor(p => p.Name)
-                   .NotEmpty().WithMessage("Vui lòng nhập tên")
-                   .NotNull();
+                   .NotEmpty().When(customer => customer.TypeCustomer==Application.Enums.ENumTypeCustomer.Company, ApplyConditionTo.CurrentValidator)
+                   .WithMessage("Khách hàng là doanh nghiệp vui lòng nhập tên đơn vị"); 
+            RuleFor(p => p.Taxcode)
+                   .NotEmpty().When(customer => customer.TypeCustomer==Application.Enums.ENumTypeCustomer.Company, ApplyConditionTo.CurrentValidator)
+                   .WithMessage("Khách hàng là doanh nghiệp vui lòng nhập mã số thuế");
+            RuleFor(p => p.Buyer)
+                   .NotEmpty().When(customer => customer.TypeCustomer == Application.Enums.ENumTypeCustomer.Personal, ApplyConditionTo.CurrentValidator)
+                   .WithMessage("Khách hàng là cá nhân vui lòng nhập tên người mua  hàng");
+
         }
     }public class PaymentMethodValidator : AbstractValidator<PaymentMethod>
     {
