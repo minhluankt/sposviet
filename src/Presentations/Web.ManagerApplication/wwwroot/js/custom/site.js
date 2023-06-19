@@ -57,7 +57,8 @@ var EnumTypeNotifyKitchenBar =// nhân viên báo cho bếp
 var EnumTypeUpdateDefaultFoodOrder = {
     UPDATE_FOOD : 0,//CẬP NHẬT MẶT HÀNG ABC
     UPDATE_QUANTITY_FOOD : 1,//CẬP NHẬT SỐ LƯỢNG CỦA MẶT HÀNG ĐÓ
-    DELETE_FOOD : 2//CẬP NHẬT SỐ LƯỢNG CỦA MẶT HÀNG ĐÓ
+    DELETE_FOOD : 2,//xóa 1
+    DELETE_MUTI_FOOD : 3//xóa nhiều
 }
 
 var EnumStatusPublishInvoiceOrder =
@@ -2805,6 +2806,7 @@ var eventConfigSaleParameters = {
     }
 }
 btnadddefaultfood = $(".adddefaultfood");
+btndeletemutidefaultfood = $(".btndeletedefaultfood");
 var DefaultFoodOrder = {
     initCompleteTable: function () {
         $("#dataTable tbody tr").map(function () {
@@ -2868,11 +2870,6 @@ var DefaultFoodOrder = {
     addDefaultFood: function () {
         btnadddefaultfood.click(function () {
             var lstid = new Array();
-            var rows_selected = dataTableOut.column(0).data();
-            
-            rows_selected.each(function (index, elem) {
-                lstid.push(parseInt(index));
-            });
             $.ajax({
                 type: 'GET',
                 //global: false,
@@ -2884,28 +2881,28 @@ var DefaultFoodOrder = {
                     if (res.isValid) {
                         htmllistitem = "";
                         let getdata = await axios.get("/Selling/DefaultFoodOrder/GetListJsonId");
-                        
+
                         if (getdata.data?.isValid) {
                             lstid = JSON.parse(getdata.data.data);
                         }
                         //optionhtml = `<select class="form-control idCategory" id="IdCategory">`;
-                        
+
                         //res.jsoncate.forEach(function (item, index) {
                         //    optionhtml += `<option value="` + item.id + `">` + item.name + `</option>`;
                         //}); optionhtml += "</select>";
-                        
+
                         res.jsonPro.forEach(function (item, index) {
                             htmlimg = "./images/no-img.png";
-                            if (item.img != "" && item.img !=null) {
+                            if (item.img != "" && item.img != null) {
                                 htmlimg = "../" + item.img;
                             }
                             htmllistitem += `<tr>
-                                                <td><input type="checkbox" `+ (lstid.includes(item.id)?"checked":"") + ` class="icheck" data-category="` + item.idCategory + `" value="` + item.id +`" /></td>
+                                                <td><input type="checkbox" `+ (lstid.includes(item.id) ? "checked" : "") + ` class="icheck" data-category="` + item.idCategory + `" value="` + item.id + `" /></td>
                                                
-                                                <td><img src="../`+ htmlimg +`"/></td>
-                                                 <td>`+ item.nameCategory +`</td>
+                                                <td><img src="../`+ htmlimg + `"/></td>
+                                                 <td>`+ item.nameCategory + `</td>
                                                 <td><san class="name">`+ item.name + `</name></td>
-                                                <td>`+ item.retailPrice.format0VND(3,3) +`</td>
+                                                <td>`+ item.retailPrice.format0VND(3, 3) + `</td>
                                             </tr>`;
                         });
 
@@ -2929,7 +2926,7 @@ var DefaultFoodOrder = {
                                         </tr>
                                     </thead>
                                     <tbody class="BI_tablebody">
-                                       `+ htmllistitem +`
+                                       `+ htmllistitem + `
                                     </tbody>
                                 </table></div> </div>`;
                         Swal.fire({
@@ -2962,7 +2959,7 @@ var DefaultFoodOrder = {
                             cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
 
                             didRender: () => {
-                                loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#IdCategory",0, "Chọn thực đơn");
+                                loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#IdCategory", 0, "Chọn thực đơn");
                                 loadEventIcheck();
                                 //end
                                 $(".btn-continue").click(function () {
@@ -2999,26 +2996,86 @@ var DefaultFoodOrder = {
                     console.log(err)
                 }
             });
-        })
-    },
-    deleteFoodDefaultOrder: function (iditem) {
-        $.ajax({
-            type: 'POST',
-            url: "/Selling/DefaultFoodOrder/Update",
-            async: true,
-            data: {
-                idguid: iditem,
-                enumTypeUpdateDefaultFoodOrder: EnumTypeUpdateDefaultFoodOrder.DELETE_FOOD
-            },
-            success: function (res) {
-                if (res.isValid) {
-                    dataTableOut.ajax.reload(null, false);
-                }
-            },
-            error: function (err) {
-                console.log(err)
+        });
+        btndeletemutidefaultfood.click(async function () {
+            var lstid = new Array();
+            var rows_selected = dataTableOut.column(0).checkboxes.selected();
+            rows_selected.each(function (index, elem) {
+                lstid.push(parseInt(index));
+            });
+            if (lstid.length == 0) {
+                toastrcus.error("Vui lòng chọn hàng hóa để xóa!");
+                return;
             }
-        })
+            let title = "Bạn có chắc chắn muốn xóa các mặt hàng đã chọn không?";
+            await Swal.fire({
+                icon: 'warning',
+                title: title,
+                // showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy bỏ',
+                // denyButtonText: `Don't save`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: "/Selling/DefaultFoodOrder/Update",
+                        async: true,
+                        data: {
+                            lstid: lstid,
+                            enumTypeUpdateDefaultFoodOrder: EnumTypeUpdateDefaultFoodOrder.DELETE_MUTI_FOOD
+                        },
+                        success: async function (res) {
+                            if (res.isValid) {
+                                dataTableOut.ajax.reload(null, false);
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                }
+            });
+          
+        });
+
+    },
+    deleteFoodDefaultOrder: async function (iditem) {
+        let title = "Bạn có chắc chắn muốn xóa mặt hàng đã chọn không?";
+        await Swal.fire({
+            icon: 'warning',
+            title: title,
+            // showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy bỏ',
+            // denyButtonText: `Don't save`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    type: 'POST',
+                    url: "/Selling/DefaultFoodOrder/Update",
+                    async: true,
+                    data: {
+                        idguid: iditem,
+                        enumTypeUpdateDefaultFoodOrder: EnumTypeUpdateDefaultFoodOrder.DELETE_FOOD
+                    },
+                    success: function (res) {
+                        if (res.isValid) {
+                            dataTableOut.ajax.reload(null, false);
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                })
+            }
+        });
+
     },
     saveDefaultFoodOrder: function (lstid) {
         $.ajax({
@@ -4868,7 +4925,10 @@ var eventCreate = {
                                         toastrcus.error("Khách hàng là doanh nghiệp, bắt buộc nhập tên đơn vị!");
                                         return false;
                                     }
-                                
+                                    if ($("#create-form #Taxcode").val().trim() == "") {
+                                        toastrcus.error("Khách hàng là doanh nghiệp, bắt buộc nhập mã số thuế!");
+                                        return false;
+                                    }
                                 }
                                 jQueryModalPost($("form#create-form")[0]);
                             });
@@ -7101,9 +7161,10 @@ var eventInvocie = {
                                             if (res.isGetHashToken) {
                                                 eventInvocie.gethashTokenPublishEinvoice(lstid,res.typeSupplierEInvoice,res.serialCert, res.serial, res.pattern, res.data);
                                             } else {
-                                                dataTableOut.columns().checkboxes.deselectAll(true);
-                                                dataTableOut.ajax.reload(null, false);
+                                              
                                                 if (res.isValid) {
+                                                    dataTableOut.columns().checkboxes.deselectAll(true);
+                                                    dataTableOut.ajax.reload(null, false);
                                                     Swal.close();
                                                     title = "Tạo mới và phát hành hóa đơn điện tử";
                                                     Swal.fire({
@@ -7554,9 +7615,13 @@ var eventInvocie = {
                                 lstid.push(parseInt(index));
                             });
 
-                            htmlfooter = "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-power-off mr-2'></i>Hủy bỏ giao dịch</button><button class='btn btn-save btn-success mr-2'><i class='fas fa-save mr-2'></i>Phát hành không xóa đơn gộp</button><button class='btn btn-saveAndDelete btn-success'><i class='fas fa-share mr-2'></i>Phát hành và xóa đơn gộp</button>";
+                            if (lstid.length <= 1) {
+                                toastrcus.error("Vui lòng chọn hơn một hóa đơn để xuất gộp");
+                                return;
+                            }
+                            htmlfooter = "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-power-off mr-2'></i>Hủy bỏ giao dịch</button><button class='btn btn-save btn-success mr-2'><i class='fas fa-save mr-2'></i>Phát hành không xóa đơn gộp</button><button class='btn btn-saveAndDelete btn-success mr-2'><i class='fas fa-share mr-2'></i>Phát hành và xóa đơn gộp</button><button class='btn btn-mergeinvoice btn-warning'><i class='far fa-object-ungroup mr-2'></i>Chỉ gộp đơn</button>";
                             if (checkSavereport == 1) {
-                                htmlfooter = "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-power-off mr-2'></i>Hủy bỏ giao dịch</button><button class='btn btn-save btn-success mr-2'><i class='fas fa-save mr-2'></i>Phát hành và xóa đơn gộp</button>";
+                                htmlfooter = "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-power-off mr-2'></i>Hủy bỏ giao dịch</button><button class='btn btn-save btn-success mr-2'><i class='fas fa-save mr-2'></i>Phát hành và xóa đơn gộp</button><button class='btn btn-mergeinvoice btn-warning'><i class='fas <i class='far fa-object-ungroup mr-2'></i>'></i>Chỉ gộp đơn</button>";
                             }
                             $.ajax({
                                 type: 'GET',
@@ -7607,6 +7672,10 @@ var eventInvocie = {
                                             showCancelButton: false,
                                             cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                                             didRender: () => {
+                                                ////
+                                                loaddaterangepicker(false);
+                                                loadEventIcheck();
+
                                                 evetnFormatnumber3();
                                                 evetnFormatTextnumber3decimal();
                                                 eventInvocie.eventChanegVATrate();//tính công thức
@@ -7635,6 +7704,10 @@ var eventInvocie = {
                                                         }
                                                     },
                                                 });
+                                                $('input#changeArisingDate').on('ifChanged', function (event) {
+                                                    $(".showarisingdate").toggleClass("d-none");
+                                                });
+                                               
                                                 loaddataSelect2("/API/Handling/GetAllPaymentMethod", ".PaymentMethod", res.idPayment, "Chọn hình thức thanh toán");
                                                 loadEventIcheck();
                                                 eventInvocie.eventAutocomplete();
@@ -7661,6 +7734,19 @@ var eventInvocie = {
                                                 });
                                                 $(".btn-saveAndDelete").click(function () {
                                                     $("#IsDelete").val("true");
+                                                    eventInvocie.eventSaveInvoice();
+                                                    if ($("form#create-formProduct").valid()) {
+                                                        if ($("#CusName").val().trim() == "" && $("#Buyer").val().trim() == "" && $("#IsRetailCustomer").prop("checked") == false) {
+                                                            toastrcus.error("Tên đơn vị mua hàng hoặc tên người hàng phải nhập một trong hai.");
+                                                            return;
+                                                        } else {
+                                                            eventInvocie.savePublishEInvoiceMeger();
+                                                        }
+                                                    }
+                                                });
+                                                $(".btn-mergeinvoice").click(function () {
+                                                    $("#IsDelete").val("false");
+                                                    $("#IsOnlyMerge").val("true");
                                                     eventInvocie.eventSaveInvoice();
                                                     if ($("form#create-formProduct").valid()) {
                                                         if ($("#CusName").val().trim() == "" && $("#Buyer").val().trim() == "" && $("#IsRetailCustomer").prop("checked") == false) {
@@ -12691,7 +12777,7 @@ var eventBanle = {
 
         $(".box-data-customer .btn-cleardata").trigger("click");
         _classPosEvent.input_searchProduct.val("");
-        // _classPosEvent.input_searchProduct.focus();
+         _classPosEvent.input_searchProduct.blur();
     }, //reset data
     loadeventchangeclickprice: function () {
         $("#item-mon li .price").unbind();
@@ -13072,12 +13158,21 @@ var eventBanle = {
     },
     eventLoadCongThucTien: function () {
 
+        let IsDiscountAfterTax = $("#IsDiscountAfterTax").data("value");
+
         let totalPayment = $(".fullamount").text().replaceAll(",", "") || 0;
         let discountPayment = $(".discountamount").val().replaceAll(",", "") || 0;
         let totalsaudiscount = (parseFloat(totalPayment) - parseFloat(discountPayment)) || 0;
         let vatamount = 0;
         if ($("#Vatrate").length > 0) {
-            vatamount = parseFloat((totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100)).toFixed(3));
+
+            if (IsDiscountAfterTax == 0) {//nếu k cấu hình chiết khấu theo giá sau thuế, thì md tính giá trước thuế
+                vatamount = parseFloat((totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100)).toFixed(3));
+            } else {
+                _oldtotal = parseFloat((totalsaudiscount + parseFloat(discountPayment)).toFixed(3));
+                vatamount = parseFloat((_oldtotal * (parseFloat($("#Vatrate").val() || 0) / 100)).toFixed(3));
+            }
+            
             $(".VATAmount").val(vatamount.format0VND(0, 3, ""));
         } else {
         }
@@ -13143,26 +13238,31 @@ var eventBanle = {
             toastrcus.error("Lỗi hệ thống, vui lòng tải lại trang");
         }
     },
-    eventPaymentInvoice: async  function (model) {
+    eventPaymentInvoice: async function (model, datas, foundIndex) {
+        //foundIndex = foundIndex;
+        //datas = datas;
         var Datainvoice = {};
         $.ajax({
             type: 'POST',
-            global: false,
-            async: false,
+           // global: false,
+            async: true,
             url: '/Selling/OrderTable/PaymentSaleRatailt',
             data: {
                 jsonData: JSON.stringify(model)
             },
             success: function (res) {
+                loadingStop();
                 if (res.isValid) {
-                    Datainvoice.Html = res.data;
-                    Datainvoice.IsSuccess = true;
+                    //Datainvoice.Html = res.data;
+                   // Datainvoice.IsSuccess = true;
+                    eventBanle.clearDataorder();
+                    Swal.close();
+                    datas.splice(foundIndex, 1);//xóa đi đơn đó
+                    localStorage.setItem("ProductsArrays", JSON.stringify(datas));
 
-                    //eventBanle.clearDataorder();
-                    //htmlPrint = res.data;
-                    //if (htmlPrint != "") {
-                    //    printDiv(htmlPrint);
-                    //}
+                    if (res.data != "") {
+                        printDiv(res.data);
+                    }
 
                 } else {
                     Datainvoice.IsSuccess = false;
@@ -13229,8 +13329,6 @@ var eventBanle = {
                                             cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                                             didRender: () => {
                                                 loadingStop();
-                                                //loaddaterangepicker(false);
-                                                //loadEventIcheck();
                                                 $(".btn-continue").click(function () {
                                                     Swal.close();
                                                 });
@@ -13246,9 +13344,6 @@ var eventBanle = {
                                                         }
                                                     },
                                                 })
-                                                //$('input#changeArisingDate').on('ifChanged', function (event) {
-                                                //    $(".showarisingdate").toggleClass("d-none");
-                                                //});
                                                 $(".btn-save").click(async function () {
                                                     loadingStart();
                                                     let idpatern = $(".selectSupplerInoice").find("#ManagerPatternEInvoices").val();
@@ -13257,20 +13352,24 @@ var eventBanle = {
                                                         return;
                                                     }
                                                     getdata.IdPattern = parseInt(idpatern);
-                                                    Swal.close();
-                                                    let changeArisingDate = $("#changeArisingDate").is(":checked");
-                                                    let ArisingDate = $("#ArisingDate").val();
-                                                  //  getdata.ArisingDate= changeArisingDate ? ArisingDate : null,
-                                                   await eventBanle.eventPaymentInvoice(getdata).then(function (data) {
-                                                        loadingStop();
+                                                   // Swal.close();
+                                                  
+                                                   //await eventBanle.eventPaymentInvoice(getdata).then(function (data) {
+                                                   //     loadingStop();
+                                                   //     if (data.IsSuccess) {
+                                                   //         eventBanle.clearDataorder();
+                                                   //         Swal.close();
+                                                   //         if (data.Html != "") {
+                                                   //             printDiv(data.Html);
+                                                   //         }
+                                                   //         datas.splice(foundIndex, 1);//xóa đi đơn đó
+                                                   //         localStorage.setItem("ProductsArrays", JSON.stringify(datas));
+                                                   //     }
+                                                   //});
+                                                    await eventBanle.eventPaymentInvoice(getdata, datas, foundIndex).then(function (data) {
+                                                      // loadingStop();
                                                         if (data.IsSuccess) {
-                                                            eventBanle.clearDataorder();
-                                                            Swal.close();
-                                                            if (data.Html != "") {
-                                                                printDiv(data.Html);
-                                                            }
-                                                            datas.splice(foundIndex, 1);//xóa đi đơn đó
-                                                            localStorage.setItem("ProductsArrays", JSON.stringify(datas));
+                                                           
                                                         }
                                                     });
                                                 });
@@ -13285,16 +13384,16 @@ var eventBanle = {
                             });
                         }
                         else {
-                            eventBanle.eventPaymentInvoice(getdata).then(function (data) {
-                                loadingStop();
+                            eventBanle.eventPaymentInvoice(getdata, datas, foundIndex).then(function (data) { //phải bật tính nawg ở hàm đó lên ms dùng dc then
+                               // loadingStop();
                                 if (data.IsSuccess) {
-                                    eventBanle.clearDataorder();
-                                    Swal.close();
-                                    if (data.Html != "") {
-                                        printDiv(data.Html);
-                                    }
-                                    datas.splice(foundIndex, 1);//xóa đi đơn đó
-                                    localStorage.setItem("ProductsArrays", JSON.stringify(datas));
+                                    //eventBanle.clearDataorder();
+                                    //Swal.close();
+                                    //if (data.Html != "") {
+                                    //    printDiv(data.Html);
+                                    //}
+                                    //datas.splice(foundIndex, 1);//xóa đi đơn đó
+                                    //localStorage.setItem("ProductsArrays", JSON.stringify(datas));
                                 }
                             });
                         }
@@ -13313,7 +13412,7 @@ var eventBanle = {
             }
         })
     },
-    payment: function () {//thanh toán
+    payment: function () {//thanh toán bán lẻ cũ
         $(".btn-payment").click(function () {
             // bắt đầu thanh toán luận nhé
             let idorder = $(".action-inv li.active").data("id");
@@ -14642,6 +14741,7 @@ var eventBanle = {
 
     },//sự kiện autocomple sản phẩm và khách hàng, và select chọn sản phẩm
     eventLoadTFullAmount: async function () {
+        let IsDiscountAfterTax = $("#IsDiscountAfterTax").data("value");
         let isvatpro = $(".fullamount").data("isproductvat") || false;
         let totalfull = parseFloat($(".fullamount").data("totalfull")) || 0;
         let totalisvatpro = parseFloat($(".fullamount").data("totalisvatpro")) || 0;
@@ -14662,7 +14762,13 @@ var eventBanle = {
 
         let VATAmount = parseFloat($(".VATAmount").data("VATAmount")) || 0;
         if (VATAmount == 0) {
-            VATAmount = ((Total) * (Vatrate / 100));
+            if (IsDiscountAfterTax == 1) {//1 là tính theo giá sau chiết khấu
+                VATAmount = ((Total + discountamount) * (Vatrate / 100));
+            }
+            else {
+                VATAmount = ((Total) * (Vatrate / 100));
+            }
+
             if (isvatpro) {
                 VATAmount = parseFloat(VATAmount.toFixed(3));
             } else {
@@ -14912,7 +15018,7 @@ var eventBanle = {
                 if (foundIndex != -1) {
                     let getdata = datas[foundIndex];
                     getdata.VATMTT = VATMTT;
-                    getdata.Total = parseFloat($(".fullamount").html().replaceAll(",", ""));
+                    getdata.Total = parseFloat($(".fullamount").data("totalfull"));
                     if (VATMTT) {
                         getdata.VATRate = parseInt($("#Vatrate").val());
                         getdata.VATAmount = parseFloat($(".VATAmount").val().replaceAll(",", ""));
@@ -15661,6 +15767,7 @@ var eventBanle = {
         eventBanle.eventUpdateAllDataAttrProduct();//update toàn bộ attr data-id
 
         $(".fullamount").text(json.Total.format0VND(3, 3));
+        debugger
         eventBanle.addAttrFulltotal(json.Total, json.TotalIsVatPro, json.IsProductVAT);//load data fullamount
 
         $(".discountamount").val(json.DiscountAmount.format0VND(3, 3));
@@ -18540,8 +18647,10 @@ var loadeventPos = {
         let IsDiscountAfterTax = parseInt($("#IsDiscountAfterTax").val())||0;
         let discountPayment = $("#discountPayment").val().replaceAll(",", "") || 0;
         let totalsaudiscount = (parseFloat(totalPayment) - parseFloat(discountPayment)) || 0;
+        let vatamountproduct = 0;//để tính riêng trong sản phẩm vì phần IsDiscountAfterTax có tính lại vatamount cho bên ngoài
         let vatamount = 0;
         let khachtra = 0;
+        
         if ($(".ele-vatrate").length>0) {
             if (parseInt($("#errVATrate").val()) > 0) {//tức là hàng hóa có thuế thì phải tách riêng là lấy thuế của hàng hóa này+ với thuế hàng hóa chưa có thuế (thuế này dc tính bên dưới)
                 var totals = 0;
@@ -18572,21 +18681,22 @@ var loadeventPos = {
                     let amount = parseFloat($(this).find("td:last-child").html().replaceAll(",", "")) || 0;
                     amountpros += amount;
                 });
-               
+                vatamountproduct = vatamount;//gán lại trước khi tính
                 totalsaudiscount = totals - discountPayment;
                 if (IsDiscountAfterTax == 0) {//nếu k cấu hình chiết khấu theo giá sau thuế,thì phải tính lại giá bán trước thuế để tính thuế GTGt
-                    vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
+                    vatamount = parseFloat((totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100)).toFixed(3));
                 }
+                
                 //vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
-                $(".VATAmount").html(Math.round(vatamount).format0VND(0, 3, ""));
-                $("#dataTablePayment").find(".elevatamounts").html(vatamount.format0VND(3, 3, ""));
+                $(".VATAmount").html(Math.round(vatamount).format0VND(3, 3, ""));
+                $("#dataTablePayment").find(".elevatamounts").html(vatamountproduct.format0VND(3, 3, ""));//sử dụng vatamountproduct cho sản phẩm
                 $("#dataTablePayment").find(".eleamounts").html(amountpros.format0VND(3, 3, ""));
                 $("#dataTablePayment").data("isVat", 1);
              
             }
             else {
-                vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100));
-                $(".VATAmount").html(vatamount.format0VND(0, 3, ""));
+                vatamount = Math.round(totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100),3);
+                $(".VATAmount").html(vatamount.format0VND(3, 3, ""));
                 $("#dataTablePayment").data("isVat", 1);
                 
             }

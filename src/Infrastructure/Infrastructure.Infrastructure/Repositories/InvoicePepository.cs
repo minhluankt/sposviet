@@ -247,7 +247,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 List<EInvoice> lsteinvoice = new List<EInvoice>();
                 foreach (var item in _invoice)
                 {
-                    if (item.IsMerge)
+                    if (item.IsMerge && item.IdEInvoice!=null)//trường hợp chỉ gộp chưa phát hành thì vẫn cho phát hành nên check cả là có phsat hành chưa
                     {
                         lstinvoicefail.Add(item);
                     }
@@ -329,7 +329,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         lstketqua.TypeEventInvoice = model.TypeEventInvoice;
                         return await Result<PublishInvoiceModelView>.SuccessAsync(lstketqua);
                     }
-                    if (suplcompany.TypeSeri == ENumTypeSeri.TOKEN)
+                    if (suplcompany.TypeSeri == ENumTypeSeri.TOKEN && !LibraryCommon.IsHDDTMayTinhTien(getpattern.Serial))//là hóa đơn thông thường mới ký số
                     {
                         // hóa đơn ký = token
                         //Bước 1 phải lấy chuỗi hash rồi ký ở hàm khác nhé
@@ -704,7 +704,7 @@ namespace Infrastructure.Infrastructure.Repositories
             }
             if (model.VATRate != invoice.VATRate.Value && model.VATRate > (int)NOVAT.NOVAT && invoice.VATRate.Value == (int)NOVAT.NOVAT)
             {
-                đơn vừa có số thuế vừa k, thì nên lấy từ tiền từ bên ngoài vào, phần khách hàng hiển thị tên
+                //đơn vừa có số thuế vừa k, thì nên lấy từ tiền từ bên ngoài vào, phần khách hàng hiển thị tên
                 var checkprovat = invoice.InvoiceItems.Where(x=>x.VATRate!= (int)NOVAT.NOVAT).ToList();
                 if (checkprovat.Count()>0)//th các sản phẩm giá đã có thuế thfi phải tính lại total tiền trucosw thuế khác
                 {
@@ -961,8 +961,10 @@ namespace Infrastructure.Infrastructure.Repositories
             PublishInvoiceModel publishInvoiceModel = new PublishInvoiceModel()
             {
                 VATRate = Convert.ToInt32(model.VATRate),
+                ArisingDate = model.ArisingDate,
                 VATAmount = model.VATAmount,
                 Amount = model.Amount,
+                Total = model.Total,
                 ComId = ComId,
                 TypeSupplierEInvoice = model.TypeSupplierEInvoice,
             };
@@ -971,6 +973,12 @@ namespace Infrastructure.Infrastructure.Repositories
             {
                 return await Result<PublishInvoiceModelView>.FailAsync(HeperConstantss.ERR049);
             }
+            //check chỉ hỗ trợ máy tính tiền
+            if (!LibraryCommon.IsHDDTMayTinhTien(getpattern.Serial))
+            {
+                return await Result<PublishInvoiceModelView>.FailAsync("Hệ thống chỉ hỗ trợ phát hành hóa đơn điện tử từ máy tính tiền, mẫu số và ký hiệu hóa đơn bạn chọn không hợp lệ");
+            }
+
             this.AddEInvoice(lsteinvoice, Invoice, publishInvoiceModel, getpattern);
             var item = lsteinvoice.SingleOrDefault();//lấy invoice vì có 1 cái thôi
                                                      //foreach (var item in lsteinvoice)
@@ -988,6 +996,8 @@ namespace Infrastructure.Infrastructure.Repositories
                 _log.LogError("Chưa cấu hình nhà cung cấp");
                 _log.LogError(item.EInvoiceCode);
             }
+           
+
             string error = string.Empty;
             int numberRetry2 = 0;
             RetryInvoice2:
@@ -1284,10 +1294,9 @@ namespace Infrastructure.Infrastructure.Repositories
                 var getInv = await _managerInvNoRepository.UpdateInvNo(ComId, ENumTypeManagerInv.Invoice, true);
                 invoicenew.InvoiceCode = $"HD-{getInv.ToString("00000000")}";
                 invoicenew.IsMerge = true;//đánh dấu là hóa đơn gộp k có InvoiceCodePatern là thèn cha
-                if (model.IsDelete)
-                {
-                    invoicenew.IsDeleteMerge = true;//--------------------đánh dâu là xóa các hóa đơn cũ nhé, nếu có cấu hình-------------------------
-                }
+                
+                invoicenew.IsDeleteMerge = model.IsDelete; //--------------------xem có đánh dâu là xóa các hóa đơn cũ nhé, nếu có cấu hình-------------------------
+                
                 await _invoiceRepository.AddAsync(invoicenew);
                 await _unitOfWork.SaveChangesAsync();//lưu hóa đơn bán hàng
 
@@ -1335,48 +1344,14 @@ namespace Infrastructure.Infrastructure.Repositories
                 }
                 invoicenew.PaymentMethod = getpayment;
                 invoicenew.Status = EnumStatusInvoice.DA_THANH_TOAN;
-                var publisheinvoice = await this.PublishEInvoiceByMerge(invoicenew, model, ComId);
-                if (publisheinvoice.Succeeded)
+                if (model.IsOnlyMerge)//th chỉ gộp
                 {
-                    publishInvoiceModelView.PublishInvoiceResponse = publisheinvoice.Data.PublishInvoiceResponse;
-                    if (publisheinvoice.Data.PublishInvoiceResponse.IsSuccess)
+                    ListDetailInvoice.Add(new DetailInvoice()
                     {
-                        ListDetailInvoice.Add(new DetailInvoice()
-                        {
-                            code = invoicenew.InvoiceCode,
-                            note = $"Phát hành hóa đơn điện tử thành công số: {publishInvoiceModelView.PublishInvoiceResponse.InvoiceNo.ToString("00000000")}, " +
-                            $"mẫu số: {publishInvoiceModelView.PublishInvoiceResponse.Pattern}, ký hiệu: {publishInvoiceModelView.PublishInvoiceResponse.Serial}",
-                            TypePublishEinvoice = ENumTypePublishEinvoice.PHATHANHOK,
-                        });
-                        HistoryInvoice history2 = new HistoryInvoice()
-                        {
-                            InvoiceCode = invoicenew.InvoiceCode,
-                            IdInvoice = invoicenew.Id,
-                            Carsher = model.CasherName,
-                            Name = $"Phát hành hóa đơn điện tử thành công: {publisheinvoice.Data.PublishInvoiceResponse?.Pattern},{publisheinvoice.Data.PublishInvoiceResponse?.Serial},{publisheinvoice.Data.PublishInvoiceResponse?.InvoiceNo}"
-                        };
-                        //add lịch sử
-                        await _historyInvoiceRepository.AddAsync(history2);
-                    }
-                    else
-                    {
-                        ListDetailInvoice.Add(new DetailInvoice()
-                        {
-                            code = invoicenew.InvoiceCode,
-                            note = "Phát hành thành công hóa đơn điện tử không có kết quả, vui lòng truy cập danh sách hóa đơn điện tử để đồng bộ lại hóa đơn: " + publishInvoiceModelView.PublishInvoiceResponse.Message,
-                            TypePublishEinvoice = ENumTypePublishEinvoice.PHATHANHOK,
-                        });
-                        HistoryInvoice history2 = new HistoryInvoice()
-                        {
-                            InvoiceCode = invoicenew.InvoiceCode,
-                            IdInvoice = invoicenew.Id,
-                            Carsher = model.CasherName,
-                            Name = $"Phát hành hóa đơn điện tử thành công: {publisheinvoice.Data.PublishInvoiceResponse?.Fkey}"
-                        };
-                        //add lịch sử
-                        await _historyInvoiceRepository.AddAsync(history2);
-                    }
-
+                        code = invoicenew.InvoiceCode,
+                        note = $"Đã gộp đơn thành công",
+                        TypePublishEinvoice = ENumTypePublishEinvoice.TAOMOIOK,
+                    });
                     publishInvoiceModelView.DetailInvoices = ListDetailInvoice;
                     await _unitOfWork.SaveChangesAsync();//lưu các phiên nếu có
                     await _unitOfWork.CommitAsync();
@@ -1384,9 +1359,60 @@ namespace Infrastructure.Infrastructure.Repositories
                 }
                 else
                 {
-                    await _unitOfWork.RollbackAsync();
-                    return await Result<PublishInvoiceModelView>.FailAsync(GeneralMess.GeneralMessStartPublishEInvoice(publisheinvoice.Message));
+                    var publisheinvoice = await this.PublishEInvoiceByMerge(invoicenew, model, ComId);
+                    if (publisheinvoice.Succeeded)
+                    {
+                        publishInvoiceModelView.PublishInvoiceResponse = publisheinvoice.Data.PublishInvoiceResponse;
+                        if (publisheinvoice.Data.PublishInvoiceResponse.IsSuccess)
+                        {
+                            ListDetailInvoice.Add(new DetailInvoice()
+                            {
+                                code = invoicenew.InvoiceCode,
+                                note = $"Phát hành hóa đơn điện tử thành công số: {publishInvoiceModelView.PublishInvoiceResponse.InvoiceNo.ToString("00000000")}, " +
+                                $"mẫu số: {publishInvoiceModelView.PublishInvoiceResponse.Pattern}, ký hiệu: {publishInvoiceModelView.PublishInvoiceResponse.Serial}",
+                                TypePublishEinvoice = ENumTypePublishEinvoice.PHATHANHOK,
+                            });
+                            HistoryInvoice history2 = new HistoryInvoice()
+                            {
+                                InvoiceCode = invoicenew.InvoiceCode,
+                                IdInvoice = invoicenew.Id,
+                                Carsher = model.CasherName,
+                                Name = $"Phát hành hóa đơn điện tử thành công: {publisheinvoice.Data.PublishInvoiceResponse?.Pattern},{publisheinvoice.Data.PublishInvoiceResponse?.Serial},{publisheinvoice.Data.PublishInvoiceResponse?.InvoiceNo}"
+                            };
+                            //add lịch sử
+                            await _historyInvoiceRepository.AddAsync(history2);
+                        }
+                        else
+                        {
+                            ListDetailInvoice.Add(new DetailInvoice()
+                            {
+                                code = invoicenew.InvoiceCode,
+                                note = "Phát hành thành công hóa đơn điện tử không có kết quả, vui lòng truy cập danh sách hóa đơn điện tử để đồng bộ lại hóa đơn: " + publishInvoiceModelView.PublishInvoiceResponse.Message,
+                                TypePublishEinvoice = ENumTypePublishEinvoice.PHATHANHOK,
+                            });
+                            HistoryInvoice history2 = new HistoryInvoice()
+                            {
+                                InvoiceCode = invoicenew.InvoiceCode,
+                                IdInvoice = invoicenew.Id,
+                                Carsher = model.CasherName,
+                                Name = $"Phát hành hóa đơn điện tử thành công: {publisheinvoice.Data.PublishInvoiceResponse?.Fkey}"
+                            };
+                            //add lịch sử
+                            await _historyInvoiceRepository.AddAsync(history2);
+                        }
+
+                        publishInvoiceModelView.DetailInvoices = ListDetailInvoice;
+                        await _unitOfWork.SaveChangesAsync();//lưu các phiên nếu có
+                        await _unitOfWork.CommitAsync();
+                        return Result<PublishInvoiceModelView>.Success(publishInvoiceModelView, HeperConstantss.SUS006);
+                    }
+                    else
+                    {
+                        await _unitOfWork.RollbackAsync();
+                        return await Result<PublishInvoiceModelView>.FailAsync(GeneralMess.GeneralMessStartPublishEInvoice(publisheinvoice.Message));
+                    }
                 }
+                
                // publishInvoiceModelView.DetailInvoices = ListDetailInvoice;
               
             }
@@ -1417,7 +1443,7 @@ namespace Infrastructure.Infrastructure.Repositories
             invoice.VATAmount = model.VATAmount;
             invoice.Amonut = model.Amount;
             invoice.Total = model.Total;
-            invoice.ArrivalDate = model.ArisingDate??DateTime.Now;
+            invoice.ArrivalDate = DateTime.Now;
             invoice.PurchaseDate = invoice.ArrivalDate;
             invoice.DiscountAmount = model.DiscountAmount;
             invoice.StaffName = model.CasherName;

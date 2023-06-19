@@ -29,7 +29,8 @@ namespace Application.Enums
     {
         UPDATE_FOOD = 0,//CẬP NHẬT MẶT HÀNG ABC
         UPDATE_QUANTITY_FOOD = 1,//CẬP NHẬT SỐ LƯỢNG CỦA MẶT HÀNG ĐÓ
-        DELETE_FOOD = 2//CẬP NHẬT SỐ LƯỢNG CỦA MẶT HÀNG ĐÓ
+        DELETE_FOOD = 2,//XÓA FOOD ITEM ĐƠN
+        DELETE_MUTI_FOOD = 3//XÓA NHIỀU
     }
     public enum AutocompleteTypeCustomer
     {

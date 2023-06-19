@@ -157,8 +157,17 @@
             },
             "columns": [
                 { "data": "id", "name": "id", "autoWidth": true },
-                { "data": "code", "name": "Name", "autoWidth": true },
-                { "data": "name", "name": "Name", "autoWidth": true },
+                { 
+                    "data": "code", "name": "Name", "autoWidth": true },
+                    {
+                        "data": "name", "name": "Name", "autoWidth": true, 
+                        "render": function (data, type, full, meta) {
+                            if (full.name != "" && full.name!=null) {
+                                return full.name;
+                            }
+                            return full.buyer;
+                        }
+                },
                 { "data": "email", "name": "Email", "autoWidth": true },
                 { "data": "phoneNumber", "name": "PhoneNumber", "autoWidth": true },
                 { "data": "address", "name": "Address", "autoWidth": true },

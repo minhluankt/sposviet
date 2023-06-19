@@ -1726,7 +1726,11 @@ a.codeinvoiceold {
         }
     }
 }
-
+.ele-btnright {
+    position: absolute;
+    right: 20px;
+    z-index: 1;
+}
 .ui-helper-hidden-accessible {
     display: none;
 }

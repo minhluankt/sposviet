@@ -12,5 +12,6 @@ namespace Application.Interfaces.Repositories
         Task<IResult<Task>> UpdateFoodAsync(int[] ListId, int ComId);
         Task<IResult<Task>> UpdateQuantityFoodAsync(Guid Id, int ComId, decimal Quantity);
         Task<IResult<Task>> DeleteFoodAsync(Guid Id, int ComId);
+        Task<IResult<Task>> DeleteFoodAsync(int[] LstId, int ComId);
     }
 }

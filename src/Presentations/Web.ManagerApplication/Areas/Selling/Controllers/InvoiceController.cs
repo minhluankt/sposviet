@@ -115,6 +115,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 }
                 var currentUser = User.Identity.GetUserClaimLogin();
 
+                if (!string.IsNullOrEmpty(model.NgayHoaDon))
+                {
+                    model.ArisingDate = Common.ConvertStringToDateTime(model.NgayHoaDon);
+                }
                 if (model.ManagerPatternEInvoices == 0)
                 {
                     _notify.Error("Vui lòng chọn mẫu số ký hiệu");

@@ -134,11 +134,11 @@ namespace Application.Features.OrderTablePos.Commands
                             comemail = company?.Email,
 
                             isVAT = command.vat,
-                            tongtien = product.Data.Invoice.Amonut.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
-                            tientruocthue = (product.Data.IsProductVAT) ? (product.Data.Invoice.VATAmount+ product.Data.Invoice.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider()): product.Data.Invoice.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
-                            tienthue = product.Data.Invoice.VATAmount.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            tongtien = product.Data.Invoice.Amonut.ToString("#,0.###", LibraryCommon.GetIFormatProvider()),
+                            tientruocthue = (product.Data.IsProductVAT) ? (product.Data.Invoice.VATAmount+ product.Data.Invoice.Total).ToString("#,0.###", LibraryCommon.GetIFormatProvider()): product.Data.Invoice.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            tienthue = product.Data.Invoice.VATAmount.ToString("#,0.###", LibraryCommon.GetIFormatProvider()),
                             thuesuat = product.Data.Invoice.VATRate?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
-                            giamgia = ((product.Data.Invoice.DiscountAmount ?? 0) + (product.Data.Invoice.DiscountOther??0)).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                            giamgia = ((product.Data.Invoice.DiscountAmount ?? 0) + (product.Data.Invoice.DiscountOther??0)).ToString("#,0.###", LibraryCommon.GetIFormatProvider()),
                             khachcantra = (product.Data.Invoice.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                             khachthanhtoan = product.Data.Invoice.AmountCusPayment?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                             tienthuatrakhach = product.Data.Invoice.AmountChangeCus?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
@@ -149,18 +149,12 @@ namespace Application.Features.OrderTablePos.Commands
                         {
                             if (product.Data.Invoice.VATRate != (float)NOVAT.NOVAT)//nếu hóa đơn có thuế thì hiển thị tiền trước thuế phải là tiền trước thuế của sản phẩm có và k có thuế
                             {
-                                //foreach (var item in listitemnew)
-                                //{
-                                //    if (item.PriceNoVAT == 0)//là sp đơn giá không có thuế
-                                //    {
-                                //        item.Amonut = item.Total;//update lại amount để hiển thị lên bill cho đúng là tiền trước thuế của sp đó
-                                //    }
-                                //}
-                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                                //templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                                templateInvoiceParameter.tientruocthue = product.Data.Invoice.Total.ToString("#,0.###", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
                             }
                             else
                             {
-                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                                templateInvoiceParameter.tientruocthue = listitemnew.Sum(x => x.Amonut).ToString("#,0.###", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
                             }
 
                         }

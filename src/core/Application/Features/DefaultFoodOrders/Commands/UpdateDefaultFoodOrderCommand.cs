@@ -69,6 +69,19 @@ namespace Application.Features.DefaultFoodOrders.Commands
                     return await Result<int>.SuccessAsync(up.Message);
                 }
                 return await Result<int>.FailAsync(up.Message);
+            } 
+            else if (command.TypeUpdateDefaultFoodOrder==EnumTypeUpdateDefaultFoodOrder.DELETE_MUTI_FOOD)
+            {
+                if (command.ListId==null ||command.ListId.Count()==0)
+                {
+                    return await Result<int>.FailAsync(HeperConstantss.ERR000);
+                }
+                var up=  await _Repository.DeleteFoodAsync(command.ListId, command.ComId);
+                if (up.Succeeded)
+                {
+                    return await Result<int>.SuccessAsync(up.Message);
+                }
+                return await Result<int>.FailAsync(up.Message);
             }
             else
             {

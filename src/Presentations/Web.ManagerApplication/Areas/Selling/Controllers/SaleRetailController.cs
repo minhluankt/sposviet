@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Net;
 using Web.ManagerApplication.Abstractions;
+using Application.Enums;
+using Application.Features.ConfigSystems.Query;
+using Web.ManagerApplication.Areas.Selling.Models;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -43,6 +46,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 posModel = _get.Data;
                 posModel.PaymentMethods =  _payment.GetAll(user.ComId, true).ToList();
             }
+            var _sendDISCOUNT_PRICE_AFTER_TAX = await _mediator.Send(new GetByKeyConfigSystemQuery(EnumConfigParameters.DISCOUNT_PRICE_AFTER_TAX.ToString()) { ComId = user.ComId });
+            if (_sendDISCOUNT_PRICE_AFTER_TAX.Succeeded)
+            {
+                posModel.IsDiscountAfterTax = (_sendDISCOUNT_PRICE_AFTER_TAX.Data.Value == "true");
+            }
+
             return View(posModel);
         }
         [Authorize(Policy = "saleRetail.order")]

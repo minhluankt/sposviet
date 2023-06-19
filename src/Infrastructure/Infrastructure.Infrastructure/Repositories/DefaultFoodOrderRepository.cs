@@ -130,6 +130,17 @@ namespace Infrastructure.Infrastructure.Repositories
             await _repository.DeleteAsync(getid);
             await _unitOfWork.SaveChangesAsync();
             return await Result<Task>.SuccessAsync(HeperConstantss.SUS006);
+        } 
+        public async Task<IResult<Task>> DeleteFoodAsync(int[] LstId, int ComId)
+        {
+            var getid =  _repository.Entities.Where(x => x.ComId == ComId && LstId.Contains(x.Id));
+            if (getid.Count()==0)
+            {
+                return await Result<Task>.FailAsync(HeperConstantss.ERR012);
+            }
+            await _repository.DeleteRangeAsync(getid);
+            await _unitOfWork.SaveChangesAsync();
+            return await Result<Task>.SuccessAsync(HeperConstantss.SUS006);
         }
     }
 }

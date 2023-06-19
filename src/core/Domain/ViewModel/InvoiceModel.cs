@@ -29,6 +29,7 @@ namespace Domain.ViewModel
     {
         public ENumSupplierEInvoice TypeSupplierEInvoice { get; set; } = ENumSupplierEInvoice.VNPT;// vi dụ VNPT 
         public EnumTypeProduct TypeProduct { get; set; }// cafe, bán lẻ, vlxd
+        public bool IsOnlyMerge { get; set; } // là chỉ cho gộp
         public bool IsDelete { get; set; } // là cho xóa các hóa đơn cũ
         public bool IsRetailCustomer { get; set; } // là khách lẻ
         public bool IsCreateCustomer { get; set; } // có cho phép tạo mới khách hàng luôn
@@ -47,6 +48,7 @@ namespace Domain.ViewModel
         public string CusBankNo { get; set; }
         public string CusBankName { get; set; }
         public string Email { get; set; }
+        public string NgayHoaDon { get; set; }
         public int? IdCustomer { get; set; }
         public int IdPaymentMethod { get; set; }
         public int ManagerPatternEInvoices { get; set; }

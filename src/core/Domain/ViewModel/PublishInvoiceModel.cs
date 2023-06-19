@@ -53,6 +53,7 @@ namespace Domain.ViewModel
         public decimal VATAmount { get; set; }//
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? ArisingDate { get; set; }//
+        public decimal Total { get; set; }//
         public decimal Amount { get; set; }//
         public string CasherName { get; set; }//thuế s
         public string IdCarsher { get; set; }//thuế s

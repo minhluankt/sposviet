@@ -80,8 +80,8 @@ namespace Application.Features.OrderTablePos.Querys
 
                         giamgia = "0",
                         TypeTemplatePrint = EnumTypeTemplatePrint.IN_TAM_TINH,
-                        tientruocthue = product.Amonut.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
-                        khachcantra = (product.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
+                        tientruocthue = product.Amonut.ToString("#,0.###", LibraryCommon.GetIFormatProvider()),
+                        khachcantra = (product.Amonut).ToString("#,0.###", LibraryCommon.GetIFormatProvider()),
                         //khachthanhtoan = product.AmountCusPayment?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                         //tienthuatrakhach = product.AmountChangeCus?.ToString("#,0.##", LibraryCommon.GetIFormatProvider()),
                     };
@@ -127,8 +127,8 @@ namespace Application.Features.OrderTablePos.Querys
                     if (IsServiceDate)//xử lý tổng tiền trước nếu có tính dịch vụ
                     {
                         product.Amonut= neworderitem.Sum(x => x.Amount);
-                        templateInvoiceParameter.tientruocthue = product.Amonut.ToString("#,0.##", LibraryCommon.GetIFormatProvider());
-                        templateInvoiceParameter.khachcantra = (product.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                        templateInvoiceParameter.tientruocthue = product.Amonut.ToString("#,0.###", LibraryCommon.GetIFormatProvider());
+                        templateInvoiceParameter.khachcantra = (product.Amonut).ToString("#,0.###", LibraryCommon.GetIFormatProvider());
                     }
 
                     if (query.vat)
@@ -138,14 +138,14 @@ namespace Application.Features.OrderTablePos.Querys
                         if (IsProductVAT)
                         {
                             var tienthue = neworderitem.Sum(x=>x.VATAmount);
-                            templateInvoiceParameter.tienthue = tienthue.ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                            templateInvoiceParameter.tienthue = tienthue.ToString("#,0.###", LibraryCommon.GetIFormatProvider());
                             templateInvoiceParameter.khachcantra = Math.Round(neworderitem.Sum(x => x.Amount),MidpointRounding.AwayFromZero).ToString("#,0.##", LibraryCommon.GetIFormatProvider());
                         }
                         else
                         {
                             var vatrate = (query.VATRate / 100.0M);
                             var tienthue = vatrate * product.Amonut;
-                            templateInvoiceParameter.tienthue = tienthue.ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                            templateInvoiceParameter.tienthue = tienthue.ToString("#,0.###", LibraryCommon.GetIFormatProvider());
                             templateInvoiceParameter.khachcantra = (tienthue + product.Amonut).ToString("#,0.##", LibraryCommon.GetIFormatProvider());
                         }
                     }
@@ -154,11 +154,11 @@ namespace Application.Features.OrderTablePos.Querys
                     {
                         if (query.vat)//nếu hóa đơn có thuế thì hiển thị tiền trước thuế phải là tiền trước thuế của sản phẩm có và k có thuế
                         {
-                            templateInvoiceParameter.tientruocthue = neworderitem.Sum(x => x.Total).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                            templateInvoiceParameter.tientruocthue = neworderitem.Sum(x => x.Total).ToString("#,0.###", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
                         }
                         else//hóa đơn k có thuế mà sp có thuế thì hiển tiền sau thuế
                         {
-                            templateInvoiceParameter.tientruocthue = neworderitem.Sum(x => x.Amount).ToString("#,0.##", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
+                            templateInvoiceParameter.tientruocthue = neworderitem.Sum(x => x.Amount).ToString("#,0.###", LibraryCommon.GetIFormatProvider());//update lại tiền trước thuế cho đúng
                         }
 
                     }

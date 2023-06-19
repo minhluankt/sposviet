@@ -19,6 +19,7 @@ namespace Domain.ViewModel
         public List<ProductPosModel> Products { get; set; }
         public List<PaymentMethod> PaymentMethods { get; set; }
         public Casher Casher { get; set; }
+        public bool IsDiscountAfterTax { get; set; }
     }
     public class ProductPosModel
     {

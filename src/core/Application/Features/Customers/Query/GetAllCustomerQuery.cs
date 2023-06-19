@@ -91,6 +91,7 @@ namespace Application.Features.Customers.Query
                      CustomerModel
                 {
                     Name = x.Name,
+                    Buyer = x.Buyer,
                     UserName = x.UserName,
                     LoginProvider = x.LoginProvider,
                     Status = x.Status,
