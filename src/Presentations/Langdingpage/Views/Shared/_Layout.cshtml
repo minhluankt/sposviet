@@ -3,17 +3,28 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Phần mềm quản lý bán hàng giá rẻ | Phần mềm quản lý bán hàng tốt nhất</title>
+    <title>Phần mềm quản lý bán hàng cho cửa hàng tốt nhất - SposViet | Phần mềm quản lý bán hàng giá rẻ</title>
     <meta name="robots" content="index, follow" />
     <meta name="description" content="Phần mềm quản lý bán hàng giá rẻ, tốt nhất hiện nay, dành cho loại hình nhà hàng, cafe, bida,quán ăn, tạp hóa, siêu thị, vật tư xây dựng, mẹ và bé" />
-    <meta name="keywords" content="Phần mềm quản lý bán hàng giá rẻ, Phần mềm quản lý bán hàng tốt nhất" />
-    <meta property="og:title" content="Phần mềm quản lý bán hàng giá rẻ | Phần mềm quản lý bán hàng tốt nhất" />
+    <meta name="keywords" content="Phần mềm quản lý bán hàng, phần mềm bán hàng, phần mềm quản lý, phần mềm tính tiền, phần mềm quản lý bán hàng tốt nhất" />
+    <meta property="og:title" content="Phần mềm quản lý bán hàng cho cửa hàng tốt nhất - SposViet" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="http://sposviet.vn" />
-    <meta property="fb:app_id" content="http://sposviet.vn" />
-    <meta property="og:image" content="http://sposviet.vn/img/logosposviet.png" />
+    <meta property="og:site_name" content="Phần mềm quản lý bán hàng cho cửa hàng tốt nhất - SposViet">
+    <meta property="og:image:alt" content="Phần mềm quản lý bán hàng cho cửa hàng tốt nhất - SposViet">
+    <meta property="og:url" content="https://sposviet.vn" />
+    <meta property="fb:app_id" content="https://sposviet.vn" />
+    <meta property="og:image:secure_url" content="https://sposviet.vn/img/sposvietbanner.png">
+    <meta property="og:image" content="https://sposviet.vn/img/sposvietbanner.png" />
     <meta property="og:description" content="Phần mềm quản lý bán hàng giá rẻ, tốt nhất hiện nay, dành cho loại hình nhà hàng, cafe, bida,quán ăn, tạp hóa, siêu thị, vật tư xây dựng, mẹ và bé" />
+    <meta name="twitter:card" content="Phần mềm quản lý bán hàng SposViet giúp chủ cửa hàng và người kinh doanh online hiệu quả, mang lại doanh thu cao.">
+    <meta name="twitter:site" content="Phần mềm quản lý bán hàng cho cửa hàng tốt nhất - SposViet">
+    <meta name="twitter:creator" content="Phần mềm quản lý bán hàng cho cửa hàng tốt nhất - SposViet">
+    <meta name="twitter:title" content="Phần mềm quản lý bán hàng cho cửa hàng tốt nhất - SposViet">
+    <meta name="twitter:description" content="Phần mềm quản lý bán hàng SposViet giúp chủ cửa hàng và người kinh doanh online hiệu quả, mang lại doanh thu cao.">
+    <meta name="twitter:url" content="https://sposviet.vn">
+    <meta name="twitter:image" content="https://sposviet.vn/img/sposvietbanner.png">
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://sposviet.vn/" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/all.css" />
     <link rel="stylesheet" href="~/css/animate.min.css" />
@@ -47,7 +58,7 @@
                         </li>
                         
                     </ul>
-                    <a href="http://fnb.sposviet.vn" class="loginFnb">Đăng nhập</a>
+                    <p class="loginFnb">Đăng nhập</p>
                 </div>
             </div>
         </nav>
@@ -130,6 +141,9 @@
             live: true // default
         })
         wow.init();
+        $(".loginFnb").click(function () {
+            window.location.href = "https://fnb.sposviet.vn";
+        })
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
