@@ -6338,60 +6338,76 @@ var loadeventEinvoice = {
             }
         });
     },
-    publishinvoice: function () {
-        $.ajax({
-            type: 'POST',
-            url: '/Selling/EInvoice/PublishEInvoice',
-            traditional: true,
-            dataType: "json",
-            data: {
-                lstid: lstid
-            },
-            success: function (res) {
+    publishinvoice: async function (lstid) {
 
-                if (res.isValid) {
-                    dataTableOut.ajax.reload(null, false);
+        let title = "Bạn có chắc chắn muốn phát hành hóa đơn không?";
+        await Swal.fire({
+            icon: 'warning',
+            title: title,
+            // showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Đóng',
+            // denyButtonText: `Don't save`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Selling/EInvoice/PublishEInvoice',
+                    traditional: true,
+                    dataType: "json",
+                    data: {
+                        lstid: lstid
+                    },
+                    success: function (res) {
 
-                    Swal.close();
-                    title = "Phát hành hóa đơn điện tử";
-                    Swal.fire({
-                        // icon: 'success',
-                        position: 'center',
-                        showClass: {
-                            popup: `popup-formcreate eventpublisinvoice`
-                        },
+                        if (res.isValid) {
+                            dataTableOut.ajax.reload(null, false);
 
-                        showCloseButton: true,
+                            Swal.close();
+                            title = "Phát hành hóa đơn điện tử";
+                            Swal.fire({
+                                // icon: 'success',
+                                position: 'center',
+                                showClass: {
+                                    popup: `popup-formcreate eventpublisinvoice`
+                                },
 
-                        title: title,
-                        html: res.html,
-                        //showClass: {
-                        //    popup: 'popup-formcreate'
-                        //},
+                                showCloseButton: true,
 
-                        // footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
-                        allowOutsideClick: true,
-                        showConfirmButton: false,
-                        showCancelButton: true,
-                        cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
-                        didRender: () => {
+                                title: title,
+                                html: res.html,
+                                //showClass: {
+                                //    popup: 'popup-formcreate'
+                                //},
 
-                            $(".btn-continue").click(function () {
-                                Swal.close();
+                                // footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                                allowOutsideClick: true,
+                                showConfirmButton: false,
+                                showCancelButton: true,
+                                cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                                didRender: () => {
+
+                                    $(".btn-continue").click(function () {
+                                        Swal.close();
+                                    });
+                                    $("#accordionkqpubinv a.text-dark").click(function () {
+                                        alert("ok");
+                                    });
+
+                                }
                             });
-                            $("#accordionkqpubinv a.text-dark").click(function () {
-                                alert("ok");
-                            });
-
                         }
-                    });
-                }
-            },
+                    },
 
-            error: function (err) {
-                console.log(err)
+                    error: function (err) {
+                        console.log(err)
+                    }
+                });
             }
         });
+       
     },
     GetHashTokenPublishEInvoiceIndex: async function (url) {//tại màn hình hóa đơn điện tử
         let title = "Bạn có chắc chắn muốn phát hành hóa đơn không?";
@@ -14929,6 +14945,32 @@ var eventBanle = {
             $(".elemdiscount").after(html);
             loadFormatnumber(".showselectboxvat");
         }
+       
+        //---CHECK SẢN PHẨM CÓ THUẾ THÌ LẤY HIỂN THỊ
+
+        let getidhoadon = $("ul.action-inv li.active").data("id");
+        let getloca = localStorage.getItem("ProductsArrays");
+        if (typeof getloca != "undefined" && getloca != null) {
+            let datas = JSON.parse(getloca);
+            if (datas.length > 0) {
+                let foundIndex = datas.findIndex(x => x.Id == getidhoadon);
+                if (foundIndex != -1) {
+                    let getdata = datas[foundIndex];
+                    var _vatrate = 10;
+                    getdata.Items.map(function (ele, index) {
+                        
+                        if (ele.Vatrate != NOVATRate) {
+                            _vatrate = ele.Vatrate;
+                        }
+                    });
+                    if (_vatrate != 10) {
+                        $('#Vatrate option').each(function (i, e) { e.selected = false });
+                        $("#Vatrate option[value='" + _vatrate + "']").prop("selected", "selected");
+                    }
+                }
+            }
+        }
+        
     },
     eventChangeCheckboxHDDTVAT: function () {
 

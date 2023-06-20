@@ -801,7 +801,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [HttpGet]
         public async Task<IActionResult> Payment(EnumTypeUpdatePos TypeUpdate, Guid IdOrder,bool vat,bool isStopService)
         {
-            thêm tab tất cả đơn và có nút tạo đơn
+       
             try
             {
                 if (TypeUpdate == EnumTypeUpdatePos.Payment)

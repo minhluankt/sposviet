@@ -305,7 +305,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 var listkq = response.Data.OrderBy(x => x.Name).Select(x => new
                 {
                     id = x.Id,
-                    text = x.Name
+                    text = !string.IsNullOrEmpty(x.Name) ? x.Name : x.Buyer
                 }).ToList();
                 if (listkq.Count()>0)
                 {
@@ -331,7 +331,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 {
                     id = x.Id,
                     selected = x.Id== idselectd,
-                    text = x.Name
+                    text = !string.IsNullOrEmpty(x.Name)? x.Name: x.Buyer
                 }).ToList();
                 if (listkq.Count() > 0)
                 {
