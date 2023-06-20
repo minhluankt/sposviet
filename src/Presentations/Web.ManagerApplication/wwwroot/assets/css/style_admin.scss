@@ -5944,7 +5944,40 @@ span.discountAmountItemPro {
                 display: flex;
                 gap: 10px;
                 flex-wrap: wrap;
-                justify-content: space-between;
+                //justify-content: space-between;
+
+                .eleitempatern {
+                    cursor: pointer;
+
+                    &.active {
+                        border: #e92d2d solid thin;
+
+                        li.item-first {
+                            border-top: #e92d2d solid 5px;
+
+                            .info-area {
+                                color: #e92d2d;
+                            }
+
+
+                            .ribbon {
+                                background-image: -webkit-gradient(radial,center top,0,center top,487,color-stop(0,#e92d2d),color-stop(1,#e92d2d));
+                                background-image: -webkit-radial-gradient(center top,circle farthest-side,#e92d2d 0%,#e92d2d 100%);
+                                background-image: radial-gradient(circle farthest-side at center top,#e92d2d 0%,#e92d2d 100%);
+
+
+                                &:before {
+                                    border-top: 26px solid #e92d2d;
+                                }
+
+                                &:after {
+                                    border-top: 26px solid #e92d2d;
+                                }
+
+                            }
+                        }
+                    }
+                }
 
                 > li {
                     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
@@ -5977,6 +6010,11 @@ span.discountAmountItemPro {
                         gap: 35px;
                         font-size: 16px;
                         color: #065c93;
+
+                        .info-moby {
+                            color: #ff5757;
+                            font-weight: bold;
+                        }
                     }
 
                     li.item-last {
@@ -5987,10 +6025,26 @@ span.discountAmountItemPro {
                         grid-template-columns: 75px 12px 126px;
                         text-align: center;
 
+                        .more-action {
+                            background: transparent;
+                            border: none;
+                            color: #0b7bbd;
+                            font-weight: bold;
+                        }
+
                         button.payment {
                             border: none;
-                            color: #0477c0;
-                            background: transparent;
+                            color: #ffffff;
+                            background: #02aa53;
+                            border-radius: 8px;
+                            padding: 3px 9px;
+                            width: max-content;
+                            text-align: right;
+                            position: relative;
+                            right: 10px;
+                            float: right;
+                            position: absolute;
+                            font-size: 14px;
                         }
                     }
 

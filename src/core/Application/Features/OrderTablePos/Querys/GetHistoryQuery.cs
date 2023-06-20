@@ -13,6 +13,7 @@ namespace Application.Features.OrderTablePos.Querys
     public class GetHistoryQuery : IRequest<Result<OrderTable>>
     {
         public Guid IdOrder { get; set; }
+        public int Comid { get; set; }
         public class GetHistoryQueryHandler : IRequestHandler<GetHistoryQuery, Result<OrderTable>>
         {
             private readonly IRepositoryAsync<OrderTable> _repository;
@@ -29,7 +30,7 @@ namespace Application.Features.OrderTablePos.Querys
             public async Task<Result<OrderTable>> Handle(GetHistoryQuery query, CancellationToken cancellationToken)
             {
 
-                var product = await _repository.GetAllQueryable().AsNoTracking().Include(x => x.HistoryOrders).SingleOrDefaultAsync(x => x.IdGuid == query.IdOrder);
+                var product = await _repository.GetAllQueryable().AsNoTracking().Include(x => x.HistoryOrders).SingleOrDefaultAsync(x => x.IdGuid == query.IdOrder &&x.ComId==query.Comid);
 
                 return await Result<OrderTable>.SuccessAsync(product);
             }

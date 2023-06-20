@@ -95,9 +95,9 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             return new JsonResult(new { isValid = false });
         }
         //[Authorize(Policy = "pos.order")]
-
+        checked khi thanh toán, bên all thì úp date bên kia
      
-        public async Task<IActionResult> LoadDataOrder(string idtable)
+        public async Task<IActionResult> LoadDataOrder(string idtable,Guid? idorder)
         {
             //sự kiện kích thêm oder trên bàn, sự kiện thêm khách hàng,
             bool IsBringBack = false;
@@ -112,7 +112,13 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 idGuidtable = Guid.Parse(idtable);
 
             }
-            var update = await _mediator.Send(new GetByIdOrderTableQuery() { TypeProduct = EnumTypeProduct.AMTHUC, IdRoomAndTable = idGuidtable, IncludeItem = true, IsBringBack = IsBringBack, Comid = currentUser.ComId }); ;
+
+            var update = await _mediator.Send(new GetByIdOrderTableQuery() { TypeProduct = EnumTypeProduct.AMTHUC,
+                IdOrder = idorder, 
+                IdRoomAndTable = idGuidtable, 
+                IncludeItem = true,
+                IsBringBack = IsBringBack,
+                Comid = currentUser.ComId }); ;
             if (update.Succeeded)
             {
                 OrderTableViewModel orderTableViewModel = new OrderTableViewModel();
@@ -891,9 +897,29 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
            
         }
         [HttpGet]
+        public async Task<IActionResult> LoadAllDataOrderAsync()
+        {
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var update = await _mediator.Send(new GetAllOrderTableQuery() {Comid= currentUser.ComId });
+            if (update.Succeeded)
+            {
+                return new JsonResult(new
+                { 
+                    data = ConvertSupport.ConverModelToJson(update.Data),
+                    isValid = true,
+                });
+            }
+            return new JsonResult(new
+            {
+                isValid = false,
+            });
+        } 
+            
+            [HttpGet]
         public async Task<IActionResult> GetHistoryOrder(Guid IdOrder)
         {
-            var update = await _mediator.Send(new GetHistoryQuery() { IdOrder = IdOrder });
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var update = await _mediator.Send(new GetHistoryQuery() { IdOrder = IdOrder,Comid= currentUser.ComId });
             if (update.Succeeded)
             {
                 var html = await _viewRenderer.RenderViewToStringAsync("_HistoryOrder", update.Data);

@@ -13206,7 +13206,7 @@ var eventBanle = {
 
     },
     saveUpdateAmountLoca: function (typeSelectDiscount) {
-        debugger
+        
         let discounttypevalue = 0;
         if (typeSelectDiscount != -1) {
             discounttypevalue = parseFloat($("#discounttypevalue").val().replaceAll(",", "")) || 0
@@ -13430,13 +13430,13 @@ var eventBanle = {
     },
     payment: function () {//thanh toán bán lẻ cũ
         $(".btn-payment").click(function () {
-            // bắt đầu thanh toán luận nhé
+            // bắt đầu thanh toán  nhé
             let idorder = $(".action-inv li.active").data("id");
             if (idorder == "0") {
                 toastrcus.error("Chưa có đơn hàng nào để thanh toán!");
                 return false;
             }
-            debugger
+            
 
             let discountPayment = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
             let totalPayment = parseFloat($(".totalPayment").text().replaceAll(",", "")) || 0;
@@ -14441,7 +14441,7 @@ var eventBanle = {
             eventBanle.loadSugetionPayment();
         });
         $("#Vatrate").change(function () {
-            debugger
+            
             eventBanle.eventLoadTFullAmount();
             eventBanle.saveUpdateAmountLoca(-1);
             eventBanle.loadSugetionPayment();
@@ -15809,7 +15809,7 @@ var eventBanle = {
         eventBanle.eventUpdateAllDataAttrProduct();//update toàn bộ attr data-id
 
         $(".fullamount").text(json.Total.format0VND(3, 3));
-        debugger
+        
         eventBanle.addAttrFulltotal(json.Total, json.TotalIsVatPro, json.IsProductVAT);//load data fullamount
 
         $(".discountamount").val(json.DiscountAmount.format0VND(3, 3));
@@ -15979,6 +15979,28 @@ var eventBanle = {
 }
 var loadeventPos = {
     loadeventCoutUpTimes: function () {
+        $("#lst-roomandtable .datetime").each(function (i, item) {
+            //setInterval(countTimer, 1000);
+            var totalSeconds = parseInt(parseFloat($(item).data("time")));
+            if (typeof totalSeconds != "undefined" && totalSeconds >= 0) {
+                setInterval(function () {
+                    ++totalSeconds;
+                    var hour = Math.floor(totalSeconds / 3600);
+                    var minute = Math.floor((totalSeconds - hour * 3600) / 60);
+                    var seconds = totalSeconds - (hour * 3600 + minute * 60);
+                    if (hour < 10)
+                        hour = "0" + hour;
+                    if (minute < 10)
+                        minute = "0" + minute;
+                    if (seconds < 10)
+                        seconds = "0" + seconds;
+                    $(item).html(hour + ":" + minute + ":" + seconds);
+                }, 1000);
+
+            }
+            
+        });
+    }, loadeventCoutUpTimesIntabAllOrder: function () {
         $("#lst-roomandtable .datetime").each(function (i, item) {
             //setInterval(countTimer, 1000);
             var totalSeconds = parseInt(parseFloat($(item).data("time")));
@@ -16645,6 +16667,13 @@ var loadeventPos = {
         if (!isExit) {
             loadeventPos.loadAddOrRemoveCurentClassTable(false);
         }
+        let idorder = $(".ele-tab-leftRoomMenu li.tab-allOrder").data("idorder");
+        
+        $("#datarootlistallorder li.eleitempatern").each(function (i, item) {
+            if ($(item).data("idorder") == idorder) {
+                $(item).remove();
+            }
+        })
     },
     eventUpdateQuantityItemMonOrder: function () {
         $(".tab-content-order .tab-pane.active ul#item-mon").children("li").map(function () {
@@ -18238,7 +18267,8 @@ var loadeventPos = {
     loadDatatable: async function (sel) {
         sel.addClass("active");
         id = $(sel).data("id");
-        await loadeventPos.loadOrderByTable(id);// phải load dữ liệu trước
+        idorder = $(sel).data("idorder");
+        await loadeventPos.loadOrderByTable(id, idorder);// phải load dữ liệu trước
         let text = $(sel).find("b").text();
         $(".btn-showttable").attr("data-id", id);// hiển thị cái bàn hiện tại
         $(".btn-showttable").find(".showTableOrder").html(text); // hiển thị cái bàn hiện tại
@@ -18249,8 +18279,11 @@ var loadeventPos = {
         $(".search-customer").blur(function () {
             $(this).parent(".input-group").removeClass("focus-input");
         });
+        if ($(sel).parents(".eleitempatern").length > 0) {
+            $(sel).parents(".eleitempatern").addClass("active");
+        }
     },
-    loadClickTableroom: function () { // tự load sau khi loadpage và sự kiện click vào bàn lưu lại giá trị đó
+    loadIntWindow: function () { // tự load sau khi loadpage và sự kiện click vào bàn lưu lại giá trị đó
         //check xem có lưu localStorage có lưu table k để active
 
         $("#lst-roomandtable li").click(async function () {
@@ -18333,24 +18366,134 @@ var loadeventPos = {
             } else {
                 alert("Liên hệ đội ngủ hỗ  trợ lỗi trình duyệt của bạn không hỗ  trợ Storage");
             }
+
         }
+        loadeventPos.loadOrderTabAll();
 
     },// sự kiện click vào bàn lưu lại giá trị đó
-    loadEventActiveTabMenuLeft: function () {
-        let menuOrderShow = localStorage.getItem("menuOrderShow");
+    loadOrderTabAll: async function () {
+        var loadOrder = await axios.get("/Selling/OrderTable/LoadAllDataOrder"); 
+        if (loadOrder.data.isValid) {
+            let jsondata = JSON.parse(loadOrder.data.data);
+            let html = "";
+            jsondata.map(function (item, inde) {
+                html += `<li class="eleitempatern" data-id="` + item.IdGuid + `" data-idroomandtable="` + item.IdRoomAndTable +`">
+                           <ul class="item-col">
+                              <li class="item-first">
+                                 <div class="ribbon">
+                                    <i class="fas fa-utensils"></i>
+                                 </div>
+                                 <span class="info-area">`+ item.AreaName+`</span>
+                                 <span class="info-noorder">
+                                    <i class="fas fa-user" ></i>
+                                    1
+                                 </span>
+                              </li>
+                              <li class="item-two">
+                                 <b>`+ item.TableName +`</b>
+                              </li>
+                              <li class="item-there">
+                                 <span class="info-time">
+                                    <i class="fas fa-clock"></i>
+                                    <span class="timedata" data-time="`+ item.NumberTime +`"></span>
+                                 </span>
+                                 <span class="info-moby">
+                                    <i class="fas fa-donate" ></i>
+                                    `+ item.Amount.format0VND(3,3) +`
+                                 </span>
+                              </li>
+                              <li class="item-last">
+                                 <button class="more-action"><i class="fas fa-ellipsis-h"></i></button>
+                                 |
+                                 <button class="payment"><i class="fa fa-sign-out"></i> Thanh toán</button>
+                              </li>
+                           </ul>
+                        </li>`;            
+            });
+            $("#datarootlistallorder").html(html);
+           
+            $("#datarootlistallorder li.eleitempatern").each(function (i, item) {
 
-        if (menuOrderShow == "1") {
+                var totalSeconds = parseInt(parseFloat($(item).find(".timedata").data("time")));
+                if (typeof totalSeconds != "undefined" && totalSeconds >= 0) {
+                    setInterval(function () {
+                        ++totalSeconds;
+                        var hour = Math.floor(totalSeconds / 3600);
+                        var minute = Math.floor((totalSeconds - hour * 3600) / 60);
+                        var seconds = totalSeconds - (hour * 3600 + minute * 60);
+                        if (hour < 10)
+                            hour = "0" + hour;
+                        if (minute < 10)
+                            minute = "0" + minute;
+                        if (seconds < 10)
+                            seconds = "0" + seconds;
+                        $(item).find(".timedata").html(hour + ":" + minute + ":" + seconds);
+                    }, 1000);
+                }
+                $(item).find(".timedata").removeAttr("data-time");
+
+                let idguid = $(item).data("id");
+                let idroomandtable = $(item).data("idroomandtable");
+
+        
+
+                $(item).removeAttr("data-id");
+                $(item).removeAttr("data-idroomandtable");
+
+                $(item).data("idroomandtable", idroomandtable);
+                $(item).data("idorder", idguid);
+
+                $(item).find(".item-two").data("idorder", idguid);
+                $(item).find(".item-two").data("id", idroomandtable);//để vậy vì hàm loadDatatable nhận id là idtable
+
+                $(item).find(".payment").data("idorder", idguid);
+                $(item).find(".more-action").data("idorder", idguid);
+                
+
+            });
+            $("#datarootlistallorder li.item-two").click(function () {
+                $("#datarootlistallorder li.item-two.active").not($(this)).removeClass("active");
+                $("#datarootlistallorder li.eleitempatern").removeClass("active");
+                if (!$(this).hasClass("active")) {
+                    loadeventPos.loadDatatable($(this));
+                } else {
+                    $(this).parents(".eleitempatern").addClass("active");
+                }
+            });
+            $("#datarootlistallorder button.more-action").click(function () {
+                alert("ok")
+            });
+        }
+    },
+    intLoadCheckOrdeTabAll: function (idorder) {
+        $("#datarootlistallorder li.eleitempatern").each(function (i, item) {
+            let idguid = $(item).data("idorder");
+            if (idorder == idguid) {
+                $(item).addClass("active");
+                $(item).parents(".eleitempatern").addClass("active");
+            }
+        });
+    },
+    loadEventActiveTabMenuLeft: function () {
+        let menuOrderShow = parseInt(localStorage.getItem("menuOrderShow"));
+        
+        if (menuOrderShow == 1) {
             $(".ele-tab-leftRoomMenu li.tab-menuOrder a").trigger("click");
+        }else if (menuOrderShow == 2) {
+            $(".ele-tab-leftRoomMenu li.tab-allOrder a").trigger("click");
         }
 
         $(".ele-tab-leftRoomMenu li").click(function () {
+            
             if ($(this).hasClass("tab-menuOrder")) {
                 localStorage.setItem("menuOrderShow", 1);
+            } else if ($(this).hasClass("tab-allOrder")) {
+                localStorage.setItem("menuOrderShow", 2);
             } else {
                 localStorage.setItem("menuOrderShow", 0);
             }
         });
-
+        $(".tab-content .tab-pane").removeClass("d-none");
     },
     loadClicktabOrder: function () {
         $("#ul-tab-order li a").unbind();
@@ -18392,14 +18535,15 @@ var loadeventPos = {
 
         });
     }, // sự kiện click tab
-    loadOrderByTable: async function (idTable) {
-        var loadOrder = await axios.get("/Selling/OrderTable/LoadDataOrder?idtable=" + idTable);
+    loadOrderByTable: async function (idTable,idorder="") {
+        var loadOrder = await axios.get("/Selling/OrderTable/LoadDataOrder?idtable=" + idTable+"&idorder="+idorder);
         if (loadOrder.data.isValid) {
             $("#container-tableOder").html(loadOrder.data.data);
             loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
             loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
             loadeventPos.eventUpdatedataItemMonOrder();//update lại các data
             loadeventPos.eventShowInfoFoodService();//kích vào món nếu là dịch vụ tính giờ để xem chi tiết
+          
             if (loadOrder.data.dataCus.length > 0) {
                 ListCusByOrderPos = loadOrder.data.dataCus;
             }
@@ -18428,7 +18572,7 @@ var loadeventPos = {
         loadeventPos.loadEventClose();
 
         loadeventPos.loadClicktabOrder();
-
+      
         //------check clone để load đơn
         let idtableClone = $("#idtableClone").data("id");//lấy đơn nếu có clone
         if ($("#lst-roomandtable li.active").data("id") == idtableClone) {
@@ -18443,7 +18587,9 @@ var loadeventPos = {
             $('#ul-tab-order a:first').trigger('click');
         }
      
-       
+        //phải load sau
+        let _idor = $("#ul-tab-order a.active").data("id");
+        loadeventPos.intLoadCheckOrdeTabAll(_idor);//load active của invoice tab all
 
         loadeventPos.loadAmoutAndQuantity();// load tong tien
         loadEventadmin.evnetFullscreen();// sự kiện full màn hình
@@ -18582,6 +18728,10 @@ var loadeventPos = {
             success: async function (res) {
                 isValid = res.isValid;
                 if (res.isValid) {
+                    
+                    //-----------add vào tab all để xử lý ẩn đi đơn neo
+                    $(".ele-tab-leftRoomMenu li.tab-allOrder").data("idorder", idorder);
+                    //-------
                     Swal.close();
                     htmlPrint = res.data;
                     let sel = $("#lst-roomandtable li.active");
@@ -20036,7 +20186,6 @@ var loadeventPos = {
             });
             //check đếm giờ
             loadeventPos.loadeventCoutUpTimes();
-       
             //check số bàn trống và bàn dg có
             loadeventPos.eventloadNumberStatusTable();
         }

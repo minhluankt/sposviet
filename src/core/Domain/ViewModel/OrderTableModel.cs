@@ -72,4 +72,14 @@ namespace Domain.ViewModel
         public DateTime? DateCreateService { get; set; } // bắt đầu tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
         public DateTime? DateEndService { get; set; } // dừng tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
     }
+    public class OrderTableInPos
+    {
+        public string TableName { get; set; }
+        public string AreaName { get; set; }
+        public DateTime Date { get; set; }
+        public double NumberTime { get; set; }
+        public decimal Amount { get; set; }
+        public Guid IdGuid { get; set; }
+        public Guid? IdRoomAndTable { get; set; }
+    }
 }
