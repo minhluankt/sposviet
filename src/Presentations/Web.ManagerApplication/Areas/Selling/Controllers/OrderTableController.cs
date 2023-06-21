@@ -95,7 +95,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             return new JsonResult(new { isValid = false });
         }
         //[Authorize(Policy = "pos.order")]
-        checked khi thanh toán, bên all thì úp date bên kia
+    
      
         public async Task<IActionResult> LoadDataOrder(string idtable,Guid? idorder)
         {

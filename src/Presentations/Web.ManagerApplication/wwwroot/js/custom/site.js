@@ -16161,7 +16161,7 @@ var loadeventPos = {
             });
         }, 60000);
     },
-    eventUpdateTotalProductByService: async function () {
+    eventUpdateTotalProductByService: async function (isStop=false) {
         let isUpdate = false;
         $("#item-mon li.isServiceDate").map(function () {
             if ($(this).data("datecreateservice") != null && $(this).data("datecreateservice") != "") {//nếu sản phẩm có tính giờ
@@ -16173,6 +16173,9 @@ var loadeventPos = {
                     enddatenew = moment(dateendservice);
                 } else {
                     enddatenew = moment();//k có thì lấy giờ hiện tại
+                    if (isStop) {//cái này dùng cho lúc bấm nút thanh toán có xác nhận là dừng, add date vào để bấm vào xem thì hiển thị nút tiếp tục
+                        $(this).data("dateendservice", enddatenew);//gán lại để dừng
+                    }
                 }
                 if ($(".ele-foodisservice").length>0) {
                     loadeventPos.updateEndDateFoodservice($(".enddate"),enddatenew);
@@ -16220,11 +16223,14 @@ var loadeventPos = {
         
         $("#item-mon .btnServicedate").unbind();
         $("#item-mon .btnServicedate").click(function () {
-          
+            if ($(".ele-foodisservice").length > 0) {
+                $(".ele-foodisservice").remove();
+            }
             let date = moment($(this).data("datecreateservice"));
             let isservicedate = $(this).parents("li").data("isservicedate");
             let datecreateservice = $(this).parents("li").data("datecreateservice");
             let dateendservice = $(this).parents("li").data("dateendservice");
+            debugger
             let price = parseFloat($(this).parents("li").find(".price").val().replaceAll(",", ""))||0;
             let enddatenew;
             if (dateendservice != null && dateendservice != "") {
@@ -16255,7 +16261,7 @@ var loadeventPos = {
                 });//tính tiền
             }
 
-            html = `<div class="ele-foodisservice">
+            html = `<div class="ele-foodisservice" data-id="">
                     <div class="index-z"></div>
                       <button class="btncancel"><i class="fas fa-times"></i></button>
                           <table class="tableinfo-foodisservice">
@@ -16278,10 +16284,15 @@ var loadeventPos = {
                             </tbody>
                         </table>
                     </div>`;
-            $(this).after(html);
-            if ($(this).parents("li.isServiceDate").offset().top > 500) {
+           // $(this).after(html);
+            $("body").append(html);
+            let gettop = $(this).parents("li.isServiceDate").offset().top;
+            let gettleft = $(this).offset().left;
+            if (gettop > 500) {
                 $(this).parents("li.isServiceDate").addClass("topevent");
             }
+            $(".ele-foodisservice").css("top", (gettop+50)+"px");
+            $(".ele-foodisservice").css("left", (gettleft-250) +"px");
             loaddaterangepicker();
             $(".btncancel").click(function () {
                 $(this).parent(".ele-foodisservice").remove();
@@ -16672,6 +16683,9 @@ var loadeventPos = {
         $("#datarootlistallorder li.eleitempatern").each(function (i, item) {
             if ($(item).data("idorder") == idorder) {
                 $(item).remove();
+            } else if ($(item).hasClass("active")) {
+                $(item).removeClass("active");
+                $(item).find(".item-two").removeClass("active");
             }
         })
     },
@@ -17953,11 +17967,17 @@ var loadeventPos = {
         });
 
     },// kích vào menu thực đơn chọn sản phẩm
+    loadUpdateAmountTabInvoice: function (amount) {
+        $("#datarootlistallorder li.eleitempatern.active").find(".value").html(amount.format0VND(3,3))
+    },
     loadAmoutAndQuantity: function (amount = null, quantity = null, idorder = "") {
 
         if (amount != null && quantity != null) {
-            $(".fullamount").html(amount);
-            $(".quantitySum").html(quantity);
+            $(".fullamount").html(amount.format0VND(3, 3));
+            $(".quantitySum").html(quantity.format0VND(3, 3));
+            //---load bên tab all order
+            loadeventPos.loadUpdateAmountTabInvoice(amount);
+            
         } else {
             amount = 0;
             quantity = 0;
@@ -17975,10 +17995,10 @@ var loadeventPos = {
                 });
             }
 
-            $(".fullamount").html(amount);
-            $(".quantitySum").html(quantity);
+            $(".fullamount").html(amount.format0VND(3, 3));
+            $(".quantitySum").html(quantity.format0VND(3, 3));
         }
-        priceFormat();
+       // priceFormat();
     },//load toongrquantity và tiền:
     loadAutocomplete: function (isProduct = true, isCustomer = true) { //sự kiện autocomple sản phẩm và khách hàng
         if (isProduct) {
@@ -18283,9 +18303,21 @@ var loadeventPos = {
             $(sel).parents(".eleitempatern").addClass("active");
         }
     },
+    eventCheckAutoShowtabFood: function () {
+        let getshowMenuInSelectTable = localStorage.getItem("showMenuInSelectTable");
+
+
+        if (typeof getshowMenuInSelectTable != "undefined") {
+            if (parseInt(getshowMenuInSelectTable) == 1) {
+                $(".ele-tab-leftRoomMenu .tab-menuOrder a").trigger("click");
+                localStorage.setItem("menuOrderShow", 1);
+            }
+        }
+
+    },
     loadIntWindow: function () { // tự load sau khi loadpage và sự kiện click vào bàn lưu lại giá trị đó
         //check xem có lưu localStorage có lưu table k để active
-
+        loadeventPos.loadOrderTabAll();//load tất cả đơn đang có vào tab tất cả đơn
         $("#lst-roomandtable li").click(async function () {
 
             if (!$(this).hasClass("active")) {// chỉ cho kích 1 lần trên 1 table
@@ -18305,20 +18337,10 @@ var loadeventPos = {
                     $(this).parent(".input-group").removeClass("focus-input");
                 });
             }
-
-            let getshowMenuInSelectTable = localStorage.getItem("showMenuInSelectTable");
-
-
-            if (typeof getshowMenuInSelectTable != "undefined") {
-                if (parseInt(getshowMenuInSelectTable) == 1) {
-                    $(".ele-tab-leftRoomMenu .tab-menuOrder a").trigger("click");
-                    localStorage.setItem("menuOrderShow", 1);
-                }
-            }
-
+            loadeventPos.eventCheckAutoShowtabFood();
             // load dữ liệu order
-
         });
+        
         loadTableActive();
         function saveTableActive(_cl) { // lưu lại giá trị mới localStorage
             if (typeof (Storage) !== "undefined") {
@@ -18368,7 +18390,7 @@ var loadeventPos = {
             }
 
         }
-        loadeventPos.loadOrderTabAll();
+       
 
     },// sự kiện click vào bàn lưu lại giá trị đó
     loadOrderTabAll: async function () {
@@ -18399,7 +18421,7 @@ var loadeventPos = {
                                  </span>
                                  <span class="info-moby">
                                     <i class="fas fa-donate" ></i>
-                                    `+ item.Amount.format0VND(3,3) +`
+                                    <b class="value">`+ item.Amount.format0VND(3,3) +`</b>
                                  </span>
                               </li>
                               <li class="item-last">
@@ -18456,6 +18478,7 @@ var loadeventPos = {
                 $("#datarootlistallorder li.eleitempatern").removeClass("active");
                 if (!$(this).hasClass("active")) {
                     loadeventPos.loadDatatable($(this));
+                    loadeventPos.eventCheckAutoShowtabFood();
                 } else {
                     $(this).parents(".eleitempatern").addClass("active");
                 }
@@ -18470,7 +18493,10 @@ var loadeventPos = {
             let idguid = $(item).data("idorder");
             if (idorder == idguid) {
                 $(item).addClass("active");
-                $(item).parents(".eleitempatern").addClass("active");
+                $(item).find(".item-two").addClass("active");
+            } else if ($(item).hasClass("active")) {
+                $(item).removeClass("active");
+                $(item).find(".item-two").removeClass("active");
             }
         });
     },
@@ -18535,7 +18561,8 @@ var loadeventPos = {
 
         });
     }, // sự kiện click tab
-    loadOrderByTable: async function (idTable,idorder="") {
+    loadOrderByTable: async function (idTable, idorder = "") {
+        debugger
         var loadOrder = await axios.get("/Selling/OrderTable/LoadDataOrder?idtable=" + idTable+"&idorder="+idorder);
         if (loadOrder.data.isValid) {
             $("#container-tableOder").html(loadOrder.data.data);
@@ -18594,6 +18621,7 @@ var loadeventPos = {
         loadeventPos.loadAmoutAndQuantity();// load tong tien
         loadEventadmin.evnetFullscreen();// sự kiện full màn hình
         loadeventPos.eventLoadStaffOrder();//load nhân viên của đơn
+       
         // $(".btnfullScreen").trigger("click");
         // loadeventPos.loadCustomerByOrder($('#ul-tab-order a:first').data("id"));// load khasch hang
 
@@ -19119,7 +19147,8 @@ var loadeventPos = {
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
                         clearInterval(countuptimeFoodService);//nếu dừng thì xóa đi k chạy nữa
-                        loadeventPos.eventUpdateTotalProductByService().then(function (data) {
+
+                        loadeventPos.eventUpdateTotalProductByService(true).then(function (data) {
                             if (data) {//nếu có dịch vụ thì tính tiền lại
                                 loadeventPos.updateTotalIsFoodByService();
                             }

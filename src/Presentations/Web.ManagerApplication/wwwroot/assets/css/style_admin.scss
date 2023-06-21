@@ -1933,6 +1933,83 @@ div#parentautocomplete {
     z-index: 5;
     left: 0;
 }
+.ele-foodisservice {
+    position: absolute;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    padding: 20px;
+    z-index: 6;
+    border-radius: 8px;
+    top: 116%;
+    right: -50%;
+    width: max-content;
+
+    .btncancel {
+        border: none;
+        position: absolute;
+        top: -16px;
+        right: -13px;
+        border-radius: 50%;
+        color: #ffffff;
+        width: 30px;
+        height: 30px;
+        background-color: #568bb9;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    }
+    /* &:before {
+                    content: "";
+                    position: absolute;
+                    top: -12px;
+                    right: 20px;
+                    width: 0;
+                    height: 0;
+                    border-style: solid;
+                    border-width: 0 10px 13px 10px;
+                    border-color: transparent transparent #fff transparent;
+                }*/
+
+    .tableinfo-foodisservice {
+        position: relative;
+        z-index: 2;
+        font-weight: 500;
+
+        .flex {
+            display: flex;
+            white-space: nowrap;
+            gap: 20px;
+            position: relative;
+
+            i.fa-clock {
+                position: absolute;
+                right: 6px;
+            }
+        }
+
+        td {
+            padding: 5px 10px;
+
+            .totaltime, .totalmony {
+                color: #1287aa;
+            }
+
+
+
+            input.fc-datetimepicker {
+                width: 148px;
+                font-size: 14px;
+                padding: 0px 10px;
+                padding-right: 22px;
+            }
+
+            .lstbtnaction {
+                text-align: center;
+                border-top: #ccc solid thin;
+                padding-top: 15px;
+                margin-top: 20px;
+            }
+        }
+    }
+}
 #item-mon {
     padding-left: 0px;
     z-index: 5;
@@ -2076,82 +2153,7 @@ div#parentautocomplete {
             position: relative;
             display: flex;
 
-            .ele-foodisservice {
-                position: absolute;
-                background: #fff;
-                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-                padding: 20px;
-                z-index: 6;
-                border-radius: 8px;
-                top: 116%;
-                right: -50%;
-
-                .btncancel {
-                    border: none;
-                    position: absolute;
-                    top: -16px;
-                    right: -13px;
-                    border-radius: 50%;
-                    color: #ffffff;
-                    width: 30px;
-                    height: 30px;
-                    background-color: #568bb9;
-                    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-                }
-                /* &:before {
-                    content: "";
-                    position: absolute;
-                    top: -12px;
-                    right: 20px;
-                    width: 0;
-                    height: 0;
-                    border-style: solid;
-                    border-width: 0 10px 13px 10px;
-                    border-color: transparent transparent #fff transparent;
-                }*/
-
-                .tableinfo-foodisservice {
-                    position: relative;
-                    z-index: 2;
-                    font-weight: 500;
-
-                    .flex {
-                        display: flex;
-                        white-space: nowrap;
-                        gap: 20px;
-                        position: relative;
-
-                        i.fa-clock {
-                            position: absolute;
-                            right: 0;
-                        }
-                    }
-
-                    td {
-                        padding: 5px 10px;
-
-                        .totaltime, .totalmony {
-                            color: #1287aa;
-                        }
-
-
-
-                        input.fc-datetimepicker {
-                            width: 139px;
-                            font-size: 14px;
-                            padding: 0px;
-                            padding-right: 22px;
-                        }
-
-                        .lstbtnaction {
-                            text-align: center;
-                            border-top: #ccc solid thin;
-                            padding-top: 15px;
-                            margin-top: 20px;
-                        }
-                    }
-                }
-            }
+            
 
             .btnServicedate {
                 display: flex;
@@ -3320,10 +3322,21 @@ ul.dashboardEinvoice {
     bottom: 0px;
     background-color: #fff;
     padding: 5px;
+    top: 2px;
+    bottom: 0;
+    margin: auto;
+    left: 10px;
+    right: auto;
+    width: max-content;
+    border-radius: 5px;
+    color: #000;
+    font-size: 14px;
 
     span {
         margin-left: 15px;
     }
+
+   
 }
 
 .cashier-payment-info-bottom {
@@ -4265,12 +4278,18 @@ span.select2-dropdown.selectCustome100 {
 
     .footer-pos {
         position: fixed;
-        bottom: 10px;
+        bottom: 7px;
         width: 100%;
         text-align: center;
         color: #fff;
         font-size: 18px;
         font-weight: bold;
+
+        .txt-support {
+            color: #fff;
+            float: right;
+            margin-right: 15px;
+        }
 
         a {
             color: #fff;
@@ -5973,7 +5992,6 @@ span.discountAmountItemPro {
                                 &:after {
                                     border-top: 26px solid #e92d2d;
                                 }
-
                             }
                         }
                     }
@@ -6052,6 +6070,13 @@ span.discountAmountItemPro {
                         text-align: center;
                         /* display: grid; */
                         flex-flow: column;
+
+                        &.active {
+
+                            b {
+                                color: red;
+                            }
+                        }
 
                         b {
                             font-size: 20px;
