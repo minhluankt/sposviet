@@ -19242,57 +19242,64 @@ var loadeventPos = {
         $(".btn-payment").click(function () {
             let idOder = $("#ul-tab-order > li").find("a.active").data("id");
             // let vat = $(".paymentvatmtt").is(':checked');
-            let vat = false;
-            if (localStorage.getItem("VATMTT") == "true") {
-                vat = true;
-            }
-            let isServiceFood = false;
-            $("#item-mon li.isServiceDate").map(function () {
-                let getendate = $(this).data("dateendservice");
-                if (getendate == null || getendate=="") {//tức là có dịch vụ chưa vẫn dg tính giờ
-                    isServiceFood = true;
-                }
-            });
-            if (!isServiceFood) {
-                payment(vat, idOder, false);
-            }
-            else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Đơn hàng có hàng hóa đang tính giờ. Bạn có chắc chắn muốn dừng tính giờ để thanh toán không?',
-                    // showDenyButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'Đồng ý thanh toán',
-                    cancelButtonText: 'Hủy bỏ thanh toán',
-                    // denyButtonText: `Don't save`,
-                }).then((result) => {
-                    /* Read more about isConfirmed, isDenied below */
-                    if (result.isConfirmed) {
-                        clearInterval(countuptimeFoodService);//nếu dừng thì xóa đi k chạy nữa
+            loadeventPos.Getpayment(idOder);
+        });
+        
+    },
+    Getpayment: function (idOder) {
 
-                        loadeventPos.eventUpdateTotalProductByService(true).then(function (data) {
-                            if (data) {//nếu có dịch vụ thì tính tiền lại
-                                loadeventPos.updateTotalIsFoodByService();
-                            }
-                        });//tính tuền
-
-                        //iditemorder = $("#item-mon li.isServiceDate").data("id");
-                        //idorder = $("#item-mon li.isServiceDate").data("idorder");
-                        isStop = true;
-                        payment(vat, idOder, isStop);
-                        //loadeventPos.eventUpdateStatusFoodService(idorder, iditemorder, isStop).then(function (data) {
-                        //    if (data != null) {
-                        //       //code nếu có
-                        //    }
-                        //    payment(vat, idOder);
-                        //});//cập nhật db
-
-                       
-                    }
-                })
+        let vat = false;
+        if (localStorage.getItem("VATMTT") == "true") {
+            vat = true;
+        }
+        let isServiceFood = false;
+        $("#item-mon li.isServiceDate").map(function () {
+            let getendate = $(this).data("dateendservice");
+            if (getendate == null || getendate == "") {//tức là có dịch vụ chưa vẫn dg tính giờ
+                isServiceFood = true;
             }
         });
-        function payment(vat, idOder,isStopService = false) {
+        if (!isServiceFood) {
+            payment(vat, idOder, false);
+        }
+        else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Đơn hàng có hàng hóa đang tính giờ. Bạn có chắc chắn muốn dừng tính giờ để thanh toán không?',
+                // showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Đồng ý thanh toán',
+                cancelButtonText: 'Hủy bỏ thanh toán',
+                // denyButtonText: `Don't save`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    clearInterval(countuptimeFoodService);//nếu dừng thì xóa đi k chạy nữa
+
+                    loadeventPos.eventUpdateTotalProductByService(true).then(function (data) {
+                        if (data) {//nếu có dịch vụ thì tính tiền lại
+                            loadeventPos.updateTotalIsFoodByService();
+                        }
+                    });//tính tuền
+
+                    //iditemorder = $("#item-mon li.isServiceDate").data("id");
+                    //idorder = $("#item-mon li.isServiceDate").data("idorder");
+                    isStop = true;
+                    payment(vat, idOder, isStop);
+                    //loadeventPos.eventUpdateStatusFoodService(idorder, iditemorder, isStop).then(function (data) {
+                    //    if (data != null) {
+                    //       //code nếu có
+                    //    }
+                    //    payment(vat, idOder);
+                    //});//cập nhật db
+
+
+                }
+            })
+        }
+
+
+        function payment(vat, idOder, isStopService = false) {
             $.ajax({
                 type: 'GET',
                 //global: false,

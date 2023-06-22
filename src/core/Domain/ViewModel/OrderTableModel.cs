@@ -80,6 +80,7 @@ namespace Domain.ViewModel
         public DateTime Date { get; set; }
         public double NumberTime { get; set; }
         public decimal Amount { get; set; }
+        public bool IsServiceDate { get; set; }
         public Guid IdGuid { get; set; }
         public Guid? IdRoomAndTable { get; set; }
     }

@@ -35,8 +35,9 @@ namespace Application.Features.OrderTablePos.Querys
             {
                 try
                 {
-                    var product = await _repository.Entities.Where(x=>x.ComId==query.Comid&&x.Status==Enums.EnumStatusOrderTable.DANG_DAT&&!x.IsBringBack).Include(x => x.RoomAndTable).ThenInclude(x=>x.Area).AsNoTracking().Select(x => new OrderTableInPos()
+                    var product = await _repository.Entities.Where(x=>x.ComId==query.Comid&&x.Status==Enums.EnumStatusOrderTable.DANG_DAT&&!x.IsBringBack).Include(x => x.OrderTableItems.Where(x=>x.IsServiceDate)).Include(x => x.RoomAndTable).ThenInclude(x=>x.Area).AsNoTracking().Select(x => new OrderTableInPos()
                     {
+                        IsServiceDate = x.OrderTableItems.Count()>0, hiển thị thêm ngoài view để xác định và thanth oán  Getpayment
                         IdRoomAndTable = x.IdRoomAndTableGuid,
                         IdGuid = x.IdGuid,
                         Amount = x.Amonut,
