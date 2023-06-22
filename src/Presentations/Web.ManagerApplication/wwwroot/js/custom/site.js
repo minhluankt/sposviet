@@ -16109,9 +16109,9 @@ var loadeventPos = {
                                             `+ htmlservicedate +`
                                             <button class="note`+ (item.Note != null && item.Note != "" ? " active" : "") + `" data-note="` + (item.Note != null ? item.Note : "") + `"><i class="far fa-sticky-note"></i> <span class="text">` + ((item.note != "" && item.note != null) ? item.note : "Thêm ghi chú") + `</span></button>
                                             </div>
-                                            <div class="item_action`+ (item.IsServiceDate ? " disabled" : "") + `"><i class="fas fa-minus"></i><input class="quantity numberformat" ` + (item.IsServiceDate ? "readonly" : "") +` value="`+ item.Quantity + `"> <i class="fas fa-plus"></i></div>
-                                            <div><input type="text" class="form-control priceFormat price" readonly value="`+ (item.Price) + `" /></div>
-                                            <div class="amount"><b class="priceFormat valueamount">`+ (item.Total) + `</b><button class="CloneItem"><i class="fas fa-plus"></i></button></div>
+                                            <div class="item_action`+ (item.IsServiceDate ? " disabled" : "") + `"><i class="fas fa-minus"></i><input class="quantity" ` + (item.IsServiceDate ? "readonly" : "") + ` value="` + item.Quantity.format0VND(3, 3) + `"> <i class="fas fa-plus"></i></div>
+                                            <div><input type="text" class="form-control price" readonly value="`+ (item.Price.format0VND(3,3)) + `" /></div>
+                                            <div class="amount"><b class="valueamount">`+ (item.Total.format0VND(3, 3)) + `</b><button class="CloneItem"><i class="fas fa-plus"></i></button></div>
                                         </li>`;
                     // <div class="item_action"><i class="fas fa-minus"></i><span class="quantity">`+ item.quantity + `</span> <i class="fas fa-plus"></i></div>
                 });
@@ -16121,17 +16121,70 @@ var loadeventPos = {
             $("#ul-tab-order").find("a.active").parent("li").data("title", "");// phải gán  = "" mới có hiệu lực chỉ xóa đi thì k dc
             $("#ul-tab-order").find("a.active").find("span.orderCode").html(data.OrderCode);
             $(".tab-content-order").find(".tab-pane.active").html(html);
+            loadeventPos.addOrderTotabAllInvoice(data);//thêm ghi chú trong chi tiết món
             loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
             loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
             loadeventPos.eventUpdatedataItemMonOrder();//update các data-id...
-            loadeventPos.loadAmoutAndQuantity(data.Amount, data.Quantity);//heienr thị thổng tiền
+            loadeventPos.loadAmoutAndQuantity(data.Amount, data.Quantity, data.IdGuid);//heienr thị thổng tiền
             loadeventPos.eventShowInfoFoodService();//kích vào món nếu là dịch vụ tính giờ để xem chi tiết,đồng thời chạy setInterval các giá trị tiền
 
             $(".tab-content-order").find(".tab-pane.active").attr("data-id", data.IdGuid);
-            
             loadeventPos.loadEventClickIconAddAndMinus();//sự kiện kích vào icon
             loadeventPos.loadAddOrRemoveCurentClassTable(true, data.TimeNumber);// xem có sản phẩm thì add class curen table
         // console.log(dataObject.IdOrderItem);
+        }
+    },
+    addOrderTotabAllInvoice: function (order) {
+        debugger
+        item = {};
+        item.IdGuid = order.IdGuid;
+        item.IdRoomAndTable = order.IdRoomAndTableGuid;
+        item.AreaName = order.AreaName;
+        item.TableName = order.TableName;
+        item.NumberTime = order.TimeNumber;
+        item.Amount = order.Amount;
+
+        html = loadeventPos.maphtmlOrdertabInvoice(item);
+        let isadd = true;
+        $("#datarootlistallorder li.eleitempatern").map(function () {
+            let id = $(this).data("id");
+            if (id == order.IdGuid) {
+                isadd = false;
+            }
+        });
+        if (isadd) {
+            $("#datarootlistallorder").append(html);
+            let _class = makeid(5);
+            $("#datarootlistallorder > li:last-child").addClass(_class);
+            let sel = $("#datarootlistallorder li." + _class);
+            sel.data("idorder", order.IdGuid);
+            loadeventPos.intLoadCheckOrdeTabAll(order.IdGuid);
+            loadeventPos.loadeventCoutUpTime(sel.find(".timedata"));
+            //--------update các data id
+            $(sel).find(".timedata").removeAttr("data-time");
+
+            let idguid = $(sel).data("id");
+            let idroomandtable = $(sel).data("idroomandtable");
+
+
+
+            $(sel).removeAttr("data-id");
+            $(sel).removeAttr("data-idroomandtable");
+
+            $(sel).data("idroomandtable", idroomandtable);
+            $(sel).data("idorder", idguid);
+
+            $(sel).find(".item-two").data("idorder", idguid);
+            $(sel).find(".item-two").data("id", idroomandtable);//để vậy vì hàm loadDatatable nhận id là idtable
+
+            $(sel).find(".payment").data("idorder", idguid);
+            $(sel).find(".more-action").data("idorder", idguid);
+
+            loadeventPos.loadEventClickShowtableTabAll();//load sự kiện click vfao item để show table
+
+
+        } else {
+
         }
     },
     getTotalServiceByTime: function (num, price) {
@@ -16144,28 +16197,38 @@ var loadeventPos = {
         //return Math.round((_rhours * price) + (_rminutes * price / 60)); cách tính 1
         return Math.round(quantity * price);
     },
-    updateTotalIsFoodByService: function () {
+    updateTotalIsFoodByService: function (idorder) {
         var amountall = 0;
-        $("#item-mon li").map(function () {
+        var quantitySumall = 0;
+        $("#container-tableOder .tab-pane.active #item-mon li").map(function () {
             let amoount = parseFloat($(this).find(".valueamount").html().replaceAll(",", "")) || 0;
+            let quantitySum = parseFloat($(this).find(".quantity").val().replaceAll(",", "")) || 0;
             amountall += amoount;
+            quantitySumall += quantitySum;
         });
+        $(".cashier-payment-info-bottom .quantitySum").html(quantitySumall.format0VND(3, 3));
         $(".cashier-payment-info-bottom .fullamount").html(amountall.format0VND(3, 3));
+        //---load bên tab all order
+        loadeventPos.loadUpdateAmountTabInvoice(amountall,idorder);
     },// tính toán lại khi có các item là dịch vụ tính tiền giờ
     eventsetIntervalInfoodserice: function () {
         countuptimeFoodService = setInterval(function () {
             loadeventPos.eventUpdateTotalProductByService().then(function (data) {
-                if (data) {//nếu có dịch vụ thì tính tiền lại
-                    loadeventPos.updateTotalIsFoodByService();
+                if (data.isUpdate) {//nếu có dịch vụ thì tính tiền lại
+                    loadeventPos.updateTotalIsFoodByService(data.idOrder);
                 }
             });
         }, 60000);
     },
-    eventUpdateTotalProductByService: async function (isStop=false) {
+    eventUpdateTotalProductByService: async function (isStop = false) {
+        let object = {};
         let isUpdate = false;
         $("#item-mon li.isServiceDate").map(function () {
+
             if ($(this).data("datecreateservice") != null && $(this).data("datecreateservice") != "") {//nếu sản phẩm có tính giờ
+               
                 let price = parseFloat($(this).find(".price").val().replaceAll(",", "")) || 0;
+                
                 let date = moment($(this).data("datecreateservice"));//lấy giờ bắt đầu tính
                 let dateendservice = $(this).data("dateendservice");//lấy giờ kết thúc nếu có
                 let enddatenew;
@@ -16180,10 +16243,8 @@ var loadeventPos = {
                 if ($(".ele-foodisservice").length>0) {
                     loadeventPos.updateEndDateFoodservice($(".enddate"),enddatenew);
                 }
-                
                 //tính ra bao nhiêu phút rồi
                 let timeDiff = enddatenew.diff(date, 'minutes');//years, months, weeks, days, hours, minutes, and seconds
-
 
                 //tính tiền và số lượng
                 let _hours = (timeDiff / 60);
@@ -16196,15 +16257,18 @@ var loadeventPos = {
                 //let mony = loadeventPos.getTotalServiceByTime(timeDiff, price);//lấy tổng tiền theo phút trên
                 $(this).find(".quantity").val(quantity.format0VND(3, 3));
                 $(this).find(".valueamount").html(mony.format0VND(3, 3));
+               
                 if ($(this).find(".tableinfo-foodisservice").length > 0) {
                     $(this).find(".tableinfo-foodisservice").find(".totalmony").html(mony.format0VND(3, 3));
                     $(this).find(".tableinfo-foodisservice").find(".totaltime").html(timeConvert(timeDiff));
                 }
+                idOrder = $("#ul-tab-order a.active").data("id");
                 isUpdate = true;
-
+                object.isUpdate = isUpdate;
+                object.idOrder = idOrder;
             }
         });
-        return isUpdate;
+        return object;
     },//hàm tính tiền khi có sản phẩm tính tiền theo giờ
     eventStartServiceDateFood: function () {
         loadeventPos.eventUpdateTotalProductByService().then(function (data) {
@@ -16230,7 +16294,7 @@ var loadeventPos = {
             let isservicedate = $(this).parents("li").data("isservicedate");
             let datecreateservice = $(this).parents("li").data("datecreateservice");
             let dateendservice = $(this).parents("li").data("dateendservice");
-            debugger
+            
             let price = parseFloat($(this).parents("li").find(".price").val().replaceAll(",", ""))||0;
             let enddatenew;
             if (dateendservice != null && dateendservice != "") {
@@ -16679,7 +16743,7 @@ var loadeventPos = {
             loadeventPos.loadAddOrRemoveCurentClassTable(false);
         }
         let idorder = $(".ele-tab-leftRoomMenu li.tab-allOrder").data("idorder");
-        
+        //dành cho lúc xóa
         $("#datarootlistallorder li.eleitempatern").each(function (i, item) {
             if ($(item).data("idorder") == idorder) {
                 $(item).remove();
@@ -17967,16 +18031,22 @@ var loadeventPos = {
         });
 
     },// kích vào menu thực đơn chọn sản phẩm
-    loadUpdateAmountTabInvoice: function (amount) {
-        $("#datarootlistallorder li.eleitempatern.active").find(".value").html(amount.format0VND(3,3))
+    loadUpdateAmountTabInvoice: function (amount,idorder) {
+        $("#datarootlistallorder li.eleitempatern").map(function () {
+            let id = $(this).data("idorder");
+            if (id == idorder) {
+                $(this).find(".value").html(amount.format0VND(3, 3))
+            }
+        });
     },
     loadAmoutAndQuantity: function (amount = null, quantity = null, idorder = "") {
-
+        debugger
         if (amount != null && quantity != null) {
             $(".fullamount").html(amount.format0VND(3, 3));
             $(".quantitySum").html(quantity.format0VND(3, 3));
             //---load bên tab all order
-            loadeventPos.loadUpdateAmountTabInvoice(amount);
+            let checkOrder = idorder != "" ? idorder : $("#ul-tab-order li a.active").data("id");
+            loadeventPos.loadUpdateAmountTabInvoice(amount, checkOrder);
             
         } else {
             amount = 0;
@@ -17985,18 +18055,21 @@ var loadeventPos = {
 
                 $(".tab-content-order").find("div[data-id=" + idorder + "]").find("ul").find("li").map(function (item, index) {
 
-                    amount += parseFloat($(this).find(".amount").find(".priceFormat").html().replaceAll(",", ""));
+                    amount += parseFloat($(this).find(".amount").find(".valueamount").html().replaceAll(",", ""));
                     quantity += parseFloat($(this).find(".quantity").val().replaceAll(",", ""));
                 });
             } else {
                 $(".tab-content-order").find(".tab-pane.active").find("ul").find("li").map(function (item, index) {
-                    amount += parseFloat($(this).find(".amount").find(".priceFormat").html().replaceAll(",", ""));
+                    amount += parseFloat($(this).find(".amount").find(".valueamount").html().replaceAll(",", ""));
                     quantity += parseFloat($(this).find(".quantity").val().replaceAll(",", ""));
                 });
             }
 
             $(".fullamount").html(amount.format0VND(3, 3));
             $(".quantitySum").html(quantity.format0VND(3, 3));
+            //---load bên tab all order
+            let checkOrder = $("#ul-tab-order li a.active").data("id");
+            loadeventPos.loadUpdateAmountTabInvoice(amount, checkOrder);
         }
        // priceFormat();
     },//load toongrquantity và tiền:
@@ -18316,8 +18389,7 @@ var loadeventPos = {
 
     },
     loadIntWindow: function () { // tự load sau khi loadpage và sự kiện click vào bàn lưu lại giá trị đó
-        //check xem có lưu localStorage có lưu table k để active
-        loadeventPos.loadOrderTabAll();//load tất cả đơn đang có vào tab tất cả đơn
+       
         $("#lst-roomandtable li").click(async function () {
 
             if (!$(this).hasClass("active")) {// chỉ cho kích 1 lần trên 1 table
@@ -18341,7 +18413,12 @@ var loadeventPos = {
             // load dữ liệu order
         });
         
-        loadTableActive();
+        //check xem có lưu localStorage có lưu table k để active
+        loadeventPos.loadOrderTabAll().then(function (data) {
+            
+            loadTableActive();
+        });//load tất cả đơn đang có vào tab tất cả đơn
+
         function saveTableActive(_cl) { // lưu lại giá trị mới localStorage
             if (typeof (Storage) !== "undefined") {
                 // Store
@@ -18393,35 +18470,30 @@ var loadeventPos = {
        
 
     },// sự kiện click vào bàn lưu lại giá trị đó
-    loadOrderTabAll: async function () {
-        var loadOrder = await axios.get("/Selling/OrderTable/LoadAllDataOrder"); 
-        if (loadOrder.data.isValid) {
-            let jsondata = JSON.parse(loadOrder.data.data);
-            let html = "";
-            jsondata.map(function (item, inde) {
-                html += `<li class="eleitempatern" data-id="` + item.IdGuid + `" data-idroomandtable="` + item.IdRoomAndTable +`">
+    maphtmlOrdertabInvoice: function (item) {
+        return  `<li class="eleitempatern" data-id="` + item.IdGuid + `" data-idroomandtable="` + item.IdRoomAndTable + `">
                            <ul class="item-col">
                               <li class="item-first">
                                  <div class="ribbon">
                                     <i class="fas fa-utensils"></i>
                                  </div>
-                                 <span class="info-area">`+ item.AreaName+`</span>
+                                 <span class="info-area">`+ item.AreaName + `</span>
                                  <span class="info-noorder">
                                     <i class="fas fa-user" ></i>
                                     1
                                  </span>
                               </li>
                               <li class="item-two">
-                                 <b>`+ item.TableName +`</b>
+                                 <b>`+ item.TableName + `</b>
                               </li>
                               <li class="item-there">
                                  <span class="info-time">
                                     <i class="fas fa-clock"></i>
-                                    <span class="timedata" data-time="`+ item.NumberTime +`"></span>
+                                    <span class="timedata" data-time="`+ item.NumberTime + `"></span>
                                  </span>
                                  <span class="info-moby">
                                     <i class="fas fa-donate" ></i>
-                                    <b class="value">`+ item.Amount.format0VND(3,3) +`</b>
+                                    <b class="value">`+ item.Amount.format0VND(3, 3) + `</b>
                                  </span>
                               </li>
                               <li class="item-last">
@@ -18430,12 +18502,18 @@ var loadeventPos = {
                                  <button class="payment"><i class="fa fa-sign-out"></i> Thanh toán</button>
                               </li>
                            </ul>
-                        </li>`;            
+                        </li>`;     
+    },
+    loadOrderTabAll: async function () {
+        var loadOrder = await axios.get("/Selling/OrderTable/LoadAllDataOrder"); 
+        if (loadOrder.data.isValid) {
+            let jsondata = JSON.parse(loadOrder.data.data);
+            let html = "";
+            jsondata.map(function (item, inde) {
+                html += loadeventPos.maphtmlOrdertabInvoice(item);            
             });
             $("#datarootlistallorder").html(html);
-           
             $("#datarootlistallorder li.eleitempatern").each(function (i, item) {
-
                 var totalSeconds = parseInt(parseFloat($(item).find(".timedata").data("time")));
                 if (typeof totalSeconds != "undefined" && totalSeconds >= 0) {
                     setInterval(function () {
@@ -18473,20 +18551,56 @@ var loadeventPos = {
                 
 
             });
-            $("#datarootlistallorder li.item-two").click(function () {
-                $("#datarootlistallorder li.item-two.active").not($(this)).removeClass("active");
-                $("#datarootlistallorder li.eleitempatern").removeClass("active");
-                if (!$(this).hasClass("active")) {
-                    loadeventPos.loadDatatable($(this));
-                    loadeventPos.eventCheckAutoShowtabFood();
-                } else {
-                    $(this).parents(".eleitempatern").addClass("active");
-                }
-            });
-            $("#datarootlistallorder button.more-action").click(function () {
-                alert("ok")
-            });
+
+            loadeventPos.loadEventClickShowtableTabAll();
+           
         }
+    },
+    loadEventClickShowtableTabAll: function () {
+        $("#datarootlistallorder li.item-two").unbind();
+        $("#datarootlistallorder li.item-two").click(function () {
+            $("#datarootlistallorder li.item-two.active").not($(this)).removeClass("active");
+            $("#datarootlistallorder li.eleitempatern").removeClass("active");
+
+            if (!$(this).hasClass("active")) {
+                let idroomtabel = $(this).parents(".eleitempatern").data("idroomandtable");
+                let idorder = $(this).parents(".eleitempatern").data("idorder");
+                loadeventPos.loadDatatable($(this));
+                loadeventPos.eventCheckAutoShowtabFood();
+                //---------check load active đơn mặc định của bàn
+                if (typeof (Storage) !== "undefined") {
+                    // Store
+                    $("#lst-roomandtable li").map(function () {
+                        let idtable = $(this).data("id");
+                        if (idroomtabel == idtable) {
+                            localStorage.setItem("activeTable", $(this).index()); // tham số active table
+                            localStorage.setItem("activeTableAndIdorder", idorder); // tham số active table cho id
+                        }
+                        
+                    });
+                  
+                    // Retrieve
+                } else {
+                    alert("Liên hệ đội ngủ hỗ  trợ lỗi trình duyệt của bạn không hỗ  trợ Storage");
+                }
+
+            } else {
+                $(this).parents(".eleitempatern").addClass("active");
+            }
+        });
+        $("#datarootlistallorder li.more-action").unbind();
+        $("#datarootlistallorder button.more-action").click(function () {
+            alert("ok")
+        });
+        $("#datarootlistallorder li.payment").unbind();
+        $("#datarootlistallorder button.payment").click(function () {
+            let idorder = $(this).data("idorder");
+            let _idortab = $("#ul-tab-order a.active").data("id");
+            if (idorder == _idortab) {
+                $(".cashier-payment-info-bottom .btn-payment").trigger("click");
+            }
+            luận
+        });
     },
     intLoadCheckOrdeTabAll: function (idorder) {
         $("#datarootlistallorder li.eleitempatern").each(function (i, item) {
@@ -18562,7 +18676,7 @@ var loadeventPos = {
         });
     }, // sự kiện click tab
     loadOrderByTable: async function (idTable, idorder = "") {
-        debugger
+        
         var loadOrder = await axios.get("/Selling/OrderTable/LoadDataOrder?idtable=" + idTable+"&idorder="+idorder);
         if (loadOrder.data.isValid) {
             $("#container-tableOder").html(loadOrder.data.data);
@@ -18607,18 +18721,26 @@ var loadeventPos = {
             if ($('#ul-tab-order a[data-id="' + idOderClone + '"]').length>0) {
                 $('#ul-tab-order a[data-id="' + idOderClone + '"]').trigger('click');
             } else {
+
                 $('#ul-tab-order a:first').trigger('click');
             }
            
         } else {
-            $('#ul-tab-order a:first').trigger('click');
+            //check nếu có idorder của bản tab all thì kích load vào đơn đó
+            let idorderab = localStorage.getItem("activeTableAndIdorder");
+            
+            if (idorderab != null && typeof idorderab != "undefined") {
+                $('#ul-tab-order a[data-id="' + idorderab + '"]').trigger('click');
+            } else {
+                $('#ul-tab-order a:first').trigger('click');
+            }
         }
      
         //phải load sau
         let _idor = $("#ul-tab-order a.active").data("id");
         loadeventPos.intLoadCheckOrdeTabAll(_idor);//load active của invoice tab all
-
-        loadeventPos.loadAmoutAndQuantity();// load tong tien
+        debugger
+        loadeventPos.loadAmoutAndQuantity(null, null, idorder);// load tong tien
         loadEventadmin.evnetFullscreen();// sự kiện full màn hình
         loadeventPos.eventLoadStaffOrder();//load nhân viên của đơn
        

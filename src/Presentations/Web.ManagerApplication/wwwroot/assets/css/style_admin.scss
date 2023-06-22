@@ -5955,8 +5955,22 @@ span.discountAmountItemPro {
     .tab-dataListAllOrder {
         background-color: #fff;
 
+
         .bodyDataListAllOrder {
             padding: 10px;
+
+            .sposvietbackgroud {
+                position: absolute;
+                top: 50px;
+                width: 100%;
+
+                span.bgnen {
+                    background-image: url(/images/logo1.png);
+                    width: 50%;
+                    margin: auto;
+                    right: 0;
+                }
+            }
 
             .lstpaternlist {
                 padding-left: 0;
@@ -5964,6 +5978,8 @@ span.discountAmountItemPro {
                 gap: 10px;
                 flex-wrap: wrap;
                 //justify-content: space-between;
+                position: relative;
+                z-index: 1;
 
                 .eleitempatern {
                     cursor: pointer;
@@ -6240,7 +6256,7 @@ span.discountAmountItemPro {
                         display: block;
                     }
 
-                    .priceFormat {
+                    .valueamount {
                         display: none;
                     }
 

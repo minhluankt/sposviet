@@ -24,6 +24,7 @@ namespace Domain.ViewModel
         public string CreateDate { get; set; }// thời gian tạo
         public string ProductCode { get; set; }// id của sản phẩm
         public string TableName { get; set; }// tên bàn/phòng
+        public string AreaName { get; set; }// tên khu vực
         public bool IsBringBack { get; set; }// mag về
         public bool IsCancel { get; set; } // là hủy món
         public bool IsStartDate { get; set; } // là dành cho update ngày giờ bắt đầu tính tiền cho sp có tính giờ

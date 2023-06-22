@@ -139,6 +139,15 @@ namespace Application.Features.OrderTablePos.Commands
                 orderTableModel = request.orderTableModel;
                 orderTableModel.CreateDate = update.Data.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss");
                 orderTableModel.IsBringBack = update.Data.IsBringBack;
+                orderTableModel.IdRoomAndTableGuid = update.Data.IdRoomAndTableGuid;
+                //------------ xử lý lấy bàn
+                if (update.Data.IdRoomAndTableGuid != null)
+                {
+                    var table = await _roomAndTableRepository.Entities.AsNoTracking().Include(x=>x.Area).SingleOrDefaultAsync(x => x.IdGuid == update.Data.IdRoomAndTableGuid);
+                    orderTableModel.TableName = table.Name;
+                    orderTableModel.AreaName = table.Area?.Name;
+                }
+               
                 //--------xử lý giờ
                 DateTime today = DateTime.Now;
                 TimeSpan value = today.Subtract(update.Data.CreatedOn);
