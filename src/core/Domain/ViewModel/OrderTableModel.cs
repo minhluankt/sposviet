@@ -26,6 +26,7 @@ namespace Domain.ViewModel
         public string TableName { get; set; }// tên bàn/phòng
         public string AreaName { get; set; }// tên khu vực
         public bool IsBringBack { get; set; }// mag về
+        public bool IsServiceDate { get; set; } // là món dịch vụ tính giờ
         public bool IsCancel { get; set; } // là hủy món
         public bool IsStartDate { get; set; } // là dành cho update ngày giờ bắt đầu tính tiền cho sp có tính giờ
         public bool IsRemoveCustomer { get; set; } // là xóa khách hàng
@@ -37,8 +38,12 @@ namespace Domain.ViewModel
         public string Note { get; set; }
         public string IdCasher { get; set; } // thu ngân
         public string CasherName { get; set; } //  thu ngân
-        public decimal Amount { get; set; } //  thu ngân
-        public decimal Quantity { get; set; } //  thu ngân
+        public decimal PriceOld { get; set; } // 
+        public decimal? Price { get; set; } //  thu ngân
+        public decimal Discount { get; set; } //  thu ngân
+        public decimal DiscountAmount { get; set; } //  thu ngân
+        public decimal Amount { get; set; } //  
+        public decimal Quantity { get; set; } // 
         public string QuantityFloat { get; set; } //  thu ngân
         [JsonIgnore]
         public string HtmlPrint { get; set; } //  html báo bếp
@@ -65,6 +70,7 @@ namespace Domain.ViewModel
         public decimal QuantityNotifyKitchen { get; set; }
         public decimal Quantity { get; set; }
         public string Unit { get; set; }
+        public decimal? PriceOld { get; set; }
         public decimal Price { get; set; }
         public decimal Total { get; set; }
         public float Discount { get; set; } // % ck

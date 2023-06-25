@@ -2194,5 +2194,65 @@ namespace Infrastructure.Infrastructure.Repositories
             await _unitOfWork.SaveChangesAsync();
             return await Result<OrderTable>.SuccessAsync(getdata);
         }
+
+        public async Task<Result<OrderTable>> UpdatePriceAndDiscountAsync(int ComId, Guid idOrder, Guid idItem, decimal Discount, decimal DiscountAmount, decimal? Price, decimal PriceAdjust)
+        {
+            var getdata = await _repository.Entities.Where(x => x.ComId == ComId && x.IdGuid == idOrder)
+                  .Include(x => x.OrderTableItems)
+                  .SingleOrDefaultAsync();
+            if (getdata == null)
+            {
+                return await Result<OrderTable>.FailAsync(HeperConstantss.ERR012);
+            }
+            getdata.OrderTableItems.ForEach(x =>
+            {
+                if (x.IdGuid == idItem)
+                {
+                    if (x.IsVAT)
+                    {
+                        x.PriceNoVAT = Math.Round(PriceAdjust / (1 + x.VATRate / 100.0M),MidpointRoundingCommon.Three);
+                        x.Total = x.Quantity * x.PriceNoVAT;
+                        x.VATAmount = Math.Round(x.Total*(x.VATRate / 100.0M), MidpointRoundingCommon.Three);
+                        x.Amount = x.Quantity * PriceAdjust;
+                    }
+                    else
+                    {
+                        x.Total = x.Quantity * PriceAdjust;
+                        x.VATAmount = 0;
+                        x.Amount = x.Total;
+                    }
+                    //check giá mục đích vì ban đầu update khác rồi sau đó update đúng lại
+                    if (x.Price != PriceAdjust)
+                    {
+                        if (x.PriceOld==null)//check null để chỉ update lần đầu lần sau k được update nữa giữ mãi giá cũ
+                        {
+                            x.PriceOld = x.Price;//gán cái giá bán cũ vào PriceOld
+                        }
+                        else if (x.PriceOld == Price && x.PriceOld == PriceAdjust)
+                        {
+                            x.PriceOld = null;
+                        }
+                       
+                        x.Price = PriceAdjust;//gán cái giá bán mới vào giá bán 
+                    }
+                    else if (x.PriceOld == Price && x.PriceOld == PriceAdjust) // nếu người nhập update lại = nhau thì phải update lại giá cũ = null
+                    {
+                        x.Price = PriceAdjust;
+                        x.PriceOld = null;
+                    }
+                    
+                    if(x.Price!= Price && x.Price==0) //nếu có th dành cho giá bán = 0  và tự nhập giá khi bán thì update giá cũ là giá bán mới, giá bán mới Price đã được update bên trên
+                    {
+                        x.PriceOld = Price.Value;// phải gán old là giá bán
+                    }
+                    x.Discount = (float)Discount; 
+                    x.DiscountAmount = DiscountAmount;
+                }
+            });
+            getdata.Amonut = getdata.OrderTableItems.Sum(x => x.Amount);
+            await _repository.UpdateAsync(getdata);
+            await _unitOfWork.SaveChangesAsync();
+            return await Result<OrderTable>.SuccessAsync(getdata);
+        }
     }
 }

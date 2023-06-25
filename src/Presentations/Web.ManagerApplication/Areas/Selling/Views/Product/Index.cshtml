@@ -11,7 +11,7 @@
 <div class="card mb-2">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-3 mb-3">
                 <div class="">
                     <label for="" asp-for="idCategory">Danh mục sản phẩm</label>
                     <select class="form-control idCategory" name="idCategory">
@@ -19,7 +19,7 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-3">
                 <div class="">
                     <label>Người tạo</label>
                     <select class="form-control select2" style="width: 100%;" name="userId" aria-hidden="true" id="listUserselect2">
@@ -27,17 +27,24 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-3">
                 <div class="">
                     <label>Mã sản phẩm</label>
                     <input type="text" name="textSearch" id="code" placeholder="Mã sản phẩm" class="form-control">
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3 mb-3">
                 <div class="">
                     <label>Tên sản phẩm</label>
                     <input type="text" name="textSearch" id="textSearch" placeholder="Tên sản phẩm......" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="">
+                    <label for="">Mở/ngừng bán</label>
+                    @Html.DropDownList("StatusProduct", (IEnumerable<SelectListItem>)ViewBag.StatusProduct,  new { @style = "width:100%" ,@class="select2 form-control"} )
+                 
                 </div>
             </div>
         </div>
@@ -81,8 +88,8 @@
                 <button type="button" disabled class="btn btn-primary btn-removeprouct" data-toggle="tooltip" data-placement="top" title="Xóa bỏ sản phẩm ra khỏi hệ thống, không thể khôi phục">Xóa sản phẩm</button>
                 @*<button type="button" disabled class="btn btn-danger btn-checkinventory" data-toggle="tooltip" data-placement="top" title="Kiểm tra số lượng sản phẩm còn trong kho">Kiểm tra tồn kho</button>*@
                 <button type="button"  disabled class="btn btn-primary btn-printbarcode" data-toggle="tooltip" data-placement="top" title="In mã vạch, in tem">In mã vạch</button>
-                <button type="button" disabled class="btn btn-danger btn-stopbusiness" data-toggle="tooltip" data-placement="top" title="Ngừng kinh doanh sản phẩm, không thể bán hàng">Ngừng giao dịch</button>
-                <button type="button" disabled class="btn btn-success btn-unstopbusiness" data-toggle="tooltip" data-placement="top" title="Sản phẩm đã ngừng kinh doanh, cần mở lại">Mở giao dịch</button>
+                <button type="button" disabled class="btn btn-danger btn-stopbusiness" data-toggle="tooltip" data-placement="top" title="Ngừng kinh doanh sản phẩm, không thể bán hàng">Ngừng bán</button>
+                <button type="button" disabled class="btn btn-success btn-unstopbusiness" data-toggle="tooltip" data-placement="top" title="Sản phẩm đã ngừng kinh doanh, cần mở lại">Mở bán</button>
             </div>
         </div>
     </div>
@@ -115,6 +122,7 @@
 <script>
 
     $(document).ready(function () {
+            loadEventSelect2($("#StatusProduct"));
             Product.eventbtnAddProduct();
         loadeventProduct.loadEventbtnaction();
             loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", ".idCategory", @Model.idCategory, "Tất cả");
@@ -211,6 +219,7 @@
                 type: "POST",
                 datatype: "json",
                 data: {
+                        StatusProduct: function () { return $('#StatusProduct').val()},
                     Name : function () { return $('#textSearch').val().trim() },
                     code: function () { return $('#code').val().trim() },
                     idCategory: function () { return $('.idCategory').val()},
@@ -279,7 +288,7 @@
                 {
                         "data": "_Quantity", "name": "Quantity", "autoWidth": true,
                          "render": function (data, type, full, meta) {
-                            if (full.typeProductCategory == @((int)Application.Enums.EnumTypeProductCategory.COMBO) || full.typeProductCategory == @((int)Application.Enums.EnumTypeProductCategory.SERVICE) || full.isInventory) {
+                            if (full.isEnterInOrder || full.typeProductCategory == @((int)Application.Enums.EnumTypeProductCategory.COMBO) || full.typeProductCategory == @((int)Application.Enums.EnumTypeProductCategory.SERVICE) || full.isInventory) {
                                 return "--";
                             }else{
                                 return $.fn.dataTable.render.number(',', '.', 0).display(full._Quantity);
@@ -290,7 +299,16 @@
                 },
                  {
                         "data": "_Price", "name": "Price", "autoWidth": true,
-                        render: $.fn.dataTable.render.number(',', '.', 0)
+                        //render: $.fn.dataTable.render.number(',', '.', 0)
+                        "render": function (data, type, full, meta) {
+                            debugger
+                            if (full.isEnterInOrder && full._Price == 0) {
+                                return "--";
+                            } else {
+                                return $.fn.dataTable.render.number(',', '.', 0).display(full._Price);
+                            }
+
+                        }
                 },
 
                 //{

@@ -230,7 +230,7 @@
                                         <div class="col-md-7">
                                             <div class="form-group">
                                                 <label for="" asp-for="Name">Tên hàng hóa<span class="required">(*)</span></label>
-                                                <input type="text" asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" data-toggle="tooltip" data-placement="top"
+                                                <input  type="text" asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" data-toggle="tooltip" data-placement="top"
                                                        title="Tên hàng hóa là tên sản phẩm" />
                                             </div>
                                         </div>
@@ -245,11 +245,11 @@
                                                     </div>
                                                     @if (Model.Id > 0)
                                                     {
-                                                        <input asp-for="Code" placeholder="Mã sản phẩm tự sinh" class="form-control">
+                                                        <input asp-for="Code" placeholder="Mã sản phẩm sinh tự động" class="form-control">
                                                     }
                                                     else
                                                     {
-                                                        <input asp-for="Code" placeholder="Mã hàng hóa tự sinh" data-toggle="tooltip" data-placement="top"
+                                                        <input asp-for="Code" placeholder="Mã sản phẩm sinh tự động" data-toggle="tooltip" data-placement="top"
                                                            title="Mã hàng hóa là mã sản phẩm duy nhất trên hệ thống" class="form-control code">
 
                                                     }
@@ -277,6 +277,35 @@
                                                         </select>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="" asp-for="IdUnit">Đơn vị tính</label>
+                                                        <select class="form-control select2_cre" name="IdUnit" id="IdUnit" style="width:100%">
+                                                            <opiton></opiton>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                @if (Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.COMBO && Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.SERVICE)
+                                                {
+                                                    <div class='col-md-3'>
+                                                        <div class='form-group @(Model.IsInventory?"d-none":"")'>
+                                                            <label for="" asp-for="Name">Số lượng tồn</label>
+                                                            <input type="text" class="form-control number3 text-right" asp-for="_Quantity" value='@Model._Quantity?.Replace(",",".")' id="Quantity" placeholder="Nhập số lượng" />
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                <div class="col-md-3 eleEnterInOrder">
+                                                    <div class="form-group">
+                                                        <label for="">Nhập giá khi bán</label>
+                                                        <div class="form-check">
+                                                            <input class="form-control icheck" asp-for="IsEnterInOrder" />
+                                                            <label class="form-check-label" for="exampleCheck1">Xác nhận</label>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+
                                                 @if (Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.COMBO)
                                                 {
                                                     <div class="col-md-3">
@@ -293,15 +322,7 @@
                                                         <input type="text" name="_Price" class="form-control number3 text-right" asp-for="_Price" value='@Model._Price?.Replace(",",".")' id="_Price" placeholder="Nhập giá bán" />
                                                     </div>
                                                 </div>
-                                                @if (Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.COMBO && Model.TypeProductCategory != Application.Enums.EnumTypeProductCategory.SERVICE)
-                                                {
-                                                    <div class='col-md-3'>
-                                                        <div class='form-group @(Model.IsInventory?"d-none":"")'>
-                                                            <label for="" asp-for="Name">Số lượng tồn</label>
-                                                            <input type="text" class="form-control number3 text-right" asp-for="_Quantity" value='@Model._Quantity?.Replace(",",".")'  id="Quantity" placeholder="Nhập số lượng" />
-                                                        </div>
-                                                    </div>
-                                                }
+                                               
                                                 @if (user.IdDichVu == Application.Enums.EnumTypeProduct.TAPHOA_SIEUTHI || user.IdDichVu == Application.Enums.EnumTypeProduct.BAN_LE || user.IdDichVu == Application.Enums.EnumTypeProduct.VATLIEU_XAYDUNG)
                                                 {
                                                      <div class="col-md-3">
@@ -312,14 +333,7 @@
                                                     </div>
                                                 }
                                                
-                                                  <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="" asp-for="IdUnit">Đơn vị tính</label>
-                                                        <select class="form-control select2_cre" name="IdUnit" id="IdUnit" style="width:100%">
-                                                            <opiton></opiton>
-                                                        </select>
-                                                    </div>
-                                                </div>
+                                                
                                                 <div class="col-md-3">
                                                     <label for="" asp-for="IsVAT">Giá bán bao gồm thuế?</label>
                                                     <div class="input-group">

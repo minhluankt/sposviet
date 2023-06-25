@@ -71,6 +71,10 @@ namespace Application.Features.OrderTables.Commands
                             return await Result<OrderTableModel>.FailAsync(upfate.Message);
                         }
                      case EnumTypeUpdatePos.UpdateDateTimeFoodService:
+                        if (request.IdOrder == 0 || request.IdOrderItem == null)
+                        {
+                            return await Result<OrderTableModel>.FailAsync("Không tìm thấy dữ liệu phù hợp");
+                        }
                         var upfatetime = await _orderTableRepository.UpdateDateTimeFoodServiceAsync(request.ComId,request.IdOrder, request.IdOrderItem.Value, request.IsStartDate,request.DateCreateService.Value);
                         if (upfatetime.Succeeded)
                         {
@@ -79,6 +83,27 @@ namespace Application.Features.OrderTables.Commands
                         else
                         {
                             return await Result<OrderTableModel>.FailAsync(upfatetime.Message);
+                        }
+                         
+                    case EnumTypeUpdatePos.UpdatePriceAndDiscountItemOrder:
+                        if (request.IdGuid == null || request.IdOrderItem == null)
+                        {
+                            return await Result<OrderTableModel>.FailAsync("Không tìm thấy dữ liệu phù hợp");
+                        }
+                        var updateprice = await _orderTableRepository.UpdatePriceAndDiscountAsync(request.ComId,request.IdGuid.Value, request.IdOrderItem.Value, request.Discount, request.DiscountAmount, request.Price, request.PriceOld);
+                        if (updateprice.Succeeded)
+                        {
+                            var orderitem = updateprice.Data.OrderTableItems.FirstOrDefault(x=>x.IdGuid==request.IdOrderItem.Value);
+                            var _OrderTableModel = new OrderTableModel()
+                            {
+                                Price = orderitem.Price,
+                                PriceOld = orderitem.PriceOld?? orderitem.Price,
+                            };
+                            return await Result<OrderTableModel>.SuccessAsync(_OrderTableModel, HeperConstantss.SUS006);
+                        }
+                        else
+                        {
+                            return await Result<OrderTableModel>.FailAsync(updateprice.Message);
                         }
                         
                     case EnumTypeUpdatePos.UpdateQuantity:
@@ -252,6 +277,7 @@ namespace Application.Features.OrderTables.Commands
                 }
                 
                 orderTableModel = request;
+                orderTableModel.IsServiceDate = updatequantity.Data.OrderTableItems.Count(x=>x.IsServiceDate)>0;
                 orderTableModel.IdGuid = updatequantity.Data.IdGuid;
                 orderTableModel.CreateDate = updatequantity.Data.CreatedOn.ToString("dd/MM/yyyy HH:mm:ss");
                 orderTableModel.IdRoomAndTableGuid = request.IdRoomAndTableGuid;
@@ -266,7 +292,8 @@ namespace Application.Features.OrderTables.Commands
                     Id = x.Id,
                     IdGuid = x.IdGuid,
                     IdProduct = x.IdProduct, 
-                    Price = x.Price, 
+                    Price = x.Price,
+                    PriceOld = x.PriceOld, 
                     Quantity = x.Quantity, 
                     QuantityNotifyKitchen = x.QuantityNotifyKitchen,
                     IdOrderTable = x.IdOrderTable, 
@@ -277,6 +304,7 @@ namespace Application.Features.OrderTables.Commands
                     DateEndService = x.DateEndService, 
                     Note = x.Note, 
                     IsVAT = x.IsVAT }));
+
                 // kèm báo bếp
                 if (updatequantity.Data.NotifyOrderNewModels != null)
                 {

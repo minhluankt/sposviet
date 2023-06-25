@@ -57,8 +57,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [Authorize(Policy = "product.list")]
         public IActionResult Index()
         {
-            // var brand = await _mediator.Send(new GetAllBrandCacheQuery());
             ProductSearch productModelView = new ProductSearch();
+            ViewBag.StatusProduct = GetSelectListItem();
             _logger.LogInformation(User.Identity.Name + "--> Product index");
             return View(productModelView);
         }
@@ -86,9 +86,9 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var attributes = field.GetCustomAttribute<DisplayAttribute>();
             return attributes != null ? attributes.Name : value.ToString();
         }
-        private List<SelectListItem> GetSelectListItem(LISTVAT type = LISTVAT.NOVAT)
+        private List<SelectListItem> GetSelectListItem(EnumStatusProduct type = EnumStatusProduct.NONE)
         {
-            var select = Enum.GetValues(typeof(LISTVAT)).Cast<LISTVAT>()
+            var select = Enum.GetValues(typeof(EnumStatusProduct)).Cast<EnumStatusProduct>()
                 .OrderBy(x => (Convert.ToInt32(x)))
                 .Where(x => (Convert.ToInt32(x)) > 0)
                 .Select(x => new SelectListItem

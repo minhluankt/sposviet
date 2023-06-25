@@ -115,6 +115,7 @@ var TypeSelectDiscount = {
     Percent: 1,
     Cash: 2
 }
+
 var TypeThuChi = {
     THU: 1,
     CHI: 2
@@ -12797,6 +12798,7 @@ var eventBanle = {
     }, //reset data
     loadeventchangeclickprice: function () {
         $("#item-mon li .price").unbind();
+
         $("#item-mon li .price").click(function () {
             let price = parseFloat($(this).data("price")) || 0;
             let giamoi = parseFloat($(this).data("pricenew")) || 0;
@@ -14206,115 +14208,8 @@ var eventBanle = {
             eventBanle.loadChangeItemOrderLoca();
         });
     },
-    //loadEventClickIconAddAndMinus: function () {
-    //    $("#item-mon  li .item_action").find("input").unbind();
-    //    $("#item-mon  li .item_action").find("input").change(function () {
-    //        if ($(this).val() <= 0) {
-    //            toastrcus.error("Số lượng không hợp lệ");
-    //            $(this).val(1);
-    //        }
-    //        let IdOrderItem = $(this).parent().parent("li").data("id");
-    //        let idTable = "-1";
-    //        let cusocde = $(".search-customer").val();
-    //        let sluongmon = $(this).val();
-    //        let IdCustomer = "";
-    //        if (cusocde.trim() != "") {
-    //            cusocde = cusocde.split(" ")[0];
-    //            IdCustomer = $(".search-customer").data("id");
-    //        }
-    //        //bấm giảm thì phải hỏi
-    //        if (sluongmon <= 0) {
-    //            toastrcus.error("Sô lượng ít nhất của sản phẩm phải là 1");
-    //        } else {
-    //            var dataObject = {
-    //                IdOrderItem: IdOrderItem,
-    //                CusCode: cusocde,
-    //                IdCustomer: IdCustomer,
-    //                QuantityFloat: sluongmon,
-    //                TypeUpdate: _TypeUpdatePos.ReplaceQuantity,
-    //                IdRoomAndTableGuid: idTable != "-1" ? idTable : "",
-    //                IsBringBack: idTable == "-1" ? true : false,
-    //                IdGuid: $(".action-inv").find("li.active").data("id")
-    //            };// giảm số lượng
-    //            eventBanle.orderTable(dataObject);
-    //        }
+  
 
-    //    });
-    //    $("#item-mon  li .item_action").find("i").unbind();
-    //    $("#item-mon  li .item_action").find("i:first-child").click(function () {
-    //        let IdOrderItem = $(this).parent().parent("li").data("id");
-    //        let idTable = "-1";
-    //        let cusocde = $(".search-customer").val();
-    //        let sluongmon = parseInt($(this).parent().parent().data("sl"));
-    //        let IdCustomer = "";
-    //        if (cusocde.trim() != "") {
-    //            cusocde = cusocde.split(" ")[0];
-    //            IdCustomer = $(".search-customer").data("id");
-    //        }
-    //        //bấm giảm thì phải hỏi
-    //        if (sluongmon <= 1) {
-    //            toastrcus.error("Sô lượng ít nhất của sản phẩm phải là 1");
-    //        } else {
-    //            var dataObject = {
-    //                IdOrderItem: IdOrderItem,
-    //                CusCode: cusocde,
-    //                IdCustomer: IdCustomer,
-    //                QuantityFloat: -1,
-    //                TypeUpdate: _TypeUpdatePos.UpdateQuantity,
-    //                IdRoomAndTableGuid: idTable != "-1" ? idTable : "",
-    //                IsBringBack: idTable == "-1" ? true : false,
-    //                IdGuid: $(".action-inv").find("li.active").data("id")
-    //            };// giảm số lượng
-    //            eventBanle.orderTable(dataObject);
-    //        }
-
-
-    //        //  loadeventPos.loadactiveClickItemMon($(this));
-
-    //    });// dùng để giảm món
-    //    $("#item-mon  li .item_action").find("i:last-child").click(function () {
-
-    //        let IdOrderItem = $(this).parent().parent("li").data("id");
-    //        let idTable = "-1";
-    //        let cusocde = $(".search-customer").val();
-    //        let IdCustomer = "";
-    //        if (cusocde.trim() != "") {
-    //            cusocde = cusocde.split(" ")[0];
-    //            IdCustomer = $(".search-customer").data("id");
-    //        }
-    //        var dataObject = {
-    //            IdOrderItem: IdOrderItem,
-    //            CusCode: cusocde,
-    //            IdCustomer: IdCustomer,
-    //            QuantityFloat: 1,
-    //            TypeUpdate: _TypeUpdatePos.UpdateQuantity,
-    //            IdRoomAndTableGuid: idTable != "-1" ? idTable : "",
-    //            IsBringBack: idTable == "-1" ? true : false,
-    //            IdGuid: $(".action-inv").find("li.active").data("id")
-    //        };// giảm số lượng
-    //        eventBanle.orderTable(dataObject);
-
-    //    });
-    //    $("#item-mon  li .btn-remove").unbind();
-    //    $("#item-mon  li .btn-remove").click(function () {
-    //        let IdOrderItem = $(this).parent("li").data("id");
-    //        let Quantity = $(this).data("idquan");
-    //        let idTable = "-1";
-
-    //        var dataObject = {
-    //            QuantityFloat: Quantity,
-    //            IdOrderItem: IdOrderItem,
-    //            TypeUpdate: _TypeUpdatePos.RemoveRowItem,
-    //            IdRoomAndTableGuid: idTable != "-1" ? idTable : "",
-    //            IsBringBack: idTable == "-1" ? true : false,
-    //            IdGuid: $(".action-inv").find("li.active").data("id")
-    //        };// giảm số lượng
-    //        eventBanle.orderTable(dataObject);
-
-    //    });
-
-
-    //},// sự kiện giảm đi số lượng món
     loadAmoutAndQuantity: function (amount = null, quantity = null) {
 
         if (amount != null && quantity != null) {
@@ -14707,13 +14602,14 @@ var eventBanle = {
                             // html: true,
                             success: function (data) {
                                 response($.map(data, function (item) {
-                                    let texthigh = __highlight(item.name, request.term);
+                                    let _name = (item.name != "" && item.name != null) ? item.name : item.buyer
+                                    let texthigh = __highlight(_name, request.term);
                                     let html =
                                         "<a href='javascript:void(0)'><div class='search-auto'>" +
                                         "<div class='img'><img src='../" + item.img + "'></div>" +
                                         "<div class='tk_name'><span>" + texthigh + "</span><span class='code'>Mã KH: " + item.code + " <br/> SĐT: " + item.phoneNumber + "</div></div></a>";
                                     return {
-                                        label: html, value: item.name, idCus: item.id, code: item.code
+                                        label: html, value: item.code + " " + _name, idCus: item.id, code: item.code
                                     };
                                 }))
                                 return { label: request.term, value: request.term };
@@ -16091,6 +15987,15 @@ var loadeventPos = {
             let html = `<ul id="item-mon"> `;
             data.OrderTableItems
                 .forEach(function (item, index) {
+                    
+                    var privenew = 0;
+                    if (item.IsVAT && item.DiscountAmount != 0)//nếu có thuế và có ck thì đơn giá khác
+                    {
+                        privenew = item.PriceNoVAT - item.DiscountAmount;
+                    }
+                    else if (item.DiscountAmount != 0) {
+                        privenew = item.Price - item.DiscountAmount;
+                    }
                     htmlvat = "";
                     htmlservicedate = "";
                     if (item.IsServiceDate) {
@@ -16103,6 +16008,7 @@ var loadeventPos = {
                     html += ` <li class='itemorder` + (item.IsServiceDate ? " isServiceDate" : "") + `' data-isservicedate="` + (item.IsServiceDate?"1":"0") + `"
                         data-datecreateservice="` + (item.IsServiceDate ? item.DateCreateService : "") + `"
                         data-dateendservice="` + (item.DateEndService!=null ? item.DateEndService : "") + `"
+                        data-procode="` + item.Code + `"
                         data-id="` + item.IdGuid + `" data-idorder="` + item.IdOrderTable + `" data-idpro ="` + item.IdProduct + `" data-slNotify=` + item.QuantityNotifyKitchen + ` data-sl=` + item.Quantity + ` >
                                             <div  class="btn-remove" data-idquan="`+ item.Quantity + `"><i data-idquan="` + item.Quantity + `" class="fas fa-trash-alt"></i></div>
                                             <div class="name"><b>` + index + ". " + item.Name + htmlvat + `</b>
@@ -16110,7 +16016,14 @@ var loadeventPos = {
                                             <button class="note`+ (item.Note != null && item.Note != "" ? " active" : "") + `" data-note="` + (item.Note != null ? item.Note : "") + `"><i class="far fa-sticky-note"></i> <span class="text">` + ((item.note != "" && item.note != null) ? item.note : "Thêm ghi chú") + `</span></button>
                                             </div>
                                             <div class="item_action`+ (item.IsServiceDate ? " disabled" : "") + `"><i class="fas fa-minus"></i><input class="quantity" ` + (item.IsServiceDate ? "readonly" : "") + ` value="` + item.Quantity.format0VND(3, 3) + `"> <i class="fas fa-plus"></i></div>
-                                            <div><input type="text" class="form-control price" readonly value="`+ (item.Price.format0VND(3,3)) + `" /></div>
+                                            <div class="elePrice"><input type="text"
+                                            data-isvat="`+ item.IsVAT+`"
+                                            data-pricenovat="`+ item.PriceNoVAT +`"
+                                            data-price="`+ (item.PriceOld != null ? item.PriceOld : item.Price) +`"
+                                            data-pricenew="`+ item.Price +`"
+                                            data-discount="`+ item.Discount +`"
+                                            data-discountamount="`+ item.DiscountAmount +`"
+                                            class="form-control price" readonly  value="`+ (item.Price.format0VND(3, 3)) + `" /></div>
                                             <div class="amount"><b class="valueamount">`+ (item.Total.format0VND(3, 3)) + `</b><button class="CloneItem"><i class="fas fa-plus"></i></button></div>
                                         </li>`;
                     // <div class="item_action"><i class="fas fa-minus"></i><span class="quantity">`+ item.quantity + `</span> <i class="fas fa-plus"></i></div>
@@ -16124,6 +16037,7 @@ var loadeventPos = {
             loadeventPos.addOrderTotabAllInvoice(data);//thêm ghi chú trong chi tiết món
             loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
             loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
+            loadeventPos.loadeventchangeclickprice();//kích vào đơn giá hiển thị thay đổi giá bán hay giảm giá
             loadeventPos.eventUpdatedataItemMonOrder();//update các data-id...
             loadeventPos.loadAmoutAndQuantity(data.Amount, data.Quantity, data.IdGuid);//heienr thị thổng tiền
             loadeventPos.eventShowInfoFoodService();//kích vào món nếu là dịch vụ tính giờ để xem chi tiết,đồng thời chạy setInterval các giá trị tiền
@@ -16134,8 +16048,265 @@ var loadeventPos = {
         // console.log(dataObject.IdOrderItem);
         }
     },
+    loadeventchangeclickprice: function () { 
+        $("#item-mon li .price").unbind();
+        $("#item-mon li .price").click(function () {
+            let idOrder = $("#ul-tab-order a.active").data("id");
+            let idorderint = $(this).parents("li.itemorder").data("idorder");//kiểu int
+            let iditemorder = $(this).parents("li.itemorder").data("id");//id của item guid
+            let procode = $(this).parents("li.itemorder").data("procode");
+            let name = $(this).parents("li.itemorder").find(".name").find("b").html();
+            let quantity = $(this).parents("li.itemorder").find(".quantity").val();
+            let price = parseFloat($(this).data("price")) || 0;
+            let pricenovat = parseFloat($(this).data("pricenovat")) || 0;
+            let isvat = $(this).data("isvat");
+            let pricenew = parseFloat($(this).data("pricenew")) || 0;
+            let discountamount = parseFloat($(this).data("discountamount")) || 0;
+            let discount = parseFloat($(this).data("discount")) || 0;
+            //let a = $(this).data("typediscount");
+            let typediscount = parseInt($(this).data("typediscount"));
+
+            //if (typediscount == TypeSelectDiscount.Percent) {
+            //   discountamount  = discount;
+            //}
+            if (isvat=="false") {
+                pricenovat = price;
+            }
+            let clsdisabled = "";
+            if (price>0) {
+                clsdisabled = "readonly disabled";
+            }
+            let html = `<div id="popupselectDiscountPos" class="popup-change-pricepos">
+                                                   <div class="overlazy"></div>
+                                                   <div class="ele-discount ele-SaleRetail" id="ousSizeOutPopup">
+                                                   <button class="cancelpopup"><i class="fas fa-times"></i></button>
+                                                       <div class="header-dis">
+                                                            <b>`+ procode + ` - ` + name + ` - Số lượng: ` + quantity +`</b>
+                                                       </div>
+                                                        <div class="item">
+                                                            <span>Đơn giá bán: </span>
+                                                            <div class="content">
+                                                                <div class="text">
+                                                                    <input `+ clsdisabled +` class="data-value form-control number3 giaban" placeholder="Nhập số tiền" value=`+ price + ` />
+                                                                </div>
+                                                            </div>
+                                                         </div>
+                                                         <div class="item">
+                                                            <span>Giảm giá: </span>
+                                                            <div class="content">
+                                                                <div class="text discount">
+                                                                    <input class="data-value form-control number3 discountamount" value="`+ (typediscount == TypeSelectDiscount.Cash ? discountamount : discount) + `" data-typediscount="` + typediscount + `"/>
+                                                                    <button type="button" data-value="2" class="btn btn-action  btn-amountselect">VND</button>
+                                                                    <button type="button" data-value="1" class="btn btn-action btn-percent">%</button>
+                                                                </div>
+                                                            </div>
+                                                         </div>
+                                                         <div class="item">
+                                                            <span>Giá bán mới: </span>
+                                                            <div class="content">
+                                                                <div class="text elepricenew">
+                                                                    <input class="data-value form-control number3 pricenew" placeholder="Nhập số tiền" value=`+ pricenew + ` />
+                                                                    <i>Lưu ý: Giá bán mới chỉ áp dụng cho sản phẩm của đơn hiện tại này</i>
+                                                                    </div>
+                                                            </div>
+                                                         </div>
+                                                         <div class="lstbtn">
+                                                            <button class="btn btn-default btn-cancel">Hủy bỏ</button>
+                                                            <button class="btn btn-success btn-save">Lưu</button>
+                                                         </div>
+                                                    </div>
+                                                </div>`;
+            $("body").after(html);
+
+          
+            $("#popupselectDiscountPos").data("iditemorder", iditemorder);
+            $("#popupselectDiscountPos").data("idorder", idOrder);
+            $("#popupselectDiscountPos").data("idorderint", idorderint);
+            $("#popupselectDiscountPos").data("price", price);
+
+            if (typediscount == TypeSelectDiscount.Cash) {
+                $(".btn-amountselect").addClass("btn-primary");
+            } else {
+                $(".btn-percent").addClass("btn-primary");
+             
+            }
+            $(".discountamount").data("typediscount", TypeSelectDiscount.Cash);
+            evetnFormatnumber3(false);
+         
+            $(".popup-change-pricepos").find("input.pricenew").focus();//phải làm 2 lần vì lần 1 nó hủy do focus vafo mất format
+            $(".popup-change-pricepos").find("input.pricenew").select();
+            loadeventPos.loadEventSelectInputPopupPrice();
+            //------event kích bên ngoài tự động đóng
+            //  $(document).mouseup(function (e) {
+            //      var container = $("#popupselectDiscountPos #ousSizeOutPopup");
+            //    if (!container.is(e.target) && container.has(e.target).length === 0) {
+            //        $("#popupselectDiscountPos").remove();
+            //    }
+            //});
+        });
+    },
+    loadEventSelectInputPopupPrice: function () {
+        $("#ousSizeOutPopup .btn-amountselect").click(function () {
+            if ($(this).hasClass("btn-primary")) {
+                return false;
+            }
+            $(".discountamount").data("typediscount", TypeSelectDiscount.Cash);
+            let discountamountold = parseFloat($(".discountamount").val().replaceAll(",", ""));
+            let price = parseFloat($("#popupselectDiscountPos").data("price"));
+ 
+            let discountamount = 0;
+            if (discountamountold != 0) {
+                discountamount = Math.round((price * (discountamountold / 100.0)).toFixed(2));
+                $(".discountamount").val(discountamount.format0VND(3, 3));
+                loadeventPos.loadCongthucChangeDiscountAndPriceInPopup();
+            }
+          
+            $(".btn-percent").toggleClass("btn-primary");
+            $(".btn-amountselect").toggleClass("btn-primary");
+        });//kích vào chọn VND
+        $("#ousSizeOutPopup .btn-percent").click(function () {
+            if ($(this).hasClass("btn-primary")) {
+                return false;
+            }
+            $(".discountamount").data("typediscount", TypeSelectDiscount.Percent);
+            let discountold = parseFloat($(".discountamount").val().replaceAll(",", ""));
+            let price = parseFloat($("#popupselectDiscountPos").data("price"));
+
+            let discount = 0;
+            if (discountold != 0) {
+                discount = parseFloat(((discountold / price) * 100).toFixed(3));
+                $(".discountamount").val(discount.format0VND(3, 3));
+                loadeventPos.loadCongthucChangeDiscountAndPriceInPopup();
+
+            }
+         
+            $(".btn-percent").toggleClass("btn-primary");
+            $(".btn-amountselect").toggleClass("btn-primary");
+        });//kích vvafochonj %
+        $("#ousSizeOutPopup .discountamount").keyup(function () {
+            loadeventPos.loadCongthucChangeDiscountAndPriceInPopup();
+        });//change giảm giá
+        $("#ousSizeOutPopup .pricenew").keyup(function () {
+            debugger
+           // let discountamount = parseFloat($(".discountamount").val().replaceAll(",", ""));
+            let pricenew = parseFloat($(this).val());
+            let discountamount = 0;
+            let price = parseFloat($("#popupselectDiscountPos").data("price"));
+            let typeDiscount = parseInt($(".discountamount").data("typediscount"));
+
+            if (typeDiscount == TypeSelectDiscount.Cash) {//tiền mặt
+                discountamount = price - pricenew;
+                if (discountamount > 0) {
+                    $(".discountamount").val(discountamount.format0VND(3, 3))
+                } else {
+                    $(".discountamount").val(0);
+                }
+            } else {
+                if ((price - pricenew) > 0) {
+                    let value = (((price - pricenew) / price) * 100).toFixed(3);
+                    discountamount = parseFloat(value);
+                    $(".discountamount").val(discountamount.format0VND(3, 3))
+                } else {
+                    $(".discountamount").val(0);
+                }
+            }
+
+        });//tự động giá bán select
+
+        $("#ousSizeOutPopup .discountamount").click(function () {
+            $(this).select();
+        });//tự động select
+        $("#ousSizeOutPopup .pricenew").click(function () {
+            $(this).select();
+        });//tự động giá bán select
+        $("#ousSizeOutPopup .cancelpopup").click(function () {
+            $("#popupselectDiscountPos").remove();
+        });//cancel popup  
+        $("#ousSizeOutPopup .btn-cancel").click(function () {
+            $("#popupselectDiscountPos").remove();
+        });//cancel popup
+         $("#ousSizeOutPopup .btn-save").click(function () {
+             loadeventPos.saveChangePriceDiscoutnPopup();
+        });//cancel popup
+
+    },
+    loadCongthucChangeDiscountAndPriceInPopup: function () {
+        let discountamount = parseFloat($(".discountamount").val().replaceAll(",", ""));
+        let price = parseFloat($("#popupselectDiscountPos").data("price"));
+        let typeDiscount = parseInt($(".discountamount").data("typediscount"));
+        
+        let pricenew = 0;
+        if (typeDiscount == TypeSelectDiscount.Cash) {//tiền mặt
+            pricenew = price - discountamount;
+        } else {
+            discountamount = Math.round(discountamount / 100 * price);
+            pricenew = price - discountamount;
+        }
+        $(".pricenew").val(pricenew.format0VND(3, 3));
+
+    },
+    saveChangePriceDiscoutnPopup: function () {
+        let txtdiscountamount = parseFloat($(".discountamount").val().replaceAll(",", ""));
+        let giaban = parseFloat($("#popupselectDiscountPos").find(".giaban").val().replaceAll(",", ""));
+        let pricenew = parseFloat($("#popupselectDiscountPos").find(".pricenew").val().replaceAll(",", ""));
+        let price = parseFloat($("#popupselectDiscountPos").data("price"));
+        let typeDiscount = parseInt($(".discountamount").data("typediscount"));
+        let idorder = $("#popupselectDiscountPos").data("idorder");
+        let iditemorder = $("#popupselectDiscountPos").data("iditemorder");
+        let discount = 0;
+        let discountamount = 0;
+        if (txtdiscountamount != 0 && typeDiscount == TypeSelectDiscount.Percent) {//nếu như là%
+            discount = txtdiscountamount;
+            discountamount = Math.round(txtdiscountamount / 100 * price);
+        } else {
+            discountamount = txtdiscountamount;
+        }
+       
+      //  if (discountamount != 0 || price != giaban || price != pricenew)
+        {
+         
+            $.ajax({
+                type: 'POST',
+                url: '/Selling/OrderTable/UpdatePriceItemTable',
+                dataType: 'json',
+                //async: false,
+                data: {
+                    IdOrder: idorder,
+                    IdItemOrder: iditemorder,
+                    Discount: discount,
+                    DiscountAmount: discountamount,
+                    PriceAdjust: pricenew,
+                    Price: giaban
+                },
+                // traditional: true,
+                success: function (res) {
+                    if (res.isValid) {
+                        $(".tab-pane.active li.itemorder").map(function (item, inde) {
+                            let iditemorder = $(this).data("id");
+                            if (iditemorder == iditemorder) {
+                                $(this).find(".price").val(res.price.format0VND(3, 3));
+                                $(this).find(".price").data("price", res.priceold);
+                                $(this).find(".price").data("pricenew", res.price);
+                                $(this).find(".price").data("typediscount", typeDiscount);
+                                if ($(this).find(".discounttxt").length > 0) {
+                                    $(this).find(".discounttxt").remove();
+                                }
+                                if (discount != 0) {
+                                    $(this).find(".elePrice").append("<span class='discounttxt'>-" + discount +"%</span>");
+                                } else if (discountamount != 0) {
+                                    $(this).find(".elePrice").append("<span class='discounttxt'>-" + discountamount +"</span>");
+                                }
+                            }
+                        });
+                        $("#popupselectDiscountPos").remove();
+                    }
+                }
+            });
+        }
+        
+    },
     addOrderTotabAllInvoice: function (order) {
-        debugger
+        
         item = {};
         item.IdGuid = order.IdGuid;
         item.IdRoomAndTable = order.IdRoomAndTableGuid;
@@ -16143,6 +16314,7 @@ var loadeventPos = {
         item.TableName = order.TableName;
         item.NumberTime = order.TimeNumber;
         item.Amount = order.Amount;
+        item.IsServiceDate = order.IsServiceDate;
 
         html = loadeventPos.maphtmlOrdertabInvoice(item);
         let isadd = true;
@@ -16165,12 +16337,14 @@ var loadeventPos = {
 
             let idguid = $(sel).data("id");
             let idroomandtable = $(sel).data("idroomandtable");
+            let isservicedate = $(item).data("isservicedate");
 
 
-
+            $(sel).removeAttr("data-isservicedate");
             $(sel).removeAttr("data-id");
             $(sel).removeAttr("data-idroomandtable");
 
+            $(sel).data("isservicedate", isservicedate);
             $(sel).data("idroomandtable", idroomandtable);
             $(sel).data("idorder", idguid);
 
@@ -16324,8 +16498,11 @@ var loadeventPos = {
                     }
                 });//tính tiền
             }
-
-            html = `<div class="ele-foodisservice" data-id="">
+            iditemorder = $(this).parents("li.isServiceDate").data("id");
+            idorder = $(this).parents("li.isServiceDate").data("idorder");
+            datecreateservice = $(this).parents("li.isServiceDate").data("datecreateservice");
+            
+            html = `<div class="ele-foodisservice" data-idorder="` + idorder + `" data-iditemorder="` + iditemorder + `"  data-datecreateservice="` + datecreateservice +`" >
                     <div class="index-z"></div>
                       <button class="btncancel"><i class="fas fa-times"></i></button>
                           <table class="tableinfo-foodisservice">
@@ -16362,14 +16539,15 @@ var loadeventPos = {
                 $(this).parent(".ele-foodisservice").remove();
             })
             $('.fc-datetimepicker').on('apply.daterangepicker', function (ev, picker) {
+                
                 ele = $(this);
-                iditemorder = $(this).parents("li.active").data("id");
-                idorder = $(this).parents("li.active").data("idorder");
+                //iditemorder = $(this).parents("li.ele-foodisservice").data("iditemorder");
+                //idorder = $(this).parents("li.ele-foodisservice").data("idorder");
                 let datestart = picker.startDate.format('DD/MM/YYYY HH:mm');
                 let datevalue = picker.startDate.format('HH:mm');
                 let start = false;
                 if ($(this).hasClass("startdate")) {//dành cho cập nhật thời gian bắt đầu tính
-                    let enddate = $(ele).parents("li.isServiceDate").data("dateendservice") ;
+                    let enddate = dateendservice;
                     if (enddate != "" && enddate!=null) {
                         enddate = moment(enddate);
                     } else {
@@ -16386,7 +16564,9 @@ var loadeventPos = {
                 } else {
                     //dành cho cập nhập end date
                     if ($(".tableinfo-foodisservice .btn-actiontime").hasClass("stop")) {//chỉ cho update khi đang dừng tính giờ
-                        let startdate = moment($(ele).parents("li.isServiceDate").data("datecreateservice"));
+                       // let stringdate = $(ele).parents(".ele-foodisservice").data("datecreateservice");
+                        let startdate = moment(datecreateservice);
+                        
                         let minutes = picker.startDate.diff(startdate, 'minutes');//years, months, weeks, days, hours, minutes, and seconds
                         if (minutes <= 0) {
                             toastrcus.error("Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu");
@@ -16408,11 +16588,26 @@ var loadeventPos = {
                     if (data) {
                        
                         if (start) {//nếu cập nhật giờ bắt đầu thì hiển thị lại trên dòng sản phẩm
-                            $(ele).parents("li.isServiceDate").data("datecreateservice", picker.startDate)
-                            $(ele).parents("li.isServiceDate").find(".btnServicedate").data("datecreateservice", picker.startDate)
-                            $(ele).parents("li.isServiceDate").find(".valuetime").html(datevalue)
+                            $("#container-tableOder .tab-pane.active .isServiceDate").map(function (index, item) {
+                                
+                                let _id = $(item).data("idorder");
+                                if (_id == idorder) {
+                                    $(item).data("datecreateservice", picker.startDate)
+                                    $(item).find(".btnServicedate").data("datecreateservice", picker.startDate)
+                                    $(item).find(".valuetime").html(datevalue)
+                                }
+                            })
+
+
+                            
                         } else {
-                            $(ele).parents("li.isServiceDate").data("dateendservice", picker.startDate)
+                            $("#container-tableOder .tab-pane.active .isServiceDate").map(function (index, item) {
+                                let _id = $(item).data("idorder");
+                                if (_id == idorder) {
+                                    $(item).data("dateendservice", picker.startDate)
+                                    $(item).find(".btnServicedate").data("dateendservice", picker.startDate)
+                                }
+                            })
                         }
                         if ($(".tableinfo-foodisservice .btn-actiontime").hasClass("stop")) {
                             //nếu nó dg dừng thì update tiền lại thôi
@@ -16433,8 +16628,8 @@ var loadeventPos = {
             });
             $(".btn-actiontime").click(function () {
                 _selele = $(this);
-                iditemorder = $(this).parents("li.active").data("id");
-                idorder = $(this).parents("li.active").data("idorder");
+                //iditemorder = $(this).parents("li.active").data("id");
+                //idorder = $(this).parents("li.active").data("idorder");
                 isStop = true;
                 if ($(this).hasClass("stop")) {//nếu có tức là  chừ bỏ đi để tiếp tục
                     //tiếp tục tính giờ
@@ -16443,10 +16638,22 @@ var loadeventPos = {
                 loadeventPos.eventUpdateStatusFoodService(idorder, iditemorder, isStop).then(function (data) {
                     if (data != null) {
                         if (isStop) {
-                            _selele.parents("li.itemorder").data("dateendservice", data);
+                            $("#container-tableOder .tab-pane.active .isServiceDate").map(function (index, item) {
+                                let _id = $(item).data("idorder");
+                                if (_id == idorder) {
+                                    $(item).data("dateendservice", data)
+                                }
+                            })
+                           // _selele.parents("li.itemorder").data("dateendservice", data);
                             clearInterval(countuptimeFoodService);//nếu dừng thì xóa đi k chạy nữa
                         } else {
-                            _selele.parents("li.itemorder").data("dateendservice", "");
+                           // _selele.parents("li.itemorder").data("dateendservice", "");
+                            $("#container-tableOder .tab-pane.active .isServiceDate").map(function (index, item) {
+                                let _id = $(item).data("idorder");
+                                if (_id == idorder) {
+                                    $(item).data("dateendservice", "")
+                                }
+                            })
                             loadeventPos.eventStartServiceDateFood();
                         }
                         _selele.toggleClass("btn-success");
@@ -18040,7 +18247,7 @@ var loadeventPos = {
         });
     },
     loadAmoutAndQuantity: function (amount = null, quantity = null, idorder = "") {
-        debugger
+        
         if (amount != null && quantity != null) {
             $(".fullamount").html(amount.format0VND(3, 3));
             $(".quantitySum").html(quantity.format0VND(3, 3));
@@ -18183,13 +18390,14 @@ var loadeventPos = {
                             // html: true,
                             success: function (data) {
                                 response($.map(data, function (item) {
-                                    let texthigh = __highlight(item.name, request.term);
+                                    let _name = (item.name != "" && item.name != null) ? item.name : item.buyer
+                                    let texthigh = __highlight(_name, request.term);
                                     let html =
                                         "<a href='javascript:void(0)'><div class='search-auto'>" +
                                         "<div class='img'><img src='../" + item.img + "'></div>" +
                                         "<div class='tk_name'><span>" + texthigh + "</span><span class='code'>Mã KH: " + item.code + " <br/> SĐT: " + item.phoneNumber + "</div></div></a>";
                                     return {
-                                        label: html, value: item.code + " " + item.name, idCus: item.id
+                                        label: html, value: item.code + " " + _name, idCus: item.id
                                     };
                                 }))
                                 return { label: request.term, value: request.term };
@@ -18471,7 +18679,7 @@ var loadeventPos = {
 
     },// sự kiện click vào bàn lưu lại giá trị đó
     maphtmlOrdertabInvoice: function (item) {
-        return  `<li class="eleitempatern" data-id="` + item.IdGuid + `" data-idroomandtable="` + item.IdRoomAndTable + `">
+        return `<li class="eleitempatern" data-isservicedate="` + item.IsServiceDate + `" data-id="` + item.IdGuid + `" data-idroomandtable="` + item.IdRoomAndTable + `">
                            <ul class="item-col">
                               <li class="item-first">
                                  <div class="ribbon">
@@ -18532,14 +18740,17 @@ var loadeventPos = {
                 }
                 $(item).find(".timedata").removeAttr("data-time");
 
+                let isservicedate = $(item).data("isservicedate");
                 let idguid = $(item).data("id");
                 let idroomandtable = $(item).data("idroomandtable");
 
         
 
+                $(item).removeAttr("data-isservicedate");
                 $(item).removeAttr("data-id");
                 $(item).removeAttr("data-idroomandtable");
 
+                $(item).data("isservicedate", isservicedate);
                 $(item).data("idroomandtable", idroomandtable);
                 $(item).data("idorder", idguid);
 
@@ -18598,8 +18809,10 @@ var loadeventPos = {
             let _idortab = $("#ul-tab-order a.active").data("id");
             if (idorder == _idortab) {
                 $(".cashier-payment-info-bottom .btn-payment").trigger("click");
+            } else {
+                loadeventPos.eventPaymentIntabAllOrder($(this));
             }
-            luận
+            
         });
     },
     intLoadCheckOrdeTabAll: function (idorder) {
@@ -18681,6 +18894,7 @@ var loadeventPos = {
         if (loadOrder.data.isValid) {
             $("#container-tableOder").html(loadOrder.data.data);
             loadeventPos.loadeventAddNote();//thêm ghi chú trong chi tiết món
+            loadeventPos.loadeventchangeclickprice();//kích vào đơn giá hiển thị thay đổi giá bán hay giảm giá
             loadeventPos.loadCloneitem();//nhân bản copy thêm dòng item order
             loadeventPos.eventUpdatedataItemMonOrder();//update lại các data
             loadeventPos.eventShowInfoFoodService();//kích vào món nếu là dịch vụ tính giờ để xem chi tiết
@@ -18695,6 +18909,7 @@ var loadeventPos = {
                 $("#lst-roomandtable li.active").addClass("CurentOrder");
             }
             numberFormat();
+            evetnFormatTextnumber3(false);
         } else {
             return false;
         }
@@ -18729,7 +18944,7 @@ var loadeventPos = {
             //check nếu có idorder của bản tab all thì kích load vào đơn đó
             let idorderab = localStorage.getItem("activeTableAndIdorder");
             
-            if (idorderab != null && typeof idorderab != "undefined") {
+            if (idorderab != null && idorderab != "" && typeof idorderab != "undefined") {
                 $('#ul-tab-order a[data-id="' + idorderab + '"]').trigger('click');
             } else {
                 $('#ul-tab-order a:first').trigger('click');
@@ -18739,7 +18954,7 @@ var loadeventPos = {
         //phải load sau
         let _idor = $("#ul-tab-order a.active").data("id");
         loadeventPos.intLoadCheckOrdeTabAll(_idor);//load active của invoice tab all
-        debugger
+        
         loadeventPos.loadAmoutAndQuantity(null, null, idorder);// load tong tien
         loadEventadmin.evnetFullscreen();// sự kiện full màn hình
         loadeventPos.eventLoadStaffOrder();//load nhân viên của đơn
@@ -18878,8 +19093,9 @@ var loadeventPos = {
             success: async function (res) {
                 isValid = res.isValid;
                 if (res.isValid) {
-                    
-                    //-----------add vào tab all để xử lý ẩn đi đơn neo
+                    //---------xóa active của order bên tab all
+                    loadeventPos.updatelocaactivePayment(idorder);
+                    //-----------add vào tab all để xử lý ẩn đi đơn neo phục vụ bên dưới
                     $(".ele-tab-leftRoomMenu li.tab-allOrder").data("idorder", idorder);
                     //-------
                     Swal.close();
@@ -19241,24 +19457,44 @@ var loadeventPos = {
 
         $(".btn-payment").click(function () {
             let idOder = $("#ul-tab-order > li").find("a.active").data("id");
-            // let vat = $(".paymentvatmtt").is(':checked');
-            loadeventPos.Getpayment(idOder);
+            let isServiceFood = false;
+            $("#item-mon li.isServiceDate").map(function () {
+                let getendate = $(this).data("dateendservice");
+                if (getendate == null || getendate == "") {//tức là có dịch vụ chưa vẫn dg tính giờ
+                    isServiceFood = true;
+                }
+            });
+            loadeventPos.Getpayment(idOder, isServiceFood);
         });
         
     },
-    Getpayment: function (idOder) {
+    eventPaymentIntabAllOrder: function (sel) {
+
+        //$("#datarootlistallorder button.payment").click(function () {
+            let isServiceFood = false;
+        let isservice = $(sel).parents(".eleitempatern").data("isservicedate");
+            if (isservice == "true" || isservice == true) {
+                isServiceFood = true;
+            }
+        let idOder = $(sel).data("idorder");
+            loadeventPos.Getpayment(idOder, isServiceFood);
+       
+        //});
+        
+    },
+    updatelocaactivePayment: function (idorder) {
+        let iddata = localStorage.getItem("activeTableAndIdorder");
+        if (iddata == idorder) {
+            localStorage.setItem("activeTableAndIdorder","")
+        }
+    },
+    Getpayment: function (idOder, isServiceFood) {//isservice là đơn đó có sản phẩm tính tiền theo giờ dich vụ
 
         let vat = false;
         if (localStorage.getItem("VATMTT") == "true") {
             vat = true;
         }
-        let isServiceFood = false;
-        $("#item-mon li.isServiceDate").map(function () {
-            let getendate = $(this).data("dateendservice");
-            if (getendate == null || getendate == "") {//tức là có dịch vụ chưa vẫn dg tính giờ
-                isServiceFood = true;
-            }
-        });
+       
         if (!isServiceFood) {
             payment(vat, idOder, false);
         }

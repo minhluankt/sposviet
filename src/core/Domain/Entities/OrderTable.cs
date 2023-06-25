@@ -87,6 +87,7 @@ namespace Domain.Entities
         public decimal Quantity { get; set; }
         public string Unit { get; set; }
         public decimal Price { get; set; }//giá bán
+        public decimal? PriceOld { get; set; }//giá bán cũ, tức là khi có đổi giá bàn thì phải lưu cái cũ lại
         public decimal EntryPrice { get; set; }//giá nhập
         //---------thuế
         public bool IsVAT { get; set; } // sản phẩm đơn giá có  thuế

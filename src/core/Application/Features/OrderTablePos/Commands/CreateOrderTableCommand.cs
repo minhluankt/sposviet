@@ -153,7 +153,7 @@ namespace Application.Features.OrderTablePos.Commands
                 TimeSpan value = today.Subtract(update.Data.CreatedOn);
                 orderTableModel.TimeNumber = value.TotalSeconds;
                 //--------xử lý giờ
-
+                orderTableModel.IsServiceDate = update.Data.OrderTableItems.Count(x => x.IsServiceDate) > 0;
                 orderTableModel.IdGuid = update.Data.IdGuid;
                 orderTableModel.IdOrder = update.Data.Id;
                 orderTableModel.OrderCode = update.Data.OrderTableCode;
@@ -166,6 +166,7 @@ namespace Application.Features.OrderTablePos.Commands
                     IdGuid = x.IdGuid,
                     IdProduct = x.IdProduct, 
                     Price = x.Price,
+                    PriceOld = x.PriceOld,
                     Quantity = x.Quantity,
                     QuantityNotifyKitchen = x.QuantityNotifyKitchen,
                     IdOrderTable = x.IdOrderTable, 

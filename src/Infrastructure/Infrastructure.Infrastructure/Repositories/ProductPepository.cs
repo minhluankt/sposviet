@@ -182,6 +182,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 datalist = datalist.Where(m => m.Name.ToLower().Contains(model.Name.ToLower()));
                 //  datalist = datalist.Where(m => m.Name.ToLower().Contains(model.TextName.ToLower()) || m.Code.ToLower().Contains(model.TextName.ToLower()));
             }
+
             if (!string.IsNullOrEmpty(model.Code))
             {
                 datalist = datalist.Where(m => m.Code.ToLower().Contains(model.Code.ToLower()));
@@ -193,6 +194,15 @@ namespace Infrastructure.Infrastructure.Repositories
                 datalist = datalist.Where(m => m.CreatedBy == model.IdUser);
             }
 
+            if (model.StatusProduct==EnumStatusProduct.NGUNG_HOAT_DONG)
+            {
+                datalist = datalist.Where(m => m.StopBusiness);
+            }
+
+            if (model.StatusProduct == EnumStatusProduct.DANG_HOAT_DONG)
+            {
+                datalist = datalist.Where(m => !m.StopBusiness);
+            }
 
             if (model.isCustomer && model.idCustomer > 0)
             {
@@ -239,6 +249,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 VATRate = x.VATRate,
                 _PriceNoVAT = x.PriceNoVAT.ToString().Replace(",", "."),
                 IsVAT = x.IsVAT,
+                IsEnterInOrder = x.IsEnterInOrder,
                 isRunPromotion = x.isRunPromotion,
                 Id = x.Id,
                 Status = x.Status,

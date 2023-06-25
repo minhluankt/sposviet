@@ -26,6 +26,7 @@ namespace Application.Interfaces.Repositories
         Task UpdateCustomerOrder(int comid, Guid idOrder, Customer customer, EnumTypeProduct enumTypeProduct = EnumTypeProduct.AMTHUC);
         Task<Result<OrderTable>> UpdateStatusFoodServiceAsync(int ComId, int idOrder, Guid idItem, bool IsStop,DateTime? timestop);
         Task<Result<OrderTable>> UpdateDateTimeFoodServiceAsync(int ComId, int idOrder, Guid idItem, bool IsStart,DateTime datetime);
+        Task<Result<OrderTable>> UpdatePriceAndDiscountAsync(int ComId, Guid idOrder, Guid idItem, decimal Discount, decimal DiscountAmount, decimal? Price, decimal PriceAdjust);
         Task<Result<OrderTable>> UpdateItemOrderAsync(int? IdCustomer, string CusCode, int comid, Guid idOrder, Guid idItem, Guid? idTable, bool IsBringBack, decimal Quantity, string Cashername, string IdCasher, string note = "", bool IsRemoverow = false, bool IsCancelItem = false);
         Task<IResult> UpdateStaffAsync(int comid, Guid idOrder, string idstaff, string staffName );
         Task<Result<OrderTable>> CloneItemAsync(int comid, Guid idOrder, Guid idItem);

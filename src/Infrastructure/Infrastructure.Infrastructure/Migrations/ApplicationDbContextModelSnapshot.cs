@@ -3014,6 +3014,9 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<decimal>("PriceNoVAT")
                         .HasColumnType("decimal(18,3)");
 
+                    b.Property<decimal?>("PriceOld")
+                        .HasColumnType("decimal(18,3)");
+
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(18,3)");
 

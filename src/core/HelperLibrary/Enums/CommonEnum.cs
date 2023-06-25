@@ -587,6 +587,7 @@ namespace Application.Enums
         UpdateStaffOrder = 15,// cập nhật nhân viên cho đơn
         UpdateStatusFoodService = 16,// cập nhật là dừng hay tiếp tục tính giờ cho hàng hóa là dịch vụ tính tiền theo giờ
         UpdateDateTimeFoodService = 17,// cập nhật giờ bắt đầu hay kết thúc của sản phẩm là dịch vụ tính tiền theo giờ
+        UpdatePriceAndDiscountItemOrder = 18,// cập nhật giá hoặc giảm giá cho item đơn hàng
     }
     public enum EnumTypeSpitOrder
     {
@@ -594,11 +595,24 @@ namespace Application.Enums
         Separate = 1, // tách
         Graft = 2, // ghép
     }
-    public enum EnumStatusArea
+    public enum EnumTypeDiscount  {
+    NONE= 0,//
+    DISCOUNT= 1,//PHẦN %
+    CASH=2//TIỀ MẶT
+}
+public enum EnumStatusArea
     {
         NONE = -1,
         NGUNG_HOAT_DONG = 0,
         DANG_HOAT_DONG = 1, // tách
+    } 
+    public enum EnumStatusProduct
+    {
+        NONE = 0,
+        [Display(Name = "Ngưng bán")]
+        NGUNG_HOAT_DONG = 1,
+        [Display(Name = "Đang bán")]
+        DANG_HOAT_DONG = 2, // tách
     }
     public enum EnumTypeTemplatePrint
     {

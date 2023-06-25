@@ -5,6 +5,7 @@ using AspNetCoreHero.Results;
 using Domain.Entities;
 using HelperLibrary;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using System;
@@ -59,7 +60,7 @@ namespace Application.Features.Customers.Commands
                 {
                     if (brand.PhoneNumber != command.PhoneNumber && !string.IsNullOrEmpty(command.PhoneNumber))
                     {
-                        int checktaxcodeandType = _Repository.Entities.Count(m => m.PhoneNumber == command.PhoneNumber && m.Id != command.Id);
+                        int checktaxcodeandType = await _Repository.Entities.AsNoTracking().CountAsync(m => m.PhoneNumber == command.PhoneNumber && m.Id != command.Id && m.Comid==command.Comid);
                         if (checktaxcodeandType > 0)
                         {
                             _log.LogInformation("UpdateCustomerCommand update trùng phone: " + command.PhoneNumber);
@@ -69,7 +70,7 @@ namespace Application.Features.Customers.Commands
                     }
                     if (brand.Email != command.Email && !string.IsNullOrEmpty(command.Email))
                     {
-                        int checktaxcodeandType = _Repository.Entities.Count(m => m.Email == command.Email && m.Id != command.Id);
+                        int checktaxcodeandType = await _Repository.Entities.AsNoTracking().CountAsync(m => m.Email == command.Email && m.Id != command.Id && m.Comid == command.Comid);
                         if (checktaxcodeandType > 0)
                         {
                             _log.LogInformation("UpdateCustomerCommand update trùng email: " + command.Email);

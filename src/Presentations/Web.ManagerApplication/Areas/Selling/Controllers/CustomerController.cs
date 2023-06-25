@@ -75,6 +75,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 var response = await _mediator.Send(new GetAllCustomerQuery()
                 {
                     Name = model.Name,
+                    TextPhoneOrEmail = model.TextPhoneOrEmail,
                     Comid = currentUser.ComId,
                     sortColumn = sortColumn,
                     sortColumnDirection = sortColumnDirection,
@@ -278,7 +279,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var listkq = response.Data.Select(x => new AutocompleteCustomerModel
             {
                 Id = x.Id,
-                Name = x.Name,
+                Name = !string.IsNullOrEmpty(x.Name)? x.Name: x.Buyer,
                 Buyer = x.Buyer,
                 Code = x.Code,
                 Taxcode = x.Taxcode,

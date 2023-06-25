@@ -122,6 +122,7 @@ namespace Application.Features.Products.Commands
                     //    brand.albumImg = command.albumImg;
                     //}
 
+                    brand.IsEnterInOrder = command.IsEnterInOrder;
                     brand.Title = command.Title;
                     brand.TechnicialParameter = command.TechnicialParameter;
                     brand.Promotion = command.Promotion;

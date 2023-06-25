@@ -587,10 +587,6 @@ div#popupselectDiscount {
             z-index: 2;
         }
     }
-
-
-
-
     &:before {
         content: " ";
         border-color: transparent transparent #fff;
@@ -602,7 +598,6 @@ div#popupselectDiscount {
         right: 15px;
         z-index: 3;
     }
-
 
     .ele-discount {
         background-color: #fff;
@@ -691,7 +686,12 @@ body.loaded.swal2-shown.swal2-height-auto {
     background-repeat: no-repeat;
     right: 0;
 }
-
+.eleEnterInOrder {
+    label.form-check-label {
+        display: contents;
+        
+    }
+}
 label.form-check-label {
     display: flex;
     align-items: center;
@@ -716,6 +716,139 @@ label.form-check-label {
     &:hover {
         .tooltipcus {
             display: block;
+        }
+    }
+}
+div#popupselectDiscountPos {
+    position: fixed;
+    top: 0;
+    z-index: 9;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+
+    &.popup-change-pricepos {
+        button.cancelpopup {
+            border-radius: 100px;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            top: -13px;
+            right: -14px;
+            font-size: 14px;
+            padding: 13px 16px;
+            color: #fff;
+            background-color: #0961af;
+        }
+
+        .overlazy {
+            background-color: #00000082;
+            position: absolute;
+            height: 100vh;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .header-dis {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        #ousSizeOutPopup {
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            border-radius: 25px;
+            height: max-content;
+            z-index: 1;
+            POSITION: RELATIVE;
+            max-width: 450px;
+
+            .lstbtn {
+                padding: 20px 0px;
+                text-align: center;
+
+                button {
+                    padding: 10px 50px;
+                    font-size: 20px;
+                    border-radius: 25px;
+                    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+                    margin-right: 15px;
+                }
+
+                .btn-cancel {
+                    background-color: #838383;
+                    color: #fff;
+                }
+            }
+        }
+
+        .item {
+            margin-bottom: 20px;
+
+            input {
+                text-align: right;
+                font-size: 20px;
+                padding: 7px 10px;
+                height: auto;
+                color: black;
+            }
+
+            > span {
+                margin-bottom: 5px;
+                font-weight: 600;
+                display: block;
+                color: #4D5258;
+            }
+
+            .elepricenew {
+                flex-direction: column;
+                gap: 10px;
+
+                i {
+                    color: red
+                }
+            }
+
+            .content {
+                .text {
+                    display: flex;
+
+
+
+                    &.discount {
+                        input {
+                            border-top-right-radius: 0px;
+                            border-bottom-right-radius: 0px;
+                        }
+
+                        button {
+                            min-width: 68px;
+                            border-left: 0px;
+                            border-radius: 0px;
+                            font-size: 20px;
+
+                            &.btn-primary {
+                                border: 1px solid #3f6ad8;
+                            }
+
+                            &:not(.btn-primary) {
+                                border: 1px solid #e4e7ea;
+                                border-left: none;
+                            }
+
+                            &:last-child {
+                                border-top-right-radius: .25rem;
+                                border-bottom-right-radius: .25rem;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -6214,6 +6347,15 @@ span.discountAmountItemPro {
 
     #item-mon {
         li {
+            &.itemorder {
+                .elePrice {
+                    text-align: right;
+
+                    .discounttxt {
+                        color: red;
+                    }
+                }
+            }
 
             input.quantity {
                 width: 72px !important;

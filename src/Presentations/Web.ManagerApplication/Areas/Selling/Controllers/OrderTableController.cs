@@ -1022,7 +1022,41 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             _notify.Error(response.Message);
             return Json(new { isValid = false });
         }
-    
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePriceItemTableAsync(Guid? IdOrder, Guid? IdItemOrder, decimal Discount, decimal DiscountAmount, decimal Price, decimal PriceAdjust)
+        {
+         
+            if (IdOrder == null)
+            {
+                _notify.Error("Không tìm thấy đơn!");
+                return Json(new { isValid = false });
+            }
+
+            var currentUser = User.Identity.GetUserClaimLogin();
+            OrderTableModel orderTableModel = new OrderTableModel();
+            orderTableModel.TypeUpdate = EnumTypeUpdatePos.UpdatePriceAndDiscountItemOrder;
+            orderTableModel.ComId = currentUser.ComId;
+            orderTableModel.IdGuid = IdOrder.Value;
+            orderTableModel.IdOrderItem = IdItemOrder;
+            orderTableModel.PriceOld = PriceAdjust;
+            orderTableModel.Price = Price;
+            orderTableModel.Discount = Discount;
+            orderTableModel.DiscountAmount = DiscountAmount;
+            var ipdateOrderTableCommand = _mapper.Map<UpdateOrderTableCommand>(orderTableModel);
+            var _send = await _mediator.Send(ipdateOrderTableCommand);
+            if (_send.Succeeded)
+            {
+                _notify.Success("Cập nhật thành công!");
+                // tính tổng tiền và giảm giá trên từng món: hàm 
+                return Json(new { isValid = true,price= _send.Data.Price,priceold= _send.Data.PriceOld });
+            }
+            else
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString(_send.Message));
+                return Json(new { isValid = false });
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> UpdateFoodServiceStatusAsync(int? IdOrder,Guid? IdItemOrder,bool IsTop)
         {
@@ -1080,7 +1114,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var _send= await _mediator.Send(ipdateOrderTableCommand);
             if (_send.Succeeded)
             {
-               // tính tổng tiền và giảm giá trên từng món: hàm 
+                _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
+                // tính tổng tiền và giảm giá trên từng món: hàm 
                 return Json(new { isValid = true,date= orderTableModel.DateCreateService });
             }
             else
@@ -1148,6 +1183,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             decimal discountPayment, decimal discount, decimal discountOther, decimal? cuspayAmount, int Idpayment,bool vat,
             int? Vatrate,int? ManagerPatternEInvoices,decimal VATAmount,decimal Amount,decimal Total)
         {
+
+            //đã thanh toán thành công nhưng khi load lại đơn thì chưa kích vào tab od-new, check chỉ cần kích vào nữa là ok
             if (TypeUpdate == EnumTypeUpdatePos.CheckOutOrder)
             {
                 if (Idpayment == 0)

@@ -97,6 +97,7 @@ namespace Model
 
     public class CustomerModelView : LoginCustomerViewModel
     {
+        public string TextPhoneOrEmail { get; set; }
         public string EmailConfirm { get; set; }
         public bool isEmailConfirm { get; set; }
         public int payment { get; set; }

@@ -53,6 +53,7 @@ namespace Model
     {
         public string keyword { get; set; }
         public int ComId { get; set; }
+        public EnumStatusProduct StatusProduct { get; set; }
         public EnumTypeProduct TypeProduct { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
@@ -167,6 +168,7 @@ namespace Model
         public string Description { get; set; }
         public string Title { get; set; }
         public EnumTypeProduct TypeProduct { get; set; }
+        public bool IsEnterInOrder { get; set; }// nhập giá khi bán
         public bool IsInventory { get; set; }//sản phẩm k quản lý tồn kho
         public bool IsServiceDate { get; set; } // sản phẩm tính tiền giờ
         public bool DirectSales { get; set; } // là sản phẩm bán trực tiếp tại quầy
