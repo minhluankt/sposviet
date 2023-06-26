@@ -58,11 +58,11 @@ namespace SposVietPlugin_net_4._6._1
 
         static Microsoft.AspNet.SignalR.Client.HubConnection signalR { get; set; }
         public static Microsoft.AspNet.SignalR.Client.IHubProxy signalRhub { get; set; }
-
+        public static int numberRetry2 = 0;
         public async Task<bool> StartSignalRAsync()//khởi chạy kết nôi
         {
             bool connected = false;
-        //    int numberRetry2 = 0;
+           
         //RetryInvoice2:
             try
             {
@@ -80,35 +80,39 @@ namespace SposVietPlugin_net_4._6._1
                 {
                     timeSpans.Add(TimeSpan.FromSeconds(1));
                 }
-               
-               
-                var connection = new HubConnectionBuilder()
-                    .WithUrl(url)
-                    .WithAutomaticReconnect(timeSpans.ToArray())
-                    .Build();
-                connection.ServerTimeout = TimeSpan.FromHours(15);
-
-                connection.On<string>("PrintbaobepSposViet", (html) => OnReceiveMessage(html));
-                await connection.StartAsync();
                 // t.Wait();
                 if (Properties.Settings.Default.ComId > 0)
                 {
+                    LogControl.Write("COmid ok: "+ Properties.Settings.Default.ComId);
+                    var connection = new HubConnectionBuilder()
+                    .WithUrl(url)
+                    .WithAutomaticReconnect(timeSpans.ToArray())
+                    .Build();
+                    connection.ServerTimeout = TimeSpan.FromHours(15);
+
+                    connection.On<string>("PrintbaobepSposViet", (html) => OnReceiveMessage(html));
+                    await connection.StartAsync();
+                    LogControl.Write("StartAsync thành công");
                     await connection.InvokeAsync("PrintbaobepSposViet", Properties.Settings.Default.ComId, "TEST");
                     LogControl.Write("PrintbaobepSposViet test thành công");
+
+                    if (connection.State == HubConnectionState.Connected)
+                    {
+                        connection.Closed += (exception) => {
+                            LogControl.Write("exception Closed:" + exception.ToString());
+                            Connection_StateChangedCore(HubConnectionState.Connected);
+                            return Task.CompletedTask;
+                        };
+                        connected = true;
+                        numberRetry2 = 0;
+                    }
                 }
                 else
                 {
                     LogControl.Write("Comid faile:" + Properties.Settings.Default.ComId);
+                    return false;
                 }
-                if (connection.State == HubConnectionState.Connected)
-                {
-                    connection.Closed += (exception) => {
-                        LogControl.Write("exception Closed:" + exception.ToString());
-                        Connection_StateChangedCore(HubConnectionState.Connected);
-                        return Task.CompletedTask;
-                    };
-                    connected = true;
-                }
+                
 
 
 
@@ -165,8 +169,16 @@ namespace SposVietPlugin_net_4._6._1
             }
             catch (Exception e)
             {
-                LogControl.Write("RestartConnection: " + e.ToString());
-                await RestartConnection();
+                numberRetry2= numberRetry2+1;
+                LogControl.Write("RestartConnection: "+ numberRetry2+"_________" + e.ToString());
+                if (numberRetry2<10)
+                {
+                    await RestartConnection();
+                }
+                else
+                {
+                    return true;
+                }
                 return connected;
             }
         }
@@ -186,9 +198,11 @@ namespace SposVietPlugin_net_4._6._1
         }
         public async Task RestartConnection()
         {
+            int again = 0;
             bool ApplicationClosed =false;
-            while (!ApplicationClosed)
+            while (!ApplicationClosed && again<5)
             {
+                again++;
                 bool connected = await StartSignalRAsync();
                 if (connected)
                     return;

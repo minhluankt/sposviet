@@ -21,7 +21,7 @@ namespace SposVietPlugin_net_4._6._1
         //    Application.SetCompatibleTextRenderingDefault(false);
         //    Application.Run(new Form1());
         //}
-        static  void Main()
+        static   void Main()
         {
             LogControl.Write("Bắt đầu chạy");
             bool ownmutex;

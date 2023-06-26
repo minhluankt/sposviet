@@ -42,8 +42,8 @@ namespace Application.Hepers
                     }
                     if (item.DiscountAmount != 0)
                     {
-                        dongiachietkhau = item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider());
-                        item.Price = item.Price - item.DiscountAmount;
+                        dongiachietkhau = (item.Price + item.DiscountAmount).ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                        //item.Price = item.Price - item.DiscountAmount;
                     }
                     tableProduct += result
                         .Replace("{tenhanghoa}", item.Name)
@@ -103,8 +103,8 @@ namespace Application.Hepers
                     }
                     if (item.DiscountAmount!=0)
                     {
-                        dongiachietkhau = item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider());
-                        item.Price = item.Price - item.DiscountAmount;
+                        dongiachietkhau = (item.Price + item.DiscountAmount).ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                       // item.Price = item.Price - item.DiscountAmount;
                     }
                     tableProduct += result.Replace("{tenhanghoa}", item.Name)
                         .Replace("{dongiachietkhau}", dongiachietkhau)
