@@ -1410,19 +1410,22 @@ namespace Infrastructure.Infrastructure.Repositories
         {
             foreach (var x in model.Items)
             {
-                decimal price = x.Price;
-                if (x.DiscountAmount !=0 && (x.DiscountAmount+ x.PriceNew) == x.Price)//tức là chiết khấu trên giá bán thì k update lại giá bán
-                {
-                    price = x.Price;
-                }
-                else if (x.DiscountAmount == 0 && x.PriceNew != x.Price)//nếu có đổi giá  bán thì update
-                {
-                    price = x.PriceNew;
-                }
-                else // nếu có ck và có sửa giá bán
-                {
-                    price = x.PriceNew;
-                }
+               // decimal price = x.Price;
+                //if (x.DiscountAmount !=0 && (x.DiscountAmount+ x.PriceNew) == x.Price)//tức là chiết khấu trên giá bán thì k update lại giá bán
+                //{
+                //    price = x.Price;
+                //}
+                //else if (x.DiscountAmount == 0 && x.PriceNew != x.Price)//nếu có đổi giá  bán thì update
+                //{
+                //    price = x.PriceNew;
+                //}
+                //else // nếu có ck và có sửa giá bán
+                //{
+                //    price = x.PriceNew;
+                //}
+
+               // price = x.PriceNew;
+
                 var iteminvoice = new InvoiceItem()
                 {
                     IdProduct = x.Id,
@@ -1500,11 +1503,16 @@ namespace Infrastructure.Infrastructure.Repositories
                             x.VATRate = item.VATRate;
                             x.IsVAT = item.IsVAT;
                             x.RetailPrice = item.RetailPrice;
-                            x.Price = item.Price;
+                            
                             if (x.IsVAT)
                             {
                                 IsProductVAT = true;
+                                if (x.PriceNew!=item.Price)//nếu giá bán cuối cùng khác với giá trong sản phẩm, phải tính lại tiền trước thuế đối với hàng hóa có thuế
+                                {
+                                    x.PriceNoVAT = Math.Round(x.PriceNew / (1 + (item.VATRate / 100.0M)),MidpointRoundingCommon.Three);
+                                }
                             }
+                            x.Price = x.PriceNew; testc lại nếu k có chọn nhập gì thì giá mới có truyền vào k
                             //if (x.IsVAT)// nếu sp có thuế
                             //{
                             //    x.Total = x.Quantity * x.PriceNoVAT;

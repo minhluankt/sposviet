@@ -16296,12 +16296,15 @@ var loadeventPos = {
                                 $(this).find(".price").data("price", res.priceold);
                                 $(this).find(".price").data("pricenew", res.price);
                                 $(this).find(".price").data("typediscount", typeDiscount);
+                              
                                 if ($(this).find(".discounttxt").length > 0) {
                                     $(this).find(".discounttxt").remove();
                                 }
                                 if (discount != 0) {
+                                    $(this).find(".price").data("discount", discount);
                                     $(this).find(".elePrice").append("<span class='discounttxt'>-" + discount +"%</span>");
                                 } else if (discountamount != 0) {
+                                    $(this).find(".price").data("discountamount", discountamount);
                                     $(this).find(".elePrice").append("<span class='discounttxt'>-" + discountamount +"</span>");
                                 }
                             }
