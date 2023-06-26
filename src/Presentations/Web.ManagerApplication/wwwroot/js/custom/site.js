@@ -16004,6 +16004,12 @@ var loadeventPos = {
                     if (item.IsVAT) {
                         htmlvat = " <i class='fas fa-percent'></i>";
                     }
+                    htmldiscount = ""
+                    if (item.Discount != 0) {
+                        htmldiscount = "<span class='discounttxt'>-" + item.Discount + "%</span>";
+                    } else if (item.Discountamount != 0) {
+                        htmldiscount = "<span class='discounttxt'>-" + item.DiscountAmount + "</span>";
+                    }
                     index = index + 1;
                     html += ` <li class='itemorder` + (item.IsServiceDate ? " isServiceDate" : "") + `' data-isservicedate="` + (item.IsServiceDate?"1":"0") + `"
                         data-datecreateservice="` + (item.IsServiceDate ? item.DateCreateService : "") + `"
@@ -16023,7 +16029,9 @@ var loadeventPos = {
                                             data-pricenew="`+ item.Price +`"
                                             data-discount="`+ item.Discount +`"
                                             data-discountamount="`+ item.DiscountAmount +`"
-                                            class="form-control price" readonly  value="`+ (item.Price.format0VND(3, 3)) + `" /></div>
+                                            class="form-control price" readonly  value="`+ (item.Price.format0VND(3, 3)) + `" />
+                                            `+ htmldiscount +`
+                                            </div>
                                             <div class="amount"><b class="valueamount">`+ (item.Total.format0VND(3, 3)) + `</b><button class="CloneItem"><i class="fas fa-plus"></i></button></div>
                                         </li>`;
                     // <div class="item_action"><i class="fas fa-minus"></i><span class="quantity">`+ item.quantity + `</span> <i class="fas fa-plus"></i></div>

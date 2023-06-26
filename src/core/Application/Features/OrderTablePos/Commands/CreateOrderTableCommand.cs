@@ -167,6 +167,8 @@ namespace Application.Features.OrderTablePos.Commands
                     IdProduct = x.IdProduct, 
                     Price = x.Price,
                     PriceOld = x.PriceOld,
+                    DiscountAmount = x.DiscountAmount,  test lại ở view nha, có hiển thị khi kích thêm trừ số lượng, test thanh toán
+                    Discount = x.Discount,
                     Quantity = x.Quantity,
                     QuantityNotifyKitchen = x.QuantityNotifyKitchen,
                     IdOrderTable = x.IdOrderTable, 
