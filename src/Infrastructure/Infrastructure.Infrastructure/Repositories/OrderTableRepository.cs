@@ -1433,7 +1433,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     Name = x.Name,
                     Quantity = x.Quantity,
                     PriceNoVAT = x.PriceNoVAT,
-                    Price = price,
+                    Price = x.Price,
                     Unit = x.Unit,
                     Total = x.Amount,
                     VATRate = (float)x.VATRate,
@@ -1447,7 +1447,8 @@ namespace Infrastructure.Infrastructure.Repositories
                // if (iteminvoice.VATRate.HasValue && iteminvoice.VATRate > (int)NOVAT.NOVAT)
                 if (iteminvoice.VATRate.HasValue && x.IsVAT)//nếu sp có thuế thì phải update lại total = trước thuế, còn amoutn ngoài view chính là amount sp
                 {
-                    iteminvoice.Total = (x.Quantity* x.PriceNoVAT) - x.DiscountAmount;
+                    //iteminvoice.Total = (x.Quantity* x.PriceNoVAT) - x.DiscountAmount;
+                    iteminvoice.Total = (x.Quantity* x.PriceNoVAT);//không cần trừ chiết khấu vì chiết khấu đã trừ trực tiếp vào giá sau thuế, và đã tín lại giá trước thuế này
                     iteminvoice.VATAmount = Math.Round(iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100.0M),MidpointRoundingCommon.Three);
                     //iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
                 }
@@ -1512,7 +1513,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                     x.PriceNoVAT = Math.Round(x.PriceNew / (1 + (item.VATRate / 100.0M)),MidpointRoundingCommon.Three);
                                 }
                             }
-                            x.Price = x.PriceNew; testc lại nếu k có chọn nhập gì thì giá mới có truyền vào k
+                            x.Price = x.PriceNew;
                             //if (x.IsVAT)// nếu sp có thuế
                             //{
                             //    x.Total = x.Quantity * x.PriceNoVAT;
@@ -1565,7 +1566,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 if (IsProductVAT && model.VATRate==(int)NOVAT.NOVAT)
                 {
                     //đây tính lại total, vatamouont, nếu hàng hóa là sp có thuế, để khi xuất hóa đơn cho đúng, tính lại cả ở view
-                   // inv.Total = inv.InvoiceItems.Sum(x => x.Total);// tong tien chưa giam, gán amount bởi vì là giá trị gốc của hóa đơn ban đầu
+                    inv.Total = inv.InvoiceItems.Sum(x => x.Total);// tong tien chưa giam, gán amount bởi vì là giá trị gốc của hóa đơn ban đầu
                     inv.VATAmount = inv.InvoiceItems.Sum(x => x.VATAmount);//
                 }
                 //else

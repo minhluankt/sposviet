@@ -112,6 +112,7 @@ var ENumTypeSeri = //chữ ký số
     VNPTSmartCA: 3,
 }
 var TypeSelectDiscount = {
+    NONE: 0,
     Percent: 1,
     Cash: 2
 }
@@ -12787,6 +12788,9 @@ var eventBanle = {
         $(".cuspayment").html(0);
         $(".amoutchange").html(0);
         $(".discountamount").val(0);
+        $(".discountamount").data("discount", 0);
+        $(".discountamount").data("value", 0);
+        $(".discountamount").data("type", TypeSelectDiscount.Cash)
         $(".cussendamount").val(0);
         if ($(".VATAmount").length > 0) {
             $(".VATAmount").val(0);
@@ -12999,6 +13003,7 @@ var eventBanle = {
                     $(".giamgia").val(100);
                     giamgia = 100;
                     toastrcus.error("Giá trị % giảm giá không hợp lệ");
+                 
                 }
                 discountAmount = giaban * (parseFloat(giamgia / 100));
                 total = giaban - discountAmount;
@@ -13007,11 +13012,32 @@ var eventBanle = {
                 toastrcus.error("Giá trị không hợp lệ");
                 return;
             }
+            
             if (type == 2 || type == 3) {//khi sự kiện giá mơi dc gõ
+
+                let isvat = $(".giamoi").parents("li.itemOrderSale").data("isvat");
+                if (isvat) {
+                    let vatrate = parseFloat($(".giamoi").parents("li.itemOrderSale").data("vatrate"));
+                    let pricenovat = parseFloat((giamoi / (1 + (vatrate / 100))).toFixed(3));
+                    $(".giamoi").parents(".ele-price").find(".price").data('pricenovat', pricenovat);//load lại giá bán trước thuế 
+                } else {
+                    $(".giamoi").parents(".ele-price").find(".price").data('pricenovat', giamoi);//load lại giá bán trước thuế 
+                }
+
                 $(".giamoi").parents(".ele-price").find(".price").val(giamoi.format0VND(3, 3));//thay đổi đơn giá gốc
                 $(".giamoi").parents(".ele-price").find(".price").data('pricenew', giamoi);//thay đổi đơn giá gốc
             } else {
                 $(".giamoi").val(total.format0VND(3, 3));// load giá mới sau giảm giá trên popup
+                //--------check điều kiện để update lại giá trước thuế nếu có thay đổi giá bán mới
+                let isvat = $(".giamoi").parents("li.itemOrderSale").data("isvat");
+                if (isvat) {
+                    let vatrate = parseFloat($(".giamoi").parents("li.itemOrderSale").data("vatrate"));
+                    let pricenovat = parseFloat((total / (1 + (vatrate / 100))).toFixed(3));
+                    $(".giamoi").parents(".ele-price").find(".price").data('pricenovat', pricenovat);//load lại giá bán trước thuế 
+                } else {
+                    $(".giamoi").parents(".ele-price").find(".price").data('pricenovat', total);//load lại giá bán trước thuế 
+                }
+               
                 $(".giamoi").parents(".ele-price").find(".price").val(total.format0VND(3, 3));//thay đổi đơn giá gốc
                 $(".giamoi").parents(".ele-price").find(".price").data('pricenew', total);//thay đổi đơn giá gốc
             }
@@ -13133,13 +13159,15 @@ var eventBanle = {
             }, 150);
         });
         $("#discounttypevalue").keyup(function () {
-            if (typeSelectDiscount == 0) {
+            if (typeSelectDiscount == TypeSelectDiscount.NONE) {
                 typeSelectDiscount = parseInt($(".discountamount").data("discount"));
             }
             loadCongthuc();
 
         });
         function loadCongthuc() {
+            let IsDiscountAfterTax = $("#IsDiscountAfterTax").data("value");
+            let IsProductVAT = $(".fullamount").data("isproductvat");
             if (typeSelectDiscount == TypeSelectDiscount.Cash) {
                 let discountamount = parseFloat($("#discounttypevalue").val().replaceAll(",", "")) || 0;
                 Cashkeup = discountamount;//lưu để update lại số cũ
@@ -13150,16 +13178,42 @@ var eventBanle = {
             }
             else if (typeSelectDiscount == TypeSelectDiscount.Percent) {
                 let totalPayment = parseFloat($(".fullamount").text().replaceAll(",", ""));
+                let VATAmount = 0;
+                if ($("#Vatrate").length>0) {
+                    VATAmount = parseFloat($(".VATAmount").val().replaceAll(",", "")) || 0;
+                }
                 let discountamount = parseFloat($("#discounttypevalue").val().replaceAll(",", ""));
+
+                if (discountamount>100) {
+                    let oldDiscount = $(".discountamount").data("discount");
+                    $("#discounttypevalue").val(oldDiscount);
+                    toastrcus.error("Giá trị chiết khấu phần trăm không được lớn hơn 100%");
+                    return false;
+                }
+
+
                 let _discountamount = Math.round(parseFloat(totalPayment * (discountamount / 100)));
+                if (IsDiscountAfterTax==1) {//cấu hình thức là lấy giá tổng cộng tiền sau thuế mà trừ mặc định là lấy tiền trước thuế trừ rồi mới tính thuế
+                    //-----kiểm tra nếu là hóa đơn có thuế trong sp mới tính chiết khấu theo giá sau thuế theo cấu hình, dù có cấu hình mà k có sp nào có thuế thì phải tính giá trước thuế
+                    if (IsProductVAT) {
+                        _discountamount = Math.round(parseFloat((VATAmount + totalPayment) * (discountamount / 100)));
+                    }
+                    else {
+                        _discountamount = Math.round(parseFloat(totalPayment * (discountamount / 100)));
+                    }
+                }
+
                 Percentkeup = discountamount;//lưu để update lại số cũ
                 $(".discountamount").val(_discountamount.format0VND(3, 3));
-                //-----gán giá trị tiền và %
+
+               
+                //-----gán giá trị tiền và % theo giá trị nhập ở popup
                 $(".discountamount").data("value", discountamount);
                 $(".discountamount").data("discount", discountamount);
             }
             $(".discountamount").data("type", typeSelectDiscount);
             eventBanle.eventLoadCongThucTien();
+            
             eventBanle.saveUpdateAmountLoca(typeSelectDiscount);
         }
 
@@ -13175,16 +13229,16 @@ var eventBanle = {
         }, 200);
     },
     eventLoadCongThucTien: function () {
-
+        
         let IsDiscountAfterTax = $("#IsDiscountAfterTax").data("value");
-
+        let IsProductVAT = $(".fullamount").data("isproductvat");
         let totalPayment = $(".fullamount").text().replaceAll(",", "") || 0;
         let discountPayment = $(".discountamount").val().replaceAll(",", "") || 0;
         let totalsaudiscount = (parseFloat(totalPayment) - parseFloat(discountPayment)) || 0;
         let vatamount = 0;
         if ($("#Vatrate").length > 0) {
 
-            if (IsDiscountAfterTax == 0) {//nếu k cấu hình chiết khấu theo giá sau thuế, thì md tính giá trước thuế
+            if (IsDiscountAfterTax == 0 || !IsProductVAT) {//nếu k cấu hình chiết khấu theo giá sau thuế, thì md tính giá trước thuế hoặc trường hợp nếu k có sp nào có thuế, ngược lại co cấu hình và bắt buộc phải có sp có thuế mới tính nhánh else
                 vatamount = parseFloat((totalsaudiscount * (parseFloat($("#Vatrate").val() || 0) / 100)).toFixed(3));
             } else {
                 _oldtotal = parseFloat((totalsaudiscount + parseFloat(discountPayment)).toFixed(3));
@@ -13866,10 +13920,11 @@ var eventBanle = {
                 let id = $(this).data("idpro");
                 let code = $(this).data("code");
                 let isvat = $(this).data("isvat");
-                let pricenovat = parseFloat($(this).data("pricenovat")) || 0;
+              
                 let vatrate = parseFloat($(this).data("vatrate")) || NOVATRate;
                 let name = $(this).find(".name").data("name");
                 let quantity = parseFloat($(this).find(".quantity").val()) || 0;
+                let pricenovat = parseFloat($(this).find(".price").data("pricenovat")) || 0;
                 let price = parseFloat($(this).find(".price").data("price")) || 0;
                 let pricenew = parseFloat($(this).find(".price").data("pricenew")) || 0;
                 let retailPrice = parseFloat($(this).find(".price").data("retailPrice")) || 0;
@@ -13901,31 +13956,50 @@ var eventBanle = {
                     totalIsVatPro += amount;
                 }
             });
-            //--------------tính tiền------------
             
+            //--------------tính tiền------------
+            let IsDiscountAfterTax = $("#IsDiscountAfterTax").data("value") || 0;
             let discountamount = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
             let discount = parseFloat($(".discountamount").data("discount")) || 0;
-            $(".discountamount").val(discountamount);
+            
+            if (discount != 0) {
+                if (IsDiscountAfterTax == 1) {//nếu có cấu hình tính theo giá sau chiết khấu thì lấy giá sau thuế mà chiết khấu mặc định là giá trước thuế
+                    discountamount = parseFloat(totals * parseFloat(discount / 100));
+                } else {
+                    discountamount = parseFloat(totalIsVatPro * parseFloat(discount / 100)); 
+                }
+                $(".discountamount").val(discountamount.format0VND(3, 3));
+            }
+
+
+           
             //------------
             
             if ($("#Vatrate").length > 0) {
-
-                totalsaudiscount = IsProductVAT ? totalIsVatPro - discountamount : totals - discountamount;
+                $(".fullamount").html((IsProductVAT ? totalIsVatPro : totals).format0VND(3, 3));//dòng tổng tiền hàng khi có thuế hay k có
+                totalsaudiscount = parseFloat((IsProductVAT ? totalIsVatPro - discountamount : totals - discountamount).toFixed(3));
 
                 Vatrate = parseFloat($("#Vatrate").val());
-                vatamount = totalsaudiscount * parseFloat(Vatrate / 100).toFixed(3);
+
+                if (IsDiscountAfterTax == 1 && IsProductVAT) {//nếu có cấu hình tính theo giá sau chiết khấu thì phần thuế gtgt phải lấy giá gốc sau thuế chưa trừ chiết khấu để tính thuế
+                    vatamount = totalIsVatPro * parseFloat(Vatrate / 100).toFixed(3);
+                   // vatamount = totals * parseFloat(Vatrate / 100).toFixed(3);
+                } else {
+                    vatamount = totalsaudiscount * parseFloat(Vatrate / 100).toFixed(3);
+                }
                 $(".VATAmount").val(vatamount.format0VND(3, 3));
                 //-------tính lại nếu sản phẩm có thuế
-                $(".fullamount").html(totalIsVatPro.format0VND(3, 3));//dòng tổng tiền hàng khi có thuế
             } else {
+                $(".fullamount").html(totals.format0VND(3, 3));//dòng tổng tiền hàng khi có thuế hay k có
                 totalsaudiscount = totals - discountamount;
-                $(".fullamount").html(totals.format0VND(3, 3));//dòng tổng tiền hàng
             }
+           
 
-            eventBanle.addAttrFulltotal(totals, totalIsVatPro, IsProductVAT);
+            eventBanle.addAttrFulltotal(totals, totalIsVatPro, IsProductVAT);//thêm attr vào cho thèn tổng cộng tiền đầu tiên 
          
 
             amounts = Math.round(vatamount + totalsaudiscount);
+           
             $(".cuspayment").html(amounts.format0VND(3, 3));
 
             $(".cussendamount").val(amounts.format0VND(0, 3, ""));
@@ -14074,6 +14148,7 @@ var eventBanle = {
         return isValid;
     }, 
     eventselectProductCompelteOffline: async function (id, price, retailPrice, code, name, isVAT, priceNoVAT, vatrate) {
+        debugger
         var checkcode = await eventBanle.loadEventCheckCodeItem(code);
         if (!checkcode) {
             let html = `<ul id="item-mon"> `;
@@ -14081,13 +14156,14 @@ var eventBanle = {
             htmlli += `<li 
             data-code="` + code + `" 
             data-isvat="` + isVAT + `" 
-            data-pricenovat="` + priceNoVAT + `" 
             data-vatrate="` + vatrate + `" 
-            data-idpro ="` + id + `" data-sl=` + 1 + `>
+            data-idpro ="` + id + `" data-sl=` + 1 + ` class="itemOrderSale">
                             <div  class="btn-remove" data-idquan="1"><i data-idquan="1" class="fas fa-trash-alt"></i></div>
                             <div class="name" data-name="`+ name + `"><b>` + name + `</b></div>
                             <div class="item_action"><i class="fas fa-minus"></i><input data-quantity="1" class="quantity number3" value="1"><i class="fas fa-plus"></i></div>
-                            <div class="ele-price"><input type="text" class="form-control number3 price"  data-price="`+ price + `" data-pricenew="` + price + `"  data-retailPrice="` + retailPrice + `" data-typediscount="-1" data-discountamount="0" data-discount="0" readonly value="` + (price) + `" /></div>
+                            <div class="ele-price"><input type="text" class="form-control number3 price"
+                            data-pricenovat="` + priceNoVAT + `" 
+                            data-price="`+ price + `" data-pricenew="` + price + `"  data-retailPrice="` + retailPrice + `" data-typediscount="-1" data-discountamount="0" data-discount="0" readonly value="` + (price) + `" /></div>
                             <div class="total"><b class="number3" data-total="`+ (price * 1) + `">` + (price * 1) + `</b></div>
                         </li>`;
             html += htmlli;
@@ -14103,7 +14179,12 @@ var eventBanle = {
             }
             eventBanle.loadUpdatedataAttrItem($("ul#item-mon li:last-child"));//xóa các id data attr
         }
-
+        
+        if ($("#Vatrate").length > 0 && parseFloat(vatrate) != NOVATRate) {
+            //---CHECK SẢN PHẨM CÓ THUẾ THÌ LẤY HIỂN THỊ
+            $('#Vatrate option').each(function (i, e) { e.selected = false });
+            $("#Vatrate option[value='" + parseFloat(vatrate) + "']").prop("selected", "selected");
+        }
         
         eventBanle.loadeventchangeclickprice();//kích vào giá
         eventBanle.loadChangeItemOrderLoca();
@@ -14316,6 +14397,7 @@ var eventBanle = {
     },
     loadEventChangeVATRateVATAmount: function () {
         $(".VATAmount").keyup(function () {
+            
             let fullamount = parseFloat($(".fullamount").text().replaceAll(",", "")) || 0;
             let discountamount = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
             let Total = fullamount - discountamount;
@@ -14657,36 +14739,71 @@ var eventBanle = {
         let isvatpro = $(".fullamount").data("isproductvat") || false;
         let totalfull = parseFloat($(".fullamount").data("totalfull")) || 0;
         let totalisvatpro = parseFloat($(".fullamount").data("totalisvatpro")) || 0;
-        
+        let VATAmount = 0;
         let fullamount = 0;
+        let discountamount = 0;
+        let discount = 0;
         if (isvatpro && $("#Vatrate").length>0) {
             fullamount = totalisvatpro;
         } else {
             fullamount = totalfull;
         }
+     
+        discountamount = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
+        discount = parseFloat($(".discountamount").data("discount")) || 0;
         $(".fullamount").html(fullamount.format0VND(3, 3, ""));
-
-        let discountamount = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
-        $(".discountamount").val(discountamount.format0VND(3, 3, ""));
-        let Total = fullamount - discountamount;
-
-        let Vatrate = parseFloat($("#Vatrate").val()) || 0;
-
-        let VATAmount = parseFloat($(".VATAmount").data("VATAmount")) || 0;
-        if (VATAmount == 0) {
-            if (IsDiscountAfterTax == 1) {//1 là tính theo giá sau chiết khấu
-                VATAmount = ((Total + discountamount) * (Vatrate / 100));
-            }
-            else {
-                VATAmount = ((Total) * (Vatrate / 100));
+        
+        //----------check điều kiện là có cấu hình chhieets khấu trước thuế hay sau thuế không, vì 2 dk khác nhau, nếu sau thuế thì lúc có sp có thuế và k có thuế thì chưa xd  định tiền hàng
+        let Vatrate = 0;
+        if (IsDiscountAfterTax == 1 && isvatpro) {//tính theo giá sau thuế thì phải tính thuế không dựa vào chiết khấu và bắt buộc phải có sp có thuế mới tính nhé
+            if (VATAmount == 0 && $("#Vatrate").length > 0) {
+                Vatrate = parseFloat($("#Vatrate").val()) || 0;
+                VATAmount = fullamount * (Vatrate / 100);
+                if (isvatpro) {
+                    VATAmount = parseFloat(VATAmount.toFixed(3));
+                } else {
+                    VATAmount = Math.round(VATAmount);
+                }
             }
 
-            if (isvatpro) {
-                VATAmount = parseFloat(VATAmount.toFixed(3));
-            } else {
-                VATAmount = Math.round(VATAmount);
+            if (discount > 0) {//chiết khấu theo % chứ k phải tiền nên khi thay đổi gì phải tính lại chiết khấu mới theo %
+                if (isvatpro) {//nếu có cấu hình và bắt buộc có 1 sp có thuế mới tính chiết khấu theo giá sau thuế
+                    discountamount = Math.round((VATAmount + fullamount) * (discount / 100));
+                }
+                else {
+                    discountamount = Math.round(totalisvatpro * (discount / 100));
+                }
+
+                $(".discountamount").val(discountamount.format0VND(3, 3, ""));
+                $(".discountamount").data("discountamount", discountamount);
+            }
+
+        } else {
+            //tính theo giá trước thuế
+            if (discount > 0) {//chiết khấu theo % chứ k phải tiền nên khi thay đổi gì phải tính lại chiết khấu mới theo %
+                discountamount = Math.round(fullamount * (discount / 100));//nếu có cấu hình và bắt buộc có 1 sp có thuế mới tính chiết khấu theo giá sau thuế
+               
+
+                $(".discountamount").val(discountamount.format0VND(3, 3, ""));
+                $(".discountamount").data("discountamount", discountamount);
+            }
+
+            if (VATAmount == 0 && $("#Vatrate").length > 0) {
+                Vatrate = parseFloat($("#Vatrate").val()) || 0;
+                VATAmount = Math.round(fullamount - discountamount) * (Vatrate / 100);
+                if (isvatpro) {
+                    VATAmount = parseFloat(VATAmount.toFixed(3));
+                } else {
+                    VATAmount = Math.round(VATAmount);
+                }
             }
         }
+       
+
+      
+      
+        let Total = fullamount - discountamount;
+
         let Amount = Math.round(Total + VATAmount);
         $(".VATAmount").val(VATAmount.format0VND(3, 3, ""));
         $(".cuspayment").html(Amount.format0VND(3, 3, ""));
@@ -14841,7 +14958,11 @@ var eventBanle = {
             $(".elemdiscount").after(html);
             loadFormatnumber(".showselectboxvat");
         }
-       
+       //---CHECK SẢN PHẨM CÓ THUẾ THÌ LẤY HIỂN THỊ
+        eventBanle.eventCheckVATRateProductShowPayment();
+        
+    },
+    eventCheckVATRateProductShowPayment: function () {
         //---CHECK SẢN PHẨM CÓ THUẾ THÌ LẤY HIỂN THỊ
 
         let getidhoadon = $("ul.action-inv li.active").data("id");
@@ -14854,7 +14975,7 @@ var eventBanle = {
                     let getdata = datas[foundIndex];
                     var _vatrate = 10;
                     getdata.Items.map(function (ele, index) {
-                        
+
                         if (ele.Vatrate != NOVATRate) {
                             _vatrate = ele.Vatrate;
                         }
@@ -14866,7 +14987,6 @@ var eventBanle = {
                 }
             }
         }
-        
     },
     eventChangeCheckboxHDDTVAT: function () {
 
@@ -14950,6 +15070,8 @@ var eventBanle = {
         let getidhoadon = $("ul.action-inv li.active").data("id");
         let getloca = localStorage.getItem("ProductsArrays");
         if (typeof getloca != "undefined" && getloca != null) {
+            let discountamount = parseFloat($(".discountamount").val().replaceAll(",", "")) || 0;
+            let discount = parseFloat($(".discountamount").data("discount")) || 0;
             let datas = JSON.parse(getloca);
             if (datas.length > 0) {
                 let foundIndex = datas.findIndex(x => x.Id == getidhoadon);
@@ -14960,13 +15082,14 @@ var eventBanle = {
                     if (VATMTT) {
                         getdata.VATRate = parseInt($("#Vatrate").val());
                         getdata.VATAmount = parseFloat($(".VATAmount").val().replaceAll(",", ""));
-                        getdata.Amount = parseFloat($(".cuspayment").html().replaceAll(",", ""));
-                       
                     } else {
                         getdata.VATRate = NOVATRate;//
                         getdata.VATAmount = 0;
                         getdata.Amount = getdata.Total;
                     }
+                    getdata.Discount = discount;
+                    getdata.DiscountAmount = discountamount;
+                    getdata.Amount = parseFloat($(".cuspayment").html().replaceAll(",", ""));
                     datas[foundIndex] = getdata;
                     localStorage.setItem("ProductsArrays", JSON.stringify(datas));
                 } else {
@@ -15687,15 +15810,16 @@ var eventBanle = {
             }
             html += `<li 
             data-isvat="` + ele.IsVAT + `" 
-            data-pricenovat="` + ele.PriceNoVAT + `" 
-            data-vatrate="` + ele.Vatrate + `" 
+            data-vatrate="` + ele.Vatrate + `"  
             data-code="` + ele.Code + `" 
             data-idpro ="` + ele.Id + `" 
-            data-sl=` + ele.Quantity + `>
+            data-sl=` + ele.Quantity + ` class="itemOrderSale">
                             <div  class="btn-remove" data-idquan="1"><i data-idquan="1" class="fas fa-trash-alt"></i></div>
                             <div class="name" data-name="`+ ele.Name + `"><b>` + (index + 1) + `.` + ele.Name + `</b></div>
                             <div class="item_action"><i class="fas fa-minus"></i><input data-quantity="`+ ele.Quantity + `" class="quantity number3" value="` + ele.Quantity + `"><i class="fas fa-plus"></i></div>
-                            <div class="ele-price"><input type="text" class="form-control number3 price"  data-price="`+ ele.Price + `"  data-pricenew="` + ele.PriceNew + `"  data-retailPrice="` + ele.RetailPrice + `" data-typediscount="` + ele.Typediscount + `" data-discountamount="` + ele.DiscountAmount + `" data-discount="` + ele.Discount + `" readonly value="` + (pricenew) + `" />` + htmldiscount + `</div>
+                            <div class="ele-price"><input type="text" class="form-control number3 price"
+                             data-pricenovat="` + ele.PriceNoVAT + `" 
+                            data-price="`+ ele.Price + `"  data-pricenew="` + ele.PriceNew + `"  data-retailPrice="` + ele.RetailPrice + `" data-typediscount="` + ele.Typediscount + `" data-discountamount="` + ele.DiscountAmount + `" data-discount="` + ele.Discount + `" readonly value="` + (pricenew) + `" />` + htmldiscount + `</div>
                             <div class="total"><b class="number3" data-total="`+ (ele.Amount) + `">` + ele.Amount.format0VND(0, 3) + `</b></div>
                         </li>`;
 
@@ -16195,7 +16319,7 @@ var loadeventPos = {
             loadeventPos.loadCongthucChangeDiscountAndPriceInPopup();
         });//change giảm giá
         $("#ousSizeOutPopup .pricenew").keyup(function () {
-            debugger
+            
            // let discountamount = parseFloat($(".discountamount").val().replaceAll(",", ""));
             let pricenew = parseFloat($(this).val());
             let discountamount = 0;
@@ -19066,7 +19190,7 @@ var loadeventPos = {
             discount = valuediscount;
         }
         let totalPayment = parseFloat($(".totalPayment").text().replaceAll(",", "")) || 0;
-        let IsDiscountAfterTax = parseInt($("#IsDiscountAfterTax").val()) || 0;
+        let IsDiscountAfterTax = parseInt($("#IsDiscountAfterTax").data("value")) || 0;
         let idorder = $("#dataTablePayment").data("id");
         let discountPayment = $("#discountPayment").val().replaceAll(",", "");
         let cuspayAmount = $(".cuspay").val().replaceAll(",", "") || 0;
@@ -19213,7 +19337,7 @@ var loadeventPos = {
     eventLoadCongThucTien: function () {
         
         let totalPayment = $(".totalPayment").text().replaceAll(",", "") || 0;
-        let IsDiscountAfterTax = parseInt($("#IsDiscountAfterTax").val())||0;
+        let IsDiscountAfterTax = parseInt($("#IsDiscountAfterTax").data("value"))||0;
         let discountPayment = $("#discountPayment").val().replaceAll(",", "") || 0;
         let totalsaudiscount = (parseFloat(totalPayment) - parseFloat(discountPayment)) || 0;
         let vatamountproduct = 0;//để tính riêng trong sản phẩm vì phần IsDiscountAfterTax có tính lại vatamount cho bên ngoài

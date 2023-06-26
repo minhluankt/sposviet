@@ -1124,6 +1124,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return Json(new { isValid = false });
             }
         }
+        xử lý chiết khấu của sản phẩm bên cafe nhà hàng
         [HttpPost]
         public async Task<IActionResult> PaymentSaleRatailtAsync(string jsonData)
         {
