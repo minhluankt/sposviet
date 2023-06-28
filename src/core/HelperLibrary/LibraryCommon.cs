@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
@@ -139,7 +140,61 @@ namespace HelperLibrary
             }
             return null;
         }
+        public static decimal toFixed(this decimal source,int dec=0)
+        {
+            try
+            {
+                var num = source;
+                var pow = Math.Pow(10, dec);
+                var z = (num * (decimal)pow).ToString(LibraryCommon.GetIFormatProvider());
+                var l = z.Split('.');
+                if (l.Count() > 1)
+                {
+                    z = l[0] + ".";
+                    decimal mm = 0;
+                    if (l[1].Length > 1)
+                    {
+                        mm = Convert.ToDecimal(l[1].Substring(0, 2));
+                        if (mm > 55)
+                        {
+                            mm = 6;
+                        }
+                        else
+                        {
+                            mm = Convert.ToDecimal(l[1].Substring(0, 1));
+                        }
+                    }
+                    else
+                    {
+                        mm = Convert.ToDecimal(l[1].Substring(0, 1));
+                    }
 
+                    if (mm == 5)
+                    {
+                        z += Convert.ToDecimal(l[1].Substring(0, 1)) - 1;
+                    }
+                    else
+                    {
+                        z += mm;
+                    }
+                }
+
+                var m = (decimal)Math.Pow(10, dec);
+                var result = Math.Round(Convert.ToDecimal(z)) / m;
+
+                var arr = (result).ToString().Split('.');
+                var _int = arr[0] + '.';
+                var _dec = arr[1] ?? "0";
+                var lastvl = Math.Pow(10, (dec - _dec.Length)).ToString().Replace("0", "");
+
+                return Convert.ToDecimal(_int + _dec + (lastvl).Substring(1));
+            }
+            catch 
+            {
+                return Math.Round(source,dec);
+            }
+            
+        }
         public static T CloneJson<T>(this T source)
         {
             // Don't serialize a null object, simply return the default for that object

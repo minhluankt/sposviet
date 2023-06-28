@@ -111,6 +111,7 @@ namespace Infrastructure.Infrastructure.DbContexts
         public DbSet<HistoryOrder> HistoryOrder { get; set; }
         public DbSet<Kitchen> Kitchen { get; set; }
         public DbSet<BarAndKitchen> BarAndKitchen { get; set; }
+        public DbSet<ProductInBarAndKitchen> ProductInBarAndKitchen { get; set; }
         public DbSet<PurchaseOrder> PurchaseOrder { get; set; }
         public DbSet<ItemPurchaseOrder> ItemPurchaseOrder { get; set; }
         public DbSet<Suppliers> Suppliers { get; set; }
@@ -217,11 +218,20 @@ namespace Infrastructure.Infrastructure.DbContexts
             {
                 // Tạo Index Unique trên 1 cột
                 entity.HasIndex(p => new { p.Slug, p.ComId }).IsUnique();
+                entity.HasMany(x=>x.ProductInBarAndKitchens).WithOne(x=>x.BarAndKitchen).HasForeignKey(x=>x.IdBarAndKitchen).OnDelete(DeleteBehavior.Cascade);
             }); 
             builder.Entity<HistoryKitchen>(entity =>
             {
                 // Tạo Index Unique trên 1 cột
                 entity.HasOne(x => x.Kitchen).WithMany(x => x.HistoryKitchens).HasForeignKey(x => x.IdKitchen).OnDelete(deleteBehavior: DeleteBehavior.NoAction);
+            }); 
+            builder.Entity<ProductInBarAndKitchen>(entity =>
+            {
+                // Tạo Index Unique trên 1 cột
+                entity.HasOne(x => x.BarAndKitchen).WithMany(x => x.ProductInBarAndKitchens).HasForeignKey(x => x.IdBarAndKitchen);
+                entity.HasOne(e => e.Product)
+                .WithOne(e => e.ProductInBarAndKitchen)
+                .HasForeignKey<ProductInBarAndKitchen>(e => e.IdProduct);
             }); 
         
             builder.Entity<Kitchen>(entity =>

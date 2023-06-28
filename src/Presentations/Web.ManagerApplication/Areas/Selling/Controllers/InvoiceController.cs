@@ -403,10 +403,14 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
 
         [EncryptedParameters("secret")]
-        public async Task<ActionResult> PrintInvoiceAsync(Guid id)
+        public async Task<ActionResult> PrintInvoiceAsync(Guid id, int isvat = 0)
         {
             var currentUser = User.Identity.GetUserClaimLogin();
-            var response = await _mediator.Send(new PrintInvoicePos() { ComId = currentUser.ComId, Id = id, IncludeRoomAndTable=true });
+            var response = await _mediator.Send(new PrintInvoicePos() { 
+                ComId = currentUser.ComId, 
+                PrintByVAT = isvat==1?true:false, 
+                Id = id, 
+                IncludeRoomAndTable=true });
             if (response.Succeeded)
             {
                 return Json(new { isValid = true, html = response.Data });

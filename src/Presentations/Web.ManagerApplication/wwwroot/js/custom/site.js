@@ -441,7 +441,44 @@ toastr.options = {
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
 }
+//https://codepen.io/jeffreypoland/pen/abgQpE
+Number.prototype.toFixedSpos = function (dec) {
+    var num = this;
+    let pow = Math.pow(10, dec);
+    let z = num * pow;
+    let l = (z + []).split('.');
+    if (l.length > 1) {
+        z = l[0] + ".";
+        mm = 0;
+        if (l[1].length > 1) {
+            mm = parseFloat(l[1].substr(0, 2));
+            if (mm > 55) {
+                mm = 6;
+            } else {
+                mm = l[1].substr(0, 1)
+            }
+        } else {
+            mm = l[1].substr(0, 1);
+        }
 
+        if (parseFloat(mm) == 5) {
+            z += parseFloat(l[1].substr(0, 1)) - 1;
+        } else {
+            z += mm;
+        }
+    }
+
+    m = Math.pow(10, dec);
+    var result = Math.round(z) / m;
+
+    //var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec); 
+
+    $arr = (result + []).split('.');
+    $int = $arr[0] + '.';
+    $dec = $arr[1] || '';
+    let lastvl = Math.pow(10, (dec - $dec.length)).toString().replaceAll("0", "");
+    return $int + $dec + (lastvl + []).substr(1);
+}
 
 Number.prototype.format0 = function (n, x, typeCurrency, isQuantity) {
 
@@ -13980,12 +14017,12 @@ var eventBanle = {
                 totalsaudiscount = parseFloat((IsProductVAT ? totalIsVatPro - discountamount : totals - discountamount).toFixed(3));
 
                 Vatrate = parseFloat($("#Vatrate").val());
-
+                debugger
                 if (IsDiscountAfterTax == 1 && IsProductVAT) {//nếu có cấu hình tính theo giá sau chiết khấu thì phần thuế gtgt phải lấy giá gốc sau thuế chưa trừ chiết khấu để tính thuế
-                    vatamount = totalIsVatPro * parseFloat(Vatrate / 100).toFixed(3);
+                    vatamount = parseFloat((totalIsVatPro * parseFloat(Vatrate / 100)).toFixedSpos(3));
                    // vatamount = totals * parseFloat(Vatrate / 100).toFixed(3);
                 } else {
-                    vatamount = totalsaudiscount * parseFloat(Vatrate / 100).toFixed(3);
+                    vatamount = parseFloat((totalsaudiscount * parseFloat(Vatrate / 100)).toFixedSpos(3));
                 }
                 $(".VATAmount").val(vatamount.format0VND(3, 3));
                 //-------tính lại nếu sản phẩm có thuế
@@ -14760,7 +14797,8 @@ var eventBanle = {
                 Vatrate = parseFloat($("#Vatrate").val()) || 0;
                 VATAmount = fullamount * (Vatrate / 100);
                 if (isvatpro) {
-                    VATAmount = parseFloat(VATAmount.toFixed(3));
+                    VATAmount = parseFloat(VATAmount.toFixedSpos(3));//làm tròn của thuế GTGT bán lẻ
+                    //VATAmount = parseFloat(VATAmount.toFixed(3));
                 } else {
                     VATAmount = Math.round(VATAmount);
                 }

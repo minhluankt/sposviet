@@ -2119,7 +2119,7 @@ namespace Infrastructure.Infrastructure.Repositories
         {
             if (asNotracking)
             {
-                var getall = _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+                var getall = await _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
             }
             return await _repository.GetByIdAsync(id);
         }

@@ -209,7 +209,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                 if (x.IsVAT)
                                 {
                                     x.Total = x.Quantity * x.PriceNoVAT;
-                                    x.VATAmount = Math.Round(x.Total * (x.VATRate / 100),  Application.Constants.MidpointRoundingCommon.Three); 
+                                    x.VATAmount = (x.Total * (x.VATRate / 100)).toFixed(3); 
                                     x.Amount = x.Quantity * x.Price;
                                 }
                                 else
@@ -337,7 +337,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                 if (x.IsVAT)
                                 {
                                     x.Total = x.Quantity * x.PriceNoVAT;
-                                    x.VATAmount = Math.Round(x.Total * (x.VATRate / 100), Application.Constants.MidpointRoundingCommon.Three);
+                                    x.VATAmount = (x.Total * (x.VATRate / 100)).toFixed(3);
                                     x.Amount = x.Quantity * x.Price;
                                 }
                                 else
@@ -431,7 +431,7 @@ namespace Infrastructure.Infrastructure.Repositories
             if (product.IsVAT)
             {
                 item.Total = product.PriceNoVAT;
-                item.VATAmount = Math.Round(item.Total * (product.VATRate / 100), Application.Constants.MidpointRoundingCommon.Three);
+                item.VATAmount = (item.Total * (product.VATRate / 100)).toFixed(3);
                 item.Amount = product.Price;
             }
             else
@@ -559,7 +559,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             var thue = Vatrate.Value / 100.0m;
                             invitem.VATRate = Vatrate.Value;
-                            invitem.VATAmount = Math.Round(invitem.Total * thue, MidpointRoundingCommon.Three);
+                            invitem.VATAmount = (invitem.Total * thue).toFixed(3);
                             invitem.Amonut = invitem.Total + invitem.VATAmount;
                         }
                         else if (!_item.IsVAT)
@@ -589,7 +589,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     inv.DiscountAmount = discountPayment;
                     inv.Discount = (float)discount;
                     inv.Total = Math.Round(newlistitem.Sum(x=>x.Total), MidpointRoundingCommon.Three);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
-                    inv.VATAmount = Math.Round(newlistitem.Sum(x=>x.VATAmount), MidpointRoundingCommon.Three);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+                    inv.VATAmount = newlistitem.Sum(x=>x.VATAmount).toFixed(3);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
                                                                                                                // lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
 
                     inv.Amonut = Amount;//inv.Amonut - discountPayment;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
@@ -1337,7 +1337,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         if (x.IsVAT)
                         {
                             x.Total = x.Quantity * x.PriceNoVAT;
-                            x.VATAmount = x.Total * (x.VATRate / 100);
+                            x.VATAmount = (x.Total * (x.VATRate / 100)).toFixed(3);
                             x.Amount = x.Quantity * x.Price;
                         }
                         else
@@ -1451,13 +1451,13 @@ namespace Infrastructure.Infrastructure.Repositories
                 {
                     //iteminvoice.Total = (x.Quantity* x.PriceNoVAT) - x.DiscountAmount;
                     iteminvoice.Total = (x.Quantity* x.PriceNoVAT);//không cần trừ chiết khấu vì chiết khấu đã trừ trực tiếp vào giá sau thuế, và đã tín lại giá trước thuế này
-                    iteminvoice.VATAmount = Math.Round(iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100.0M),MidpointRoundingCommon.Three);
+                    iteminvoice.VATAmount = (iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100.0M)).toFixed(3);
                     //iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
                 }
                 else if(model.VATRate!= (int)NOVAT.NOVAT && (!iteminvoice.VATRate.HasValue || iteminvoice.VATRate== (int)NOVAT.NOVAT))
                 {
                     iteminvoice.VATRate = (float)model.VATRate;
-                    iteminvoice.VATAmount = Math.Round(iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100.0M), MidpointRoundingCommon.Three);
+                    iteminvoice.VATAmount = (iteminvoice.Total * (Convert.ToDecimal(iteminvoice.VATRate.Value) / 100.0M)).toFixed(3);
                     iteminvoice.Amonut = iteminvoice.VATAmount + iteminvoice.Total;
 
                 }
@@ -1725,6 +1725,7 @@ namespace Infrastructure.Infrastructure.Repositories
             }
             catch (Exception e)
             {
+                await _unitOfWork.RollbackAsync();
                 _log.LogError("Lỗi phát hành hóa đơn bán hàng");
                 _log.LogError(e.ToString());
                 return await Result<PublishInvoiceResponse>.FailAsync(e.Message);
@@ -1858,7 +1859,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         if (getitem.IsVAT)
                         {
                             newitem.Total = 1 * priceNovat;
-                            newitem.VATAmount = Math.Round(newitem.Total * (newitem.VATRate/100.0M), MidpointRoundingCommon.Three);
+                            newitem.VATAmount = (newitem.Total * (newitem.VATRate/100.0M)).toFixed(3);
                             newitem.Amount = 1 * price;
                         }
                         else
@@ -1977,7 +1978,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         inv.DiscountAmount = discountPayment;//ngược lại là giá sau thuế
                     }
                     inv.Total = Math.Round(newlistitem.Sum(x => x.Total), MidpointRounding.AwayFromZero);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
-                    inv.VATAmount = Math.Round(newlistitem.Sum(x => x.VATAmount), MidpointRounding.AwayFromZero);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
+                    inv.VATAmount = (newlistitem.Sum(x => x.VATAmount)).toFixed(3);// lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
                                                                                                                  // lấy tổng tiền trong sản phẩm chưa thuế vì có sp có thuế nên phải sum vậy, k lấy tổng bên order vì bên đó có thuế
 
                     inv.Amonut = Amount;//inv.Amonut - discountPayment;// tiền  cần thanh toán đoạn này là sau khi hiển thị bill khách có nhập giảm giá hay k
@@ -2188,7 +2189,7 @@ namespace Infrastructure.Infrastructure.Repositories
             getitem.Quantity = (timespan.Days * 24) + timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
             getitem.QuantityNotifyKitchen = getitem.Quantity;
             getitem.Total = getitem.Quantity * (getitem.IsVAT ? getitem.PriceNoVAT : getitem.Price);
-            getitem.VATAmount = getitem.IsVAT ? getitem.Total * (getitem.VATRate / 100) : 0;
+            getitem.VATAmount = getitem.IsVAT ? (getitem.Total * (getitem.VATRate / 100)).toFixed(3) : 0;
             getitem.Amount = getitem.VATAmount + getitem.Total;
             // cách 1 tính thành tiền var mony = Math.Round((rhours * getitem.Price) + (rminutes * getitem.Price / 60),MidpointRounding.AwayFromZero);
 
@@ -2214,7 +2215,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     getitem.Quantity = (timespan.Days * 24) + timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
                     getitem.QuantityNotifyKitchen = getitem.Quantity;
                     getitem.Total = getitem.Quantity * (getitem.IsVAT ? getitem.PriceNoVAT : getitem.Price);
-                    getitem.VATAmount = getitem.IsVAT ? getitem.Total * (getitem.VATRate / 100.0M) : 0;
+                    getitem.VATAmount = getitem.IsVAT ? (getitem.Total * (getitem.VATRate / 100.0M)).toFixed(3) : 0;
                     getitem.Amount = getitem.VATAmount + getitem.Total;
                     getitem.DateEndService = DateTime.Now;
                 }
@@ -2250,7 +2251,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     {
                         x.PriceNoVAT = Math.Round(PriceAdjust / (1 + x.VATRate / 100.0M),MidpointRoundingCommon.Three);
                         x.Total = x.Quantity * x.PriceNoVAT;
-                        x.VATAmount = Math.Round(x.Total*(x.VATRate / 100.0M), MidpointRoundingCommon.Three);
+                        x.VATAmount = (x.Total*(x.VATRate / 100.0M)).toFixed(3);
                         x.Amount = x.Quantity * PriceAdjust;
                     }
                     else

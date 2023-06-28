@@ -14,5 +14,13 @@ namespace Domain.Entities
         public string Name { get; set; }
         public string Slug { get; set; }
         public int ComId { get; set; }
+        public List<ProductInBarAndKitchen> ProductInBarAndKitchens { get; set; }
+    }
+    public class ProductInBarAndKitchen
+    {
+        public int IdBarAndKitchen { get; set; }
+        public int IdProduct { get; set; }
+        public Product Product { get; set; }
+        public BarAndKitchen BarAndKitchen { get; set; }
     }
 }

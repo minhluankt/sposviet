@@ -27,6 +27,7 @@ namespace Application.Features.Invoices.Query
         public int ComId { get; set; }
         public bool IncludeCustomer { get; set; } = true;
         public bool IncludeRoomAndTable { get; set; }
+        public bool PrintByVAT { get; set; }
 
         public class PrintInvoicePosHandler : IRequestHandler<PrintInvoicePos, Result<string>>
         {
@@ -152,7 +153,7 @@ namespace Application.Features.Invoices.Query
                                 }
                             }
                             //string thongtinthue = string.Empty;
-                            if (InvoiceData.VATRate != (int)VATRateInv.KHONGVAT)
+                            if (InvoiceData.VATRate != (int)NOVAT.NOVAT)
                             {
                                 templateInvoiceParameter.isVAT = true;
                                 //thongtinthue = $"<tr style='font-size: 11px; text-align: left'>" +
@@ -160,39 +161,21 @@ namespace Application.Features.Invoices.Query
                                 //        $"</tr>";
 
                             }
-                           //templateInvoiceParameter.thongtinthue = thongtinthue;
-                            //if (!string.IsNullOrEmpty(thongtintracuuhoadon))
-                            //{
-                            //    templateInvoiceParameter.thongtintracuuhoadon = $"<hr />" +
-                            //                    $"<table style='margin-top: 0mm;width: 100%;'>" +
-                            //                    $"<tr style='width: 100%;'>" +
-                            //                    $"<td style='text-align: center; font-size: 11px;'>" +
-                            //                    $"<span style='display: block;'>{thongtintracuuhoadon}</span>" +
-                            //                    $"</td>" +
-                            //                    $"</tr>" +
-                            //                    $"</table>";
-                            //}
-
+                            //-----------kiểm tra nếu hóa đơn mà xuất hóa đơn điện tử sau khi bán, tùy chọn để in
+                            else if (query.PrintByVAT)
+                            {
+                                templateInvoiceParameter.isVAT = true;
+                                templateInvoiceParameter.tongtien = inv.Amount.ToString("#,0.###", LibraryCommon.GetIFormatProvider());
+                                templateInvoiceParameter.tientruocthue = inv.Total.ToString("#,0.###", LibraryCommon.GetIFormatProvider());
+                                templateInvoiceParameter.tienthue = inv.VATAmount.ToString("#,0.###", LibraryCommon.GetIFormatProvider());
+                                templateInvoiceParameter.thuesuat = inv.VATRate.ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                                templateInvoiceParameter.giamgia = (inv.DiscountAmount ?? 0 + inv.DiscountOther ?? 0).ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                                templateInvoiceParameter.khachcantra = (inv.Amount).ToString("#,0.##", LibraryCommon.GetIFormatProvider());
+                            }
                         }
                         else
                         {
-                            //đoạn này là xóa đi vì chưa phát hành hóa đơn điện tử
-                            //string regex = @"<.*?{kyhieuhoadon}.*?>";
-                            //Regex rg = new Regex(regex);
-                            //var match = rg.Match(templateInvoice.Template);
-                            //String result = match.Groups[0].Value;
-                            //if (!string.IsNullOrEmpty(result))
-                            //{
-                            //    templateInvoice.Template = templateInvoice.Template.Replace(result,"");
-                            //}//số hóa đơn
-                            //regex = @"<.*?{sohoadon}.*?>";
-                            //rg = new Regex(regex);
-                            //match = rg.Match(templateInvoice.Template);
-                            //result = match.Groups[0].Value;
-                            //if (!string.IsNullOrEmpty(result))
-                            //{
-                            //    templateInvoice.Template = templateInvoice.Template.Replace(result, "");
-                            //}
+                           
                         }
                     }
                     //string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice.Template, EnumTypeTemplate.INVOICEPOS);
