@@ -1,0 +1,205 @@
+﻿@model Domain.Entities.BarAndKitchen
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+
+
+<div class="container">
+    <div class="row">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/selling/restaurantsetting">< Trở lại thiết lập nhà hàng</a></li>
+                <li class="breadcrumb-item"><a href="/selling/BarAndKitchen">< Trở lại quản lý nhà bếp</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Quản lý hàng hóa nhà bếp</li>
+            </ol>
+        </nav>
+        <div class="col-md-12">
+
+            <h3>Thiết lập các hàng hóa thuộc <b class=" mr-3">@Model.Name</b><button class="btn btn-success addfoodInBarAndKitchen" data-id="@Model.Id" type="button" data-style="expand-left">Thêm hàng hóa</button></h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card  mb-2">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="">
+                                <label for="">Danh mục sản phẩm</label>
+                                <select class="form-control" id="IdCategoryIndex" name="idCategory">
+                                    <opiton></opiton>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-9 pl-lg-0">
+                            <div class="">
+                                <label>Tên hàng hóa</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="Nhập tên hàng hóa" id="NameIndex" aria-describedby="basic-addon2">
+                                    <div class="input-group-append">
+                                        <button class="ladda-button btn btn-primary" id="btnSearch" type="button" data-style="expand-left"><span class="ladda-label">Tìm kiếm</span><span class="ladda-spinner"></span></button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="ele-btnright">
+                        <button class="btn btn-danger btndeletedefaultfood"><i class="fas fa-trash-alt"></i> Xóa</button>
+                    </div>
+                    <table class="table table-striped" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Danh mục</th>
+                                <th>Hình ảnh</th>
+                                <th>Mặt hàng</th>
+                                <th>Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+
+</div>
+<input type="hidden" id="IdBarAndKitchen" value="@Model.Id"/>
+@section Scripts
+    {
+    <script>
+
+        loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#IdCategoryIndex", 0, "Tất cả");
+        FoodInBarAndKitchen.addfoodInBarAndKitchen();
+        dataTableOut = $('#dataTable').DataTable({
+            "responsive": true,
+            "processing": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "filter": false,
+            "rowId": "id",
+            "orderMulti": false,
+            "start": 0,
+            "ordering": true,
+            "order": [[0, "desc"]],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                "zeroRecords": "Không tìm thấy dữ liệu nào",
+                "emptyTable": "Không có dữ liệu",
+                "search": "Tìm kiếm:",
+                "processing": "Đang xử lý...",
+                "lengthMenu": "Hiển thị _MENU_ dòng",
+                "loadingRecords": "Vui lòng chờ...",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Tiếp theo",
+                    "previous": "Về trước"
+                },
+            },
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, 200, 500], [10, 25, 50, 100, 200, 500]],
+            "buttons": [
+                {
+                    text: 'Reload',
+                    action: function (e, dt, node, config) {
+                        dataTableOut.ajax.reload();
+                    }
+                }
+            ],
+            "columnDefs": [
+                {
+                    'targets': 0,
+                    'checkboxes': {
+                        'selectRow': true
+                    }
+                },
+                {
+                    "targets": [4], // your case first column
+                    "className": "text-right"
+                }, {
+                    "targets": [0, 1, -1], // your case first column
+                    "className": "text-center"
+                },
+                { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [-1, 0],
+                },
+                { "width": "50px", "targets": [-1, 0] }
+            ],
+            'select': {
+                'style': 'multi',
+                selector: 'td:first-child'
+            },
+            ajax: {
+                url: "/Selling/ProductInBarAndKitchen/LoadAll",
+                type: "POST",
+                start: 0,
+                datatype: "json",
+                data:
+                {
+                    Name: function () { return $('#NameIndex').val().trim() },
+                    IdBarAndKitchen: function () { return $('#IdBarAndKitchen').val() },
+                    IdCategory: function () { return $('#IdCategoryIndex').val() },
+
+                }
+            },
+            "columns": [
+                {
+                    "data": "id", "name": "Id", "autoWidth": true
+                },
+                {
+                    "data": "categoryName", "name": "CategoryName", "autoWidth": true
+                },
+                {
+                    "data": "img", "name": "img",
+                    "render": function (data, type, full, meta) {
+                        if (full.img != null) {
+                            let html = '<img src="../' + full.img + '" style="width:50px"/>';
+                            return html;
+                        }
+                        return "";
+                    }
+                },
+
+                {
+                    "data": "proName", "name": "ProName", "autoWidth": true
+                },
+                {
+                    "data": null, "name": null, "autoWidth": true,
+                    "render": function (data, type, full, meta) {
+                        return '<i class="fas fa-trash-alt btndelete" data-iditem="' + full.idItem + '" ></i>';
+                    }
+                },
+            ],
+            "drawCallback": function (settings) {
+                //DefaultFoodOrder.initCompleteTable();
+            },
+            initComplete() {
+                //DefaultFoodOrder.initCompleteTable();
+            }
+        });
+
+
+        $('#reload').on('click', function () {
+            dataTableOut.ajax.reload(null, false);
+        });
+        $('input').keyup(function (e) {
+            if (e.keyCode == 13) {
+                dataTableOut.ajax.reload(null, false);
+            }
+        });
+    </script>
+}

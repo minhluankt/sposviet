@@ -34,6 +34,11 @@
     <Compile Include="Features\Banners\Commands\UpdateBannerCommand.cs" />
     <Compile Include="Features\Banners\Query\GetAllBannerCacheQuery.cs" />
     <Compile Include="Features\Banners\Query\GetByIdBannerQuery.cs" />
+    <Compile Include="Features\BarAndKitchens\Commands\CreateBarAndKitchenCommand.cs" />
+    <Compile Include="Features\BarAndKitchens\Commands\DeleteBarAndKitchenCommand.cs" />
+    <Compile Include="Features\BarAndKitchens\Commands\UpdateBarAndKitchenCommand.cs" />
+    <Compile Include="Features\BarAndKitchens\Query\GetAllBarAndKitchenQuery.cs" />
+    <Compile Include="Features\BarAndKitchens\Query\GetByIdBarAndKitchenQuery.cs" />
     <Compile Include="Features\Brands\Commands\CreateBrandCommand.cs" />
     <Compile Include="Features\Brands\Commands\DeleteBrandCommand.cs" />
     <Compile Include="Features\Brands\Commands\UpdateBrandCommand.cs" />
@@ -152,6 +157,9 @@
     <Compile Include="Features\OrderTablePos\Commands\UpdateOrderTableCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\UpdateServiceFoodByPaymentCommand.cs" />
     <Compile Include="Features\OrderTablePos\Querys\GetAllOrderTableQuery.cs" />
+    <Compile Include="Features\ProductInBarAndKitchens\Command\UpdateUpdateProductInBarAndKitchenCommand.cs" />
+    <Compile Include="Features\ProductInBarAndKitchens\Query\GetListProductInBarAndKitchenQuery.cs" />
+    <Compile Include="Features\ProductInBarAndKitchens\Query\GetPaginatedListProductInBarAndKitchenQuery.cs" />
     <Compile Include="Features\ReportPoss\Query\GetRepostEInvoiceQuery.cs" />
     <Compile Include="Features\SaleRetails\Commands\CheckOutOrderInvoiceCommand.cs" />
     <Compile Include="Features\Kitchens\Commands\CreateNotifyChitkenCommand.cs" />

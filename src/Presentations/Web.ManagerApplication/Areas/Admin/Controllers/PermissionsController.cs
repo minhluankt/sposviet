@@ -56,7 +56,9 @@ namespace Web.ManagerApplication.Areas.Admin.Controllers
                 var response = await _mediator.Send(new GetAllPermissionsCacheQuery());
                 if (response.Succeeded)
                 {
-                    return PartialView("_ViewAll", response.Data);
+                    var html = await _viewRenderer.RenderViewToStringAsync("_ViewAll", response.Data);
+                    return new JsonResult(new { isValid = true, html = html });
+                    //return PartialView("_ViewAll", response.Data);
                 }
                 return default;
             }

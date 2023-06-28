@@ -3,6 +3,7 @@ using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
 using Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace Application.Features.DefaultFoodOrders.Query
             }
             public async Task<Result<IEnumerable<DefaultFoodOrder>>> Handle(GetAllDefaultFoodOrderQuery query, CancellationToken cancellationToken)
             {
-                var product =  _repository.Entities.Where(x=>x.ComId==query.ComId).AsEnumerable();
+                var product =  _repository.Entities.AsNoTracking().Where(x=>x.ComId==query.ComId).AsEnumerable();
                 return await Result<IEnumerable<DefaultFoodOrder>>.SuccessAsync(product);
             }
         }

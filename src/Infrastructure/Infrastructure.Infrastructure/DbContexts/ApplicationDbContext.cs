@@ -227,11 +227,10 @@ namespace Infrastructure.Infrastructure.DbContexts
             }); 
             builder.Entity<ProductInBarAndKitchen>(entity =>
             {
+                entity.HasIndex(p => p.IdBarAndKitchen);
                 // Tạo Index Unique trên 1 cột
                 entity.HasOne(x => x.BarAndKitchen).WithMany(x => x.ProductInBarAndKitchens).HasForeignKey(x => x.IdBarAndKitchen);
-                entity.HasOne(e => e.Product)
-                .WithOne(e => e.ProductInBarAndKitchen)
-                .HasForeignKey<ProductInBarAndKitchen>(e => e.IdProduct);
+             
             }); 
         
             builder.Entity<Kitchen>(entity =>

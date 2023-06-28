@@ -1,0 +1,37 @@
+﻿ @model List<Domain.Entities.BarAndKitchen>;
+<table class="table table-bordered dataTable" id="TableData">
+                <thead>
+                    <tr>
+                        <th class="text-center">STT</th>
+                        <th>Tên bếp</th>
+                        <th class="text-center">Ngày tạo</th>
+                        <th class="text-center">Công cụ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int i = 1;
+
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center"> @(i++)</td>
+                            <td class="text-primary"> @item.Name</td>
+                            <td class="text-center"> @item.CreatedOn.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">
+                                <div class="dropdown">
+                                 <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="javascript:void(0)" onclick="BarAndKitchen.delete(this,@item.Id)"><i class="fas fa-trash-alt mr-2"></i> Xóa</a>
+                                    <a class="dropdown-item" href="javascript:void(0)" onclick="BarAndKitchen.addoredit('/Selling/BarAndKitchen/Edit?id=@(item.Id)')"><i class="fas fa-info-circle mr-2"></i> Chỉnh sửa</a>
+                            <a class="dropdown-item" href="/Selling/ProductInBarAndKitchen?secret=@(item.secret)"><i class="fas fa-tasks mr-2"></i> Quản lý hàng hóa</a>
+                                
+                                  </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                  
+                </tbody>
+            </table>

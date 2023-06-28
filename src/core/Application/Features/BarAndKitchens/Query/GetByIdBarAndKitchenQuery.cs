@@ -4,6 +4,7 @@ using AspNetCoreHero.Results;
 using Domain.Entities;
 
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,28 +12,29 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Features.Banners.Query
+namespace Application.Features.BarAndKitchens.Query
 {
 
-    public class GetByIdBannerQuery : IRequest<Result<Banner>>
+    public class GetByIdBarAndKitchenQuery : IRequest<Result<BarAndKitchen>>
     {
         public int Id { get; set; }
+        public int Comid { get; set; }
 
-        public class GetBannerByIdQueryHandler : IRequestHandler<GetByIdBannerQuery, Result<Banner>>
+        public class GetBarAndKitchenByIdQueryHandler : IRequestHandler<GetByIdBarAndKitchenQuery, Result<BarAndKitchen>>
         {
-            private readonly IRepositoryAsync<Banner> _repository;
-            public GetBannerByIdQueryHandler(IRepositoryAsync<Banner> repository)
+            private readonly IRepositoryAsync<BarAndKitchen> _repository;
+            public GetBarAndKitchenByIdQueryHandler(IRepositoryAsync<BarAndKitchen> repository)
             {
                 _repository = repository;
             }
-            public async Task<Result<Banner>> Handle(GetByIdBannerQuery query, CancellationToken cancellationToken)
+            public async Task<Result<BarAndKitchen>> Handle(GetByIdBarAndKitchenQuery query, CancellationToken cancellationToken)
             {
-                var product = await _repository.GetByIdAsync(query.Id);
+                var product = await _repository.Entities.AsNoTracking().SingleOrDefaultAsync(x=>x.ComId==query.Comid && x.Id==query.Id);
                 if (product == null)
                 {
-                    return await Result<Banner>.FailAsync(HeperConstantss.ERR012);
+                    return await Result<BarAndKitchen>.FailAsync(HeperConstantss.ERR012);
                 }
-                return await Result<Banner>.SuccessAsync(product);
+                return await Result<BarAndKitchen>.SuccessAsync(product);
             }
         }
     }

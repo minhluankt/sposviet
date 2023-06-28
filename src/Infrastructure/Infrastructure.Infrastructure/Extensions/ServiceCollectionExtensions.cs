@@ -114,6 +114,8 @@ namespace Infrastructure.Infrastructure.Extensions
             services.AddTransient<ITemplateInvoiceRepository<TemplateInvoice>, TemplateInvoiceRepository>();
             services.AddTransient<IHistoryOrderRepository<HistoryOrder>, HistoryOrderRepository>();
             services.AddTransient<IDefaultFoodOrderRepository<DefaultFoodOrder>, DefaultFoodOrderRepository>();
+            services.AddTransient<IProductInBarAndKitchenRepository, ProductInBarAndKitchenRepository>();
+            services.AddTransient<IBarAndKitchenRepository, BarAndKitchenRepository>();
 
             services.AddTransient<IPostRepository<Post>, PostRepository>();
             services.AddTransient<IPagePostRepository<PagePost>, PagePostRepository>();

@@ -126,7 +126,7 @@ namespace Domain.Entities
         public virtual ICollection<OptionsDetailtProduct> OptionsDetailtProducts { get; set; } // danh sách các style kích thước, màu sắc
         public virtual ICollection<ContentPromotionProduct> ContentPromotionProducts { get; set; } // danh sách lịch sử nội dung khuyến mãi
         public virtual ICollection<ComponentProduct> ComponentProducts { get; set; } //danh sách các combo, thành phần sản phẩm kèm theo
-        public ProductInBarAndKitchen? ProductInBarAndKitchen { get; set; }
+    
     }
     public class StyleProduct // ví dụ  như kích thước, màu sắc
     {

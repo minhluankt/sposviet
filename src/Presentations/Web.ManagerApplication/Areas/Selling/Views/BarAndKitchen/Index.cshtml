@@ -1,5 +1,62 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model List<Domain.Entities.BarAndKitchen>;
+
+<div class="main-content-800">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/selling/restaurantsetting">< Trở lại thiết lập nhà hàng</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Quản lý nhà bếp</li>
+        </ol>
+    </nav>
+   @* <div class="card mb-2">
+        <div class="card-body">
+            <div class="row">
+              
+                <div class="col-md-6">
+                    <div class="">
+                        <label>Tên nhà bếp</label>
+                        <input type="text" name="Name" id="Name" placeholder="Tên nhà bếp......" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer text-center" style=" display: block;">
+            <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+                <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+
+                <span class="ladda-spinner"></span>
+            </button>
+        </div>
+    </div>*@
+
+    <div class="card">
+        <div class="col-sm-12 pt-2">
+            @*<a asp-area="Admin" asp-controller="Product" class="" asp-action="CreateOrEdit">*@
+            <a onclick="BarAndKitchen.addoredit('/Selling/BarAndKitchen/Create')" class="btn bg-success text-white">
+
+                <i class="fas fa-plus-circle"> </i> Thêm mới
+            </a>
+            <button class="ladda-button mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Reload</span>
+
+                <span class="ladda-spinner"></span>
+            </button>
+        </div>
+        <div id="viewAll" class="card-body">
+           
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+      <script> 
+          $(document).ready(function () {
+            loadData();
+                function loadData() {
+                loadDataAjax("/Selling/BarAndKitchen/LoadAll");
+                  
+                }
+    });
+</script>
+    }

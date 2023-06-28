@@ -1778,7 +1778,7 @@ var validateForm = {
                 }
             },
             messages: {
-                "Serial": {
+                "Pattern": {
                     required: errrequired,
                     minlength: errminlength3
                 },
@@ -1786,6 +1786,23 @@ var validateForm = {
                     required: errrequired,
                     minlength: errminlength3
                 }
+            },
+            submitHandler: function (form) {
+            }
+        });
+    },
+    addOrEditBarAndKitchen: function () {
+        $("#create-form").validate({
+            ignore: 'input[type=hidden]',
+            rules: {
+                "Name": {
+                    required: true,
+                }
+            },
+            messages: {
+                "Name": {
+                    required: errrequired
+                },
             },
             submitHandler: function (form) {
             }
@@ -3190,6 +3207,155 @@ var DefaultFoodOrder = {
                 }
             }
 
+        });
+    }
+}
+btnaddfoodInBarAndKitchen = $(".addfoodInBarAndKitchen");
+
+var FoodInBarAndKitchen = {
+    saveFoodInBarAndKitchen: function (lstid, IdBarAndKitchen) {
+        $.ajax({
+            type: 'POST',
+            url: "/Selling/ProductInBarAndKitchen/Update",
+            async: true,
+            data: {
+                lstid: lstid,
+                IdBarAndKitchen: IdBarAndKitchen,
+            },
+            success: function (res) {
+                if (res.isValid) {
+                    dataTableOut.ajax.reload(null, false);
+                    Swal.close();
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    },
+    addfoodInBarAndKitchen: function () {
+        btnaddfoodInBarAndKitchen.click(function () {
+            sel = $(this);
+            var lstid = new Array();
+            $.ajax({
+                type: 'GET',
+                //global: false,
+                url: '/Selling/Product/GetProductJson',
+                // data: fomrdata,
+                contentType: false,
+                processData: false,
+                success: async function (res) {
+                    if (res.isValid) {
+                        htmllistitem = "";
+                        let getdata = await axios.get("/Selling/ProductInBarAndKitchen/GetListJsonId?id=" + $(sel).data("id"));
+                        if (getdata.data?.isValid) {
+                            lstid = JSON.parse(getdata.data.data);
+                        }
+                        res.jsonPro.forEach(function (item, index) {
+                            htmlimg = "./images/no-img.png";
+                            if (item.img != "" && item.img != null) {
+                                htmlimg = "../" + item.img;
+                            }
+                            htmllistitem += `<tr>
+                                                <td><input type="checkbox" `+ (lstid.includes(item.id) ? "checked" : "") + ` class="icheck" data-category="` + item.idCategory + `" value="` + item.id + `" /></td>
+                                               
+                                                <td><img src="../`+ htmlimg + `"/></td>
+                                                 <td>`+ item.nameCategory + `</td>
+                                                <td><san class="name">`+ item.name + `</name></td>
+                                                <td>`+ item.retailPrice.format0VND(3, 3) + `</td>
+                                            </tr>`;
+                        });
+
+                        html = `<div class="elecontainerselectfood">
+                                    <div class="input-group mb-3">
+                                   
+                                        <div class="input-group-append">
+                                              <select class="form-control idCategory" id="IdCategory" style="min-width:200px">  </select>
+                                        </div>
+                                             <input type="text" autocomplete="off"  class="form-control" placeholder="Nhập tên hàng hóa" id="Name" aria-describedby="basic-addon2">
+                                    </div>
+                               <div class="gridtable">
+                                <table class="table table-condensed table-striped tablefood">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Ảnh</th>
+                                            <th>Danh mục</th>
+                                            <th>Mặt hàng</th>
+                                            <th>Giá bán</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="BI_tablebody">
+                                       `+ htmllistitem + `
+                                    </tbody>
+                                </table></div> </div>`;
+                        Swal.fire({
+                            // icon: 'success',
+                            title: "Chọn mặt hàng cần thêm",
+                            html: html,
+                            position: 'top-end',
+                            showClass: {
+                                popup: `
+                              popup-formcreate
+                              popup-lg
+                               animate__animated
+                              animate__fadeInRight
+                              animate__faster
+                            `
+                            },
+                            customClass: {
+                                container: 'selectfoodpopup',
+                                footer: 'footerselectfoodpopup'
+                            },
+                            hideClass: {
+                                popup: "popup-formcreate popup-lg animate__animated animate__fadeOutRight animate__faster"
+                            },
+                            showCloseButton: true,
+                            footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: 'Lưu',
+                            cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+
+                            didRender: () => {
+                                loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#IdCategory", 0, "Chọn thực đơn");
+                                loadEventIcheck();
+                                //end
+                                $(".btn-continue").click(function () {
+                                    Swal.close();
+                                });
+                                $("#Name").keyup(function () {
+                                    value = $(this).val().toLocaleLowerCase();
+                                    valuecategory = $('select#IdCategory').val();
+                                    DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
+                                });
+                                $('select#IdCategory').on('change', function () {
+                                    valuecategory = this.value;
+                                    value = $("#Name").val().toLocaleLowerCase();
+                                    DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
+                                });
+
+                                $(".btn-save").click(function () {
+                                    _lists = [];
+                                    $('.tablefood tbody tr input[type=checkbox]:checked').each(function (index, tr) {
+                                        let id = $(tr).val();
+                                        _lists.push(parseInt(id));
+                                    });
+                                    if (_lists.length == 0) {
+                                        toastrcus.error('Vui lòng chọn hàng hóa!');
+                                        return;
+                                    }
+                                    FoodInBarAndKitchen.saveFoodInBarAndKitchen(_lists, $(sel).data("id"));
+                                });
+                            }
+                        })
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            });
         });
     }
 }
@@ -5744,6 +5910,73 @@ var laodEventAutoSendTimer = {
             }
         });
     },
+}
+var BarAndKitchen = {
+    delete: function (sel,id) {
+        $.ajax({
+            type: "POST",
+            data: {
+                id:id
+            },
+            url: "/Selling/BarAndKitchen/Delete",
+            success: function (res) {
+                if (res.isValid) {
+                    dataTable
+                        .row($(sel).parents('tr'))
+                        .remove()
+                        .draw();
+                }
+            },
+            error: function () {
+                alert("Error occured!!");
+            }
+        });
+    },
+    addoredit: function (url) {
+        $.ajax({
+            type: "GET", 
+            url: url,
+            success: function (res) {
+                if (res.isValid) {
+                    Swal.fire({
+                        // icon: 'success',
+                        title: res.title,
+                        html: res.html,
+                        position: 'center',
+                        showClass: {
+                            popup: `popup-formcreate`
+                        },
+                        customClass: {
+                            container: '',
+                            footer: 'footer-Swal'
+                        },
+
+                        footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                        allowOutsideClick: true,
+                        showConfirmButton: false,
+                        showCancelButton: false,
+                        cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                        didRender: () => {
+                            validateForm.addOrEditBarAndKitchen();
+                            $(".btn-continue").click(function () {
+                                Swal.close();
+                            });
+
+                            $(".btn-save").click(function () {
+                                if ($("form#create-form").valid()) {
+                                    jQueryModalPost($("form#create-form")[0]);
+                                }
+                            });
+
+                        }
+                    });
+                }
+            },
+            error: function () {
+                alert("Error occured!!");
+            }
+        });
+    }
 }
 var loadeventEinvoice = {
 

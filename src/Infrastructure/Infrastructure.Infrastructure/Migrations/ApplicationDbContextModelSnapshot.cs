@@ -320,6 +320,9 @@ namespace Infrastructure.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ComId")
                         .HasColumnType("int");
 
@@ -339,8 +342,13 @@ namespace Infrastructure.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Note")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
                     b.Property<string>("Slug")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
@@ -3572,6 +3580,39 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.ToTable("Product");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ProductInBarAndKitchen", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdBarAndKitchen")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdProduct")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdBarAndKitchen");
+
+                    b.ToTable("ProductInBarAndKitchen");
+                });
+
             modelBuilder.Entity("Domain.Entities.PromotionRun", b =>
                 {
                     b.Property<int>("Id")
@@ -4997,6 +5038,17 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Navigation("UnitType");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ProductInBarAndKitchen", b =>
+                {
+                    b.HasOne("Domain.Entities.BarAndKitchen", "BarAndKitchen")
+                        .WithMany("ProductInBarAndKitchens")
+                        .HasForeignKey("IdBarAndKitchen")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BarAndKitchen");
+                });
+
             modelBuilder.Entity("Domain.Entities.PurchaseOrder", b =>
                 {
                     b.HasOne("Domain.Entities.Invoice", "Invoice")
@@ -5118,6 +5170,11 @@ namespace Infrastructure.Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.BankAccount", b =>
                 {
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BarAndKitchen", b =>
+                {
+                    b.Navigation("ProductInBarAndKitchens");
                 });
 
             modelBuilder.Entity("Domain.Entities.Brand", b =>

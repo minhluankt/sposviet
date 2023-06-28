@@ -2,7 +2,9 @@
 using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
 using Domain.Entities;
+using Hangfire.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +15,16 @@ namespace Infrastructure.Infrastructure.Repositories
 {
     public class DefaultFoodOrderRepository : IDefaultFoodOrderRepository<DefaultFoodOrder>
     {
+        private readonly ILogger<ProductInBarAndKitchenRepository> _log;
         private readonly IRepositoryAsync<Product> _productrepository;
         private readonly IRepositoryAsync<DefaultFoodOrder> _repository;
         private IUnitOfWork _unitOfWork { get; set; }
-        public DefaultFoodOrderRepository(IUnitOfWork unitOfWork, IRepositoryAsync<Product> productrepository, IRepositoryAsync<DefaultFoodOrder> repository)
+        public DefaultFoodOrderRepository(IUnitOfWork unitOfWork,
+            ILogger<ProductInBarAndKitchenRepository> _log,
+            IRepositoryAsync<Product> productrepository, IRepositoryAsync<DefaultFoodOrder> repository)
         {
             _unitOfWork = unitOfWork;
+            this._log = _log;
             _productrepository = productrepository;
             _repository = repository;
         }
@@ -97,8 +103,8 @@ namespace Infrastructure.Infrastructure.Repositories
             }
             catch (Exception e)
             {
-
-                throw;
+                _log.LogError(e.ToString());
+                return await Result<Task>.FailAsync(e.Message);
             }
           
         }

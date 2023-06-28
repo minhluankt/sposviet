@@ -4,6 +4,7 @@ using Application.DTOs.Logs;
 using Application.Features.Areas.Commands;
 using Application.Features.AutoSendTimers.Commands;
 using Application.Features.Banners.Commands;
+using Application.Features.BarAndKitchens.Commands;
 using Application.Features.Brands.Commands;
 using Application.Features.CategoryCevenues.Commands;
 using Application.Features.CategorysPost.Commands;
@@ -133,6 +134,9 @@ namespace Web.ManagerApplication.Areas.Mappings
             CreateMap<CreateNotifyChitkenCommand, NotifyKitChenModel>().ReverseMap();
             CreateMap<UpdateNotifyChitkenCommand, NotifyKitChenModel>().ReverseMap();
 
+
+            CreateMap<CreateBarAndKitchenCommand, BarAndKitchen>().ReverseMap();
+            CreateMap<UpdateBarAndKitchenCommand, BarAndKitchen>().ReverseMap();
 
             CreateMap<GetReportDashboardQuery, SearchReportPosModel>().ReverseMap();
             CreateMap<GetRepostEInvoiceQuery, SearchReportPosModel>().ReverseMap();
