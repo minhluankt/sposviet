@@ -96,6 +96,9 @@ namespace Application.Features.OrderTables.Commands
                             var orderitem = updateprice.Data.OrderTableItems.FirstOrDefault(x=>x.IdGuid==request.IdOrderItem.Value);
                             var _OrderTableModel = new OrderTableModel()
                             {
+                                IsServiceDate = orderitem.IsServiceDate,
+                                Amount = orderitem.Amount,
+                                Quantity = orderitem.Quantity,
                                 Price = orderitem.Price,
                                 PriceOld = orderitem.PriceOld?? orderitem.Price,
                             };

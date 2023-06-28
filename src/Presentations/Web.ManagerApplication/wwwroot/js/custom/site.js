@@ -13213,7 +13213,6 @@ var eventBanle = {
             }
             $(".discountamount").data("type", typeSelectDiscount);
             eventBanle.eventLoadCongThucTien();
-            
             eventBanle.saveUpdateAmountLoca(typeSelectDiscount);
         }
 
@@ -13246,7 +13245,8 @@ var eventBanle = {
             }
             
             $(".VATAmount").val(vatamount.format0VND(0, 3, ""));
-        } else {
+        }
+        else {
         }
         let khachtra = Math.round(totalsaudiscount + vatamount);
         $(".cuspayment").html(khachtra.format0VND(0, 3, ""));
@@ -14148,7 +14148,7 @@ var eventBanle = {
         return isValid;
     }, 
     eventselectProductCompelteOffline: async function (id, price, retailPrice, code, name, isVAT, priceNoVAT, vatrate) {
-        debugger
+        
         var checkcode = await eventBanle.loadEventCheckCodeItem(code);
         if (!checkcode) {
             let html = `<ul id="item-mon"> `;
@@ -14560,7 +14560,7 @@ var eventBanle = {
                                     let html =
                                         "<a href='javascript:void(0)'><div class='search-auto'>" +
                                         "<div class='img'><img src='../" + item.img + "'></div>" +
-                                        "<div class='tk_name'><span>" + texthigh + " (" + item.code + ")</span><span class='price'> Giá: " + parseFloat(item.price).format0VND(3, 3, '') + "</span>" +
+                                        "<div class='tk_name'><span>" + texthigh + " (" + item.code + ") <i class='red'>" + (item.isVAT?"%":"") +"</i></span><span class='price'> Giá: " + parseFloat(item.price).format0VND(3, 3, '') + "</span>" +
                                         htmltonkho + "</div></div></a>";
                                     return {
                                         //label: html, value: item.code + " " + item.name, idProduct: item.id
@@ -16095,7 +16095,7 @@ var loadeventPos = {
         });
         loadeventPos.eventloadNumberStatusTable();
     },
-    loadDataOfTable: async function (data) {
+    loadDataOfTable: async function (data) {//hàm này để load lại dữ liệu
         if (data.OrderTableItems.length == 0) {
             if (data.IsBringBack) {
                 data.IdRoomAndTableGuid = "-1";
@@ -16129,9 +16129,9 @@ var loadeventPos = {
                         htmlvat = " <i class='fas fa-percent'></i>";
                     }
                     htmldiscount = ""
-                    if (item.Discount != 0) {
+                    if (parseFloat(item.Discount) != 0) {
                         htmldiscount = "<span class='discounttxt'>-" + item.Discount + "%</span>";
-                    } else if (item.Discountamount != 0) {
+                    } else if (parseFloat(item.DiscountAmount) != 0) {
                         htmldiscount = "<span class='discounttxt'>-" + item.DiscountAmount + "</span>";
                     }
                     index = index + 1;
@@ -16153,6 +16153,7 @@ var loadeventPos = {
                                             data-pricenew="`+ item.Price +`"
                                             data-discount="`+ item.Discount +`"
                                             data-discountamount="`+ item.DiscountAmount +`"
+                                            data-typediscount="`+ (item.Discount != 0 ? TypeSelectDiscount.Percent : TypeSelectDiscount.Cash )+`"
                                             class="form-control price" readonly  value="`+ (item.Price.format0VND(3, 3)) + `" />
                                             `+ htmldiscount +`
                                             </div>
@@ -16193,9 +16194,11 @@ var loadeventPos = {
             let pricenovat = parseFloat($(this).data("pricenovat")) || 0;
             let isvat = $(this).data("isvat");
             let pricenew = parseFloat($(this).data("pricenew")) || 0;
+            debugger
             let discountamount = parseFloat($(this).data("discountamount")) || 0;
             let discount = parseFloat($(this).data("discount")) || 0;
             //let a = $(this).data("typediscount");
+            
             let typediscount = parseInt($(this).data("typediscount"));
 
             //if (typediscount == TypeSelectDiscount.Percent) {
@@ -16414,8 +16417,9 @@ var loadeventPos = {
                 success: function (res) {
                     if (res.isValid) {
                         $(".tab-pane.active li.itemorder").map(function (item, inde) {
-                            let iditemorder = $(this).data("id");
-                            if (iditemorder == iditemorder) {
+                            let _iditemorder = $(this).data("id");
+                            
+                            if (iditemorder == _iditemorder) {
                                 $(this).find(".price").val(res.price.format0VND(3, 3));
                                 $(this).find(".price").data("price", res.priceold);
                                 $(this).find(".price").data("pricenew", res.price);
@@ -16426,13 +16430,20 @@ var loadeventPos = {
                                 }
                                 if (discount != 0) {
                                     $(this).find(".price").data("discount", discount);
-                                    $(this).find(".elePrice").append("<span class='discounttxt'>-" + discount +"%</span>");
+                                    $(this).find(".elePrice").append("<span class='discounttxt'>-" + discount.format0VND(3, 3) +"%</span>");
                                 } else if (discountamount != 0) {
                                     $(this).find(".price").data("discountamount", discountamount);
-                                    $(this).find(".elePrice").append("<span class='discounttxt'>-" + discountamount +"</span>");
+                                    $(this).find(".elePrice").append("<span class='discounttxt'>-" + discountamount.format0VND(3, 3) +"</span>");
                                 }
+                                //-- update lại số lượng nếu là dịch vụ thuê theo giờ
+
+                                if (res.isServiceDate) {
+                                    $(this).find(".quantity").val(res.quantity.format0VND(3, 3))
+                                }
+                                $(this).find(".valueamount").html(res.amount.format0VND(3, 3))
                             }
                         });
+                        loadeventPos.updateAmountsOrder();
                         $("#popupselectDiscountPos").remove();
                     }
                 }
@@ -16506,7 +16517,7 @@ var loadeventPos = {
         //return Math.round((_rhours * price) + (_rminutes * price / 60)); cách tính 1
         return Math.round(quantity * price);
     },
-    updateTotalIsFoodByService: function (idorder) {
+    updateAmountsOrder: async function () {
         var amountall = 0;
         var quantitySumall = 0;
         $("#container-tableOder .tab-pane.active #item-mon li").map(function () {
@@ -16517,8 +16528,13 @@ var loadeventPos = {
         });
         $(".cashier-payment-info-bottom .quantitySum").html(quantitySumall.format0VND(3, 3));
         $(".cashier-payment-info-bottom .fullamount").html(amountall.format0VND(3, 3));
+        return amountall;
+    },//update lại tổng tiền và số lượng cuối của đơn
+    updateTotalIsFoodByService: function (idorder) {
         //---load bên tab all order
-        loadeventPos.loadUpdateAmountTabInvoice(amountall,idorder);
+        loadeventPos.updateAmountsOrder().then(function (data) {
+            loadeventPos.loadUpdateAmountTabInvoice(data, idorder);
+        });
     },// tính toán lại khi có các item là dịch vụ tính tiền giờ
     eventsetIntervalInfoodserice: function () {
         countuptimeFoodService = setInterval(function () {
@@ -16567,9 +16583,9 @@ var loadeventPos = {
                 $(this).find(".quantity").val(quantity.format0VND(3, 3));
                 $(this).find(".valueamount").html(mony.format0VND(3, 3));
                
-                if ($(this).find(".tableinfo-foodisservice").length > 0) {
-                    $(this).find(".tableinfo-foodisservice").find(".totalmony").html(mony.format0VND(3, 3));
-                    $(this).find(".tableinfo-foodisservice").find(".totaltime").html(timeConvert(timeDiff));
+                if ($(".ele-foodisservice").length > 0) {
+                    $(".ele-foodisservice").find(".tableinfo-foodisservice").find(".totalmony").html(mony.format0VND(3, 3));
+                    $(".ele-foodisservice").find(".tableinfo-foodisservice").find(".totaltime").html(timeConvert(timeDiff));
                 }
                 idOrder = $("#ul-tab-order a.active").data("id");
                 isUpdate = true;
@@ -19740,10 +19756,7 @@ var loadeventPos = {
                                 });
                                 //numberFormat();
                                 priceFormat();
-                                $('.number3').each(function () {
-                                    let idtex = $(this).text().replaceAll(",", ".");
-                                    $(this).html(parseFloat(idtex).format0VND(0, 3, ""))
-                                });
+                                evetnFormatTextnumber3(false)
                                 $("#dataTablePayment").data("id", res.idOrder);
                                 var amoutn = 0;
                                 $("#discountPayment").click(function () {

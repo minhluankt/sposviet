@@ -1,4 +1,5 @@
-﻿@using Application.Enums
+﻿@using HelperLibrary
+@using Application.Enums
 @model Web.ManagerApplication.Areas.Selling.Models.PaymentModelView
 @{
     bool isVAT = false;
@@ -70,7 +71,7 @@
                         int i = 1;
                        
                     }
-                    @foreach (var item in Model.OrderTable.OrderTableItems.GroupBy(x=>x.IdProduct))
+                    @foreach (var item in Model.OrderTable.OrderTableItems.GroupBy(x=>new {x.IdProduct,x.Price}))
                     {
                         string totaldate = string.Empty;
                         if (item.First().IsServiceDate)
@@ -93,7 +94,22 @@
                             }
                             else
                             {
-                                <td class="number3 text-right">@item.First().Price.ToString("0.###").Replace(",",".")</td>
+                                <td class="text-right">
+                                    <div class="elepricepayment">
+                                        <span>@item.First().Price.ToString("#,0.###", LibraryCommon.GetIFormatProvider())</span>
+                                        @if (item.First().DiscountAmount!=0 && !item.First().IsVAT)
+                                        {
+                                            <i style="font-size:14px" class="red">
+                                               <strike> @((item.First().Price + item.First().DiscountAmount).ToString("#,0.###", LibraryCommon.GetIFormatProvider()))</strike>
+                                                @if (item.First().Discount!=0)
+                                                {
+                                                    @:(@(item.First().Discount)%)
+                                                }
+                                            </i>
+                                        }
+                                    </div>
+
+                                </td>
                             }
                             <td class="number3 text-right totalpro">@item.Sum(x=>x.Total).ToString("0.###").Replace(",",".")</td>
                             @if (checkvatproduct>0)
@@ -109,7 +125,15 @@
                                         <span class="">--</span>
                                     }
                                     </td>
-                                <td class="number3 text-right">@item.Sum(x=>x.Amount).ToString("0.###").Replace(",",".")</td>
+                                <td class="text-right">
+                                    <div class="elepricepayment">
+                                    <span class="number3">@item.Sum(x=>x.Amount).ToString("0.###").Replace(",",".")</span>
+                                        @if (item.First().DiscountAmount!=0 && item.First().IsVAT)
+                                        {
+                                            <strike>@item.First().DiscountAmount.ToString("#,0.###", LibraryCommon.GetIFormatProvider())</strike>
+                                        }
+                                     </div>
+                                </td>
                             }
                         </tr>
                     }

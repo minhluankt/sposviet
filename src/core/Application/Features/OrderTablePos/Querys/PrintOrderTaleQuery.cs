@@ -90,7 +90,7 @@ namespace Application.Features.OrderTablePos.Querys
                     bool IsServiceDate = false;
                    
                     var neworderitem = new List<OrderTableItem>();
-                    foreach (var item in product.OrderTableItems.GroupBy(x=>x.IdProduct))
+                    foreach (var item in product.OrderTableItems.GroupBy(x =>new{ x.IdProduct,x.Price }))
                     {
                         var _item = item.First().CloneJson();
                         _item.Quantity = item.Sum(x => x.Quantity);

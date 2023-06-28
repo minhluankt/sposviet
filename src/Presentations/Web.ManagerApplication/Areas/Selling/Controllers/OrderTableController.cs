@@ -1049,7 +1049,13 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             {
                 _notify.Success("Cập nhật thành công!");
                 // tính tổng tiền và giảm giá trên từng món: hàm 
-                return Json(new { isValid = true,price= _send.Data.Price,priceold= _send.Data.PriceOld });
+                return Json(new { isValid = true,
+                    amount = _send.Data.Amount,
+                    quantity = _send.Data.Quantity,
+                    isServiceDate = _send.Data.IsServiceDate,
+                    price= _send.Data.Price,
+                    priceold= _send.Data.PriceOld
+                });
             }
             else
             {
@@ -1124,7 +1130,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return Json(new { isValid = false });
             }
         }
-        xử lý chiết khấu của sản phẩm bên cafe nhà hàng
+       
         [HttpPost]
         public async Task<IActionResult> PaymentSaleRatailtAsync(string jsonData)
         {

@@ -542,7 +542,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     inv.IdCasher = IdCasher;
                     //check item order và map, vì có 1 sản phẩm nhiều dòng
                     var newlistitem = new List<InvoiceItem>();
-                    foreach (var item in checkOrder.OrderTableItems.GroupBy(x=>x.IdProduct))
+                    foreach (var item in checkOrder.OrderTableItems.GroupBy(x => new { x.IdProduct ,x.Price}))
                     {
                         var _item = item.First().CloneJson();
                         _item.Quantity = item.Sum(x => x.Quantity);
@@ -674,11 +674,13 @@ namespace Infrastructure.Infrastructure.Repositories
                     // update lại sản phẩm tồn kho
                     var list = new List<KeyValuePair<string, decimal>>();
                     //------grby item lại vì nó có nhiều sản phẩm trên nhiều dòng
-                    foreach (var item in inv.InvoiceItems)
+                    var listProduct = inv.InvoiceItems.ToList().GroupBy(x => x.IdProduct);
+                    foreach (var product in listProduct)
                     {
+                        var item = product.FirstOrDefault();
                         if (item.TypeProductCategory!=EnumTypeProductCategory.SERVICE && item.TypeProductCategory != EnumTypeProductCategory.COMBO)//lấy ra mấy csai k phải là combo và dịch vụ
                         {
-                            list.Add(new KeyValuePair<string, decimal>(item.Code, item.Quantity * -1));
+                            list.Add(new KeyValuePair<string, decimal>(item.Code, product.Sum(x=>x.Quantity) * -1));
                         }
                         if (item.TypeProductCategory == EnumTypeProductCategory.COMBO)//nếu là combo nó sẽ có các thành phần cần lôi ra
                         {
@@ -694,7 +696,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                     // kquarn lý tồn kho,k phải dịch vụ k phải combo mới update
                                     if (!getprobycombo.IsInventory && item.TypeProductCategory != EnumTypeProductCategory.SERVICE && item.TypeProductCategory != EnumTypeProductCategory.COMBO)
                                     {
-                                        var quantity = (combo.Quantity * -1) * item.Quantity;
+                                        var quantity = (combo.Quantity * -1) * product.Sum(x => x.Quantity);
                                         list.Add(new KeyValuePair<string, decimal>(getprobycombo.Code, quantity));
                                     }
                                 }
@@ -1513,7 +1515,7 @@ namespace Infrastructure.Infrastructure.Repositories
                                     x.PriceNoVAT = Math.Round(x.PriceNew / (1 + (item.VATRate / 100.0M)),MidpointRoundingCommon.Three);
                                 }
                             }
-                            x.Price = x.PriceNew;
+                            x.Price = x.PriceNew;//luôn luôn gán lại theo giá truyền vào
                             //if (x.IsVAT)// nếu sp có thuế
                             //{
                             //    x.Total = x.Quantity * x.PriceNoVAT;
@@ -1828,23 +1830,42 @@ namespace Infrastructure.Infrastructure.Repositories
                         {
                             return Result<OrderTable>.Fail("Sản phẩm là dịch vụ tính tiền theo giờ chỉ được thêm 1 lần");
                         }
+                        decimal price = 0;
+                        decimal priceNovat = 0;
+                        if (getitem.PriceOld!=null)
+                        {
+                            price = getitem.PriceOld.Value;
+                            if (getitem.IsVAT)
+                            {
+                                priceNovat = Math.Round(price / (1 + (getitem.VATRate / 100.0M)),MidpointRoundingCommon.Three);
+                            }
+
+                        }
+                        else
+                        {
+                            price = getitem.Price;
+                            priceNovat = getitem.PriceNoVAT;
+                        }
 
                         var newitem = getitem.CloneJson();
                         newitem.Id = 0;
                         newitem.IdGuid = Guid.NewGuid();
+                        newitem.PriceOld = null;
+                        newitem.Price = price;
+                        newitem.PriceNoVAT = priceNovat;
                         newitem.Quantity = 1;
                         newitem.QuantityNotifyKitchen = 0;
                         if (getitem.IsVAT)
                         {
-                            newitem.Total = 1 * newitem.PriceNoVAT;
+                            newitem.Total = 1 * priceNovat;
                             newitem.VATAmount = Math.Round(newitem.Total * (newitem.VATRate/100.0M), MidpointRoundingCommon.Three);
-                            newitem.Amount = 1 * newitem.Price;
+                            newitem.Amount = 1 * price;
                         }
                         else
                         {
                             newitem.VATAmount =0;
-                            newitem.Total = 1 * newitem.Price;
-                            newitem.Amount = 1 * newitem.Price;
+                            newitem.Total = 1 * price;
+                            newitem.Amount = 1 * price;
                         }
                         
 
@@ -2217,6 +2238,14 @@ namespace Infrastructure.Infrastructure.Repositories
             {
                 if (x.IdGuid == idItem)
                 {
+                    if (x.IsServiceDate)// nếu có dịch vụ tính giờ thì tính lại số lượng luôn nhé
+                    {
+                        DateTime enddate = x.DateEndService ?? DateTime.Now;
+                        var timespan = enddate.Subtract(x.DateCreateService.Value);
+                        x.Quantity = (timespan.Days * 24) + timespan.Hours + Math.Round((decimal)timespan.Minutes / 60, 2);
+                        x.QuantityNotifyKitchen = x.Quantity;
+                    }
+
                     if (x.IsVAT)
                     {
                         x.PriceNoVAT = Math.Round(PriceAdjust / (1 + x.VATRate / 100.0M),MidpointRoundingCommon.Three);
@@ -2244,13 +2273,13 @@ namespace Infrastructure.Infrastructure.Repositories
                        
                         x.Price = PriceAdjust;//gán cái giá bán mới vào giá bán 
                     }
-                    else if (x.PriceOld == Price && x.PriceOld == PriceAdjust) // nếu người nhập update lại = nhau thì phải update lại giá cũ = null
+                    else if (x.PriceOld == Price && x.PriceOld == PriceAdjust) // nếu người nhập update lại = nhau vs giá cũ luôn thì phải update lại giá cũ = null
                     {
                         x.Price = PriceAdjust;
                         x.PriceOld = null;
                     }
                     
-                    if(x.Price!= Price && x.Price==0) //nếu có th dành cho giá bán = 0  và tự nhập giá khi bán thì update giá cũ là giá bán mới, giá bán mới Price đã được update bên trên
+                    if(x.Price!= Price && x.Price==0) //nếu có thop dành cho giá bán = 0  và tự nhập giá khi bán thì update giá cũ là giá bán mới, giá bán mới Price đã được update bên trên
                     {
                         x.PriceOld = Price.Value;// phải gán old là giá bán
                     }
