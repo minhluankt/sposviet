@@ -1,4 +1,8 @@
-﻿:root {
+﻿@font-face {
+    font-family: RetroTeam;
+    src: url('/font/Retro Team.otf') format("opentype");
+}
+:root {
     --main-bg-color: brown;
     --p-surface-critical: #fed3d1;
     --p-surface-critical-subdued: #fff4f4;
@@ -393,6 +397,118 @@ table body tr td {
     }
 }
 .elecontainerselectfood {
+    display: flex;
+    flex-direction: row-reverse;
+
+    .rightContentData {
+        width: calc(100% - 250px);
+    }
+
+    .leftContentData {
+        width: 250px;
+        margin-right: 20px;
+        box-shadow: rgba(99,99,99,0.2) 0px 2px 8px 0px;
+        padding-top: 108px;
+        padding-bottom: 86px;
+        position: relative;
+        background: rgb(4,96,133);
+        background: linear-gradient(90deg,rgba(4,96,133,0.8743872549) 0%,rgba(9,117,145,0.9584208683) 100%);
+        border-radius: 8px;
+        overflow: hidden;
+        height: calc(100vh - 205px);
+
+        &::before {
+            background-image: url(/images/imgmenu/top.png);
+            background-size: 100% 100%;
+            height: 115px;
+            width: 100%;
+            content: "";
+            position: absolute;
+            background-repeat: no-repeat;
+            top: 0;
+        }
+
+        &::after {
+            background-image: url(/images/imgmenu/bottom.png);
+            background-size: 100% 100%;
+            height: 85px;
+            width: 100%;
+            content: "";
+            position: absolute;
+            background-repeat: no-repeat;
+            bottom: 0;
+        }
+
+
+        ul.listCategoryleft {
+            padding-left: 0;
+            margin-bottom: 0;
+            height: 97%;
+            overflow: auto;
+
+            &:hover {
+                &::-webkit-scrollbar {
+                    width: 4px;
+                    background-color: transparent;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    border-radius: 10px;
+                    background-color: rgba(0, 0, 0, 0.24);
+                    border: 0px solid #555555;
+                }
+            }
+
+            &::-webkit-scrollbar {
+                width: 4px;
+                background-color: transparent;
+            }
+            /**  STYLE 4 */
+            &::-webkit-scrollbar-track {
+                //  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+                background-color: transparent;
+                //border-radius: 10px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                border-radius: 10px;
+                background-color: transparent;
+                border: 0px solid #555555;
+            }
+
+            li {
+                list-style: none;
+                padding: 15px;
+                border-bottom: dashed #ccc thin;
+                color: #ffffff;
+                font-weight: bold;
+                text-transform: uppercase;
+
+                sup {
+                    padding: 2px 5px;
+                    border-radius: 5px;
+                    color: #b1b1b1;
+                    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+                    margin-left: 10px;
+                }
+
+                &:hover {
+                    cursor: pointer;
+                    color: #66ff55;
+                }
+
+                &.active {
+                    color: #66ff55;
+                }
+
+                &:last-child {
+                    border-bottom: 0;
+                }
+            }
+        }
+    }
+
+
     table {
         img {
             width: 50px;
@@ -401,35 +517,43 @@ table body tr td {
 
     .gridtable tbody {
         display: block;
-        max-height: calc(100vh - 295px);
+        max-height: calc(100vh - 298px);
         overflow-y: auto;
 
-        &::-webkit-scrollbar {
-            width: 4px;
-            background-color: rgba(0, 0, 0, 0.24);
+        &:hover {
+            &::-webkit-scrollbar {
+                width: 4px;
+                background-color: transparent;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                border-radius: 10px;
+                background-color: rgba(0, 0, 0, 0.24);
+                border: 0px solid #555555;
+            }
         }
 
         &::-webkit-scrollbar {
             width: 4px;
-            background-color: #F5F5F5;
+            background-color: transparent;
         }
         /**  STYLE 4 */
         &::-webkit-scrollbar-track {
-            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-            background-color: #F5F5F5;
+            // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+            background-color: transparent;
             //border-radius: 10px;
         }
 
         &::-webkit-scrollbar-thumb {
             border-radius: 10px;
-            background-color: rgba(0, 0, 0, 0.24);
+            background-color: transparent;
             border: 0px solid #555555;
         }
     }
 
     .gridtable thead, .gridtable tbody tr {
         display: table;
-        table-layout: fixed;
+        // table-layout: fixed;
         width: 100%;
 
         th:first-child, td:first-child {
@@ -470,7 +594,7 @@ table body tr td {
         position: absolute;
         background-color: #337ab7;
         width: 1.3em;
-        height: 39px;
+        height: 42px;
         right: -1.3em;
         top: 0;
         border-bottom: 1px solid #ddd;

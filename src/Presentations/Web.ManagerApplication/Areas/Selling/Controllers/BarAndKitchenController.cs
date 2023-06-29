@@ -147,7 +147,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         // POST: BarAndKitchenController/Create
         
-
+        thiết kế nhà bếp, chọn nhà bếp và thông báo lọc món
        
         // GET: BarAndKitchenController/Delete/5
         [Authorize(Policy = "barAndKitchen.delete")]

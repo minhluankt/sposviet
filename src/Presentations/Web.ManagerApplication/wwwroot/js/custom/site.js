@@ -2958,7 +2958,7 @@ var DefaultFoodOrder = {
                                 htmlimg = "../" + item.img;
                             }
                             htmllistitem += `<tr>
-                                                <td><input type="checkbox" `+ (lstid.includes(item.id) ? "checked" : "") + ` class="icheck" data-category="` + item.idCategory + `" value="` + item.id + `" /></td>
+                                                <td><input type="checkbox" `+ (lstid.includes(item.id) ? "checked" : "") + ` class="icheck item-check" data-category="` + item.idCategory + `" value="` + item.id + `" /></td>
                                                
                                                 <td><img src="../`+ htmlimg + `"/></td>
                                                  <td>`+ item.nameCategory + `</td>
@@ -2967,19 +2967,37 @@ var DefaultFoodOrder = {
                                             </tr>`;
                         });
 
+                        //------hiển thị danh sách các danh mục sản phẩm
+
+                        var htmlcategory = "";
+                        var htmllicategory = "";
+                        lstid = res.jsoncate.filter(x => x.id != "");
+                        htmlcategory = "<ul class='listCategoryleft'>";
+                        let lengthpro = 0;
+                        lstid.forEach(function (item, index) {
+                            lengthpro += item.countpro;
+                            htmllicategory += "<li data-id='" + item.id + "'>" + (index + 1) + ". " + item.name + "<sup>" + item.countpro + "</sup></li>";
+                        });
+                        htmlcategory += `<li data-id='-1' class='active'>Tất cả <sup>` + lengthpro + `</sup></li>`;
+                        htmlcategory += htmllicategory;
+                        htmlcategory += "</ul>";
+                        //htmlselectcate = `<div class="input-group-append">
+                        //                      <select class="form-control idCategory" id="IdCategory" style="min-width:200px">  </select>
+                        //                </div>`;
+                        htmlselectcate = "";
                         html = `<div class="elecontainerselectfood">
+                                    <div class="rightContentData">
+                                   
                                     <div class="input-group mb-3">
                                    
-                                        <div class="input-group-append">
-                                              <select class="form-control idCategory" id="IdCategory" style="min-width:200px">  </select>
-                                        </div>
+                                        `+ htmlselectcate + `
                                              <input type="text" autocomplete="off"  class="form-control" placeholder="Nhập tên hàng hóa" id="Name" aria-describedby="basic-addon2">
                                     </div>
                                <div class="gridtable">
                                 <table class="table table-condensed table-striped tablefood">
                                     <thead>
                                         <tr>
-                                            <th></th>
+                                            <th><input type="checkbox" class="icheck" id="check-all" /></th>
                                             <th>Ảnh</th>
                                             <th>Danh mục</th>
                                             <th>Mặt hàng</th>
@@ -2989,7 +3007,13 @@ var DefaultFoodOrder = {
                                     <tbody class="BI_tablebody">
                                        `+ htmllistitem + `
                                     </tbody>
-                                </table></div> </div>`;
+                                </table>
+                                </div>
+                                 </div>
+                                    <div class="leftContentData">
+                                    `+ htmlcategory + `
+                                    </div>
+                                </div>`;
                         Swal.fire({
                             // icon: 'success',
                             title: "Chọn mặt hàng cần thêm",
@@ -3020,7 +3044,9 @@ var DefaultFoodOrder = {
                             cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
 
                             didRender: () => {
-                                loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#IdCategory", 0, "Chọn thực đơn");
+
+                                //loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#IdCategory", 0, "Chọn thực đơn");
+                             
                                 loadEventIcheck();
                                 //end
                                 $(".btn-continue").click(function () {
@@ -3031,12 +3057,19 @@ var DefaultFoodOrder = {
                                     valuecategory = $('select#IdCategory').val();
                                     DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
                                 });
-                                $('select#IdCategory').on('change', function () {
-                                    valuecategory = this.value;
+                                //$('select#IdCategory').on('change', function () {
+                                //    valuecategory = this.value;
+                                //    value = $("#Name").val().toLocaleLowerCase();
+                                //    DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
+                                //});
+                                FoodInBarAndKitchen.loadeventIcheckAll();
+                                $('ul.listCategoryleft li').click(function () {
+                                    $('ul.listCategoryleft li.active').removeClass("active");
+                                    $(this).addClass("active");
+                                    valuecategory = parseInt($(this).data("id"));
                                     value = $("#Name").val().toLocaleLowerCase();
                                     DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
                                 });
-
                                 $(".btn-save").click(function () {
                                     _lists = [];
                                     $('.tablefood tbody tr input[type=checkbox]:checked').each(function (index, tr) {
@@ -3103,6 +3136,7 @@ var DefaultFoodOrder = {
         });
 
     },
+   
     deleteFoodDefaultOrder: async function (iditem) {
         let title = "Bạn có chắc chắn muốn xóa mặt hàng đã chọn không?";
         await Swal.fire({
@@ -3187,7 +3221,7 @@ var DefaultFoodOrder = {
             let proname = $(this).find(".name").html().toLocaleLowerCase().trim()
             let idcategory = $(this).find("input[type='checkbox']").data("category");
             if (value == "" || value == null) {
-                if (valuecategory == "" || valuecategory == null) {
+                if (valuecategory == "" || valuecategory == null|| valuecategory == -1) {
                     $(this).show();
                 } else {
                     if (idcategory == valuecategory) {
@@ -3240,6 +3274,7 @@ var FoodInBarAndKitchen = {
             }
         })
     },
+    
     intfoodInBarAndKitchen: function () {
         btnaddfoodInBarAndKitchen.click(function () {
             sel = $(this);
@@ -3258,6 +3293,7 @@ var FoodInBarAndKitchen = {
                         if (getdata.data?.isValid) {
                             lstid = JSON.parse(getdata.data.data);
                         }
+                        //---------------hiển thị danh sách các sản phẩm
                         res.jsonPro.forEach(function (item, index) {
                             htmlimg = "./images/no-img.png";
                             if (item.img != "" && item.img != null) {
@@ -3272,13 +3308,31 @@ var FoodInBarAndKitchen = {
                                                 <td>`+ item.retailPrice.format0VND(3, 3) + `</td>
                                             </tr>`;
                         });
+                        //------hiển thị danh sách các danh mục sản phẩm
 
+                        var htmlcategory = "";
+                        var htmllicategory = "";
+                        lstid = res.jsoncate.filter(x => x.id != "");
+                        htmlcategory = "<ul class='listCategoryleft'>";
+                        let lengthpro = 0;
+                        lstid.forEach(function (item, index) {
+                            lengthpro += item.countpro;
+                            htmllicategory += "<li data-id='" + item.id + "'>" + (index + 1) + ". " + item.name + "<sup>" + item.countpro +"</sup></li>";
+                        });
+                        htmlcategory += `<li data-id='-1' class='active'>Tất cả <sup>` + lengthpro + `</sup></li>`;
+                        htmlcategory += htmllicategory;
+                        htmlcategory += "</ul>";
+                     
+                        //htmlselectcate = `<div class="input-group-append">
+                        //                      <select class="form-control idCategory" id="IdCategory" style="min-width:200px">  </select>
+                        //                </div>`;
+                        htmlselectcate = "";
                         html = `<div class="elecontainerselectfood">
+                                    <div class="rightContentData">
+                                   
                                     <div class="input-group mb-3">
                                    
-                                        <div class="input-group-append">
-                                              <select class="form-control idCategory" id="IdCategory" style="min-width:200px">  </select>
-                                        </div>
+                                        `+ htmlselectcate +`
                                              <input type="text" autocomplete="off"  class="form-control" placeholder="Nhập tên hàng hóa" id="Name" aria-describedby="basic-addon2">
                                     </div>
                                <div class="gridtable">
@@ -3295,7 +3349,13 @@ var FoodInBarAndKitchen = {
                                     <tbody class="BI_tablebody">
                                        `+ htmllistitem + `
                                     </tbody>
-                                </table></div> </div>`;
+                                </table>
+                                </div>
+                                 </div>
+                                    <div class="leftContentData">
+                                    `+ htmlcategory +`
+                                    </div>
+                                </div>`;
                         Swal.fire({
                             // icon: 'success',
                             title: "Chọn mặt hàng cần thêm",
@@ -3326,7 +3386,8 @@ var FoodInBarAndKitchen = {
                             cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
 
                             didRender: () => {
-                                loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#IdCategory", 0, "Chọn thực đơn");
+                               // loaddataSelect2CustomsTempalte("/Api/Handling/GetAllCategoryProduct?IsPos=true", "#IdCategory", 0, "Chọn thực đơn");
+                                
                                 loadEventIcheck();
                                 //end
                                 $(".btn-continue").click(function () {
@@ -3338,11 +3399,20 @@ var FoodInBarAndKitchen = {
                                     valuecategory = $('select#IdCategory').val();
                                     DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
                                 });
-                                $('select#IdCategory').on('change', function () {
-                                    valuecategory = this.value;
+                                //$('select#IdCategory').on('change', function () {
+                                //    valuecategory = this.value;
+                                //    value = $("#Name").val().toLocaleLowerCase();
+                                //    DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
+                                //});
+
+                                $('ul.listCategoryleft li').click(function () {
+                                    $('ul.listCategoryleft li.active').removeClass("active");
+                                    $(this).addClass("active");
+                                    valuecategory = parseInt($(this).data("id"));
                                     value = $("#Name").val().toLocaleLowerCase();
                                     DefaultFoodOrder.eventSearchInPopup(value, valuecategory);
                                 });
+
 
                                 $(".btn-save").click(function () {
                                     _lists = [];
