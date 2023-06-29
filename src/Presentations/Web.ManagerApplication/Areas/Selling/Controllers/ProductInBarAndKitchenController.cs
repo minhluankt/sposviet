@@ -1,4 +1,5 @@
-﻿using Application.Enums;
+﻿using Application.Constants;
+using Application.Enums;
 using Application.Features.BarAndKitchens.Query;
 using Application.Features.DefaultFoodOrders.Commands;
 using Application.Features.DefaultFoodOrders.Query;
@@ -55,7 +56,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [HttpPost]
         public async Task<IActionResult> LoadAll(string Name, int IdBarAndKitchen, int? IdCategory)
         {
-            thêm tính năng xoas1 cái và nhiều tại hàm FoodInBarAndKitchen
+         
             var draw = HttpContext.Request.Form["draw"].FirstOrDefault();
             try
             {
@@ -114,12 +115,19 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         [Authorize(Policy = "productInBarAndKitchen.update")]
         [HttpPost]
-        public async Task<IActionResult> UpdateAsync(int[] lstid, int IdBarAndKitchen)
+        public async Task<IActionResult> UpdateAsync(int[] lstid, int IdBarAndKitchen,int? id, EnumTypeUpdateProductInBarAndKitchen enumTypeUpdateProductIn = EnumTypeUpdateProductInBarAndKitchen.UPDATE_FOOD)
         {
+            if (IdBarAndKitchen==0)
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR012));
+                return new JsonResult(new { isValid = false });
+            }
             var currentUser = User.Identity.GetUserClaimLogin();
             var _send = await _mediator.Send(new UpdateProductInBarAndKitchenCommand()
             {
+                enumTypeUpdateProductIn = enumTypeUpdateProductIn,
                 ComId = currentUser.ComId,
+                Id = id,
                 IdBarAndKitchen = IdBarAndKitchen,
                 ListId = lstid
             });

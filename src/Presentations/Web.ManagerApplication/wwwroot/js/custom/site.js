@@ -60,6 +60,11 @@ var EnumTypeUpdateDefaultFoodOrder = {
     DELETE_FOOD : 2,//xóa 1
     DELETE_MUTI_FOOD : 3//xóa nhiều
 }
+var EnumTypeUpdateProductInBarAndKitchen = {
+    UPDATE_FOOD : 0,//CẬP NHẬT MẶT HÀNG ABC
+    DELETE_FOOD : 1,//xóa 1
+    DELETE_MUTI_FOOD : 2//xóa nhiều
+}
 
 var EnumStatusPublishInvoiceOrder =
 {
@@ -3211,6 +3216,7 @@ var DefaultFoodOrder = {
     }
 }
 btnaddfoodInBarAndKitchen = $(".addfoodInBarAndKitchen");
+btndeletefoodinbar = $(".btndeletefoodinbar");
 
 var FoodInBarAndKitchen = {
     saveFoodInBarAndKitchen: function (lstid, IdBarAndKitchen) {
@@ -3219,6 +3225,7 @@ var FoodInBarAndKitchen = {
             url: "/Selling/ProductInBarAndKitchen/Update",
             async: true,
             data: {
+                enumTypeUpdateProductIn: EnumTypeUpdateProductInBarAndKitchen.UPDATE_FOOD,
                 lstid: lstid,
                 IdBarAndKitchen: IdBarAndKitchen,
             },
@@ -3233,7 +3240,7 @@ var FoodInBarAndKitchen = {
             }
         })
     },
-    addfoodInBarAndKitchen: function () {
+    intfoodInBarAndKitchen: function () {
         btnaddfoodInBarAndKitchen.click(function () {
             sel = $(this);
             var lstid = new Array();
@@ -3257,7 +3264,7 @@ var FoodInBarAndKitchen = {
                                 htmlimg = "../" + item.img;
                             }
                             htmllistitem += `<tr>
-                                                <td><input type="checkbox" `+ (lstid.includes(item.id) ? "checked" : "") + ` class="icheck" data-category="` + item.idCategory + `" value="` + item.id + `" /></td>
+                                                <td><input type="checkbox" `+ (lstid.includes(item.id) ? "checked" : "") + ` class="icheck item-check" data-category="` + item.idCategory + `" value="` + item.id + `" /></td>
                                                
                                                 <td><img src="../`+ htmlimg + `"/></td>
                                                  <td>`+ item.nameCategory + `</td>
@@ -3278,7 +3285,7 @@ var FoodInBarAndKitchen = {
                                 <table class="table table-condensed table-striped tablefood">
                                     <thead>
                                         <tr>
-                                            <th></th>
+                                            <th><input type="checkbox" class="icheck" id="check-all" /></th>
                                             <th>Ảnh</th>
                                             <th>Danh mục</th>
                                             <th>Mặt hàng</th>
@@ -3325,6 +3332,7 @@ var FoodInBarAndKitchen = {
                                 $(".btn-continue").click(function () {
                                     Swal.close();
                                 });
+                                FoodInBarAndKitchen.loadeventIcheckAll();
                                 $("#Name").keyup(function () {
                                     value = $(this).val().toLocaleLowerCase();
                                     valuecategory = $('select#IdCategory').val();
@@ -3357,7 +3365,134 @@ var FoodInBarAndKitchen = {
                 }
             });
         });
-    }
+        btndeletefoodinbar.click(async function () {
+            var lstid = new Array();
+            var rows_selected = dataTableOut.column(0).checkboxes.selected();
+            rows_selected.each(function (index, elem) {
+                lstid.push(parseInt(index));
+            });
+            if (lstid.length == 0) {
+                toastrcus.error("Vui lòng chọn hàng hóa để xóa!");
+                return;
+            }
+            let title = "Bạn có chắc chắn muốn xóa các mặt hàng đã chọn không?";
+            await Swal.fire({
+                icon: 'warning',
+                title: title,
+                // showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy bỏ',
+                // denyButtonText: `Don't save`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: "/Selling/ProductInBarAndKitchen/Update",
+                        async: true,
+                        data: {
+                            lstid: lstid,
+                            IdBarAndKitchen: $("#IdBarAndKitchen").val(),
+                            enumTypeUpdateProductIn: EnumTypeUpdateProductInBarAndKitchen.DELETE_MUTI_FOOD,
+                        },
+                        success: async function (res) {
+                            if (res.isValid) {
+                                dataTableOut.ajax.reload(null, false);
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                }
+            });
+
+        });
+       
+    },
+    loadeventIcheckAll: function () {
+        var triggeredByChild = false;
+
+        $('#check-all').on('ifChecked', function (event) {
+            $(".tablefood tr").each(function (i, item) {
+                
+                if ($(item).is(":visible")) {
+                    console.log($(item).is(":visible"));
+                    $(item).find('.item-check').iCheck('check');
+                    //$('.item-check').iCheck('check');
+                    triggeredByChild = false;
+                }
+            });
+        });
+
+        $('#check-all').on('ifUnchecked', function (event) {
+
+            if (!triggeredByChild) {
+                $(".tablefood tr").each(function (i, item) {
+                    if ($(item).is(":visible")) {
+                        //$('.item-check').iCheck('uncheck');
+                        $(item).find('.item-check').iCheck('uncheck');
+                    }
+                });
+            }
+            triggeredByChild = false;
+        });
+        // Removed the checked state from "All" if any checkbox is unchecked
+        $('.item-check').on('ifUnchecked', function (event) {
+            triggeredByChild = true;
+            $('#check-all').iCheck('uncheck');
+        });
+
+        $('.item-check').on('ifChecked', function (event) {
+            if ($('.item-check').filter(':checked').length == $('.item-check').length) {
+                $('#check-all').iCheck('check');
+            }
+        });
+    },
+    initCompleteTable: function () {
+        $("#dataTable tbody .btndelete").click(function () {
+            
+            let iditem = $(this).data("iditem");
+            FoodInBarAndKitchen.deleteFoodInBar(iditem);
+        });
+    },
+    deleteFoodInBar: async function (iditem) {
+        let title = "Bạn có chắc chắn muốn xóa mặt hàng đã chọn không?";
+        await Swal.fire({
+            icon: 'warning',
+            title: title,
+            // showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy bỏ',
+            // denyButtonText: `Don't save`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    type: 'POST',
+                    url: "/Selling/ProductInBarAndKitchen/Update",
+                    async: true,
+                    data: {
+                        id: iditem,
+                        IdBarAndKitchen: $("#IdBarAndKitchen").val(),
+                        enumTypeUpdateProductIn: EnumTypeUpdateProductInBarAndKitchen.DELETE_FOOD,
+                    },
+                    success: function (res) {
+                        if (res.isValid) {
+                            dataTableOut.ajax.reload(null, false);
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                })
+            }
+        });
+
+    },
 }
 var Product = {
     eventbtnAddProduct: function () {

@@ -25,7 +25,12 @@ namespace Application.Enums
         TRANG_THAI_HOA_DON = 0,
         TRANG_THAI_CQT = 1
     }
-    public enum EnumTypeUpdateDefaultFoodOrder
+    public enum EnumTypeUpdateProductInBarAndKitchen{
+    UPDATE_FOOD = 0,//CẬP NHẬT MẶT HÀNG ABC
+    DELETE_FOOD = 1,//xóa 1
+    DELETE_MUTI_FOOD = 2//xóa nhiều
+}
+public enum EnumTypeUpdateDefaultFoodOrder
     {
         UPDATE_FOOD = 0,//CẬP NHẬT MẶT HÀNG ABC
         UPDATE_QUANTITY_FOOD = 1,//CẬP NHẬT SỐ LƯỢNG CỦA MẶT HÀNG ĐÓ

@@ -7,6 +7,7 @@ using AutoMapper;
 using Domain.Entities;
 
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace Application.Features.BarAndKitchens.Commands
     public class DeleteBarAndKitchenCommand : IRequest<Result<int>>
     {
         public int Id { get; set; }
+        public int ComId { get; set; }
         public class DeleteBarAndKitchenHandler : IRequestHandler<DeleteBarAndKitchenCommand, Result<int>>
         {
             private readonly IFormFileHelperRepository _fileHelper;
@@ -47,7 +49,7 @@ namespace Application.Features.BarAndKitchens.Commands
             }
             public async Task<Result<int>> Handle(DeleteBarAndKitchenCommand command, CancellationToken cancellationToken)
             {
-                var product = await _Repository.GetByIdAsync(command.Id);
+                var product = await _Repository.Entities.SingleOrDefaultAsync(x=>x.ComId==command.ComId && x.Id==command.Id);
                 if (product != null)
                 {
                     await _Repository.DeleteAsync(product);

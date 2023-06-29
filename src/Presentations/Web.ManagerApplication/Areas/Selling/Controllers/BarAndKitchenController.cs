@@ -3,6 +3,7 @@ using Application.Enums;
 using Application.Features.Banners.Query;
 using Application.Features.BarAndKitchens.Commands;
 using Application.Features.BarAndKitchens.Query;
+using Application.Features.Permissions.Commands;
 using Application.Features.Permissions.Query;
 using Application.Features.TemplateInvoices.Commands;
 using Application.Features.TemplateInvoices.Query;
@@ -62,7 +63,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
             return new JsonResult(new { isValid = false, html = string.Empty });
         }
-        [Authorize(Policy = "templateInvoice.create")]
+        
         [HttpPost]
         public async Task<ActionResult> OnPostCreateOrEditAsync(BarAndKitchen model)
         {
@@ -145,61 +146,46 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
         }
         // POST: BarAndKitchenController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        
 
-        // GET: BarAndKitchenController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: BarAndKitchenController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
+       
         // GET: BarAndKitchenController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS007));
-            return new JsonResult(new { isValid = false });
-        }
-
-        // POST: BarAndKitchenController/Delete/5
+        [Authorize(Policy = "barAndKitchen.delete")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var currentUser = User.Identity.GetUserClaimLogin();
+                var deleteCommand = await _mediator.Send(new DeleteBarAndKitchenCommand { Id = id,ComId= currentUser.ComId });
+                if (deleteCommand.Succeeded)
+                {
+                    _notify.Success($"Xóa thành công.");
+                    var response = await _mediator.Send(new GetAllBarAndKitchenQuery() { ComId = currentUser.ComId });
+                    if (response.Succeeded)
+                    {
+                        var html = await _viewRenderer.RenderViewToStringAsync("_ViewAll", response.Data);
+                        return new JsonResult(new { isValid = true, html = html });
+                    }
+                    else
+                    {
+                        _notify.Error(response.Message);
+                        return new JsonResult(new { isValid = false});
+                    }
+                }
+                else
+                {
+                    _notify.Error(deleteCommand.Message);
+                    return new JsonResult(new { isValid = false });
+                }
             }
-            catch
+            catch(Exception e)
             {
-                return View();
+                _notify.Error(e.Message);
+                return new JsonResult(new { isValid = false });
             }
         }
+        // POST: BarAndKitchenController/Delete/5
+       
     }
 }

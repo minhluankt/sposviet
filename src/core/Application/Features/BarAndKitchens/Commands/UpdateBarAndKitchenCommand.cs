@@ -9,7 +9,9 @@ using Domain.Entities;
 
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +52,8 @@ namespace Application.Features.BarAndKitchens.Commands
             }
             else
             {
-                var checkcode = _Repository.Entities.Count(predicate: m => m.Slug == brand.Slug && m.Id != brand.Id);
+                string slug = Common.ConvertToSlug(command.Name);
+                var checkcode = await _Repository.Entities.AsNoTracking().CountAsync(predicate: m => m.Slug == slug && m.Id != brand.Id);
                 if (checkcode > 0)
                 {
                     return await Result<int>.FailAsync(HeperConstantss.ERR014);
@@ -58,6 +61,7 @@ namespace Application.Features.BarAndKitchens.Commands
                 brand.Active = command.Active;
                 brand.Note = command.Note;
                 brand.Name = command.Name;
+                brand.Slug = slug;
                 await _Repository.UpdateAsync(brand);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                

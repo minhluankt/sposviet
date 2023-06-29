@@ -21,7 +21,9 @@ namespace Application.Features.DefaultFoodOrders.Commands
 
     public partial class UpdateProductInBarAndKitchenCommand : IRequest<Result<int>>
     {
+        public EnumTypeUpdateProductInBarAndKitchen enumTypeUpdateProductIn { get; set; }
         public int IdBarAndKitchen { get; set; }
+        public int? Id { get; set; }
         public int ComId { get; set; }
         public int[] ListId { get; set; }
     }
@@ -41,16 +43,47 @@ namespace Application.Features.DefaultFoodOrders.Commands
         public async Task<Result<int>> Handle(UpdateProductInBarAndKitchenCommand command, CancellationToken cancellationToken)
         {
 
-            if (command.ListId == null || command.ListId.Count() == 0)
+            if (command.enumTypeUpdateProductIn ==EnumTypeUpdateProductInBarAndKitchen.UPDATE_FOOD)
             {
-                return await Result<int>.FailAsync(HeperConstantss.ERR000);
+                if (command.ListId == null || command.ListId.Count() == 0)
+                {
+                    return await Result<int>.FailAsync(HeperConstantss.ERR000);
+                }
+                var up = await _Repository.UpdateFoodInBarKitChenAsync(command.ListId, command.IdBarAndKitchen, command.ComId);
+                if (up.Succeeded)
+                {
+                    return await Result<int>.SuccessAsync(up.Message);
+                }
+                return await Result<int>.FailAsync(up.Message);
             }
-            var up = await _Repository.UpdateFoodInBarKitChenAsync(command.ListId, command.IdBarAndKitchen, command.ComId);
-            if (up.Succeeded)
+
+            else if (command.enumTypeUpdateProductIn == EnumTypeUpdateProductInBarAndKitchen.DELETE_FOOD)
             {
-                return await Result<int>.SuccessAsync(up.Message);
+                if (!command.Id.HasValue)
+                {
+                    return await Result<int>.FailAsync(HeperConstantss.ERR000);
+                }
+                var up = await _Repository.DeleteFoodAsync(command.Id.Value,command.IdBarAndKitchen, command.ComId);
+                if (up.Succeeded)
+                {
+                    return await Result<int>.SuccessAsync(up.Message);
+                }
+                return await Result<int>.FailAsync(up.Message);
             }
-            return await Result<int>.FailAsync(up.Message);
+            else if (command.enumTypeUpdateProductIn == EnumTypeUpdateProductInBarAndKitchen.DELETE_MUTI_FOOD)
+            {
+                if (command.ListId == null || command.ListId.Count() == 0)
+                {
+                    return await Result<int>.FailAsync(HeperConstantss.ERR000);
+                }
+                var up = await _Repository.DeleteFoodAsync(command.ListId, command.IdBarAndKitchen, command.ComId);
+                if (up.Succeeded)
+                {
+                    return await Result<int>.SuccessAsync(up.Message);
+                }
+                return await Result<int>.FailAsync(up.Message);
+            }
+            return await Result<int>.FailAsync(HeperConstantss.ERR000);
         }
     }
 }
