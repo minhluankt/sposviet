@@ -5,11 +5,13 @@ using Application.Features.BarAndKitchens.Commands;
 using Application.Features.BarAndKitchens.Query;
 using Application.Features.Permissions.Commands;
 using Application.Features.Permissions.Query;
+using Application.Features.Products.Query;
 using Application.Features.TemplateInvoices.Commands;
 using Application.Features.TemplateInvoices.Query;
 using Application.Hepers;
 using Application.Providers;
 using Domain.Entities;
+using Domain.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -147,8 +149,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         // POST: BarAndKitchenController/Create
         
-        thiết kế nhà bếp, chọn nhà bếp và thông báo lọc món
-       
+      
         // GET: BarAndKitchenController/Delete/5
         [Authorize(Policy = "barAndKitchen.delete")]
         [HttpPost]
@@ -186,6 +187,18 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             }
         }
         // POST: BarAndKitchenController/Delete/5
-       
+        public async Task<JsonResult> GetBarJson()
+        {
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var data = await _mediator.Send(new GetAllBarAndKitchenQuery() { ComId = currentUser.ComId,GetListByBarAndKitchen=true});
+            if (data.Succeeded)
+            {
+                var jspm = data.Data.SelectMany(x =>x.ProductInBarAndKitchens).Select(x=>new {IdProduct=x.IdProduct}).ToList();
+                return new JsonResult(new { isValid = true, jsonPro = Common.ConverModelToJson(jspm) });
+            }
+            return new JsonResult(new { isValid = false });
+        }
+
+        tại hàm loadSelectBar
     }
 }

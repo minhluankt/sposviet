@@ -27,6 +27,10 @@ namespace Infrastructure.Infrastructure.Repositories
         {
             return await _barAndKitchenRepository.Entities.AsNoTracking().Where(x => x.ComId == ComId).OrderByDescending(x=>x.Id).ToListAsync();
         }
+        public async Task<List<BarAndKitchen>> GetListByBarAndKitchen(int ComId)
+        {
+            return await _barAndKitchenRepository.Entities.Include(x=>x.ProductInBarAndKitchens).AsNoTracking().Where(x => x.ComId == ComId).OrderByDescending(x=>x.Id).ToListAsync();
+        }
         public async Task<BarAndKitchen> GetById(int ComId, int Id)
         {
             return await _barAndKitchenRepository.Entities.AsNoTracking().Where(x => x.ComId == ComId && x.Id == Id).SingleOrDefaultAsync();

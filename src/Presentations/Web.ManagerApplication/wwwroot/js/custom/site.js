@@ -9100,6 +9100,9 @@ var loadcentChitkent = {
         });
         loadcentChitkent.loadDatacancelFood(null, true);
     },
+    loadSelectBar: function () {
+        let getJson = await 
+    },
     setIntervalConnectApp: function () {
         handleInterval = setInterval(function () {
             let ReconectPrintLoca = localStorage.getItem("ReconectPrintLoca");
