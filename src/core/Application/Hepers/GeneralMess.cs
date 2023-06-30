@@ -246,6 +246,12 @@ namespace Application.Hepers
             switch (code)
             {
 
+                case HeperConstantss.ERR053:
+                    txt = " Thuế suất không hợp lệ!";
+                    break; 
+                case HeperConstantss.ERR052:
+                    txt = " Hóa đơn chỉ được phát hành một lúc một nhà cung cấp!";
+                    break;
                 case HeperConstantss.ERR051:
                     txt = " Chi tiết hàng hóa có thuế suất không khớp với thuế bạn lựa chọn!";
                     break;  

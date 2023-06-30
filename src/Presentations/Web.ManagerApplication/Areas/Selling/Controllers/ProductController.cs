@@ -362,17 +362,23 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         }
         [HttpPost]
         [Authorize(Policy = "product.updatePrice")]
-        public async Task<ActionResult> UpdateVATRateMutiAsync(int[] lstid, decimal VatRate)
+        public async Task<ActionResult> UpdateVATRateMutiAsync(int[] lstid, decimal? VatRate)
         {
             try
             {
+                tét lại UpdateVATRateMutiAsync khi k chọn thuế
+                if (VatRate==null)
+                {
+                    _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR053));
+                    return new JsonResult(new { isValid = false });
+                }
                 if (lstid==null|| lstid.Count()==0)
                 {
                     _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR001));
                     return new JsonResult(new { isValid = false });
                 }
                 var currentUser = User.Identity.GetUserClaimLogin();;
-                var get = await _mediator.Send(new UpdatePriceCommand() { lstId = lstid, VATRate= VatRate, ComId = currentUser.ComId,TypeUpdatePriceProduct=EnumTypeUpdatePriceProduct.VATPRICEMUTI});
+                var get = await _mediator.Send(new UpdatePriceCommand() { lstId = lstid, VATRate= VatRate.Value, ComId = currentUser.ComId,TypeUpdatePriceProduct=EnumTypeUpdatePriceProduct.VATPRICEMUTI});
                 if (get.Succeeded)
                 {
                     _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
