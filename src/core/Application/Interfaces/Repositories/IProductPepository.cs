@@ -24,6 +24,7 @@ namespace Application.Interfaces.Repositories
         Task<T> GetByCodeAsync(int comid, string code, bool AsNoTracking = false);
         void UpdateReView(int id);
         void MapBarCode(List<Product> lst);
+        Task<Result<int>> UpdateMutiVATRate(int[] lst, decimal VATRate, int Comid);
         Task<Result<int>> UpdateBusiness(int[] lst, int Comid, bool isStop);
         Task UpdateQuantity(List<KeyValuePair<string, decimal>> lst, int Comid, EnumTypePurchaseOrder enumTypePurchaseOrder = EnumTypePurchaseOrder.NHAP_HANG);
         Task<List<T>> GetListProductCacheAsync(string text = "", bool slug = false);

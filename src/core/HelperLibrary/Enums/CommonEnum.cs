@@ -57,6 +57,7 @@ public enum EnumTypeUpdateDefaultFoodOrder
         PRICE = 1,
         VATPRICE = 2,
         PRICENOVAT = 3,
+        VATPRICEMUTI = 4
     }
     public enum EnumTypeEventInvoice
     {

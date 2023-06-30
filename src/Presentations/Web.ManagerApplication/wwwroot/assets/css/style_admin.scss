@@ -3235,7 +3235,13 @@ button.btnfullScreen {
         }
     }
 }
-
+.listactionPricebook {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    display:none;
+    z-index:1;
+}
 .search-product-pos {
    // width: calc(100% - 290px);
     min-width: 500px;

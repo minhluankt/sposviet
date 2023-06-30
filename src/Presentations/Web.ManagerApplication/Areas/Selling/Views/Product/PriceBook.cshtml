@@ -46,10 +46,14 @@
 </div>
 
 <div class="card">
+    <div class="listactionPricebook">
+        <button class="btn btn-primary btn-updatevat"><i class="fas fa-edit mr-2"></i>Cập nhật thuế</button>
+    </div>
     <div id="viewAll" class="card-body">
         <table class="table table-bordered table-striped" id="dataTable">
             <thead>
                 <tr>
+                    <th></th>
                     <th>Mã hàng</th>
                     <th>Tên hàng</th>
                     
@@ -77,7 +81,7 @@
                 stateSave: true,
                 "pagingType": "full_numbers",
                 "serverSide": true,
-                "filter": true,
+                "filter": false,
                 "rowId": "id",
                 "orderMulti": false,
                 "ordering": false,
@@ -99,7 +103,7 @@
                     },
                 },
                 "pageLength": 10,
-                "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+                "lengthMenu": [[10, 25, 50, 100, 200, 500], [10, 25, 50, 100, 200, 500]],
                 "buttons": [
                     {
                         text: 'Reload',
@@ -107,12 +111,21 @@
                             dataTableOut.ajax.reload();
                         }
                     }
-                ],
+                ], 
+                'select': {
+                    'style': 'multi',
+                    selector: 'td:first-child'
+                },
                 "columnDefs": [
 
-                   
-                    { className: "text-right", "targets": [3, 4] },
-                    { className: "text-center", "targets": [-1,0, 2] },
+                    {
+                        'targets': 0,
+                        'checkboxes': {
+                            'selectRow': true
+                        }
+                    },
+                    { className: "text-right", "targets": [4, 5] },
+                    { className: "text-center", "targets": [-1,0] },
 
                     { responsivePriority: 2, targets: [-1, 0] },////define hiển thị mặc định column 1
 
@@ -124,8 +137,8 @@
 
                     },
                     { "width": "100px", "targets": [-1] },
-                    { "width": "130px", "targets": [5] },
-                    { "width": "100px", "targets": [4] }
+                    { "width": "130px", "targets": [6] },
+                    { "width": "100px", "targets": [5] }
 
                 ],
                 ajax: {
@@ -157,7 +170,7 @@
                         }
                         Product.UpdateVATProduct(this, pricenovat);
                     });
-                    $('table#dataTable tbody input').unbind();
+                    $('table#dataTable tbody input.amount').unbind();
                     $('table#dataTable tbody input.number3')
                         .each(function (i, item) {
                             $(this).data("am", this.value);//am laf amount
@@ -173,14 +186,15 @@
                         .focusout(function () {
                             fnFocusOut(this);
                         });
-                  
-                        $('table#dataTable tbody input').change(function () {
+
+                    $('table#dataTable tbody input.amount').change(function () {
                             Product.UpdatePriceProduct(this);
                         });
                    
                 },
                 
                 "columns": [
+                    { "data": "id", "name": "Id", "autoWidth": true },
                     { "data": "code", "name": "code", "autoWidth": true },
                     {
                         "data": "name", "name": "Name", "autoWidth": true,
@@ -248,22 +262,12 @@
                 //    });
                 //},
                 initComplete() {
+                    $(".listactionPricebook").show();
                     
-                    //$('table#dataTable tbody input.number3')
-                    //    .each(function (i, item) {
-                    //        $(this).data("am", this.value);
-                    //        fnInitialFormatNumber(this);
-                    //    }).ForceNumericOnly()
-                    //    .focus(function () {
-                    //        var _val = $(this).val();
-                    //        $(this).val(_val.replaceAll(',', ''));
-                    //    })
-                    //    .focusout(function () {
-                    //        fnFocusOut(this);
-                    //    });
                 }
 
             });
+            Product.loadUpdateVATMutiInPriceBook();
             $('#reload').on('click', function () {
                 dataTableOut.ajax.reload(null, false);
 

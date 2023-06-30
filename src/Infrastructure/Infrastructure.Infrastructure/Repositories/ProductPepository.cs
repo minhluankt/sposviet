@@ -741,7 +741,7 @@ namespace Infrastructure.Infrastructure.Repositories
             {
                 return await Result<int>.SuccessAsync(gets.Count());
             }
-            return await Result<int>.FailAsync();
+            return await Result<int>.FailAsync(HeperConstantss.ERR000);
         }
 
         public void MapBarCode(List<Product> lst)
@@ -764,6 +764,37 @@ namespace Infrastructure.Infrastructure.Repositories
         public IQueryable<Product> GetAll(int comid)
         {
             return  _repository.Entities.Where(x =>x.ComId == comid);
+        }
+
+        public async Task<Result<int>> UpdateMutiVATRate(int[] lst,decimal VATRate, int Comid)
+        {
+            if (!VATRateConstant.GetAll().Contains(VATRate))
+            {
+                return await Result<int>.FailAsync(HeperConstantss.ERR053);
+            }
+           var gets = await _repository.Entities.Where(x => lst.Contains(x.Id) && x.ComId == Comid).ToListAsync();
+            if (gets.Count()==0)
+            {
+                return await Result<int>.FailAsync(HeperConstantss.ERR012);
+            }
+            gets.ForEach(x =>
+            {
+                if (VATRate <= 0)
+                {
+                    x.IsVAT = VATRate != (int)NOVAT.NOVAT;
+                    x.VATRate = VATRate;
+                    x.PriceNoVAT = 0;
+                }
+                else 
+                {
+                    x.IsVAT = true;
+                    x.VATRate = VATRate;
+                    x.PriceNoVAT = Math.Round(x.Price / (1 + VATRate / 100),MidpointRoundingCommon.Three);
+                }
+            });
+            await _repository.UpdateRangeAsync(gets);
+            await _unitOfWork.SaveChangesAsync();
+            return await Result<int>.SuccessAsync(gets.Count());
         }
     }
 }

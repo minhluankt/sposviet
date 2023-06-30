@@ -66,6 +66,7 @@
         public const string ERR050 = "NotSupportMutiVATRateOrder"; // Không hỗ trợ nhiều thues trên 1 đơn
         public const string ERR051 = "VATrateProNotSupportInvoice"; // Hóa đơn có sản phẩm thuế suất không khớp với
         public const string ERR052 = "ValidPubslishInvOneCompany"; // Hóa đơn chỉ phát hành một lúc 1 nhà cung cấp
+        public const string ERR053 = "ValidVATRate"; // Thuế suất k hợp lêj
         // 
         /// <summary>
         /// / login

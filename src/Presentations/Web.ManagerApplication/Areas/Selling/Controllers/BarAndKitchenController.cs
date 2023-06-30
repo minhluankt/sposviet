@@ -199,6 +199,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             return new JsonResult(new { isValid = false });
         }
 
-        tại hàm loadSelectBar
+        
     }
 }

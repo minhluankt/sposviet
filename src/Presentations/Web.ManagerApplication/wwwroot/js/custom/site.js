@@ -3704,6 +3704,83 @@ var Product = {
             $("#VATRate").trigger("change");
         })
     },
+    loadUpdateVATMutiInPriceBook: function () {
+        $(".btn-updatevat").click(function () {
+            var lstid = new Array();
+            var rows_selected = dataTableOut.column(0).checkboxes.selected();
+            rows_selected.each(function (index, elem) {
+                lstid.push(parseInt(index));
+            });
+            debugger
+            if (lstid.length==0) {
+                toastrcus.error("Vui lòng chọn hàng hóa");
+                return;
+            } 
+            let html = ` <div class="">
+                                    
+                                            <select id="Vatrate" name="Vatrate" class="Vatrate form-control" style="width:100px">
+                                                <option value="0">0%</option>
+                                                <option value="5">5%</option>
+                                                <option value="8">8%</option>
+                                                <option value="10" selected>10%</option>
+                                            </select>
+                                    
+                               
+                            </div>`;
+            Swal.fire({
+                icon: 'warning',
+                title: 'Lựa chọn thuế suất cần cập nhật?',
+                html: html,
+                // showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-edit"></i> Đồng ý cập nhật',
+                cancelButtonText: '<i class="fas fa-power-off"></i> Hủy bỏ',
+                // denyButtonText: `Don't save`,
+                didRender: () => {
+                    $("#Vatrate").select2({
+                        placeholder: {
+                            text: 'Chọn thuế'
+                        },
+                        allowClear: true,
+                        language: {
+                            noResults: function () {
+                                return "Không tìm thấy dữ liệu";
+                            }
+                        },
+                    });
+                }
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    if (lstid.length == 0) {
+                        toastrcus.error("Vui lòng chọn hàng hóa");
+                        return;
+                    } else {
+                        $.ajax({
+                            type: 'POST',
+                            
+                            url: "/Selling/Product/UpdateVATRateMuti",
+                            data: {
+                                lstid: lstid,
+                                VatRate: $("#Vatrate").val(),
+                            },
+                            success: async function (res) {
+                                if (res.isValid) {
+                                    dataTableOut.columns().checkboxes.deselectAll(true)
+                                    dataTableOut.ajax.reload(null, false);
+                                }
+                            },
+                            error: function (err) {
+                                console.log(err)
+                            }
+                        });
+                    }
+                   
+                }
+            })
+        })
+    },//load bên cập nhập giá
+
     loadChangeVATRate: function () {
         $("#VATRate").change(function () {
             Product.loadPriceNoVAT();
@@ -9101,7 +9178,7 @@ var loadcentChitkent = {
         loadcentChitkent.loadDatacancelFood(null, true);
     },
     loadSelectBar: function () {
-        let getJson = await 
+       // let getJson = await 
     },
     setIntervalConnectApp: function () {
         handleInterval = setInterval(function () {

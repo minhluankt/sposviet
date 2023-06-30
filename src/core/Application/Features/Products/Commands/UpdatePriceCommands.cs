@@ -21,6 +21,7 @@ namespace Application.Features.Products.Commands
    
     public class UpdatePriceCommand : IRequest<Result<int>>
     {
+        public int[] lstId { get; set; }
         public int Id { get; set; }
         public int ComId { get; set; }
         public decimal Price { get; set; }
@@ -32,6 +33,7 @@ namespace Application.Features.Products.Commands
             private readonly ITableLinkRepository _tablelink;
             private readonly ILogger<UpdatePriceHandler> _log;
             private readonly IRepositoryAsync<Product> _Repository;
+            private readonly IProductPepository<Product> _productRepository;
             private readonly IMapper _mapper;
             private readonly IDistributedCache _distributedCache;
             private readonly IFormFileHelperRepository _fileHelper;
@@ -39,17 +41,23 @@ namespace Application.Features.Products.Commands
 
             public UpdatePriceHandler(IRepositoryAsync<Product> Repository,
                  IFormFileHelperRepository fileHelper, ITableLinkRepository tablelink,
+                 IProductPepository<Product> _productRepository,
                 ILogger<UpdatePriceHandler> log, IUnitOfWork unitOfWork, IMapper mapper, IDistributedCache distributedCach)
             {
                 _log = log;
                 _Repository = Repository;
                 _fileHelper = fileHelper; _tablelink = tablelink;
+                this._productRepository = _productRepository;
                 _unitOfWork = unitOfWork;
                 _mapper = mapper;
                 _distributedCache = distributedCach;
             }
             public async Task<Result<int>> Handle(UpdatePriceCommand command, CancellationToken cancellationToken)
             {
+                if (command.TypeUpdatePriceProduct == EnumTypeUpdatePriceProduct.VATPRICEMUTI)//update khi cập nhập 1 lúc nhiều thuế
+                {
+                    return await _productRepository.UpdateMutiVATRate(command.lstId, command.VATRate, command.ComId);
+                }
                 var product = await _Repository.SingleByExpressionAsync(x=>x.Id== command.Id&&x.ComId==command.ComId);
                 if (product != null)
                 {

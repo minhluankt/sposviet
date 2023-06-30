@@ -1,4 +1,6 @@
-﻿namespace Application.Constants
+﻿using System.Collections.Generic;
+
+namespace Application.Constants
 {
     public class CommonConstants
     {
@@ -79,6 +81,10 @@
         public const string ban_co_don_hang_dang_xu_ly = "Bạn có đơn hàng đang xử lý";
         public const string ban_co_don_hang_dang_van_chuyen = "Bạn có đơn hàng đang vận chuyển";
         public const string ban_co_don_hang_giao_thanh_cong = "Bạn có đơn hàng giao thành công";
+    }
+    public static class VATRateConstant
+    {
+        public static decimal[] GetAll() => (new List<decimal>() {-3, -2, -1, 0, 5, 8, 10}).ToArray();
     }
     public static class InfoSeachInvCons
     {

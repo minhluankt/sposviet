@@ -360,6 +360,34 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 return new JsonResult(new { isValid = false });
             }
         }
+        [HttpPost]
+        [Authorize(Policy = "product.updatePrice")]
+        public async Task<ActionResult> UpdateVATRateMutiAsync(int[] lstid, decimal VatRate)
+        {
+            try
+            {
+                if (lstid==null|| lstid.Count()==0)
+                {
+                    _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR001));
+                    return new JsonResult(new { isValid = false });
+                }
+                var currentUser = User.Identity.GetUserClaimLogin();;
+                var get = await _mediator.Send(new UpdatePriceCommand() { lstId = lstid, VATRate= VatRate, ComId = currentUser.ComId,TypeUpdatePriceProduct=EnumTypeUpdatePriceProduct.VATPRICEMUTI});
+                if (get.Succeeded)
+                {
+                    _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
+                    return new JsonResult(new { isValid = true });
+                }
+                _notify.Error(GeneralMess.ConvertStatusToString(get.Message));
+                return new JsonResult(new { isValid = false });
+            }
+            catch (Exception e)
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString(e.Message));
+                _logger.LogError(e, e.ToString());
+                return new JsonResult(new { isValid = false });
+            }
+        }
 
         [HttpPost]
         [Authorize(Policy = "product.updatePrice")]
