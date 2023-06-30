@@ -10,6 +10,7 @@ namespace Application.Interfaces.Repositories
     public interface IBarAndKitchenRepository
     {
         Task<BarAndKitchen> GetById(int ComId, int Id);
-        Task<List<BarAndKitchen>> GetList(int ComId);
+        Task<List<BarAndKitchen>> GetList(int ComId); 
+        Task<List<BarAndKitchen>> GetListByBarAndKitchen(int ComId);
     }
 }

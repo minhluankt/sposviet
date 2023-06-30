@@ -19,6 +19,7 @@ namespace Application.Features.BarAndKitchens.Query
     public class GetAllBarAndKitchenQuery : IRequest<Result<List<BarAndKitchen>>>
     {
         public int ComId { get; set; }
+        public bool GetListByBarAndKitchen { get; set; }
         public GetAllBarAndKitchenQuery()
         {
         }
@@ -39,6 +40,11 @@ namespace Application.Features.BarAndKitchens.Query
 
         public async Task<Result<List<BarAndKitchen>>> Handle(GetAllBarAndKitchenQuery request, CancellationToken cancellationToken)
         {
+            if (request.GetListByBarAndKitchen)
+            {
+                var productListby = await _BarAndKitchen.GetListByBarAndKitchen(request.ComId);
+                return Result<List<BarAndKitchen>>.Success(productListby);
+            }
             var productList = await _BarAndKitchen.GetList(request.ComId);
             productList.ForEach( x =>
             {
