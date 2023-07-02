@@ -15,9 +15,9 @@ namespace Library
             var data = (T)deserializer.Deserialize(new StringReader(item));
             return data;
         }
-        public static T ConverJsonToModel<T>(string json, JsonSerializerSettings _options = null)
+        public static T ConverJsonToModel<T>(object json, JsonSerializerSettings _options = null)
         {
-            var kq = JsonConvert.DeserializeObject<T>(json, _options);
+            var kq = JsonConvert.DeserializeObject<T>(json.ToString(), _options);
             return kq;
         }
         public static int?[] ConverJsonToArrInt(string json)

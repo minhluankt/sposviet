@@ -53,7 +53,6 @@ namespace Domain.Entities
         public virtual DeliveryCompany DeliveryCompany { get; set; }
         public Customer Customer { get; set; }
         public virtual PaymentMethod PaymentMethod { get; set; }
-        public virtual BankAccount BankAccount { get; set; }
         public virtual ICollection<OrderDetailts> OrderDetailts { get; set; }
     }
 }

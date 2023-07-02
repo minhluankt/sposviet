@@ -112,6 +112,7 @@
                         </div>
                         <div class="elePrice">
                             <input type="text"
+                            data-isenterinorder="@(item.IsEnterInOrder??false)"
                             data-isvat="@item.IsVAT"
                             data-pricenovat="@item.PriceNoVAT"
                             data-price="@(item.PriceOld??item.Price)"

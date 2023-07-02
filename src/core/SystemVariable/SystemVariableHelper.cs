@@ -14,7 +14,7 @@ namespace SystemVariable
             Configuration = _configuration;
         }
     }
-    public class SystemVariableHelper
+    public static class SystemVariableHelper
     {
 
         //private static  IConfiguration Configuration;
@@ -25,6 +25,8 @@ namespace SystemVariable
         public const string passDefaultCompanyUser = "123456aA@";
         public const string lienhehotline = "0918.796.393";
         public const string publicKey = "6A6CE9C74B3B5B39FCD9EA115DB0986F";
+        public const string vietqrClientID = "2c3f984f-98f2-4454-89ea-8333491af6a3";
+        public const string vietqrAPIKey = "5160dece-7857-4e79-b7de-ed23419e420a";
         public const string folderLog = "Logs/";
         public const string TemplateWord = "Template/";
         public const string FolderUpload = "Upload/";

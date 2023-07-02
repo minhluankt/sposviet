@@ -71,10 +71,12 @@ namespace Domain.ViewModel
         public decimal Quantity { get; set; }
         public string Unit { get; set; }
         public decimal? PriceOld { get; set; }
+        public decimal PriceNoVAT { get; set; }
         public decimal Price { get; set; }
         public decimal Total { get; set; }
         public float Discount { get; set; } // % ck
         public decimal DiscountAmount { get; set; } // ck
+        public bool IsEnterInOrder { get; set; } // là sản phẩm nhập giá khi bán
         public bool IsServiceDate { get; set; } // là sản phẩm tính tiền giờ
         public DateTime? DateCreateService { get; set; } // bắt đầu tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
         public DateTime? DateEndService { get; set; } // dừng tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê

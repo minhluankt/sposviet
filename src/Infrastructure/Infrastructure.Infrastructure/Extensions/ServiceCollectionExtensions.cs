@@ -5,6 +5,7 @@ using Application.Interfaces.Contexts;
 using Application.Interfaces.Repositories;
 using Application.Providers;
 using Ardalis.Specification;
+using BankService.VietQR;
 using Domain.Entities;
 using Domain.Identity;
 using Infrastructure.Infrastructure.CacheRepositories;
@@ -16,6 +17,7 @@ using Infrastructure.Webservice.Repository.VNPT;
 using Infrastructure.Webservice.Repository.VNPT.HKD;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RestApiSupport;
 using System.Net.Http;
 using System.Reflection;
 using VNPay.Services;
@@ -56,6 +58,7 @@ namespace Infrastructure.Infrastructure.Extensions
             services.AddTransient<IUserManagerRepository<ApplicationUser>, UserManagerRepository>();
 
             services.AddScoped<IVnPayService, VnPayService>();//ngân hàng
+            services.AddScoped<IVietQRService, VietQRService>();//ngân hàng VietQR
 
 
             services.AddTransient(typeof(IRepositoryCacheAsync<>), typeof(RepositoryCacheAsync<>));
@@ -75,6 +78,8 @@ namespace Infrastructure.Infrastructure.Extensions
             services.AddTransient<IAreaRepository, AreaRepository>();
             services.AddTransient<IRevenueExpenditureRepository<RevenueExpenditure>, RevenueExpenditureRepository>();
             services.AddTransient<IAutoSendTimerRepository<AutoSendTimer>, AutoSendTimerRepository>();
+            services.AddTransient<IBankAccountRepository, BankAccountRepository>();
+            services.AddTransient<IVietQRRepository<VietQR>, VietQRRepository>();
 
             // web service VNPT
             services.AddTransient<IVNPTPortalServiceRepository, VNPTPortalServiceRepository>();

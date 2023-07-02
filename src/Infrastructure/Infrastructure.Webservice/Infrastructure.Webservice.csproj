@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\core\Application\Application.csproj" />
+    <ProjectReference Include="..\..\core\RestApiSupport\RestApiSupport.csproj" />
   </ItemGroup>
 
 </Project>

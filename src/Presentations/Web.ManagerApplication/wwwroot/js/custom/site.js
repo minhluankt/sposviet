@@ -543,7 +543,15 @@ Number.prototype.format0VND = function (n, x, typeCurrency, isQuantity) {
 
     // var result = value.toString().replaceAll(",", "_").replaceAll(".", ",").replaceAll("_", ".");
     return value;
-};
+}; function saveBase64AsFile(base64, fileName) {
+    var link = document.createElement("a");
+    document.body.appendChild(link);
+    link.setAttribute("type", "hidden");
+    link.href = "data:text/plain;base64," + base64;
+    link.download = fileName;
+    link.click();
+    document.body.removeChild(link);
+}
 //chuyển giây về đếm ngược dd/hh/mm/ss
 function secondsToDhms(seconds) {
     seconds = Number(seconds);
@@ -1034,7 +1042,13 @@ function validateFormUser() {
         }
     });
 }
-
+function formatSelect2bankaccount(data) {
+    
+    var $opt = $(
+        '<span><img src="' + data.logo + '" width="60px" /> ' + data.text + '</span>'
+    );
+    return $opt;
+};
 var validateForm = {
     AddPublishInvoiceMerge: function () {
         $("#create-formProduct").validate({
@@ -1424,6 +1438,88 @@ var validateForm = {
                     number: "Vui lòng nhập số",
                     min: "Số phải bắt đầu từ 1",
 
+                }
+            },
+            errorElement: 'span',
+            errorPlacement: function errorPlacement(error, element) {
+                Ladda.stopAll();
+                // input.removeAttr('readonly').removeAttr('disabled');
+                error.addClass('invalid-feedback');
+
+                if (element.prop('type') === 'checkbox') {
+                    error.insertAfter(element.parent('label'));
+                    Ladda.stopAll();
+                    //input.removeAttr('readonly').removeAttr('disabled');
+                } else {
+                    var a = element.parent();
+                    a = a.children().last();
+
+                    error.insertAfter(a.last());
+                    Ladda.stopAll();
+                    //input.removeAttr('readonly').removeAttr('disabled');
+                }
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    // element = $("#select2-" + elem.attr("id") + "-container").parent();
+                    element = $("#select2-" + elem.attr("id") + "-container").parents(".form-group");
+                    //error.insertAfter(element);
+                    element.append(error);
+                }
+            },
+            // eslint-disable-next-line object-shorthand
+            highlight: function highlight(element) {
+                let errorClass = "is-invalid";
+                $(element).addClass('is-invalid').removeClass('is-valid');
+                Ladda.stopAll();
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    // $("#select2-" + elem.attr("id") + "-container").parent().addClass(errorClass).removeClass('is-valid');
+                    $("#select2-" + elem.attr("id") + "-container").parents(".form-group").find("span.select2-selection--single").addClass(errorClass).removeClass('is-valid');
+                }
+                //input.removeAttr('readonly').removeAttr('disabled');
+            },
+            // eslint-disable-next-line object-shorthand
+            unhighlight: function unhighlight(element) {
+                let errorClass = "is-invalid";
+                $(element).removeClass('is-invalid');
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    // $("#select2-" + elem.attr("id") + "-container").parent().removeClass(errorClass).addClass('is-valid');
+                    $("#select2-" + elem.attr("id") + "-container").parents(".form-group").find("span.select2-selection--single").removeClass(errorClass).addClass('is-valid');
+                }
+                //Ladda.stopAll();
+            },
+            submitHandler: function (form) {
+            }
+        });
+    },
+    EditAndAddBankAccount: function () {
+        $("#create-form").validate({
+            ignore: 'input[type=hidden]',
+            rules: {
+                "AccountName": {
+                    required: true,
+                    minlength: 3
+                }, "BankName": {
+                    required: true,
+                }, "BankNumber": {
+                    required: true,
+                    number: true
+                }
+            },
+            messages: {
+                "AccountName": {
+                    required: errrequired,
+                    minlength: errminlength3
+                },
+                "BankName": {
+                    required: errrequired,
+                    number: "Vui lòng nhập số",
+                    min: "Số phải bắt đầu từ 1",
+                },
+                "BankNumber": {
+                    required: errrequired,
+                    number: "Vui lòng nhập số",
                 }
             },
             errorElement: 'span',
@@ -3753,9 +3849,14 @@ var Product = {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                     if (lstid.length == 0) {
-                        toastrcus.error("Vui lòng chọn hàng hóa");
+                        toastrcus.error("Vui lòng chọn hàng hóa!");
                         return;
-                    } else {
+                    }
+                    else if ($("#Vatrate").val()==null) {
+                        toastrcus.error("Bạn chưa chọn thuế suất!");
+                        return;
+                    }
+                    else {
                         $.ajax({
                             type: 'POST',
                             
@@ -5214,6 +5315,73 @@ var eventCreate = {
                         cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
                         didRender: () => {
                             validateForm.EditAndAddTableRoom();
+                            $(".btn-continue").click(function () {
+                                Swal.close();
+                            });
+                            $(".btn-save").click(function () {
+                                if ($("form#create-form").valid()) {
+                                    jQueryModalPost($("form#create-form")[0]);
+                                }
+
+                            });
+
+                        }
+                    });
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+
+    },
+    addOrEditBankAccount: function (url) {
+        $.ajax({
+            type: 'GET',
+            //global: false,
+            url: url,
+            // data: fomrdata,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                if (res.isValid) {
+                    Swal.fire({
+                        // icon: 'success',
+                        title: res.title,
+                        html: res.html,
+                        showClass: {
+                            popup: 'popup-formcreate'
+                        },
+
+                        footer: "<button class='btn btn-primary btn-continue mr-3'><i class='icon-cd icon-add_cart icon'></i>Hủy bỏ</button><button class='btn btn-save btn-success'><i class='icon-cd icon-doneAll icon'></i>Lưu</button>",
+                        allowOutsideClick: true,
+                        showConfirmButton: false,
+                        showCancelButton: false,
+                        cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                        didRender: async () => {
+                            validateForm.EditAndAddBankAccount();
+                            let getCustomre = await axios.get("/Selling/BankAccount/GetJsonBank?bin=" + $("#BinVietQR").val());
+
+                            $("#selectAccountName").select2({
+                                dropdownParent: $("#create-form"),
+                                data: getCustomre.data,
+                                templateResult: formatSelect2bankaccount,
+                                formatSelection: formatSelect2bankaccount,
+                                escapeMarkup: function (m) {
+                                    return m;
+                                },
+                                placeholder: {
+                                    id: '', // the value of the option
+                                    text: "Chọn ngân hàng" 
+                                },
+                                allowClear: true,
+                                language: {
+                                    noResults: function () {
+                                        return "Không tìm thấy dữ liệu";
+                                    }
+                                },
+                            })
+
                             $(".btn-continue").click(function () {
                                 Swal.close();
                             });
@@ -12200,7 +12368,176 @@ var posStaff = {
         });
     }
 }
+var btnsettingVietQR = $(".btn-settingVietQR");
+var VietQR = {
+    AddVietQR: function () {
+        btnsettingVietQR.click(async function () {
+            let getBank = await axios.get("/Selling/PaymentIntegration/AddVietQR");
+            if (getBank.status != 200) {
 
+            } else {
+                Swal.fire({
+                    // icon: 'success',
+                    position: 'top-end',
+                    showClass: {
+                        popup: `
+                              popup-formcreate
+                               animate__animated
+                              animate__fadeInRight
+                              animate__faster
+                            `
+                    },
+                    hideClass: {
+                        popup: "popup-formcreate animate__animated animate__fadeOutRight animate__faster"
+
+                    },
+                    showCloseButton: true,
+
+                    title: "Kích hoạt VietQR",
+                    html: getBank.data,
+                    customClass: {
+                        container: 'selectaddVietQR',
+                        footer: 'footeraddVietQR'
+                    },
+
+                    footer: "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-cancel'></i>Hủy bỏ</button><button class='mr-3 btn btn-save btn-success'><i class='fas fa-check mr-2'></i>Lưu</button>",
+                    allowOutsideClick: true,
+                    showConfirmButton: false,
+                    showCancelButton: false,
+                    cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                    didRender: async () => {
+                        let getBank = await axios.get("/Selling/BankAccount/GetJsonAccountBank");
+                        $("#SelectTemplateVietQR").select2({
+                            dropdownParent: $(".createVietQRfomr"),
+                            placeholder: {
+                                id: '', 
+                                text: "Chọn mẫu hiển thị"
+                            },
+                            allowClear: true,
+                            language: {
+                                noResults: function () {
+                                    return "Không tìm thấy dữ liệu";
+                                }
+                            },
+                        });
+                        $("#selectAccountName").select2({
+                            dropdownParent: $(".createVietQRfomr"),
+                            data: getBank.data,
+                            placeholder: {
+                                id: '', // the value of the option
+                                text: "Chọn tài khoản"
+                            },
+                            allowClear: true,
+                            language: {
+                                noResults: function () {
+                                    return "Không tìm thấy dữ liệu";
+                                }
+                            },
+                        }).on("change", function (data) {
+                            var info = $(this).select2('data')[0];
+                            if (info.id == "") {
+                                $(".btn-createVietQR").toggleClass("d-none");
+                            } else {
+                                if ($(".btn-createVietQR").hasClass("d-none")) {
+                                    $(".btn-createVietQR").toggleClass("d-none");
+                                } 
+                            }
+                            $("#BinVietQR").data("BinVietQR",info.binVietQR);
+                            $("#BankName").val(info.bankName);
+                            $("#BankNumber").val(info.bankNumber);
+                            $("#AccountName").val(info.accountName);
+                        })
+                        $(".btn-createVietQR").click(function () {
+                            VietQR.generateVietQR();
+                        });
+                         $(".btn-continue").click(function () {
+                            Swal.close();
+                        });
+
+                        $(".btn-save").click(function () {
+                            //if ($("form#create-form").valid()) {
+                            VietQR.saveVietQR();
+                               // jQueryModalPost($("form#create-form")[0]);
+                            //}
+                        });
+
+                    }
+                });
+            }
+           
+        });
+    },
+    saveVietQR: function () {
+        if ($("#QrCodedata").data("QrCodedata") == "") {
+            toastrcus.error("Dữ liệu không hợp lệ");
+            return;
+        }
+        if ($("#selectAccountName").val() == null || $("#selectAccountName").val() == "") {
+            toastrcus.error("Dữ liệu không hợp lệ");
+            return;
+        }
+        dataObject = {};
+        dataObject.IdBankAccount = $("#selectAccountName").val();
+        dataObject.Template = $("#SelectTemplateVietQR").val();
+        dataObject.qrCode = $("#QrCodedata").data("QrCodedata");
+        $.ajax({
+            type: 'POST',
+            url: '/Selling/PaymentIntegration/UpdateVietQR',
+            data: dataObject,
+            success: function (res) {
+                if (res.isValid) {
+
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+    },
+    generateVietQR: function () {
+        $.ajax({
+            type: 'POST',
+            url: '/Selling/PaymentIntegration/GenerateVietQR',
+            data: {
+                acqId: $("#BinVietQR").data("BinVietQR"),
+                accountNo: $("#BankNumber").val(),
+                accountName: $("#AccountName").val(),
+                template: $("#SelectTemplateVietQR").val(),
+            },
+            success: function (res) {
+                if (res.isValid) {
+                    $("#QrCodedata").data("QrCodedata", res.qrcodedata);
+                    $("#contentvalueqrviet").html('<div id="logoVietQR" style="    text-align: center;"></div>');
+                    $(".noVietQr").addClass("d-none");
+                    var img = $('<img id="logoQrcode" style="margin-left:auto;margin-right:auto;">'); //Equivalent: $(document.createElement('img'))
+                    img.attr('src', res.qrcodeurl);
+                    img.appendTo('#logoVietQR');
+                    btnhtml = ` <div class="bodyQrcode">
+                                    <button class="btn-saveToImg"><i class="fas fa-download"></i> Lưu hình ảnh</button>
+                                    <button class="btn-printQrcode"><i class="fas fa-print"></i> In Qrcode</button>
+                                </div>`;
+                    $("#contentvalueqrviet").append(btnhtml);
+                    $(".btn-saveToImg").click(function () {
+                        saveBase64AsFile(img[0].src.replace('data:image/png;base64,',""), "qrcode.png");
+                    })
+                    $(".btn-printQrcode").click(function () {
+                        var WindowObject = window.open('', 'PrintWindow', 'width=1200,height=800,top=50,left=50,toolbars=no,scrollbars=yes,status=no,resizable=yes');
+
+                        var strHtml = "<html>\n<head>\n <link rel=\"stylesheet\" type=\"text/css\">\n</head><body onload='window.print();window.close()'><div id=\"printvietqr\" style=\" display:flex;justify-content:center;align-items:center;\">\n" + $('#logoVietQR').html() + "\n</div>\n</body>\n</html>";
+
+                        WindowObject.document.writeln(strHtml);
+                        WindowObject.document.close();
+                        WindowObject.focus();
+                       // printDiv($('#logoVietQR').html());
+                    })
+                }
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        });
+    }
+}
 var PurchaseReturns = {
     loadEvnetFormatTable: function () {
         $("#tablePurchaseOrder tbody tr input").unbind();
@@ -16688,8 +17025,9 @@ var loadeventPos = {
                     if (parseFloat(item.Discount) != 0) {
                         htmldiscount = "<span class='discounttxt'>-" + item.Discount + "%</span>";
                     } else if (parseFloat(item.DiscountAmount) != 0) {
-                        htmldiscount = "<span class='discounttxt'>-" + item.DiscountAmount + "</span>";
+                        htmldiscount = "<span class='discounttxt'>-" + item.DiscountAmount.format0VND(3, 3) + "</span>";
                     }
+                    debugger
                     index = index + 1;
                     html += ` <li class='itemorder` + (item.IsServiceDate ? " isServiceDate" : "") + `' data-isservicedate="` + (item.IsServiceDate?"1":"0") + `"
                         data-datecreateservice="` + (item.IsServiceDate ? item.DateCreateService : "") + `"
@@ -16703,7 +17041,8 @@ var loadeventPos = {
                                             </div>
                                             <div class="item_action`+ (item.IsServiceDate ? " disabled" : "") + `"><i class="fas fa-minus"></i><input class="quantity" ` + (item.IsServiceDate ? "readonly" : "") + ` value="` + item.Quantity.format0VND(3, 3) + `"> <i class="fas fa-plus"></i></div>
                                             <div class="elePrice"><input type="text"
-                                            data-isvat="`+ item.IsVAT+`"
+                                            data-isvat="`+ item.IsVAT +`"
+                                            data-isenterinorder="`+ (item.IsEnterInOrder) +`"
                                             data-pricenovat="`+ item.PriceNoVAT +`"
                                             data-price="`+ (item.PriceOld != null ? item.PriceOld : item.Price) +`"
                                             data-pricenew="`+ item.Price +`"
@@ -16749,12 +17088,13 @@ var loadeventPos = {
             let price = parseFloat($(this).data("price")) || 0;
             let pricenovat = parseFloat($(this).data("pricenovat")) || 0;
             let isvat = $(this).data("isvat");
+            let isenterinorder = $(this).data("isenterinorder");
             let pricenew = parseFloat($(this).data("pricenew")) || 0;
             debugger
             let discountamount = parseFloat($(this).data("discountamount")) || 0;
             let discount = parseFloat($(this).data("discount")) || 0;
             //let a = $(this).data("typediscount");
-            
+          
             let typediscount = parseInt($(this).data("typediscount"));
 
             //if (typediscount == TypeSelectDiscount.Percent) {
@@ -16764,7 +17104,7 @@ var loadeventPos = {
                 pricenovat = price;
             }
             let clsdisabled = "";
-            if (price>0) {
+            if (price > 0 && !isenterinorder) {//th cho hóa đơn có giá lớn hơn k và k phải là hàng nhập giá khi bán
                 clsdisabled = "readonly disabled";
             }
             let html = `<div id="popupselectDiscountPos" class="popup-change-pricepos">
@@ -16814,6 +17154,7 @@ var loadeventPos = {
             $("#popupselectDiscountPos").data("idorder", idOrder);
             $("#popupselectDiscountPos").data("idorderint", idorderint);
             $("#popupselectDiscountPos").data("price", price);
+            $("#popupselectDiscountPos").data("isenterinorder", isenterinorder);
 
             if (typediscount == TypeSelectDiscount.Cash) {
                 $(".btn-amountselect").addClass("btn-primary");
@@ -16823,9 +17164,15 @@ var loadeventPos = {
             }
             $(".discountamount").data("typediscount", TypeSelectDiscount.Cash);
             evetnFormatnumber3(false);
-         
-            $(".popup-change-pricepos").find("input.pricenew").focus();//phải làm 2 lần vì lần 1 nó hủy do focus vafo mất format
-            $(".popup-change-pricepos").find("input.pricenew").select();
+            if (price==0) {//nếu là giá nhập khi bán và giá = 0 thì phải active trước
+                $(".popup-change-pricepos").find("input.giaban").focus();//
+                $(".popup-change-pricepos").find("input.giaban").select();
+            } else {
+                $(".popup-change-pricepos").find("input.pricenew").focus();//phải làm 2 lần vì lần 1 nó hủy do focus vafo mất format
+                $(".popup-change-pricepos").find("input.pricenew").select();
+            }
+          
+
             loadeventPos.loadEventSelectInputPopupPrice();
             //------event kích bên ngoài tự động đóng
             //  $(document).mouseup(function (e) {
@@ -16877,6 +17224,15 @@ var loadeventPos = {
         $("#ousSizeOutPopup .discountamount").keyup(function () {
             loadeventPos.loadCongthucChangeDiscountAndPriceInPopup();
         });//change giảm giá
+        $("#ousSizeOutPopup .giaban").keyup(function () {
+            let isenterinorder = $("#popupselectDiscountPos").data("isenterinorder");
+            let value = $(this).val();
+            if (isenterinorder) {
+                $("#popupselectDiscountPos").data("price", parseFloat(value));
+                loadeventPos.loadCongthucChangeDiscountAndPriceInPopup();
+            }
+            
+        });//check nhập giá khi bán
         $("#ousSizeOutPopup .pricenew").keyup(function () {
             
            // let discountamount = parseFloat($(".discountamount").val().replaceAll(",", ""));
@@ -16905,6 +17261,9 @@ var loadeventPos = {
         });//tự động giá bán select
 
         $("#ousSizeOutPopup .discountamount").click(function () {
+            $(this).select();
+        });//tự động select
+        $("#ousSizeOutPopup .giaban").click(function () {
             $(this).select();
         });//tự động select
         $("#ousSizeOutPopup .pricenew").click(function () {
@@ -23679,6 +24038,7 @@ async function getCheckExpired() {
             data.numdate = getCustomre.data.numdate;
             data.datesExpired = getCustomre.data.datesExpired;
             data.IsExpired = getCustomre.data.isExpired;
+            localStorage.removeItem("CheckExpired"); 
             localStorage.setItem("CheckExpired", JSON.stringify(data)); 
             CheckExpired();
             // Retrieve

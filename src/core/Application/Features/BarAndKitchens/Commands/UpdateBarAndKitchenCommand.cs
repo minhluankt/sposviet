@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.BarAndKitchens.Commands
 {
+     
     public partial class UpdateBarAndKitchenCommand : BarAndKitchen, IRequest<Result<int>>
     {
         public IFormFile Img { get; set; }
@@ -53,7 +54,7 @@ namespace Application.Features.BarAndKitchens.Commands
             else
             {
                 string slug = Common.ConvertToSlug(command.Name);
-                var checkcode = await _Repository.Entities.AsNoTracking().CountAsync(predicate: m => m.Slug == slug && m.Id != brand.Id);
+                var checkcode = await _Repository.Entities.AsNoTracking().CountAsync(predicate: m => m.Slug == slug && m.Id != brand.Id && m.ComId == brand.ComId);
                 if (checkcode > 0)
                 {
                     return await Result<int>.FailAsync(HeperConstantss.ERR014);

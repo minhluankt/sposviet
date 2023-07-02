@@ -10,6 +10,21 @@ namespace Application.Enums
         User = 0,
         Company = 1
     } 
+    public enum EnumTemplateVietQR
+    {
+        [Display(Name = "Mã QR, các logo, thông tin chuyển khoản")]
+        compact2 = 0,
+        [Display(Name = "QRcode kèm logo VietQR, Napas, ngân hàng")]
+        compact = 1,
+        [Display(Name = "Chỉ bao gồm QR")]
+        qr_only = 2,
+        [Display(Name = "Mã QR, các logo và đầy đủ thông tin chuyển khoản")]
+        print = 3,
+        // compact2	540x640 Bao gồm : Mã QR, các logo, thông tin chuyển khoản
+        //compact	540x540 QR kèm logo VietQR, Napas, ngân hàng
+        //qr_only	480x480 Trả về ảnh QR đơn giản, chỉ bao gồm QR
+        //print	600x776 Bao gồm : Mã QR, các logo và đầy đủ thông tin chuyển khoản
+    } 
  
     public enum EnumTypeSericeOrder
     {

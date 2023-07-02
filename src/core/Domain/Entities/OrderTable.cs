@@ -78,6 +78,7 @@ namespace Domain.Entities
         public string Name { get; set; }
         [StringLength(250)]
         public string Note { get; set; }//ghi chú đơn
+        public bool? IsEnterInOrder { get; set; } // nhập giá khi bán
         public bool IsServiceDate { get; set; } // là sản phẩm tính tiền giờ
         public DateTime? DateCreateService { get; set; } // bắt đầu tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê
         public DateTime? DateEndService { get; set; } // dừng tính tiền giờ dịch vụ nhà nghỉ khách sạn, cho thuê

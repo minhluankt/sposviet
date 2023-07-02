@@ -186,6 +186,29 @@ namespace Application.Hepers
                     break;
             }
             return txt;
+        } 
+        public static string ConvertEnumTemplateVietQR(EnumTemplateVietQR tem)
+        {
+            string txt = string.Empty;
+            switch (tem)
+            {
+                case EnumTemplateVietQR.qr_only:
+                    txt = "qr_only";
+                    break;
+                case EnumTemplateVietQR.compact2:
+                    txt = "compact2";
+                    break;
+                case EnumTemplateVietQR.compact:
+                    txt = "compact";
+                    break;
+                case EnumTemplateVietQR.print:
+                    txt = "print";
+                    break;
+                
+                default:
+                    break;
+            }
+            return txt;
         }
         public static string ConvertStatusOrderHtml(EnumStatusOrder EnumStatusOrder)
         {

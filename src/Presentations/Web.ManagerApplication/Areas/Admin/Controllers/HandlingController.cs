@@ -66,7 +66,7 @@ namespace Web.ManagerApplication.Areas.Admin.Controllers
             if (data.Succeeded)
             {
                
-                if (data.Data.DateExpiration <= DateTime.Now.Date)
+                if (data.Data.DateExpiration.HasValue&& data.Data.DateExpiration <= DateTime.Now.Date)
                 {
                     var jsondata = new
                     {

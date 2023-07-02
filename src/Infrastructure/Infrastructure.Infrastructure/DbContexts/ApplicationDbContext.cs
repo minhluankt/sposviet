@@ -81,6 +81,7 @@ namespace Infrastructure.Infrastructure.DbContexts
         // đơn hàng
         public DbSet<DeliveryCompany> DeliveryCompany { get; set; }
         public DbSet<BankAccount> BankAccount { get; set; }
+        public DbSet<VietQR> VietQR { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderDetailts> OrderDetailts { get; set; }
         public DbSet<Cart> Cart { get; set; }
@@ -437,7 +438,6 @@ namespace Infrastructure.Infrastructure.DbContexts
                           .IsUnique();
                 entity.HasMany(p => p.OrderDetailts).WithOne(p => p.Order).HasForeignKey(m => m.IdOrder).OnDelete(deleteBehavior: DeleteBehavior.Cascade);
                 entity.HasOne(p => p.PaymentMethod).WithMany(p => p.Order).HasForeignKey(x => x.IdPaymentMethod).OnDelete(deleteBehavior: DeleteBehavior.NoAction);
-                entity.HasOne(p => p.BankAccount).WithMany(p => p.Order).HasForeignKey(x => x.IdBankAccount).OnDelete(deleteBehavior: DeleteBehavior.NoAction);
                 entity.HasOne(p => p.DeliveryCompany).WithMany(p => p.Order).HasForeignKey(x => x.IdDeliveryCompany).OnDelete(deleteBehavior: DeleteBehavior.NoAction);
                 entity.HasOne(p => p.Customer).WithMany(p => p.Orders).HasForeignKey(x => x.IdCustomer).OnDelete(deleteBehavior: DeleteBehavior.NoAction);
 
@@ -447,9 +447,15 @@ namespace Infrastructure.Infrastructure.DbContexts
             builder.Entity<BankAccount>(entity =>
             {
                 // Tạo Index Unique trên 1 cột
-                entity.HasIndex(p => new { p.BankNumber })
+                entity.HasIndex(p => new { p.BankNumber,p.ComId })
                           .IsUnique();
 
+            }); 
+            builder.Entity<VietQR>(entity =>
+            {
+                // Tạo Index Unique trên 1 cột
+                entity.HasIndex(p => new { p.IdBankAccount, p.ComId }).IsUnique();
+                entity.HasOne(p => p.BankAccount).WithOne(p => p.VietQR).HasForeignKey<VietQR>(x => x.IdBankAccount);
             });
 
             builder.Entity<PaymentMethod>(entity =>

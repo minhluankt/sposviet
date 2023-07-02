@@ -46,7 +46,7 @@ namespace Application.Features.BarAndKitchens.Commands
             request.Name = request.Name;
             request.Slug = Common.ConvertToSlug(request.Name);
             request.Active = true;
-            var fidn = _Repository.Entities.AsNoTracking().Where(m => m.Slug == request.Slug).SingleOrDefault();
+            var fidn = _Repository.Entities.AsNoTracking().Where(m => m.Slug == request.Slug && m.ComId==request.ComId).SingleOrDefault();
             if (fidn != null)
             {
                 return await Result<int>.FailAsync("Tên đã tồn tại!");

@@ -18,5 +18,11 @@ namespace Application.Constants
         public const string PagePost = "PagePost";
         public const string ImgSeo = "images/ImgSeo/logobsd.jpg";
         public const string ProductDocument = "ProductDocument";
+        public const string BankAccountFolder = "BankAccount";
+    } 
+    public class FileConstants
+    {
+    
+        public const string BankAccountVietQR = "nganhangvietqr.txt";
     }
 }

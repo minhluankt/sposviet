@@ -1,6 +1,8 @@
 ﻿using AspNetCoreHero.Abstractions.Domain;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,13 +11,21 @@ namespace Domain.Entities
 {
     public class BankAccount : AuditableEntity
     {
-        public int IdPaymentMethod { get; set; }
+        public int ComId { get; set; }
+        [StringLength(500)]
         public string AccountName { get; set; }//tên tài khonar
+        [StringLength(500)]
         public string BankName { get; set; }//tên ngân hàng
+        [StringLength(50)]
         public string BankNumber { get; set; } // số tài khoản
+        [StringLength(300)]
         public string BankAddress { get; set; } // địa chỉ ngân hàng
-        public string Slug { get; set; }
+        [StringLength(300)]
+        public string Note { get; set; } // ghi chú
+        public int? BinVietQR { get; set; } // mã bin ngân hàng VietQR
         public bool Active { get; set; }
-        public virtual ICollection<Order> Order { get; set; }
+        [NotMapped]
+        public string secret { get; set; }
+        public VietQR? VietQR { get; set; }
     }
 }

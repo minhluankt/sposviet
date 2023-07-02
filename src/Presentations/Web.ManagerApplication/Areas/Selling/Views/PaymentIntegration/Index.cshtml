@@ -1,0 +1,207 @@
+﻿@model Domain.ViewModel.PaymentIntegrationModel
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/selling/restaurantsetting">< Trở lại thiết lập nhà hàng</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cấu hình tích hợp thanh toán</li>
+    </ol>
+</nav>
+
+
+<div class="card settingEinvoice PaymentIntegration col-md-6 col-lg-6 col-xl-4 mb-5">
+    <div class="card-header">
+        <h5>Quản lý cài đặt VietQR quét mã thanh toán</h5>
+    </div>
+    <ul class="lstSuplerinvoice mt-3">
+        @if (Model.VietQRs.Count()==0)
+        {
+            <li class="einvoiceVnpt item-infoEinvoice">
+                <img class="disnable" src="~/images/bank/vietqr.png" />
+                <p class="content">VietQR - Giải pháp quét mã QRCode thanh toán tiện lợi hoàn toàn miễn phí.</p>
+                <button class="btn btn-primary btn-settingVietQR">Cài đặt</button>
+            </li>
+        }
+        else
+        {
+            @foreach (var vietqr in Model.VietQRs)
+            {
+                <li class="einvoiceVnpt item-infoEinvoice">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img class="" src="~/images/bank/vietqr.png" />
+                            <p class="mt-3 text-success">VietQR thanh toán, chuyển khoản bằng mã QR nhanh chóng và tiện lợi </p>
+                        </div>
+                        <div class="col-md-7 infoaccount">
+                            
+                        </div>
+                        <div class="col-md-12 text-center">
+                            <div class="sltbtn mt-3">
+                                <button class="btn btn-danger btn-removeSupplierEInvoice" data-id="@(vietqr.secret)"><i class="fas fa-trash mr-2"></i>Gỡ cài đặt</button>
+                                <button class="btn btn-primary btn-editeinvoice" data-id="@(vietqr.secret)"><i class="fas fa-edit mr-2"></i>Chỉnh sửa</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            }
+           
+        }
+
+    </ul>
+</div>
+
+<div class="card col-md-12 col-lg-12 col-xl-12 mr-auto secctionbankaccount">
+    <div class="card-header">
+        <h5>Quản lý tài khoản ngân hàng</h5>
+    </div>
+    <div class="card-body">
+        <div class="col-sm-12 pt-2">
+            <a onclick="eventCreate.addOrEditBankAccount('/Selling/BankAccount/Create')" class="btn bg-success text-white">
+                <i class="fas fa-plus-circle"> </i> Thêm mới
+            </a>
+            <button class="ladda-button mr-2 btn btn-primary" id="reload" data-style="expand-left">
+                <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Reload</span>
+
+                <span class="ladda-spinner"></span>
+            </button>
+        </div>
+        <div id="viewAll" class="card-body">
+            <table class="table table-bordered table-striped" style=" " id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Ngân hàng</th>
+                        <th>Số tài khoản</th>
+                        <th>Tên chủ tài khoản</th>
+                        <th>Ngày tạo</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <script>
+        VietQR.AddVietQR();
+        dataTableOut = $('#dataTable').DataTable({
+            "responsive": true,
+            "processing": true,
+            stateSave: true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "filter": false,
+            "rowId": "id",
+            "orderMulti": false,
+            "ordering": false,
+            // "order": [[0, "desc"]],
+            "language": {
+                "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                "zeroRecords": "Không tìm thấy dữ liệu nào",
+                "emptyTable": "Không có dữ liệu",
+                "search": "Tìm kiếm:",
+                "processing": "Đang xử lý...",
+                "lengthMenu": "Hiển thị _MENU_ dòng",
+                "loadingRecords": "Vui lòng chờ...",
+                "paginate": {
+                    "first": "Đầu tiên",
+                    "last": "Cuối cùng",
+                    "next": "Tiếp theo",
+                    "previous": "Về trước"
+                },
+            },
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+            "buttons": [
+                {
+                    text: 'Reload',
+                    action: function (e, dt, node, config) {
+                        dataTableOut.ajax.reload();
+                    }
+                }
+            ],
+            "columnDefs": [
+
+
+                { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+
+                {
+                    targets: [1, 2, 3, 4, -1],
+                    className: 'text-center'
+                },
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": [-1, 0],
+
+                },
+                { "width": "100px", "targets": -1 }
+
+            ],
+            ajax: {
+                url: "/Selling/BankAccount/LoadAll",
+                type: "POST",
+                datatype: "json",
+                data: {
+                   // Name: function () { return $('#Name').val().trim() },
+                }
+            },
+            "columns": [
+                {
+                    "data": "bankName", "name": "BankName", "autoWidth": true
+
+                }, {
+                    "data": "bankNumber", "name": "BankNumber", "autoWidth": true
+
+                }, {
+                    "data": "accountName", "name": "AccountName", "autoWidth": true
+
+                },
+
+                {
+                    "data": "createdOn", "name": "createdOn",
+                    "render": function (data, type, full, meta) {
+                        // console.log(full.id);
+                        if (full.createdOn != null) {
+                            data = moment(full.createdOn).format('DD/MM/YYYY HH:MM:SS');
+                            return data;
+                        }
+                        return "";
+                    }
+
+                },
+
+                {
+                    "data": null, "name": "",
+                    "render": function (data, type, full, meta) {
+
+                        let html = '<div class="btn-group dropleft">' +
+                            '<button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>' +
+                            '<div class="dropdown-menu">' +
+                            '<a class="dropdown-item" href="javascript:void(0)" onclick="eventCreate.addOrEditBankAccount(\'/Selling/BankAccount/edit?secret=' + full.secret + '\')"><i class="fas fa-edit mr-2"></i> Sửa</a></a>' +
+
+                            '<form id="form_delete_' + full.id + '" action="/Selling/BankAccount/Delete?secret=' + full.secret + '"  asp-controller="BankAccount" asp-area="Selling" method="post" asp-action="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">' +
+                            '<a  class="dropdown-item"  href="javascript:$(\'#form_delete_' + full.id + '\').submit();"><i class="fas fa-trash-alt mr-2"></i> Xóa</a>' +
+                            '</form>' +
+                            '</div>' +
+                            '</div>';
+
+                        return html;
+                    }
+                },
+            ]
+
+        });
+        $('#reload').on('click', function () {
+            dataTableOut.ajax.reload(null, false);
+
+        });
+        $('input').keyup(function (e) {
+            if (e.keyCode == 13) {
+                dataTableOut.ajax.reload(null, false);
+            }
+        });
+    </script>
+    }

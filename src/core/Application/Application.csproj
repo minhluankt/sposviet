@@ -157,6 +157,12 @@
     <Compile Include="Features\OrderTablePos\Commands\UpdateOrderTableCommand.cs" />
     <Compile Include="Features\OrderTablePos\Commands\UpdateServiceFoodByPaymentCommand.cs" />
     <Compile Include="Features\OrderTablePos\Querys\GetAllOrderTableQuery.cs" />
+    <Compile Include="Features\BankAccounts\Commands\CreateBankAccountCommand.cs" />
+    <Compile Include="Features\BankAccounts\Commands\DeleteBankAccountCommand.cs" />
+    <Compile Include="Features\BankAccounts\Commands\UpdateBankAccountCommand.cs" />
+    <Compile Include="Features\BankAccounts\Query\GetAllBankAccountQuery.cs" />
+    <Compile Include="Features\BankAccounts\Query\GetByIdBankAccountQuery.cs" />
+    <Compile Include="Features\BankAccounts\Query\GetPageListQuery.cs" />
     <Compile Include="Features\ProductInBarAndKitchens\Command\UpdateUpdateProductInBarAndKitchenCommand.cs" />
     <Compile Include="Features\ProductInBarAndKitchens\Query\GetListProductInBarAndKitchenQuery.cs" />
     <Compile Include="Features\ProductInBarAndKitchens\Query\GetPaginatedListProductInBarAndKitchenQuery.cs" />
@@ -279,6 +285,10 @@
     <Compile Include="Features\Units\Commands\UpdateUnitCommand.cs" />
     <Compile Include="Features\Units\Query\GetAllUnitQuery.cs" />
     <Compile Include="Features\Units\Query\GetByIdUnitQuery.cs" />
+    <Compile Include="Features\VietQRs\Commands\GenerateVietQRCommand.cs" />
+    <Compile Include="Features\VietQRs\Commands\UpdateVietQRCommand.cs" />
+    <Compile Include="Features\VietQRs\Query\GetAllVietQRQuery.cs" />
+    <Compile Include="Features\VietQRs\Query\GetByIdVietQRQuery.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -312,6 +322,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\BankService\BankService.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\HelperLibrary\Library.csproj" />
     <ProjectReference Include="..\PagedList.Core\PagedList.Core.csproj" />

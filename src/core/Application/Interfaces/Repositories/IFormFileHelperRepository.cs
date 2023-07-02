@@ -10,6 +10,7 @@ namespace Application.Interfaces.Repositories
 {
     public interface IFormFileHelperRepository
     {
+        string GetContentFile(string nameFile, string path = "", string folder = SystemVariableHelper.FolderUpload);
         string GetFileTemplate(string nameFile, string path = "", string folder = SystemVariableHelper.TemplateWord);
         string UploadedFile(IFormFile Image, string name, string path,bool rename = true);
         string UploadedFile(string base64, string nameFile, string path);

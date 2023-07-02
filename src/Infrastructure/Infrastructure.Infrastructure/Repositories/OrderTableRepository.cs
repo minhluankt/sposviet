@@ -441,6 +441,10 @@ namespace Infrastructure.Infrastructure.Repositories
                 item.Amount = product.Price;
             }
             item.Name = product.Name;
+            if (product.IsEnterInOrder)
+            {
+                item.IsEnterInOrder = true;
+            }
             item.IsServiceDate = product.IsServiceDate;
             item.DateCreateService = DateCreateService;
             item.Code = product.Code;
@@ -2263,7 +2267,7 @@ namespace Infrastructure.Infrastructure.Repositories
                     //check giá mục đích vì ban đầu update khác rồi sau đó update đúng lại
                     if (x.Price != PriceAdjust)
                     {
-                        if (x.PriceOld==null)//check null để chỉ update lần đầu lần sau k được update nữa giữ mãi giá cũ
+                        if (x.PriceOld==null&& x.Price>0)//check null để chỉ update lần đầu lần sau k được update nữa giữ mãi giá cũ
                         {
                             x.PriceOld = x.Price;//gán cái giá bán cũ vào PriceOld
                         }
@@ -2280,7 +2284,7 @@ namespace Infrastructure.Infrastructure.Repositories
                         x.PriceOld = null;
                     }
                     
-                    if(x.Price!= Price && x.Price==0) //nếu có thop dành cho giá bán = 0  và tự nhập giá khi bán thì update giá cũ là giá bán mới, giá bán mới Price đã được update bên trên
+                    if(x.IsEnterInOrder==true || (x.Price != Price && x.Price == 0 && Price > 0)) //nếu có thop dành cho giá bán = 0  và tự nhập giá khi bán thì update giá cũ là giá bán mới, giá bán mới Price đã được update bên trên
                     {
                         x.PriceOld = Price.Value;// phải gán old là giá bán
                     }

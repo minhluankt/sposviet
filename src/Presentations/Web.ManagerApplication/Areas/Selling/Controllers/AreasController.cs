@@ -1,4 +1,5 @@
 ﻿using Application.Constants;
+using Application.Enums;
 using Application.Features.Areas.Commands;
 using Application.Features.Areas.Query;
 using Application.Hepers;
@@ -118,11 +119,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             collection.ComId = getusser.ComId;
             if (collection.Active)
             {
-                collection.Status = Application.Enums.EnumStatusArea.DANG_HOAT_DONG;
+                collection.Status = EnumStatusArea.DANG_HOAT_DONG;
             }
             else
             {
-                collection.Status = Application.Enums.EnumStatusArea.NGUNG_HOAT_DONG;
+                collection.Status = EnumStatusArea.NGUNG_HOAT_DONG;
             }
             try
             {
@@ -174,7 +175,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var data = await _mediator.Send(new GetByIdAreaQuery(getusser.ComId) { Id = id });
             if (data.Succeeded)
             {
-                if (data.Data.Status == Application.Enums.EnumStatusArea.DANG_HOAT_DONG)
+                if (data.Data.Status == EnumStatusArea.DANG_HOAT_DONG)
                 {
                     data.Data.Active = true;
                 }

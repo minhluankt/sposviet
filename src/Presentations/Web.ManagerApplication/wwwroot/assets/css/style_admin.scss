@@ -396,6 +396,7 @@ table body tr td {
         border-bottom: #ccc solid thin;
     }
 }
+
 .elecontainerselectfood {
     display: flex;
     flex-direction: row-reverse;
@@ -1695,8 +1696,87 @@ input.select2-search__field {
         }
     }
 }
+@media print {
+    #printvietqr {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
 
+    html, body {
+        height: 100%;
+        width: 100%;
+    }
+}
+.selectaddVietQR {
+    .swal2-popup {
+        width: 979px;
+
+
+        .createVietQRfomr {
+            #contentvalueqrviet {
+                height: 100%;
+                border: #efefef solid thin;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                padding-top: 20px;
+                padding-bottom: 20px;
+
+                .logoQrcode {
+                    width: 100%;
+                    margin: auto;
+                }
+
+                #logoVietQR {
+                    width: 100%;
+                    margin: auto;
+                    text-align: center;
+                }
+
+                .bodyQrcode {
+                    WIDTH: 100%;
+                    text-align: center;
+                    border-top: #eee solid thin;
+                    padding-top: 20px;
+
+                    button {
+                        background-color: #00457d;
+                        border: none;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        color: #fff;
+                        padding: 8px 16px;
+                    }
+                }
+
+                .noVietQr {
+                    opacity: 0.3;
+                    position: absolute;
+
+                    img.logovietqr {
+                        max-width: 200px;
+                    }
+                    /* width:300px;
+                    height:300px;
+                    background-image:url(/images/bank/vietqr.png);
+                    background-repeat:no-repeat;
+                    ba*/
+                }
+            }
+        }
+    }
+}
 .settingEinvoice {
+    &.PaymentIntegration {
+        .content {
+            margin-bottom: 80px;
+            margin-top: 20px;
+        }
+    }
+
     .lstSuplerinvoice {
         margin-left: 0px;
 
@@ -7912,6 +7992,11 @@ img#Imgdata {
 }
 // Small devices (landscape phones, less than 768px)
 @media (max-width: 767.98px) {
+    .selectaddVietQR {
+        .swal2-popup {
+            width: 100%;
+        }
+    }
     .jq-toast-wrap.top-right {
         top: 0 !important;
         right: 0 !important;

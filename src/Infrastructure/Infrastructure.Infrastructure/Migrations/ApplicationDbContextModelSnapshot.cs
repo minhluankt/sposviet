@@ -228,19 +228,29 @@ namespace Infrastructure.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("AccountName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
                     b.Property<string>("BankAddress")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("BankName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("BankNumber")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("BinVietQR")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ComId")
+                        .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -248,21 +258,19 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("IdPaymentMethod")
-                        .HasColumnType("int");
-
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Slug")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Note")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BankNumber")
+                    b.HasIndex("BankNumber", "ComId")
                         .IsUnique()
                         .HasFilter("[BankNumber] IS NOT NULL");
 
@@ -2757,8 +2765,6 @@ namespace Infrastructure.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdBankAccount");
-
                     b.HasIndex("IdCustomer");
 
                     b.HasIndex("IdDeliveryCompany");
@@ -3001,6 +3007,9 @@ namespace Infrastructure.Infrastructure.Migrations
 
                     b.Property<int?>("IdProduct")
                         .HasColumnType("int");
+
+                    b.Property<bool?>("IsEnterInOrder")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsServiceDate")
                         .HasColumnType("bit");
@@ -4504,6 +4513,49 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.ToTable("UploadImgProduct");
                 });
 
+            modelBuilder.Entity("Domain.Entities.VietQR", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ComId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdBankAccount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Template")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("qrCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdBankAccount")
+                        .IsUnique();
+
+                    b.HasIndex("IdBankAccount", "ComId")
+                        .IsUnique();
+
+                    b.ToTable("VietQR");
+                });
+
             modelBuilder.Entity("Domain.Entities.Ward", b =>
                 {
                     b.Property<int>("Id")
@@ -4883,11 +4935,6 @@ namespace Infrastructure.Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
                 {
-                    b.HasOne("Domain.Entities.BankAccount", "BankAccount")
-                        .WithMany("Order")
-                        .HasForeignKey("IdBankAccount")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("Domain.Entities.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("IdCustomer")
@@ -4903,8 +4950,6 @@ namespace Infrastructure.Infrastructure.Migrations
                         .WithMany("Order")
                         .HasForeignKey("IdPaymentMethod")
                         .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("BankAccount");
 
                     b.Navigation("Customer");
 
@@ -5138,6 +5183,17 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Domain.Entities.VietQR", b =>
+                {
+                    b.HasOne("Domain.Entities.BankAccount", "BankAccount")
+                        .WithOne("VietQR")
+                        .HasForeignKey("Domain.Entities.VietQR", "IdBankAccount")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BankAccount");
+                });
+
             modelBuilder.Entity("Domain.Entities.Ward", b =>
                 {
                     b.HasOne("Domain.Entities.City", "City")
@@ -5169,7 +5225,7 @@ namespace Infrastructure.Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.BankAccount", b =>
                 {
-                    b.Navigation("Order");
+                    b.Navigation("VietQR");
                 });
 
             modelBuilder.Entity("Domain.Entities.BarAndKitchen", b =>

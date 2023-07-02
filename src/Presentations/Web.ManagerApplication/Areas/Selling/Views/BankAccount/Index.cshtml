@@ -1,0 +1,201 @@
+﻿
+@{
+    var userId = Context.Request.Query["userId"].ToString();
+
+}
+<style>
+    .pagination {
+        float: right;
+    }
+</style>
+<div class="main-content-800">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/selling/restaurantsetting">< Trở lại thiết lập nhà hàng</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Quản lý tài khoản ngân hàng</li>
+    </ol>
+</nav>
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="">
+                    <label>Tên/Số tài khoản</label>
+                        <input type="text" name="Name" id="Name" placeholder="Tên/Số tài khoản......" class="form-control">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="card-footer text-center" style=" display: block;">
+        <button class="ladda-button mb-2 mr-2 btn btn-primary" id="btnSearch" type="button" data-style="expand-left">
+            <span class="ladda-label"><i class="fas fa-search mr-2"></i> Tìm kiếm</span>
+
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="col-sm-12 pt-2">
+        @*<a asp-area="Admin" asp-controller="Product" class="" asp-action="CreateOrEdit">*@
+            <a onclick="eventCreate.addOrEditBankAccount('/Selling/BankAccount/Create')" class="btn bg-success text-white">
+            <i class="fas fa-plus-circle"> </i> Thêm mới
+        </a>
+        <button class="ladda-button mr-2 btn btn-primary" id="reload" data-style="expand-left">
+            <span class="ladda-label"><i class="fa fas fa-bolt"></i>  Reload</span>
+
+            <span class="ladda-spinner"></span>
+        </button>
+    </div>
+    <div id="viewAll" class="card-body">
+        <table class="table table-bordered table-striped" style=" " id="dataTable">
+            <thead>
+                <tr>
+                    <th>Ngân hàng</th>
+                    <th>Số tài khoản</th>
+                    <th>Tên chủ tài khoản</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+@section Scripts
+    {
+    <script>
+
+        $(document).ready(function () {
+
+            // loaddataSelect2("/admin/users/getSelect2","#listUserselect2","@userId");
+        });
+        $(document).ready(function () {
+            dataTableOut = $('#dataTable').DataTable({
+                "responsive": true,
+                "processing": true,
+                stateSave: true,
+                "pagingType": "full_numbers",
+                "serverSide": true,
+                "filter": true,
+                "rowId": "id",
+                "orderMulti": false,
+                "ordering": false,
+                // "order": [[0, "desc"]],
+                "language": {
+                    "info": "Hiển thị _START_ đến _END_ dòng của tổng _TOTAL_ dòng",
+                    "infoEmpty": "Hiển thị 0 đến 0 dòng của tổng 0 dòng",
+                    "zeroRecords": "Không tìm thấy dữ liệu nào",
+                    "emptyTable": "Không có dữ liệu",
+                    "search": "Tìm kiếm:",
+                    "processing": "Đang xử lý...",
+                    "lengthMenu": "Hiển thị _MENU_ dòng",
+                    "loadingRecords": "Vui lòng chờ...",
+                    "paginate": {
+                        "first": "Đầu tiên",
+                        "last": "Cuối cùng",
+                        "next": "Tiếp theo",
+                        "previous": "Về trước"
+                    },
+                },
+                "pageLength": 10,
+                "lengthMenu": [[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "All"]],
+                "buttons": [
+                    {
+                        text: 'Reload',
+                        action: function (e, dt, node, config) {
+                            dataTableOut.ajax.reload();
+                        }
+                    }
+                ],
+                "columnDefs": [
+
+
+                    { responsivePriority: 4, targets: [-1, 0] },////define hiển thị mặc định column 1
+
+                    {
+                        targets: [1,2,3,4,-1],
+                        className: 'text-center'
+                    },
+                    {
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": [-1, 0],
+
+                    },
+                    { "width": "100px", "targets": -1 }
+
+                ],
+                ajax: {
+                    url: "/Selling/BankAccount/LoadAll",
+                    type: "POST",
+                    datatype: "json",
+                    data: {
+                        Name: function () { return $('#Name').val().trim() },
+                        // Name: function () { return $('#CompanyName').val().trim() },
+                    }
+                },
+                "columns": [
+                    {
+                        "data": "bankName", "name": "BankName", "autoWidth": true
+
+                    }, {
+                        "data": "bankNumber", "name": "BankNumber", "autoWidth": true
+
+                    }, {
+                        "data": "accountName", "name": "AccountName", "autoWidth": true
+
+                    },
+                   
+                    {
+                        "data": "createdOn", "name": "createdOn",
+                        "render": function (data, type, full, meta) {
+                            // console.log(full.id);
+                            if (full.createdOn != null) {
+                                data = moment(full.createdOn).format('DD/MM/YYYY HH:MM:SS');
+                                return data;
+                            }
+                            return "";
+                        }
+
+                    },
+                  
+                    {
+                        "data": null, "name": "",
+                        "render": function (data, type, full, meta) {
+
+                            let html = '<div class="btn-group dropleft">' +
+                                '<button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>' +
+                                '<div class="dropdown-menu">' +
+                                '<a class="dropdown-item" href="javascript:void(0)" onclick="eventCreate.addOrEditArea(\'/Selling/BankAccount/edit?secret=' + full.idString + '\')"><i class="fas fa-edit mr-2"></i> Sửa</a></a>' +
+
+                                '<form id="form_delete_' + full.id + '" action="/Selling/BankAccount/Delete?secret=' + full.idString + '"  asp-controller="Area" asp-area="Selling" method="post" asp-action="Delete" onsubmit="return jQueryModalDelete(this)" class="d-inline">' +
+                                '<a  class="dropdown-item"  href="javascript:$(\'#form_delete_' + full.id + '\').submit();"><i class="fas fa-trash-alt mr-2"></i> Xóa</a>' +
+                                '</form>' +
+                                '</div>' +
+                                '</div>';
+
+                            return html;
+                        }
+                    },
+                ]
+
+            });
+            $('#reload').on('click', function () {
+                dataTableOut.ajax.reload(null, false);
+
+            });
+            $('input').keyup(function (e) {
+                if (e.keyCode == 13) {
+                    dataTableOut.ajax.reload(null, false);
+                }
+            });
+        });
+
+
+    </script>
+}

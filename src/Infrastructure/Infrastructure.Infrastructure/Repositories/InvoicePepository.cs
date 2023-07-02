@@ -11,7 +11,6 @@ using Domain.ViewModel;
 using Domain.XmlDataModel;
 using Hangfire.Logging;
 using HelperLibrary;
-using Domain.Identity;
 using Infrastructure.Webservice.Repository.VNPT;
 using Joker.Extensions;
 using Library;

@@ -56,6 +56,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SposVietPlugin4.6.1", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SposVietPluginKySo", "src\Presentations\SposVietPluginKySo\SposVietPluginKySo.csproj", "{26DCBA1D-BC0A-4DCF-9F12-8D4290670369}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestApiSupport", "src\core\RestApiSupport\RestApiSupport.csproj", "{5ABA72B5-B568-43B2-8E30-63A5064AD345}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,6 +140,10 @@ Global
 		{26DCBA1D-BC0A-4DCF-9F12-8D4290670369}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26DCBA1D-BC0A-4DCF-9F12-8D4290670369}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26DCBA1D-BC0A-4DCF-9F12-8D4290670369}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ABA72B5-B568-43B2-8E30-63A5064AD345}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ABA72B5-B568-43B2-8E30-63A5064AD345}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ABA72B5-B568-43B2-8E30-63A5064AD345}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ABA72B5-B568-43B2-8E30-63A5064AD345}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,6 +172,7 @@ Global
 		{9C11CAE5-5188-4E71-825B-68FC3135728A} = {7D03D9EB-825D-4589-9832-6842E5CBF9CB}
 		{9AD58DDB-7438-4A50-8711-347BD95FD0A6} = {5916F631-77EC-4E72-A02F-A2D0E4E73469}
 		{26DCBA1D-BC0A-4DCF-9F12-8D4290670369} = {5916F631-77EC-4E72-A02F-A2D0E4E73469}
+		{5ABA72B5-B568-43B2-8E30-63A5064AD345} = {7D03D9EB-825D-4589-9832-6842E5CBF9CB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF74808C-2F6C-49F6-A12F-19D69F2C8DED}

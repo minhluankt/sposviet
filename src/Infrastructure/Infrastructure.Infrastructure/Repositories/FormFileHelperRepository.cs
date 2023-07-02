@@ -158,10 +158,20 @@ namespace Infrastructure.Infrastructure.Repositories
 
         public string GetFileTemplate(string nameFile, string path = "", string folder = SystemVariableHelper.TemplateWord)
         {
-            string filename = Path.Combine(_hostingEnvironment.WebRootPath, SystemVariableHelper.TemplateWord + path +"/"+ nameFile);
+            string filename = Path.Combine(_hostingEnvironment.WebRootPath, folder + path +"/"+ nameFile);
             if (File.Exists(filename))
             {
                 return filename;
+            }
+            return string.Empty;
+        }
+      
+          public string GetContentFile(string nameFile, string path = "", string folder = SystemVariableHelper.FolderUpload)
+        {
+            string filename = Path.Combine(_hostingEnvironment.WebRootPath, folder + path +"/"+ nameFile);
+            if (File.Exists(filename))
+            {
+                return File.ReadAllText(filename);
             }
             return string.Empty;
         }

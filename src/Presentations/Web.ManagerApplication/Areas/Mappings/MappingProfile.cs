@@ -3,6 +3,7 @@
 using Application.DTOs.Logs;
 using Application.Features.Areas.Commands;
 using Application.Features.AutoSendTimers.Commands;
+using Application.Features.BankAccounts.Commands;
 using Application.Features.Banners.Commands;
 using Application.Features.BarAndKitchens.Commands;
 using Application.Features.Brands.Commands;
@@ -40,6 +41,7 @@ using Application.Features.TemplateInvoices.Commands;
 using Application.Features.TypeCategorys.Commands;
 using Application.Features.TypeSpecification.Commands;
 using Application.Features.Units.Commands;
+using Application.Features.VietQRs.Commands;
 using AutoMapper;
 using Domain.Entities;
 using Domain.ViewModel;
@@ -102,6 +104,8 @@ namespace Web.ManagerApplication.Areas.Mappings
             CreateMap<UpdateConfigSystemCommand, ConfigSystemModel>().ReverseMap();
             CreateMap<UpdateConfigSystemCommand, SellModelSetting>().ReverseMap();
 
+            CreateMap<UpdateVietQRCommand, VietQR>().ReverseMap();
+
             CreateMap<UpdateConfigSystemCommand, ConfigSaleParametersModel>().ReverseMap();
 
             CreateMap<CheckOutOrderInvoiceCommand, OrderInvoicePaymentSaleRetailModel>().ReverseMap();
@@ -142,6 +146,9 @@ namespace Web.ManagerApplication.Areas.Mappings
             CreateMap<GetRepostEInvoiceQuery, SearchReportPosModel>().ReverseMap();
 
             CreateMap<PublishEInvoiceMergeCommand, PublishInvoiceMergeModel>().ReverseMap();
+
+            CreateMap<CreateBankAccountCommand, BankAccount>().ReverseMap();
+            CreateMap<UpdateBankAccountCommand, BankAccount>().ReverseMap();
 
             CreateMap<UpdatePostCommand, PostModel>().ReverseMap();
             CreateMap<CreatePostCommand, PostModel>().ReverseMap();

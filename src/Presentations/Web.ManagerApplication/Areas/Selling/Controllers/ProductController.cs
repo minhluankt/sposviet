@@ -343,6 +343,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             try
             {
+        
                 var currentUser = User.Identity.GetUserClaimLogin();;
                 var get = await _mediator.Send(new UpdatePriceCommand() { Id = id,PriceNoVAT= PriceNoVat,VATRate= VatRate, ComId = currentUser.ComId,TypeUpdatePriceProduct=EnumTypeUpdatePriceProduct.VATPRICE});
                 if (get.Succeeded)
@@ -366,7 +367,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             try
             {
-                tét lại UpdateVATRateMutiAsync khi k chọn thuế
+               
                 if (VatRate==null)
                 {
                     _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR053));
