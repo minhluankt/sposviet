@@ -31,7 +31,6 @@ namespace Application.Features.VietQRs.Commands
             _vietQRrepository = vietQRrepository;
         }
 
-        checklaij lưu và hiển thị qrcode ra index hiện chưa hiển thị được, và quét mã chưa dc
         public async Task<Result<VietQR>> Handle(UpdateVietQRCommand request, CancellationToken cancellationToken)
         {
             if (request.Id==0)
