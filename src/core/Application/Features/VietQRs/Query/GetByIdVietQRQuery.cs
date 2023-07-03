@@ -16,9 +16,10 @@ namespace Application.Features.VietQRs.Query
         public int Id { get; set; }
 
 
-        public GetByIdVietQRQuery(int _comId)
+        public GetByIdVietQRQuery(int _comId,int id)
         {
             ComId = _comId;
+            this.Id = id;
         }
 
         public class GetVietQRByIdQueryHandler : IRequestHandler<GetByIdVietQRQuery, Result<VietQR>>

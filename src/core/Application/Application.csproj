@@ -285,6 +285,7 @@
     <Compile Include="Features\Units\Commands\UpdateUnitCommand.cs" />
     <Compile Include="Features\Units\Query\GetAllUnitQuery.cs" />
     <Compile Include="Features\Units\Query\GetByIdUnitQuery.cs" />
+    <Compile Include="Features\VietQRs\Commands\DeleteVietQRCommand.cs" />
     <Compile Include="Features\VietQRs\Commands\GenerateVietQRCommand.cs" />
     <Compile Include="Features\VietQRs\Commands\UpdateVietQRCommand.cs" />
     <Compile Include="Features\VietQRs\Query\GetAllVietQRQuery.cs" />

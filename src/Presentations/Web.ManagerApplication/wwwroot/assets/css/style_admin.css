@@ -1456,21 +1456,24 @@ input.select2-search__field {
   margin-bottom: 80px;
   margin-top: 20px;
 }
-.settingEinvoice .lstSuplerinvoice {
+.settingEinvoice .lstSuplerinvoice, .settingEinvoice .lstsettingCard {
   margin-left: 0px;
 }
-.settingEinvoice .lstSuplerinvoice .item-infoEinvoice .infoaccount {
+.settingEinvoice .lstSuplerinvoice .item-infoEinvoice .infoaccount, .settingEinvoice .lstsettingCard .item-infoEinvoice .infoaccount {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.settingEinvoice .lstSuplerinvoice li {
+.settingEinvoice .lstSuplerinvoice li, .settingEinvoice .lstsettingCard li {
   list-style: none;
 }
-.settingEinvoice .lstSuplerinvoice li img {
+.settingEinvoice .lstSuplerinvoice li .infoimgvietqr img, .settingEinvoice .lstsettingCard li .infoimgvietqr img {
+  width: 200px;
+}
+.settingEinvoice .lstSuplerinvoice li img, .settingEinvoice .lstsettingCard li img {
   width: 100px;
 }
-.settingEinvoice .lstSuplerinvoice li img.disnable {
+.settingEinvoice .lstSuplerinvoice li img.disnable, .settingEinvoice .lstsettingCard li img.disnable {
   opacity: 0.3;
 }
 

@@ -20,8 +20,11 @@ namespace Domain.Entities
         public string BankNumber { get; set; } // số tài khoản
         [StringLength(300)]
         public string BankAddress { get; set; } // địa chỉ ngân hàng
-        [StringLength(300)]
         public string Note { get; set; } // ghi chú
+        [StringLength(50)]
+        public string Code { get; set; } 
+        [StringLength(100)]
+        public string ShortName { get; set; } // ví dụ seabank, vietinbank
         public int? BinVietQR { get; set; } // mã bin ngân hàng VietQR
         public bool Active { get; set; }
         [NotMapped]

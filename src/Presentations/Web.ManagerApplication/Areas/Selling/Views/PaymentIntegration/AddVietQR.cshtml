@@ -1,11 +1,13 @@
-﻿@model Domain.Entities.VietQR
+﻿@model Domain.ViewModel.VietQRModel
 @{
     Layout = null;
 }
 <div class="createVietQRfomr">
-    <input id="BinVietQR" type="hidden" class="form-control" readonly />
+    <input asp-for="BinVietQR" data-BinVietQR="@Model.BinVietQR" type="hidden" class="form-control" readonly />
     <input id="QrCodedata" type="hidden" class="form-control" />
-    <input type="hidden" class="form-control" />
+    <input asp-for="Code" data-Code="@Model.Code" type="hidden" class="form-control" />
+    <input asp-for="ShortName" data-ShortName="@Model.ShortName" type="hidden" class="form-control" />
+   
     <div class="row">
         <div class="col-md-4">
             <div class="">
@@ -43,7 +45,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Mẫu Qrcode hiển thị</label>
-                <select asp-items="(IEnumerable<SelectListItem>)ViewBag.Selectlist" name="template" style="width:100%" class="form-control" id="SelectTemplateVietQR">
+                <select asp-items="(IEnumerable<SelectListItem>)ViewBag.Selectlist" asp-for="template" style="width:100%" class="form-control" id="SelectTemplateVietQR">
                     <option></option>
                 </select>
             </div>
@@ -55,10 +57,18 @@
         </div>
         <div class="col-md-8">
             <div id="contentvalueqrviet">
-                <div id="logoVietQR"></div>
-                <div class="noVietQr">
-                    <img class="logovietqr" src="~/images/bank/vietqr.png"/>
+                <div id="logoVietQR">
+                    @if (Model.Id!=0)
+                    {
+                        <img src='https://img.vietqr.io/image/@(Model.ShortName)-@(Model.BankNumber)-@(Model.template).jpg?accountName=@(Model.AccountName)' />
+                    }
                 </div>
+                @if (Model.Id== 0)
+                {
+                    <div class="noVietQr">
+                        <img class="logovietqr" src="~/images/bank/vietqr.png" />
+                    </div>
+                }
             </div>
         </div>
     </div>

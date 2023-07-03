@@ -4,11 +4,16 @@ using Application.Features.BankAccounts.Query;
 using Application.Features.VietQRs.Commands;
 using Application.Features.VietQRs.Query;
 using Application.Hepers;
+using Application.Providers;
 using BankService.Model;
 using Domain.Entities;
 using Domain.ViewModel;
+using Domain.XmlDataModel;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using System.Net.NetworkInformation;
 using System.Reflection;
@@ -19,6 +24,14 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
     [Area("Selling")]
     public class PaymentIntegrationController : BaseController<PaymentIntegrationController>
     {
+        private IOptions<CryptoEngine.Secrets> _config;
+
+        public PaymentIntegrationController(IOptions<CryptoEngine.Secrets> config)
+        {
+            _config = config;
+        }
+
+        [Authorize(Policy = "paymentIntegration.index")]
         public async Task<IActionResult> Index()
         {
             var currentUser = User.Identity.GetUserClaimLogin();
@@ -27,7 +40,10 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             if (send.Succeeded)
             {
                 model.VietQRs = send.Data;
-               
+                foreach (var item in model.VietQRs)
+                {
+                    item.secret = CryptoEngine.Encrypt("id=" + item.Id, _config.Value.Key);
+                }
             }
             return View(model);
         }
@@ -47,15 +63,19 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var attributes = field.GetCustomAttribute<DisplayAttribute>();
             return attributes != null ? attributes.Name : value.ToString();
         }
-        private List<SelectListItem> GetSelectListItem(EnumTemplateVietQR type = EnumTemplateVietQR.print)
+        private List<SelectListItem> GetSelectListItem(string? type)
         {
+            if (string.IsNullOrEmpty(type))
+            {
+                type = EnumTemplateVietQR.print.ToString();
+            }
             var select = Enum.GetValues(typeof(EnumTemplateVietQR)).Cast<EnumTemplateVietQR>()
                 .OrderBy(x => x)
                 .Select(x => new SelectListItem
                 {
                     Text = GetDisplayName(x),
                     Value = x.ToString(),
-                    Selected = x == type
+                    Selected = x.ToString() == type
                 }).ToList();
             select.Insert(0, new SelectListItem()
             {
@@ -64,10 +84,34 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             });
             return select;
         }
-        public IActionResult AddVietQR()
+        [Authorize(Policy = "paymentIntegration.create")]
+        public IActionResult AddVietQRAsync()
         {
-            ViewBag.Selectlist = this.GetSelectListItem();
-            return View();
+            ViewBag.Selectlist = this.GetSelectListItem(string.Empty);
+            return View(new VietQRModel());
+        } 
+        [Authorize(Policy = "paymentIntegration.create")]
+        [EncryptedParameters("secret")]
+        public async Task<IActionResult>  GetUpdateVietQR(int id)
+        {
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var send = await _mediator.Send(new GetByIdVietQRQuery(currentUser.ComId,id));
+            if (send.Succeeded)
+            {
+                ViewBag.Selectlist = this.GetSelectListItem(send.Data.Template);
+                VietQRModel vietQRModel = new VietQRModel();
+                vietQRModel.Id = id;
+                vietQRModel.BinVietQR = send.Data.BankAccount?.BinVietQR;
+                vietQRModel.AccountName = send.Data.BankAccount?.AccountName;
+                vietQRModel.BankNumber = send.Data.BankAccount?.BankNumber;
+                vietQRModel.BankName = send.Data.BankAccount?.BankName;
+                vietQRModel.BankAddress = send.Data.BankAccount?.BankAddress;
+                vietQRModel.Code = send.Data.BankAccount?.Code;
+                vietQRModel.ShortName = send.Data.BankAccount?.ShortName;
+                return View("AddVietQR", vietQRModel);
+            }
+            _notify.Error(GeneralMess.ConvertStatusToString(send.Message));
+            return null;
         } 
         public async Task<IActionResult> GenerateVietQRAsync(InfoPayQrcode model)
         {
@@ -85,6 +129,26 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
 
             return new JsonResult(new { isValid = false, html = string.Empty });
         }
+        [Authorize(Policy = "paymentIntegration.delete")]
+        [HttpPost]
+        [EncryptedParameters("secret")]
+        public async Task<IActionResult> DeleteQRAsync(int? id)
+        {
+            if (id == null)
+            {
+                return new JsonResult(new { isValid = false, html = string.Empty });
+            }
+            var currentUser = User.Identity.GetUserClaimLogin();
+            var send = await _mediator.Send(new DeleteVietQRCommand(currentUser.ComId, id.Value));
+            if (send.Succeeded)
+            {
+                _notify.Success(GeneralMess.ConvertStatusToString(send.Message));
+                return new JsonResult(new { isValid = true, html = string.Empty });
+            }
+            _notify.Error(GeneralMess.ConvertStatusToString(send.Message));
+            return new JsonResult(new { isValid = false, html = string.Empty });
+        }
+        [HttpPost]
         public async Task<IActionResult> UpdateVietQRAsync(VietQR vietQR)
         {
             if (!ModelState.IsValid)
@@ -101,7 +165,6 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                         // You may log the errors if you want
                     }
                 }
-
                 // return View(collection);
                 return new JsonResult(new { isValid = false, html = string.Empty });
             }
@@ -111,9 +174,18 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var send = await _mediator.Send(_map);
             if (send.Succeeded)
             {
-                return new JsonResult(new { isValid = true, data = send.Data });
-            }
-
+                _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
+                return new JsonResult(new { 
+                    isValid = true,
+                    bin = send.Data.BankAccount?.BinVietQR,
+                    shortName = send.Data.BankAccount?.ShortName,
+                    bankNumber = send.Data.BankAccount?.BankNumber,
+                    accountName = send.Data.BankAccount?.AccountName,
+                    template = send.Data.Template,
+                    secret = CryptoEngine.Encrypt("id=" + send.Data.Id, _config.Value.Key)
+            });
+        }
+            _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR011));
             return new JsonResult(new { isValid = false, html = string.Empty });
         }
     }

@@ -33,6 +33,10 @@ namespace Web.ManagerApplication.BankAccounts.Selling.Controllers
         public ActionResult GetJsonBank(int? bin)
         {
             var getjson = _iFormFileHelperRepository.GetContentFile(FileConstants.BankAccountVietQR, FolderUploadConstants.BankAccountFolder);
+            if (getjson=="")
+            {
+                return Content("[]");
+            }
             var listbank = Common.ConverJsonToModel<List<BankAccountModel>>(getjson);
             var jsonselect2 = listbank.Select(x => new
             {
@@ -45,7 +49,7 @@ namespace Web.ManagerApplication.BankAccounts.Selling.Controllers
             });
             return Content(Common.ConverObjectToJsonString(jsonselect2));
         }
-        public async Task<ActionResult> GetJsonAccountBankAsync()
+        public async Task<ActionResult> GetJsonAccountBankAsync(int? bin)
         {
             var currentUser = User.Identity.GetUserClaimLogin();
             var send = await _mediator.Send(new GetAllBankAccountQuery(currentUser.ComId) { Paging = false });
@@ -54,8 +58,11 @@ namespace Web.ManagerApplication.BankAccounts.Selling.Controllers
                 var jsonselect2 = send.Data.Select(x => new
                 {
                     id = x.Id,
+                    selected = x.BinVietQR == bin,
                     text = $"{x.AccountName} - {x.BankNumber}",
                     binVietQR = x.BinVietQR,
+                    shortName = x.ShortName,
+                    code = x.Code,
                     accountName = x.AccountName,
                     bankNumber = x.BankNumber,
                     bankName = x.BankName,
@@ -153,6 +160,8 @@ namespace Web.ManagerApplication.BankAccounts.Selling.Controllers
                 return new JsonResult(new { isValid = false, html = string.Empty });
             }
             collection.BankName = $"{getbank.name} - {getbank.shortName}";
+            collection.Code = getbank.code;
+            collection.ShortName = getbank.shortName;
             try
             {
                 if (collection.Id == 0)

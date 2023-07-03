@@ -20,6 +20,9 @@ namespace Domain.ViewModel
         public string BankAddress { get; set; } // địa chỉ ngân hàng
         [StringLength(300)]
         public string Note { get; set; } // ghi chú
+        public string Code { get; set; }
+        public string ShortName { get; set; } // ví dụ seabank, vietinbank
+        public string template { get; set; } 
         public int? BinVietQR { get; set; } // mã bin ngân hàng VietQR
       
     }

@@ -249,6 +249,10 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<int?>("BinVietQR")
                         .HasColumnType("int");
 
+                    b.Property<string>("Code")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<int>("ComId")
                         .HasColumnType("int");
 
@@ -265,8 +269,11 @@ namespace Infrastructure.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Note")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
