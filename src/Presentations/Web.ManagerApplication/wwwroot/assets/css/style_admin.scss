@@ -1777,7 +1777,7 @@ input.select2-search__field {
         }
     }
 
-    .lstSuplerinvoice {
+    .lstSuplerinvoice, .lstsettingCard {
         margin-left: 0px;
 
         .item-infoEinvoice {
@@ -1790,6 +1790,11 @@ input.select2-search__field {
 
         li {
 
+            .infoimgvietqr {
+                img {
+                    width: 200px;
+                }
+            }
 
             img {
                 width: 100px;

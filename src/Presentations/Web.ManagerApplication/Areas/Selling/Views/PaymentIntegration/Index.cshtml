@@ -12,10 +12,10 @@
     <div class="card-header">
         <h5>Quản lý cài đặt VietQR quét mã thanh toán</h5>
     </div>
-    <ul class="lstSuplerinvoice mt-3">
+    <ul class="lstsettingCard mt-3">
         @if (Model.VietQRs.Count()==0)
         {
-            <li class="einvoiceVnpt item-infoEinvoice">
+            <li class="itemCardsetting">
                 <img class="disnable" src="~/images/bank/vietqr.png" />
                 <p class="content">VietQR - Giải pháp quét mã QRCode thanh toán tiện lợi hoàn toàn miễn phí.</p>
                 <button class="btn btn-primary btn-settingVietQR">Cài đặt</button>
@@ -25,27 +25,25 @@
         {
             @foreach (var vietqr in Model.VietQRs)
             {
-                <li class="einvoiceVnpt item-infoEinvoice">
+                <li class="itemCardsetting">
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-7">
                             <img class="" src="~/images/bank/vietqr.png" />
-                            <p class="mt-3 text-success">VietQR thanh toán, chuyển khoản bằng mã QR nhanh chóng và tiện lợi </p>
+                            <p class="mt-3 text-success content">VietQR thanh toán, chuyển khoản bằng mã QR nhanh chóng và tiện lợi </p>
                         </div>
-                        <div class="col-md-7 infoaccount">
-                            
+                        <div class="col-md-5 infoimgvietqr text-center">
+                            <img src='https://img.vietqr.io/image/@(vietqr.BankAccount.ShortName)-@(vietqr.BankAccount.BankNumber)-@(vietqr.Template).jpg?accountName=@(vietqr.BankAccount.AccountName)' />
                         </div>
                         <div class="col-md-12 text-center">
                             <div class="sltbtn mt-3">
-                                <button class="btn btn-danger btn-removeSupplierEInvoice" data-id="@(vietqr.secret)"><i class="fas fa-trash mr-2"></i>Gỡ cài đặt</button>
-                                <button class="btn btn-primary btn-editeinvoice" data-id="@(vietqr.secret)"><i class="fas fa-edit mr-2"></i>Chỉnh sửa</button>
+                                <button class="btn btn-danger btn-removevietqr" data-id="@(vietqr.secret)"><i class="fas fa-trash mr-2"></i>Gỡ cài đặt</button>
+                                <button class="btn btn-primary btn-editvietqr" data-id="@(vietqr.secret)" data-bin="@(vietqr.BankAccount.BinVietQR)"><i class="fas fa-edit mr-2"></i>Chỉnh sửa</button>
                             </div>
                         </div>
                     </div>
                 </li>
             }
-           
         }
-
     </ul>
 </div>
 
@@ -84,6 +82,7 @@
 @section Scripts
     {
     <script>
+        VietQR.updateDataAttrButton();
         VietQR.AddVietQR();
         dataTableOut = $('#dataTable').DataTable({
             "responsive": true,

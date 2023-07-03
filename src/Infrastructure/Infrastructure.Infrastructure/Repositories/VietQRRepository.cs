@@ -28,7 +28,7 @@ namespace Infrastructure.Infrastructure.Repositories
         }
         public async Task<VietQR> GetByIdAsync(int Comid,int id)
         {
-            return await _vietQRRepository.Entities.Where(x=>x.ComId==Comid&&x.Id==id).AsNoTracking().SingleOrDefaultAsync();
+            return await _vietQRRepository.Entities.Where(x=>x.ComId==Comid&&x.Id==id).AsNoTracking().Include(x=>x.BankAccount).SingleOrDefaultAsync();
         }
 
         public async Task<Result<VietQR>> UpdateAsync(VietQR vietQR)
@@ -39,7 +39,7 @@ namespace Infrastructure.Infrastructure.Repositories
                 getData.IdBankAccount= vietQR.IdBankAccount;
                 getData.Template= vietQR.Template;
                 getData.qrCode= vietQR.qrCode;
-                await _vietQRRepository.UpdateAsync(vietQR);
+                await _vietQRRepository.UpdateAsync(getData);
                 await _unitOfWork.SaveChangesAsync();
                 return await Result<VietQR>.SuccessAsync(vietQR,HeperConstantss.SUS006);
             }
@@ -55,6 +55,18 @@ namespace Infrastructure.Infrastructure.Repositories
             await _vietQRRepository.AddAsync(vietQR);
             await _unitOfWork.SaveChangesAsync();
             return await Result<VietQR>.SuccessAsync(vietQR,HeperConstantss.ERR012);
+        }
+
+        public async Task<Result> DeleteAsync(int ComId, int Id)
+        {
+            var getData = await _vietQRRepository.Entities.Where(x => x.ComId == ComId && x.Id == Id).SingleOrDefaultAsync();
+            if (getData != null)
+            {
+                await _vietQRRepository.DeleteAsync(getData);
+                await _unitOfWork.SaveChangesAsync();
+                return Result<VietQR>.Success(HeperConstantss.SUS007);
+            }
+            return await Result<VietQR>.FailAsync(HeperConstantss.ERR012);
         }
     }
 }

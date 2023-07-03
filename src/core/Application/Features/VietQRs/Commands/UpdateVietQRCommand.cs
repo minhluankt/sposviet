@@ -30,7 +30,6 @@ namespace Application.Features.VietQRs.Commands
             _vietQRService = vietQRServicerepository;
             _vietQRrepository = vietQRrepository;
         }
-
         public async Task<Result<VietQR>> Handle(UpdateVietQRCommand request, CancellationToken cancellationToken)
         {
             if (request.Id==0)

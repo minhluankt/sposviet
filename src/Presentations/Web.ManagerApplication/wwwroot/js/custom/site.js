@@ -12368,106 +12368,193 @@ var posStaff = {
         });
     }
 }
-var btnsettingVietQR = $(".btn-settingVietQR");
-var VietQR = {
-    AddVietQR: function () {
-        btnsettingVietQR.click(async function () {
-            let getBank = await axios.get("/Selling/PaymentIntegration/AddVietQR");
-            if (getBank.status != 200) {
 
-            } else {
-                Swal.fire({
-                    // icon: 'success',
-                    position: 'top-end',
-                    showClass: {
-                        popup: `
+var btnremovevietqr = $(".btn-removevietqr");
+var VietQR = {
+    updateDataAttrButton: function () {
+        $(".lstsettingCard li.itemCardsetting").map(function () {
+            if ($(this).find(".btn-removevietqr").length>0) {
+                let id = $(this).find(".btn-removevietqr").data("id");
+                let bin = $(this).find(".btn-editvietqr").data("bin");
+
+                $(this).find(".btn-removevietqr").removeAttr("data-id");
+                $(this).find(".btn-editvietqr").removeAttr("data-id");
+                $(this).find(".btn-editvietqr").removeAttr("data-bin");
+
+                $(this).find(".btn-removevietqr").data("id", id);
+                $(this).find(".btn-editvietqr").data("id", id);
+                $(this).find(".btn-editvietqr").data("bin", bin);
+            }
+          
+        });
+    },
+    updateDataOfUpdateVietQR: function () {
+        let BinVietQR = $(".createVietQRfomr").find("#BinVietQR").data("BinVietQR");
+        let Code = $(".createVietQRfomr").find("#Code").data("Code");
+        let ShortName = $(".createVietQRfomr").find("#ShortName").data("ShortName");
+
+        $(".createVietQRfomr").find("#BinVietQR").removeAttr("data-BinVietQR");
+        $(".createVietQRfomr").find("#Code").removeAttr("data-Code");
+        $(".createVietQRfomr").find("#ShortName").removeAttr("data-ShortName");
+      
+        $(".createVietQRfomr").find("#BinVietQR").data("BinVietQR", BinVietQR);
+        $(".createVietQRfomr").find("#Code").data("Code", Code);
+        $(".createVietQRfomr").find("#ShortName").data("ShortName", ShortName);
+    },
+    eventbtnremove: function () {
+        btnremovevietqr.click(function () {
+            let sel = $(this);
+            Swal.fire({
+                title: 'Xác nhận?',
+                text: "Bạn có chắc chắn muốn tiếp tục gỡ bỏ không?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Selling/PaymentIntegration/DeleteQR?secret=' + $(this).data("id"),
+
+                        success: function (res) {
+                            if (res.isValid) {
+                                html = ` <img class="disnable" src="../images/bank/vietqr.png" />
+                                        <p class="content">VietQR - Giải pháp quét mã QRCode thanh toán tiện lợi hoàn toàn miễn phí.</p>
+                                        <button class="btn btn-primary btn-settingVietQR">Cài đặt</button>`
+                                sel.parents(".itemCardsetting").html(html);
+                                VietQR.AddVietQR();
+                                Swal.close();
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                }
+            })
+
+        })
+    },
+    eventbtnUpdate: function () {
+        $(".btn-editvietqr").click(function () {
+            VietQR.addAndUpdateVietQR($(this), "/Selling/PaymentIntegration/GetUpdateVietQR?secret=" + $(this).data("id"), $(this).data("bin"))
+        });
+    },
+    addAndUpdateVietQR: async function (sel, urlcre, bin) {
+        debugger
+        selitem = $(sel);
+        let getBank = await axios.get(urlcre);
+        if (getBank.status != 200 || getBank.data==null) {
+
+        } else {
+            Swal.fire({
+                // icon: 'success',
+                position: 'top-end',
+                showClass: {
+                    popup: `
                               popup-formcreate
                                animate__animated
                               animate__fadeInRight
                               animate__faster
                             `
-                    },
-                    hideClass: {
-                        popup: "popup-formcreate animate__animated animate__fadeOutRight animate__faster"
+                },
+                hideClass: {
+                    popup: "popup-formcreate animate__animated animate__fadeOutRight animate__faster"
 
-                    },
-                    showCloseButton: true,
+                },
+                showCloseButton: true,
 
-                    title: "Kích hoạt VietQR",
-                    html: getBank.data,
-                    customClass: {
-                        container: 'selectaddVietQR',
-                        footer: 'footeraddVietQR'
-                    },
+                title: "Kích hoạt VietQR",
+                html: getBank.data,
+                customClass: {
+                    container: 'selectaddVietQR',
+                    footer: 'footeraddVietQR'
+                },
 
-                    footer: "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-cancel'></i>Hủy bỏ</button><button class='mr-3 btn btn-save btn-success'><i class='fas fa-check mr-2'></i>Lưu</button>",
-                    allowOutsideClick: true,
-                    showConfirmButton: false,
-                    showCancelButton: false,
-                    cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
-                    didRender: async () => {
-                        let getBank = await axios.get("/Selling/BankAccount/GetJsonAccountBank");
-                        $("#SelectTemplateVietQR").select2({
-                            dropdownParent: $(".createVietQRfomr"),
-                            placeholder: {
-                                id: '', 
-                                text: "Chọn mẫu hiển thị"
-                            },
-                            allowClear: true,
-                            language: {
-                                noResults: function () {
-                                    return "Không tìm thấy dữ liệu";
-                                }
-                            },
-                        });
-                        $("#selectAccountName").select2({
-                            dropdownParent: $(".createVietQRfomr"),
-                            data: getBank.data,
-                            placeholder: {
-                                id: '', // the value of the option
-                                text: "Chọn tài khoản"
-                            },
-                            allowClear: true,
-                            language: {
-                                noResults: function () {
-                                    return "Không tìm thấy dữ liệu";
-                                }
-                            },
-                        }).on("change", function (data) {
-                            var info = $(this).select2('data')[0];
-                            if (info.id == "") {
-                                $(".btn-createVietQR").toggleClass("d-none");
-                            } else {
-                                if ($(".btn-createVietQR").hasClass("d-none")) {
-                                    $(".btn-createVietQR").toggleClass("d-none");
-                                } 
+                footer: "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-cancel'></i>Hủy bỏ</button><button class='mr-3 btn btn-save btn-success'><i class='fas fa-check mr-2'></i>Lưu</button>",
+                allowOutsideClick: true,
+                showConfirmButton: false,
+                showCancelButton: false,
+                cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                didRender: async () => {
+                    let getBank = await axios.get("/Selling/BankAccount/GetJsonAccountBank?bin=" + bin);
+                    $("#SelectTemplateVietQR").select2({
+                        dropdownParent: $(".createVietQRfomr"),
+                        placeholder: {
+                            id: '',
+                            text: "Chọn mẫu hiển thị"
+                        },
+                        allowClear: true,
+                        language: {
+                            noResults: function () {
+                                return "Không tìm thấy dữ liệu";
                             }
-                            $("#BinVietQR").data("BinVietQR",info.binVietQR);
-                            $("#BankName").val(info.bankName);
-                            $("#BankNumber").val(info.bankNumber);
-                            $("#AccountName").val(info.accountName);
-                        })
-                        $(".btn-createVietQR").click(function () {
-                            VietQR.generateVietQR();
-                        });
-                         $(".btn-continue").click(function () {
-                            Swal.close();
-                        });
+                        },
+                    });
+                    $("#selectAccountName").select2({
+                        dropdownParent: $(".createVietQRfomr"),
+                        data: getBank.data,
+                        placeholder: {
+                            id: '', // the value of the option
+                            text: "Chọn tài khoản"
+                        },
+                        allowClear: true,
+                        language: {
+                            noResults: function () {
+                                return "Không tìm thấy dữ liệu";
+                            }
+                        },
+                    }).on("change", function (data) {
+                        var info = $(this).select2('data')[0];
+                        if (info.id == "") {
+                            $(".btn-createVietQR").toggleClass("d-none");
+                        } else {
+                            if ($(".btn-createVietQR").hasClass("d-none")) {
+                                $(".btn-createVietQR").toggleClass("d-none");
+                            }
+                        }
+                        $("#BinVietQR").data("BinVietQR", info.binVietQR);
+                        $("#Code").data("Code", info.code);
+                        $("#ShortName").data("ShortName", info.shortName);
+                        $("#BankName").val(info.bankName);
+                        $("#BankNumber").val(info.bankNumber);
+                        $("#AccountName").val(info.accountName);
+                    })
+                    $(".btn-createVietQR").click(function () {
+                        VietQR.generateVietQR();
+                    });
+                    $(".btn-continue").click(function () {
+                        Swal.close();
+                    });
 
-                        $(".btn-save").click(function () {
-                            //if ($("form#create-form").valid()) {
-                            VietQR.saveVietQR();
-                               // jQueryModalPost($("form#create-form")[0]);
-                            //}
-                        });
+                    $(".btn-save").click(function () {
+                        //if ($("form#create-form").valid()) {
+                        VietQR.saveVietQR(selitem);
+                        // jQueryModalPost($("form#create-form")[0]);
+                        //}
+                    });
 
-                    }
-                });
-            }
-           
-        });
+                }
+            });
+        }
     },
-    saveVietQR: function () {
+    
+    AddVietQR: function () {
+        var btnsettingVietQR = $(".btn-settingVietQR");
+        btnsettingVietQR.click( function () {
+            VietQR.addAndUpdateVietQR($(this), "/Selling/PaymentIntegration/AddVietQR")
+        });
+        if ($(".btn-removevietqr").length>0) {
+            VietQR.eventbtnremove();
+        }
+        if ($(".btn-editvietqr").length > 0) {
+            VietQR.eventbtnUpdate();
+        }
+    },
+    saveVietQR: function (selitem) {
         if ($("#QrCodedata").data("QrCodedata") == "") {
             toastrcus.error("Dữ liệu không hợp lệ");
             return;
@@ -12486,7 +12573,29 @@ var VietQR = {
             data: dataObject,
             success: function (res) {
                 if (res.isValid) {
-
+                    html = `<div class="row">
+                                <div class="col-md-7">
+                                    <img class="" src="../images/bank/vietqr.png" />
+                                    <p class="mt-3 text-success content">VietQR thanh toán, chuyển khoản bằng mã QR nhanh chóng và tiện lợi </p>
+                                </div>
+                                 <div class="col-md-5 infoimgvietqr text-center">
+                                    <img src='https://img.vietqr.io/image/`+ res.shortName + `-` + res.bankNumber + `-` + res.template + `.jpg?accountName=` + res.accountName +`' />
+                                </div>
+                                <div class="col-md-12 text-center">
+                                    <div class="sltbtn mt-3">
+                                        <button class="btn btn-danger btn-removevietqr"><i class="fas fa-trash mr-2"></i>Gỡ cài đặt</button>
+                                        <button class="btn btn-primary btn-editvietqr"><i class="fas fa-edit mr-2"></i>Chỉnh sửa</button>
+                                    </div>
+                                </div>
+                            </div>`;
+                    let liitem = $(selitem).parents(".itemCardsetting");
+                    liitem.html(html);
+                    liitem.find(".btn-removevietqr").data("id", res.secret)
+                    liitem.find(".btn-editvietqr").data("id", res.secret)
+                    liitem.find(".btn-editvietqr").data("bin", res.bin)
+                    VietQR.eventbtnremove();
+                    VietQR.eventbtnUpdate();
+                    Swal.close();
                 }
             },
             error: function (err) {
