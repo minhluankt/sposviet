@@ -74,5 +74,14 @@ namespace Infrastructure.Infrastructure.Repositories
             }
         }
 
+        public async Task<Result<BankAccount>> GetDefaultAsync(int ComId)
+        {
+            var product = await _repository.Entities.FirstOrDefaultAsync(x => x.ComId == ComId&&x.IsSetDefault);
+            if (product==null)
+            {
+                return await Result<BankAccount>.FailAsync(HeperConstantss.ERR012);
+            }
+            return await Result<BankAccount>.SuccessAsync(product);
+        }
     }
 }

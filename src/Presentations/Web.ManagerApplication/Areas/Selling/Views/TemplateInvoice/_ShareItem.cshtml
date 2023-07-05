@@ -6,6 +6,10 @@
     {
         Model.TypeTemplatePrint = Application.Enums.EnumTypeTemplatePrint.IN_BILL;
     }
+    if (Model.IsRegisterQrCodeVietQR && string.IsNullOrEmpty(Model.HtmlQrCodeVietQR))
+    {
+        Model.HtmlQrCodeVietQR = "<img src='{qrDataURL}' width='150px;margin:auto'/>";
+    }
 }
 @Html.HiddenFor(m => m.Id)
 <div class="card-bodysweetalert2">
@@ -42,7 +46,7 @@
                 <div class="form-group" >
                     <div style="display: flex;/* align-items: center; */flex-direction: column;">
                         <label asp-for="IsShowQrCodeVietQR" class="control-label" style="margin-bottom:0px">Tích hợp QRcode</label>
-                        <small><i>Hiển thị mã Qrcode VietQR lên bill để dễ dàng quét mã thanh toán trên bill</i></small>
+                        <small><i>Hiển thị mã Qrcode VietQR lên bill, sử dụng app mọi ngân hàng Mobile Banking, Momo, VNPT Mony.... dễ dàng quét mã QR thanh toán trên bill</i></small>
                     </div>
                     <input asp-for="IsShowQrCodeVietQR" style="width:25px;height:25px; margin-top:10px" />
                     <span asp-validation-for="IsShowQrCodeVietQR" class="text-danger"></span>
@@ -93,6 +97,18 @@
                         <td>{comemail}</td>
                     </tr>
                     <tr>
+                        <td>Tên tài khoản ngân hàng</td>
+                        <td>{chu_tai_khoan}</td>
+                    </tr>
+                       <tr>
+                        <td>Số tài khoản ngân hàng</td>
+                        <td>{so_tai_khoan}</td>
+                    </tr>
+                    <tr>
+                        <td>Tên ngân hàng</td>
+                        <td>{ten_ngan_hang}</td>
+                    </tr>
+                    <tr>
                         <td colspan="2" style="width:100%" class="font-weight-bold">Thông tin hóa đơn</td>
                     </tr>
                     <tr>
@@ -102,9 +118,14 @@
                     <tr>
                         <td>Mẫu số, ký hiệu HDDT</td>
                         <td>{kyhieuhoadon}</td>
-                    </tr> <tr>
+                    </tr> 
+                    <tr>
                         <td>Số hóa đơn điện tử</td>
                         <td>{sohoadon}</td>
+                    </tr>
+                    <tr>
+                        <td>Qrcode thanh toán</td>
+                        <td>{infoqrcodethanhtoan}</td>
                     </tr>
                     <tr>
                         <td colspan="2" style="width:100%" class="font-weight-bold">Thông tin đơn vị mua</td>

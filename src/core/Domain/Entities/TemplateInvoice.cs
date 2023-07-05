@@ -19,11 +19,11 @@ namespace Domain.Entities
         public string Template { get; set; }
         public bool Active { get; set; }
        
-        public bool IsShowQrCodeVietQR { get; set; }
+        public bool IsShowQrCodeVietQR { get; set; }//cái này dùng để lưu cho tempalte mẫu có dùng hay k
         public string HtmlQrCodeVietQR { get; set; }
         public string Note { get; set; }
         [NotMapped]
-        public bool IsRegisterQrCodeVietQR { get; set; }
+        public bool IsRegisterQrCodeVietQR { get; set; }//cái này dùng để gọi lên hệ thống là hệ thống có đăng ký qrcode chưa
         [NotMapped]
         public List<SelectListItem> Selectlist { get; set; }
     }

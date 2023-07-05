@@ -7,6 +7,7 @@ using AutoMapper;
 using BankService.Model;
 using BankService.VietQR;
 using CoreHtmlToImage;
+using HelperLibrary;
 using Library;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
@@ -14,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,6 +52,12 @@ namespace Application.Features.VietQRs.Commands
                 var gettem = _iFormFileHelperRepository.GetContentFile(filename, FolderUploadConstants.VietQR);
                 if (!string.IsNullOrEmpty(gettem))
                 {
+                    //int start = 11;
+                    //StringBuilder sb = new StringBuilder(data.qrCode);
+                    //sb
+                    //  .Remove(start, length)
+                    //  .Insert(start, replacementText);
+                    data.qrCode = data.qrCode.ReplaceAt(10,2,"11");//12 là chỉ quét 1 lần
                     string path = _iFormFileHelperRepository.GetFileTemplate(FileConstants.logAppsposviet,string.Empty, FolderUploadConstants.Images);
                    
                     string qrcodedata = string.Empty;

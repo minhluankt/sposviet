@@ -223,6 +223,11 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                     var currentUser = User.Identity.GetUserClaimLogin();
                     model.ComId = currentUser.ComId;
 
+                    if (!model.IsShowQrCodeVietQR)
+                    {
+                        model.HtmlQrCodeVietQR = null;
+                    }
+
                     if (model.Id == 0)
                     {
 

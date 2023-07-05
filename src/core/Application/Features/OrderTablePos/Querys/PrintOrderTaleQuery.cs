@@ -33,18 +33,20 @@ namespace Application.Features.OrderTablePos.Querys
         public class PrintOrderTaleQueryHandler : IRequestHandler<PrintOrderTaleQuery, Result<string>>
         {
             private readonly IVietQRService _vietQservice;
+            private readonly IBankAccountRepository _bankaccountQRrepository;
             private readonly IVietQRRepository<VietQR> _vietQRrepository;
             private readonly ITemplateInvoiceRepository<TemplateInvoice> _templateInvoicerepository;
             private readonly ICompanyAdminInfoRepository _companyProductRepository;
             private readonly IRepositoryAsync<OrderTable> _repository;
             public PrintOrderTaleQueryHandler(IRepositoryAsync<OrderTable> repository,
-                ICompanyAdminInfoRepository companyProductRepository, ITemplateInvoiceRepository<TemplateInvoice> templateInvoicerepository, IVietQRService vietQservice, IVietQRRepository<VietQR> vietQRrepository = null)
+                ICompanyAdminInfoRepository companyProductRepository, ITemplateInvoiceRepository<TemplateInvoice> templateInvoicerepository, IVietQRService vietQservice, IVietQRRepository<VietQR> vietQRrepository, IBankAccountRepository bankaccountQRrepository)
             {
                 _templateInvoicerepository = templateInvoicerepository;
                 _companyProductRepository = companyProductRepository;
                 _repository = repository;
                 _vietQservice = vietQservice;
                 _vietQRrepository = vietQRrepository;
+                _bankaccountQRrepository = bankaccountQRrepository;
             }
             public async Task<Result<string>> Handle(PrintOrderTaleQuery query, CancellationToken cancellationToken)
             {
@@ -207,6 +209,16 @@ namespace Application.Features.OrderTablePos.Querys
                                     templateInvoiceParameter.ten_ngan_hang = getvietqr.Data.BankAccount?.BankName;
                                     templateInvoiceParameter.infoqrcodethanhtoan = templateInvoice.HtmlQrCodeVietQR.Replace("{qrDataURL}", ConvertSupport.ConverStringToQrcode(data.qrCode));
                                 }
+                            }
+                        }
+                        else 
+                        {
+                            var bank = await _bankaccountQRrepository.GetDefaultAsync(query.Comid);
+                            if (bank.Succeeded)
+                            {
+                                templateInvoiceParameter.chu_tai_khoan = bank.Data.AccountName;
+                                templateInvoiceParameter.so_tai_khoan = bank.Data.BankNumber;
+                                templateInvoiceParameter.ten_ngan_hang = bank.Data.BankName;
                             }
                         }
                     }

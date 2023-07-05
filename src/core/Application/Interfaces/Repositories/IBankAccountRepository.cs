@@ -12,6 +12,7 @@ namespace Application.Interfaces.Repositories
 {
     public interface IBankAccountRepository
     {
+        Task<Result<BankAccount>> GetDefaultAsync(int ComId);
         Task<Result> DeleteAsync(int ComId, int Id);
         Task<PaginatedList<BankAccount>> GetAllAsync(EntitySearchModel model);
     }

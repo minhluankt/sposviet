@@ -44,7 +44,15 @@
             display: flex;
             align-items: center;
         ">
-            <label asp-for="Active" class="control-label" style="margin-bottom:0px">Kích họat</label>
+            <label asp-for="IsSetDefault" class="control-label" style="margin-bottom:0px">Sử dụng làm mặc định</label>
+            <input asp-for="IsSetDefault" style="width:25px;height:25px; margin-left:15px" />
+            <span asp-validation-for="IsSetDefault" class="text-danger"></span>
+        </div> 
+        <div class="form-group" style="
+            display: flex;
+            align-items: center;
+        ">
+            <label asp-for="Active" class="control-label" style="margin-bottom:0px">Kích hoạt sử dụng</label>
             <input asp-for="Active" style="width:25px;height:25px; margin-left:15px" />
             <span asp-validation-for="Active" class="text-danger"></span>
         </div>

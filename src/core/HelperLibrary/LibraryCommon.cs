@@ -140,6 +140,11 @@ namespace HelperLibrary
             }
             return null;
         }
+        public static string ReplaceAt(this string str, int index, int length, string replace)
+        {
+            return str.Remove(index, Math.Min(length, str.Length - index))
+                    .Insert(index, replace);
+        }
         public static decimal toFixed(this decimal source,int dec=0)
         {
             try

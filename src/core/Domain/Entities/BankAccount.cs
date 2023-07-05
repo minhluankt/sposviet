@@ -26,6 +26,7 @@ namespace Domain.Entities
         [StringLength(100)]
         public string ShortName { get; set; } // ví dụ seabank, vietinbank
         public int? BinVietQR { get; set; } // mã bin ngân hàng VietQR
+        public bool IsSetDefault { get; set; } // mặc định 
         public bool Active { get; set; }
         [NotMapped]
         public string secret { get; set; }
