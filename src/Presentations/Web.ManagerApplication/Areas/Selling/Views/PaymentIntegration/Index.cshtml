@@ -36,7 +36,8 @@
                             </div>
                         </div>
                         <div class="col-md-5 infoimgvietqr text-center" id="logoVietQR">
-                            <img class="vietqrimageio" src='https://img.vietqr.io/image/@(vietqr.BankAccount.ShortName)-@(vietqr.BankAccount.BankNumber)-@(vietqr.Template).jpg?accountName=@(vietqr.BankAccount.AccountName)' />
+                            @*<img class="vietqrimageio" src='https://img.vietqr.io/image/@(vietqr.BankAccount.ShortName)-@(vietqr.BankAccount.BankNumber)-@(vietqr.Template).jpg?accountName=@(vietqr.BankAccount.AccountName)' />*@
+                            <img class="vietqrimageio" src='@vietqr.qrDataURL' />
                         </div>
                         <div class="col-md-12 text-center">
                             <div class="sltbtn mt-3">

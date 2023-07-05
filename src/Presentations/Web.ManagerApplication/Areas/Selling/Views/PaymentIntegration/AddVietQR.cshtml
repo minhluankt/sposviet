@@ -69,7 +69,8 @@
                 <div id="logoVietQR">
                     @if (Model.Id!=0)
                     {
-                        <img class="vietqrimageio" src='https://img.vietqr.io/image/@(Model.ShortName)-@(Model.BankNumber)-@(Model.template).jpg?accountName=@(Model.AccountName)' />
+                        @*<img class="vietqrimageio" src='https://img.vietqr.io/image/@(Model.ShortName)-@(Model.BankNumber)-@(Model.template).jpg?accountName=@(Model.AccountName)' />*@
+                        <img class="vietqrimageio" src='@Model.qrDataURL' />
                         
                     }
                 </div>

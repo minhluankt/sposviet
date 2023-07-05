@@ -23,6 +23,7 @@ namespace Domain.ViewModel
         public string Code { get; set; }
         public string ShortName { get; set; } // ví dụ seabank, vietinbank
         public string template { get; set; } 
+        public string qrDataURL { get; set; } 
         public int? BinVietQR { get; set; } // mã bin ngân hàng VietQR
       
     }

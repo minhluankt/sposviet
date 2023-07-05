@@ -12468,126 +12468,140 @@ var VietQR = {
     addAndUpdateVietQR: async function (sel, urlcre, bin) {
         
         selitem = $(sel);
-        let getBank = await axios.get(urlcre);
-        if (getBank.status != 200 || getBank.data==null) {
 
-        } else {
-            Swal.fire({
-                // icon: 'success',
-                position: 'top-end',
-                showClass: {
-                    popup: `
+  /*      let getBank = await axios.get(urlcre);*/
+        $.ajax({
+           
+            url: urlcre,
+            type: "GET",
+            // html: true,
+            success: function (data) {
+                if (data == null) {
+
+                } else {
+                    Swal.fire({
+                        // icon: 'success',
+                        position: 'top-end',
+                        showClass: {
+                            popup: `
                               popup-formcreate
                                animate__animated
                               animate__fadeInRight
                               animate__faster
                             `
-                },
-                hideClass: {
-                    popup: "popup-formcreate animate__animated animate__fadeOutRight animate__faster"
+                        },
+                        hideClass: {
+                            popup: "popup-formcreate animate__animated animate__fadeOutRight animate__faster"
 
-                },
-                showCloseButton: true,
+                        },
+                        showCloseButton: true,
 
-                title: "Kích hoạt VietQR",
-                html: getBank.data,
-                customClass: {
-                    container: 'selectaddVietQR',
-                    footer: 'footeraddVietQR'
-                },
+                        title: "Kích hoạt VietQR",
+                        html: data,
+                        customClass: {
+                            container: 'selectaddVietQR',
+                            footer: 'footeraddVietQR'
+                        },
 
-                footer: "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-cancel'></i>Hủy bỏ</button><button class='mr-3 btn btn-save btn-success'><i class='fas fa-check mr-2'></i>Lưu</button>",
-                allowOutsideClick: true,
-                showConfirmButton: false,
-                showCancelButton: false,
-                cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
-                didRender: async () => {
-                    let getBank = await axios.get("/Selling/BankAccount/GetJsonAccountBank?bin=" + bin);
-                    $("#SelectTemplateVietQR").select2({
-                        dropdownParent: $(".createVietQRfomr"),
-                        placeholder: {
-                            id: '',
-                            text: "Chọn mẫu hiển thị"
-                        },
-                        allowClear: true,
-                        language: {
-                            noResults: function () {
-                                return "Không tìm thấy dữ liệu";
+                        footer: "<button class='btn btn-primary btn-continue mr-3'><i class='fas fa-cancel'></i>Hủy bỏ</button><button class='mr-3 btn btn-save btn-success'><i class='fas fa-check mr-2'></i>Lưu</button>",
+                        allowOutsideClick: true,
+                        showConfirmButton: false,
+                        showCancelButton: false,
+                        cancelButtonText: '<i class="fa fa-window-close"></i> Đóng',
+                        didRender: async () => {
+                            let getBank = await axios.get("/Selling/BankAccount/GetJsonAccountBank?bin=" + bin);
+                            $("#SelectTemplateVietQR").select2({
+                                dropdownParent: $(".createVietQRfomr"),
+                                placeholder: {
+                                    id: '',
+                                    text: "Chọn mẫu hiển thị"
+                                },
+                                allowClear: true,
+                                language: {
+                                    noResults: function () {
+                                        return "Không tìm thấy dữ liệu";
+                                    }
+                                },
+                            });
+                            $("#selectAccountName").select2({
+                                dropdownParent: $(".createVietQRfomr"),
+                                data: getBank.data,
+                                placeholder: {
+                                    id: '', // the value of the option
+                                    text: "Chọn tài khoản"
+                                },
+                                allowClear: true,
+                                language: {
+                                    noResults: function () {
+                                        return "Không tìm thấy dữ liệu";
+                                    }
+                                },
+                            }).on("change", function (data) {
+                                var info = $(this).select2('data')[0];
+                                if (info.id == "") {
+                                    $(".btn-createVietQR").toggleClass("d-none");
+                                } else {
+                                    if ($(".btn-createVietQR").hasClass("d-none")) {
+                                        $(".btn-createVietQR").toggleClass("d-none");
+                                    }
+                                }
+                                $("#BinVietQR").data("binvietqr", info.binVietQR);
+                                $("#Code").data("Code", info.code);
+                                $("#ShortName").data("ShortName", info.shortName);
+                                $("#BankName").val(info.bankName);
+                                $("#BankNumber").val(info.bankNumber);
+                                $("#AccountName").val(info.accountName);
+                            })
+                            $(".btn-createVietQR").click(function () {
+                                VietQR.generateVietQR();
+                            });
+                            $(".btn-continue").click(function () {
+                                Swal.close();
+                            });
+                            if (bin != "" && bin != null) {
+                                VietQR.eventDowandPrintQR();
+                                //$(".btn-saveToImg").click(function () {
+                                //    let img = $(this).parents("#contentvalueqrviet").find(".vietqrimageio");
+                                //    if (img.attr("src").includes("https")) {
+                                //        downloadImage(img.attr("src"),"qrcode");
+                                //    }
+                                //})
+                                //$(".btn-printQrcode").click(function () {
+                                //    var WindowObject = window.open('', 'PrintWindow', 'width=1200,height=800,top=50,left=50,toolbars=no,scrollbars=yes,status=no,resizable=yes');
+
+                                //    var strHtml = "<html>\n<head>\n <link rel=\"stylesheet\" type=\"text/css\">\n</head><body onload='window.print();window.close()'><div id=\"printvietqr\" style=\" display:flex;justify-content:center;align-items:center;\">\n" + $('#logoVietQR').html() + "\n</div>\n</body>\n</html>";
+
+                                //    WindowObject.document.writeln(strHtml);
+                                //    WindowObject.document.close();
+                                //    WindowObject.focus();
+                                //    // printDiv($('#logoVietQR').html());
+                                //})
                             }
-                        },
-                    });
-                    $("#selectAccountName").select2({
-                        dropdownParent: $(".createVietQRfomr"),
-                        data: getBank.data,
-                        placeholder: {
-                            id: '', // the value of the option
-                            text: "Chọn tài khoản"
-                        },
-                        allowClear: true,
-                        language: {
-                            noResults: function () {
-                                return "Không tìm thấy dữ liệu";
-                            }
-                        },
-                    }).on("change", function (data) {
-                        var info = $(this).select2('data')[0];
-                        if (info.id == "") {
-                            $(".btn-createVietQR").toggleClass("d-none");
-                        } else {
-                            if ($(".btn-createVietQR").hasClass("d-none")) {
-                                $(".btn-createVietQR").toggleClass("d-none");
-                            }
+                            $(".btn-save").click(function () {
+                                //if ($("form#create-form").valid()) {
+                                VietQR.saveVietQR(selitem);
+                                // jQueryModalPost($("form#create-form")[0]);
+                                //}
+                            });
+
                         }
-                        $("#BinVietQR").data("binvietqr", info.binVietQR);
-                        $("#Code").data("Code", info.code);
-                        $("#ShortName").data("ShortName", info.shortName);
-                        $("#BankName").val(info.bankName);
-                        $("#BankNumber").val(info.bankNumber);
-                        $("#AccountName").val(info.accountName);
-                    })
-                    $(".btn-createVietQR").click(function () {
-                        VietQR.generateVietQR();
                     });
-                    $(".btn-continue").click(function () {
-                        Swal.close();
-                    });
-                    if (bin != "" && bin != null) {
-                        VietQR.eventDowandPrintQR();
-                        //$(".btn-saveToImg").click(function () {
-                        //    let img = $(this).parents("#contentvalueqrviet").find(".vietqrimageio");
-                        //    if (img.attr("src").includes("https")) {
-                        //        downloadImage(img.attr("src"),"qrcode");
-                        //    }
-                        //})
-                        //$(".btn-printQrcode").click(function () {
-                        //    var WindowObject = window.open('', 'PrintWindow', 'width=1200,height=800,top=50,left=50,toolbars=no,scrollbars=yes,status=no,resizable=yes');
-
-                        //    var strHtml = "<html>\n<head>\n <link rel=\"stylesheet\" type=\"text/css\">\n</head><body onload='window.print();window.close()'><div id=\"printvietqr\" style=\" display:flex;justify-content:center;align-items:center;\">\n" + $('#logoVietQR').html() + "\n</div>\n</body>\n</html>";
-
-                        //    WindowObject.document.writeln(strHtml);
-                        //    WindowObject.document.close();
-                        //    WindowObject.focus();
-                        //    // printDiv($('#logoVietQR').html());
-                        //})
-                    }
-                    $(".btn-save").click(function () {
-                        //if ($("form#create-form").valid()) {
-                        VietQR.saveVietQR(selitem);
-                        // jQueryModalPost($("form#create-form")[0]);
-                        //}
-                    });
-
                 }
-            });
-        }
+            }
+        });
+       
     },
     eventDowandPrintQR: function () {
+        $(".btn-saveToImg").unbind();
         $(".btn-saveToImg").click(function () {
             let img = $(this).parents("#contentvalueqrviet").find(".vietqrimageio");
             if (img.attr("src").includes("https")) {
                 downloadImage(img.attr("src"), "qrcode");
+            } else {
+                saveBase64AsFile(img.attr("src").replaceAll('data:image/jpg;base64,', "").replaceAll('data:image/png;base64,', ""), "qrcode.png");
             }
         })
+        $(".btn-printQrcode").unbind();
         $(".btn-printQrcode").click(function () {
             var WindowObject = window.open('', 'PrintWindow', 'width=1200,height=800,top=50,left=50,toolbars=no,scrollbars=yes,status=no,resizable=yes');
 
@@ -12632,6 +12646,7 @@ var VietQR = {
             data: dataObject,
             success: function (res) {
                 if (res.isValid) {
+                   /* <img class="vietqrimageio" src='https://img.vietqr.io/image/`+ res.shortName + `-` + res.bankNumber + `-` + res.template + `.jpg?accountName=` + res.accountName +`' />*/
                     html = ` <div class="row" id="contentvalueqrviet">
                                 <div class="col-md-7 leftcontentqr">
                                     <img class="" src="../images/bank/vietqr.png" />
@@ -12642,7 +12657,9 @@ var VietQR = {
                                     </div>
                                 </div>
                                 <div class="col-md-5 infoimgvietqr text-center" id="logoVietQR">
-                                    <img class="vietqrimageio" src='https://img.vietqr.io/image/`+ res.shortName + `-` + res.bankNumber + `-` + res.template + `.jpg?accountName=` + res.accountName +`' />
+                                    
+                                    <img class="vietqrimageio" src='`+ res.qrDataURL + `'/>
+                                  
                                 </div>
                                 <div class="col-md-12 text-center">
                                     <div class="sltbtn mt-3">
@@ -12694,7 +12711,7 @@ var VietQR = {
                     $(".btn-saveToImg").unbind();
                     $(".btn-saveToImg").click(function () {
 
-                        saveBase64AsFile(img[0].src.replace('data:image/png;base64,',""), "qrcode.png");
+                        saveBase64AsFile(img[0].src.replaceAll('data:image/jpg;base64,', "").replaceAll('data:image/png;base64,', ""), "qrcode.png");
                     })
                     $(".btn-printQrcode").unbind();
                     $(".btn-printQrcode").click(function () {
@@ -20357,7 +20374,7 @@ var loadeventPos = {
                         if (getisprintloca == "true") {
                             if (getisprintlocaapp == "true") {
                                 if (getlienin > 1) {
-                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.7);display: block;} </style>');
+                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.6);display: block;margin-top:165px;margin-bottom:165px;} </style>');
                                     let html = htmlPrint;
                                     for (var i = 0; i < getlienin; i++) {
                                         await loadeventPos.eventPrintbyApp(html).then(function (data) {
@@ -20367,7 +20384,7 @@ var loadeventPos = {
                                         });
                                     }
                                 } else {
-                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.7);display: block;} </style>');
+                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.6);display: block;margin-top:165px;margin-bottom:165px;} </style>');
                                     loadeventPos.eventPrintbyApp(htmlPrint);
                                 }
                             } else {
@@ -20573,7 +20590,7 @@ var loadeventPos = {
                                             //    loadeventPos.eventPrintbyApp(res.html);
                                             //}
                                             if (getlienin > 1) {
-                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.7);display: block;} </style>');
+                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.6);display: block;margin-top:165px;margin-bottom:165px;} </style>');
                                                 let html = res.html;
                                                 for (var i = 0; i < getlienin; i++) {
                                                     await loadeventPos.eventPrintbyApp(html).then(function (data) {
@@ -20585,7 +20602,7 @@ var loadeventPos = {
                                                 //html += res.html
 
                                             } else {
-                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.7);display: block;} </style>');
+                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.6);display: block;margin-top:165px;margin-bottom:165px;} </style>');
                                                 loadeventPos.eventPrintbyApp(res.html);
                                             }
 
@@ -20636,7 +20653,7 @@ var loadeventPos = {
                                     //    loadeventPos.eventPrintbyApp(res.html);
                                     //}
                                     if (getlienin > 1) {
-                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} img { transform: scale(3.7);display: block;}</style>');
+                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} img { transform: scale(3.6);display: block;margin-top:165px;margin-bottom:165px;}</style>');
                                         let html = res.html;
                                         for (var i = 0; i < getlienin; i++) {
                                             await loadeventPos.eventPrintbyApp(html).then(function (data) {
@@ -20648,7 +20665,7 @@ var loadeventPos = {
                                         //html += res.html
                                       
                                     } else {
-                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} img { transform: scale(3.7);display: block;}</style>');
+                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} img { transform: scale(3.6);display: block;margin-top:165px;margin-bottom:165px;}</style>');
                                         loadeventPos.eventPrintbyApp(res.html);
                                     }
 

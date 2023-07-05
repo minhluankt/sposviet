@@ -39,6 +39,10 @@ namespace Application.Features.VietQRs.Commands
 
         public async Task<Result<VietQRData>> Handle(GenerateVietQRCommand request, CancellationToken cancellationToken)
         {
+            if (request.infoPayQrcode.template == EnumTemplateVietQR.compact2.ToString() && string.IsNullOrEmpty(request.infoPayQrcode.amount))
+            {
+                request.infoPayQrcode.amount = "0";
+            }
             var callapi = await _vietQRServicerepository.GetQRCode(request.infoPayQrcode);
             if (!callapi.isError)
             {
@@ -59,7 +63,7 @@ namespace Application.Features.VietQRs.Commands
                     //  .Insert(start, replacementText);
                     data.qrCode = data.qrCode.ReplaceAt(10,2,"11");//12 là chỉ quét 1 lần
                     string path = _iFormFileHelperRepository.GetFileTemplate(FileConstants.logAppsposviet,string.Empty, FolderUploadConstants.Images);
-                   
+                    int widthqrcode = 0;
                     string qrcodedata = string.Empty;
                     if (!string.IsNullOrEmpty(path))
                     {
@@ -76,6 +80,7 @@ namespace Application.Features.VietQRs.Commands
                     gettem = gettem.Replace("{qrcodedata}", qrcodedata);
                     if (request.infoPayQrcode.template== EnumTemplateVietQR.print.ToString())
                     {
+                        widthqrcode = 600;
                         gettem = gettem.Replace("{tenchutaikhoan}", request.infoPayQrcode.accountName).
                                         Replace("{sotaikhoan}", request.infoPayQrcode.accountNo).
                                         Replace("{tennganhang}", bank.name)
@@ -83,17 +88,23 @@ namespace Application.Features.VietQRs.Commands
                     }
                     else if (request.infoPayQrcode.template == EnumTemplateVietQR.compact.ToString())
                     {
+                        widthqrcode = 540;//540x540
                         gettem = gettem.Replace("{logobank}", bank.logo);
-                    }
+                    } 
                     else if (request.infoPayQrcode.template == EnumTemplateVietQR.compact2.ToString())
                     {
+                        widthqrcode = 540;//540x640
                         gettem = gettem.Replace("{logobank}", bank.logo).
+                                        Replace("{tenchutaikhoan}", request.infoPayQrcode.accountName).
                                        Replace("{sotaikhoan}", request.infoPayQrcode.accountNo).
                                        Replace("{sotien}", request.infoPayQrcode.amount);
                     }
-                  
+                    else if (request.infoPayQrcode.template == EnumTemplateVietQR.qr_only.ToString())
+                    {
+                        widthqrcode = 480;//480x480
+                    }
                     var converter = new HtmlConverter();
-                    var Base64String = $"data:image/jpg;base64,{Convert.ToBase64String(converter.FromHtmlString(gettem, 600 ))}";
+                    var Base64String = $"data:image/jpg;base64,{Convert.ToBase64String(converter.FromHtmlString(gettem, widthqrcode))}";
                     
 
                     data.qrDataURL = Base64String;

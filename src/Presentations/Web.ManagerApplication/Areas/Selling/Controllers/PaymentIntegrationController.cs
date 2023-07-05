@@ -43,9 +43,38 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 foreach (var item in model.VietQRs)
                 {
                     item.secret = CryptoEngine.Encrypt("id=" + item.Id, _config.Value.Key);
+                    InfoPayQrcode infoPayQrcode = new InfoPayQrcode()
+                    {
+                        accountName = item.BankAccount.AccountName,
+                        accountNo = item.BankAccount.BankNumber,
+                        acqId = item.BankAccount.BinVietQR,
+                        template = item.Template,
+                    };
+                    var genqr = await _mediator.Send(new GenerateVietQRCommand() { infoPayQrcode = infoPayQrcode });
+                    if (genqr.Succeeded)
+                    {
+                        item.qrDataURL = genqr.Data.qrDataURL;
+                    }
+                    
                 }
             }
             return View(model);
+        }
+        public async Task<IActionResult> GenerateVietQRAsync(InfoPayQrcode model)
+        {
+
+            if (string.IsNullOrEmpty(model.accountName) || model.acqId == null || string.IsNullOrEmpty(model.accountNo))
+            {
+                _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR000));
+                return new JsonResult(new { isValid = false, html = string.Empty });
+            }
+            var send = await _mediator.Send(new GenerateVietQRCommand() { infoPayQrcode = model });
+            if (send.Succeeded)
+            {
+                return new JsonResult(new { isValid = true, qrcodeurl = send.Data.qrDataURL, qrcodedata = send.Data.qrCode });
+            }
+
+            return new JsonResult(new { isValid = false, html = string.Empty });
         }
         private string GetDisplayName(object value)
         {
@@ -109,27 +138,25 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 vietQRModel.Code = send.Data.BankAccount?.Code;
                 vietQRModel.ShortName = send.Data.BankAccount?.ShortName;
                 vietQRModel.template = send.Data.Template;
+
+                InfoPayQrcode infoPayQrcode = new InfoPayQrcode()
+                {
+                    accountName = send.Data.BankAccount.AccountName,
+                    accountNo = send.Data.BankAccount.BankNumber,
+                    acqId = send.Data.BankAccount.BinVietQR,
+                    template = send.Data.Template,
+                };
+                var genqr = await _mediator.Send(new GenerateVietQRCommand() { infoPayQrcode = infoPayQrcode });
+                if (genqr.Succeeded)
+                {
+                    vietQRModel.qrDataURL = genqr.Data.qrDataURL;
+                }
                 return View("AddVietQR", vietQRModel);
             }
             _notify.Error(GeneralMess.ConvertStatusToString(send.Message));
             return null;
         } 
-        public async Task<IActionResult> GenerateVietQRAsync(InfoPayQrcode model)
-        {
-            
-            if (string.IsNullOrEmpty(model.accountName)|| model.acqId==null || string.IsNullOrEmpty(model.accountNo))
-            {
-                _notify.Error(GeneralMess.ConvertStatusToString(HeperConstantss.ERR000));
-                return new JsonResult(new { isValid = false, html = string.Empty });
-            }
-            var send = await _mediator.Send(new GenerateVietQRCommand() { infoPayQrcode=model});
-            if (send.Succeeded)
-            {
-                return new JsonResult(new { isValid = true, qrcodeurl = send.Data.qrDataURL, qrcodedata = send.Data.qrCode });
-            }
-
-            return new JsonResult(new { isValid = false, html = string.Empty });
-        }
+    
         [Authorize(Policy = "paymentIntegration.delete")]
         [HttpPost]
         [EncryptedParameters("secret")]
@@ -175,8 +202,23 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             var send = await _mediator.Send(_map);
             if (send.Succeeded)
             {
+                string QrDataURL = string.Empty;
+                InfoPayQrcode infoPayQrcode = new InfoPayQrcode()
+                {
+                    accountName = send.Data.BankAccount.AccountName,
+                    accountNo = send.Data.BankAccount.BankNumber,
+                    acqId = send.Data.BankAccount.BinVietQR,
+                    template = send.Data.Template,
+                };
+                var genqr = await _mediator.Send(new GenerateVietQRCommand() { infoPayQrcode = infoPayQrcode });
+                if (genqr.Succeeded)
+                {
+                    QrDataURL = genqr.Data.qrDataURL;
+                }
+
                 _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS006));
-                return new JsonResult(new { 
+                return new JsonResult(new {
+                    qrDataURL = QrDataURL,
                     isValid = true,
                     bin = send.Data.BankAccount?.BinVietQR,
                     shortName = send.Data.BankAccount?.ShortName,
