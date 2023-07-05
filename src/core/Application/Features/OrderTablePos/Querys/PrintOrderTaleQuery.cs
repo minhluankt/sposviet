@@ -3,6 +3,8 @@ using Application.Enums;
 using Application.Hepers;
 using Application.Interfaces.Repositories;
 using AspNetCoreHero.Results;
+using BankService.Model;
+using BankService.VietQR;
 using Domain.Entities;
 using Domain.ViewModel;
 using HelperLibrary;
@@ -17,6 +19,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using SystemVariable;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Application.Features.OrderTablePos.Querys
 {
@@ -29,15 +32,19 @@ namespace Application.Features.OrderTablePos.Querys
         public Guid? IdOrder { get; set; }
         public class PrintOrderTaleQueryHandler : IRequestHandler<PrintOrderTaleQuery, Result<string>>
         {
+            private readonly IVietQRService _vietQservice;
+            private readonly IVietQRRepository<VietQR> _vietQRrepository;
             private readonly ITemplateInvoiceRepository<TemplateInvoice> _templateInvoicerepository;
             private readonly ICompanyAdminInfoRepository _companyProductRepository;
             private readonly IRepositoryAsync<OrderTable> _repository;
             public PrintOrderTaleQueryHandler(IRepositoryAsync<OrderTable> repository,
-                ICompanyAdminInfoRepository companyProductRepository, ITemplateInvoiceRepository<TemplateInvoice> templateInvoicerepository)
+                ICompanyAdminInfoRepository companyProductRepository, ITemplateInvoiceRepository<TemplateInvoice> templateInvoicerepository, IVietQRService vietQservice, IVietQRRepository<VietQR> vietQRrepository = null)
             {
                 _templateInvoicerepository = templateInvoicerepository;
                 _companyProductRepository = companyProductRepository;
                 _repository = repository;
+                _vietQservice = vietQservice;
+                _vietQRrepository = vietQRrepository;
             }
             public async Task<Result<string>> Handle(PrintOrderTaleQuery query, CancellationToken cancellationToken)
             {
@@ -175,57 +182,43 @@ namespace Application.Features.OrderTablePos.Querys
                             }
                         }
                     }
+                    try
+                    {
+                        if (templateInvoice.IsShowQrCodeVietQR && !string.IsNullOrEmpty(templateInvoice.HtmlQrCodeVietQR))
+                        {
+                            var getvietqr = await _vietQRrepository.GetByFirstAsync(query.Comid);
+                            if (getvietqr.Succeeded)
+                            {
+                                InfoPayQrcode infoPayQrcode = new InfoPayQrcode()
+                                {
+                                    accountName = getvietqr.Data.BankAccount.AccountName,
+                                    accountNo = getvietqr.Data.BankAccount.BankNumber,
+                                    acqId = getvietqr.Data.BankAccount.BinVietQR,
+                                    template = getvietqr.Data.Template,
+                                    amount = templateInvoiceParameter.khachcantra.Replace(",", ""),
+                                    addInfo = product.OrderTableCode.Replace("-", "")
+                                };
+                                var qrcode = await _vietQservice.GetQRCode(infoPayQrcode);
+                                if (!qrcode.isError)
+                                {
+                                    var data = ConvertSupport.ConverJsonToModel<VietQRData>(qrcode.data);
+                                    templateInvoiceParameter.chu_tai_khoan = infoPayQrcode.accountName;
+                                    templateInvoiceParameter.so_tai_khoan = infoPayQrcode.accountNo;
+                                    templateInvoiceParameter.ten_ngan_hang = getvietqr.Data.BankAccount?.BankName;
+                                    templateInvoiceParameter.infoqrcodethanhtoan = templateInvoice.HtmlQrCodeVietQR.Replace("{qrDataURL}", ConvertSupport.ConverStringToQrcode(data.qrCode));
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
 
-
+                       
+                    }
+                   
 
                     string content = PrintTemplate.PrintOrder(templateInvoiceParameter, neworderitem, templateInvoice.Template);
 
-                    //string tableProduct = string.Empty;
-                    //foreach (var item in product.OrderTableItems)
-                    //{
-                    //    tableProduct += $"<tr>" +
-                    //                        $"<td colspan=\"4\"><span style=\"display: block;font-size: 11px\">{item.Name}</span></td>" +
-                    //                    "</tr>" +
-                    //                    "<tr>" +
-                    //                        $"<td><span style=\"display: block;  text-align: left;font-size: 11px\">{item.Price.ToString("#,0.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
-                    //                        $"<td style='text-align: center'><span style=\"display: block;font-size: 11px\">{item.Quantity.ToString("#,0.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
-                    //                        $"<td><span style=\"display: block; text-align: center;font-size: 11px\">{item.Unit}</span></td>" +
-                    //                        $"<td><span style=\"display: block; text-align: right;font-size: 11px\">{item.Total.ToString("#,0.##", LibraryCommon.GetIFormatProvider())}</span></td>" +
-                    //                    "</tr>";
-
-                    //}
-                    //templateInvoiceParameter.tableProduct = tableProduct;
-                    //string thongtinthue = string.Empty;
-                    //if (query.VATRate != (int)VATRateInv.KHONGVAT)
-                    //{
-                    //    thongtinthue = $"<tr style='font-size: 11px; text-align: left'>" +
-                    //            $"<td colspan=\"3\">Tiền thuế: {templateInvoiceParameter.thuesuat}%</td>\r\n\t\t\t<td style=\"text-align: right;\">{templateInvoiceParameter.tienthue}</td>" +
-                    //            $"</tr>";
-
-                    //}
-                    //templateInvoiceParameter.thongtinthue = thongtinthue;
-                    //templateInvoice.Template = templateInvoice.Template.Replace("HÓA ĐƠN BÁN HÀNG","HOA ĐƠN TẠM TÍNH");
-
-
-                    //đoạn này là xóa đi vì chưa phát hành hóa đơn điện tử dc
-                    //string regex = @"<.*?{kyhieuhoadon}.*?>";
-                    //Regex rg = new Regex(regex);
-                    //var match = rg.Match(templateInvoice.Template);
-                    //String result = match.Groups[0].Value;
-                    //if (!string.IsNullOrEmpty(result))
-                    //{
-                    //    templateInvoice.Template = templateInvoice.Template.Replace(result, "");
-                    //}
-                    //string regexsohoadon = @"<.*?{sohoadon}.*?>";
-                    //rg = new Regex(regexsohoadon);
-                    //match = rg.Match(templateInvoice.Template);
-                    //result = match.Groups[0].Value;
-                    //if (!string.IsNullOrEmpty(result))
-                    //{
-                    //    templateInvoice.Template = templateInvoice.Template.Replace(result, "");
-                    //}
-
-                    // string content = LibraryCommon.GetTemplate(templateInvoiceParameter, templateInvoice.Template, EnumTypeTemplate.INVOICEPOS);
                     return Result<string>.Success(content, HeperConstantss.SUS014);
                 }
 

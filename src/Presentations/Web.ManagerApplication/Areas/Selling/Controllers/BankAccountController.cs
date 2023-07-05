@@ -55,7 +55,12 @@ namespace Web.ManagerApplication.BankAccounts.Selling.Controllers
             var send = await _mediator.Send(new GetAllBankAccountQuery(currentUser.ComId) { Paging = false });
             if (send.Succeeded)
             {
-                var jsonselect2 = send.Data.Select(x => new
+                var listbank = send.Data;
+                if (bin==null)
+                {
+                    listbank = listbank.Where(x => x.Active).ToList();
+                }
+                var jsonselect2 = listbank.Select(x => new
                 {
                     id = x.Id,
                     selected = x.BinVietQR == bin,
@@ -67,6 +72,7 @@ namespace Web.ManagerApplication.BankAccounts.Selling.Controllers
                     bankNumber = x.BankNumber,
                     bankName = x.BankName,
                 });
+              
                 return Content(Common.ConverObjectToJsonString(jsonselect2));
             }
             return Content("[]");
@@ -233,6 +239,7 @@ namespace Web.ManagerApplication.BankAccounts.Selling.Controllers
                 var deleteCommand = await _mediator.Send(new DeleteBankAccountCommand(getusser.ComId, id));
                 if (deleteCommand.Succeeded)
                 {
+                    _notify.Success(GeneralMess.ConvertStatusToString(HeperConstantss.SUS007));
                     return new JsonResult(new { isValid = true, loadTable = true });
                 }
                 else

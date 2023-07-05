@@ -1,4 +1,5 @@
 ﻿using Application.Hepers;
+using AspNetCoreHero.Results;
 using Domain.Entities;
 using Domain.ViewModel;
 using System;
@@ -11,6 +12,7 @@ namespace Application.Interfaces.Repositories
 {
     public interface IBankAccountRepository
     {
+        Task<Result> DeleteAsync(int ComId, int Id);
         Task<PaginatedList<BankAccount>> GetAllAsync(EntitySearchModel model);
     }
 }

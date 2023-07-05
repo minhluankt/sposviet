@@ -4304,6 +4304,12 @@ namespace Infrastructure.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("HtmlQrCodeVietQR")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsShowQrCodeVietQR")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 

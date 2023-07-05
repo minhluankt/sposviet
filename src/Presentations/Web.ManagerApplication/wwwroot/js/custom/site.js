@@ -543,7 +543,21 @@ Number.prototype.format0VND = function (n, x, typeCurrency, isQuantity) {
 
     // var result = value.toString().replaceAll(",", "_").replaceAll(".", ",").replaceAll("_", ".");
     return value;
-}; function saveBase64AsFile(base64, fileName) {
+};
+// Using fetch
+async function downloadImage(imageSrc,namefile) {
+    const image = await fetch(imageSrc)
+    const imageBlog = await image.blob()
+    const imageURL = URL.createObjectURL(imageBlog)
+
+    const link = document.createElement('a')
+    link.href = imageURL
+    link.download = namefile
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+}
+function saveBase64AsFile(base64, fileName) {
     var link = document.createElement("a");
     document.body.appendChild(link);
     link.setAttribute("type", "hidden");
@@ -3807,7 +3821,7 @@ var Product = {
             rows_selected.each(function (index, elem) {
                 lstid.push(parseInt(index));
             });
-            debugger
+            
             if (lstid.length==0) {
                 toastrcus.error("Vui lòng chọn hàng hóa");
                 return;
@@ -5682,6 +5696,14 @@ var eventCreate = {
                                 }
                                 if ($("form#create-form").valid()) {
                                     jQueryModalPost($("form#create-form")[0]);
+                                }
+                            }); 
+
+                            $('#IsShowQrCodeVietQR').change(function () {
+                                if ($(this).is(':checked')) {
+
+                                } else {
+
                                 }
                             });
 
@@ -12389,17 +12411,17 @@ var VietQR = {
         });
     },
     updateDataOfUpdateVietQR: function () {
-        let BinVietQR = $(".createVietQRfomr").find("#BinVietQR").data("BinVietQR");
-        let Code = $(".createVietQRfomr").find("#Code").data("Code");
-        let ShortName = $(".createVietQRfomr").find("#ShortName").data("ShortName");
+        let BinVietQR = $(".createVietQRfomr").find("#BinVietQR").data("binvietqr");
+        let Code = $(".createVietQRfomr").find("#Code").data("code");
+        let ShortName = $(".createVietQRfomr").find("#ShortName").data("shortname");
 
-        $(".createVietQRfomr").find("#BinVietQR").removeAttr("data-BinVietQR");
-        $(".createVietQRfomr").find("#Code").removeAttr("data-Code");
-        $(".createVietQRfomr").find("#ShortName").removeAttr("data-ShortName");
+        $(".createVietQRfomr").find("#BinVietQR").removeAttr("data-binvietqr");
+        $(".createVietQRfomr").find("#Code").removeAttr("data-code");
+        $(".createVietQRfomr").find("#ShortName").removeAttr("data-shortname");
       
-        $(".createVietQRfomr").find("#BinVietQR").data("BinVietQR", BinVietQR);
-        $(".createVietQRfomr").find("#Code").data("Code", Code);
-        $(".createVietQRfomr").find("#ShortName").data("ShortName", ShortName);
+        $(".createVietQRfomr").find("#BinVietQR").data("binvietqr", BinVietQR);
+        $(".createVietQRfomr").find("#Code").data("code", Code);
+        $(".createVietQRfomr").find("#ShortName").data("shortname", ShortName);
     },
     eventbtnremove: function () {
         btnremovevietqr.click(function () {
@@ -12444,7 +12466,7 @@ var VietQR = {
         });
     },
     addAndUpdateVietQR: async function (sel, urlcre, bin) {
-        debugger
+        
         selitem = $(sel);
         let getBank = await axios.get(urlcre);
         if (getBank.status != 200 || getBank.data==null) {
@@ -12516,7 +12538,7 @@ var VietQR = {
                                 $(".btn-createVietQR").toggleClass("d-none");
                             }
                         }
-                        $("#BinVietQR").data("BinVietQR", info.binVietQR);
+                        $("#BinVietQR").data("binvietqr", info.binVietQR);
                         $("#Code").data("Code", info.code);
                         $("#ShortName").data("ShortName", info.shortName);
                         $("#BankName").val(info.bankName);
@@ -12529,7 +12551,25 @@ var VietQR = {
                     $(".btn-continue").click(function () {
                         Swal.close();
                     });
+                    if (bin != "" && bin != null) {
+                        VietQR.eventDowandPrintQR();
+                        //$(".btn-saveToImg").click(function () {
+                        //    let img = $(this).parents("#contentvalueqrviet").find(".vietqrimageio");
+                        //    if (img.attr("src").includes("https")) {
+                        //        downloadImage(img.attr("src"),"qrcode");
+                        //    }
+                        //})
+                        //$(".btn-printQrcode").click(function () {
+                        //    var WindowObject = window.open('', 'PrintWindow', 'width=1200,height=800,top=50,left=50,toolbars=no,scrollbars=yes,status=no,resizable=yes');
 
+                        //    var strHtml = "<html>\n<head>\n <link rel=\"stylesheet\" type=\"text/css\">\n</head><body onload='window.print();window.close()'><div id=\"printvietqr\" style=\" display:flex;justify-content:center;align-items:center;\">\n" + $('#logoVietQR').html() + "\n</div>\n</body>\n</html>";
+
+                        //    WindowObject.document.writeln(strHtml);
+                        //    WindowObject.document.close();
+                        //    WindowObject.focus();
+                        //    // printDiv($('#logoVietQR').html());
+                        //})
+                    }
                     $(".btn-save").click(function () {
                         //if ($("form#create-form").valid()) {
                         VietQR.saveVietQR(selitem);
@@ -12541,7 +12581,24 @@ var VietQR = {
             });
         }
     },
-    
+    eventDowandPrintQR: function () {
+        $(".btn-saveToImg").click(function () {
+            let img = $(this).parents("#contentvalueqrviet").find(".vietqrimageio");
+            if (img.attr("src").includes("https")) {
+                downloadImage(img.attr("src"), "qrcode");
+            }
+        })
+        $(".btn-printQrcode").click(function () {
+            var WindowObject = window.open('', 'PrintWindow', 'width=1200,height=800,top=50,left=50,toolbars=no,scrollbars=yes,status=no,resizable=yes');
+
+            var strHtml = "<html>\n<head>\n <link rel=\"stylesheet\" type=\"text/css\">\n</head><body onload='window.print();window.close()'><div id=\"printvietqr\" style=\" display:flex;justify-content:center;align-items:center;\">\n" + $(this).parents("#contentvalueqrviet").find("#logoVietQR").html() + "\n</div>\n</body>\n</html>";
+
+            WindowObject.document.writeln(strHtml);
+            WindowObject.document.close();
+            WindowObject.focus();
+            // printDiv($('#logoVietQR').html());
+        })
+    },
     AddVietQR: function () {
         var btnsettingVietQR = $(".btn-settingVietQR");
         btnsettingVietQR.click( function () {
@@ -12549,6 +12606,7 @@ var VietQR = {
         });
         if ($(".btn-removevietqr").length>0) {
             VietQR.eventbtnremove();
+            VietQR.eventDowandPrintQR();
         }
         if ($(".btn-editvietqr").length > 0) {
             VietQR.eventbtnUpdate();
@@ -12564,6 +12622,7 @@ var VietQR = {
             return;
         }
         dataObject = {};
+        dataObject.Id = $("#Id").data("id");
         dataObject.IdBankAccount = $("#selectAccountName").val();
         dataObject.Template = $("#SelectTemplateVietQR").val();
         dataObject.qrCode = $("#QrCodedata").data("QrCodedata");
@@ -12573,13 +12632,17 @@ var VietQR = {
             data: dataObject,
             success: function (res) {
                 if (res.isValid) {
-                    html = `<div class="row">
-                                <div class="col-md-7">
+                    html = ` <div class="row" id="contentvalueqrviet">
+                                <div class="col-md-7 leftcontentqr">
                                     <img class="" src="../images/bank/vietqr.png" />
                                     <p class="mt-3 text-success content">VietQR thanh toán, chuyển khoản bằng mã QR nhanh chóng và tiện lợi </p>
+                                    <div class="bodyQrcode">
+                                        <button class="btn-saveToImg"><i class="fas fa-download"></i> Lưu hình ảnh</button>
+                                        <button class="btn-printQrcode"><i class="fas fa-print"></i> In Qrcode</button>
+                                    </div>
                                 </div>
-                                 <div class="col-md-5 infoimgvietqr text-center">
-                                    <img src='https://img.vietqr.io/image/`+ res.shortName + `-` + res.bankNumber + `-` + res.template + `.jpg?accountName=` + res.accountName +`' />
+                                <div class="col-md-5 infoimgvietqr text-center" id="logoVietQR">
+                                    <img class="vietqrimageio" src='https://img.vietqr.io/image/`+ res.shortName + `-` + res.bankNumber + `-` + res.template + `.jpg?accountName=` + res.accountName +`' />
                                 </div>
                                 <div class="col-md-12 text-center">
                                     <div class="sltbtn mt-3">
@@ -12593,8 +12656,10 @@ var VietQR = {
                     liitem.find(".btn-removevietqr").data("id", res.secret)
                     liitem.find(".btn-editvietqr").data("id", res.secret)
                     liitem.find(".btn-editvietqr").data("bin", res.bin)
+                    btnremovevietqr = $(".btn-removevietqr");
                     VietQR.eventbtnremove();
                     VietQR.eventbtnUpdate();
+                    VietQR.eventDowandPrintQR();
                     Swal.close();
                 }
             },
@@ -12608,7 +12673,7 @@ var VietQR = {
             type: 'POST',
             url: '/Selling/PaymentIntegration/GenerateVietQR',
             data: {
-                acqId: $("#BinVietQR").data("BinVietQR"),
+                acqId: $("#BinVietQR").data("binvietqr"),
                 accountNo: $("#BankNumber").val(),
                 accountName: $("#AccountName").val(),
                 template: $("#SelectTemplateVietQR").val(),
@@ -12616,23 +12681,26 @@ var VietQR = {
             success: function (res) {
                 if (res.isValid) {
                     $("#QrCodedata").data("QrCodedata", res.qrcodedata);
-                    $("#contentvalueqrviet").html('<div id="logoVietQR" style="    text-align: center;"></div>');
+                    $(".createVietQRfomr").find("#contentvalueqrviet").html('<div id="logoVietQR" style="    text-align: center;"></div>');
                     $(".noVietQr").addClass("d-none");
-                    var img = $('<img id="logoQrcode" style="margin-left:auto;margin-right:auto;">'); //Equivalent: $(document.createElement('img'))
+                    var img = $('<img id="logoQrcode" style="margin-left:auto;margin-right:auto;">');// src="' + res.qrcodeurl + '"
                     img.attr('src', res.qrcodeurl);
-                    img.appendTo('#logoVietQR');
+                    img.appendTo($(".createVietQRfomr").find("#logoVietQR"));
                     btnhtml = ` <div class="bodyQrcode">
                                     <button class="btn-saveToImg"><i class="fas fa-download"></i> Lưu hình ảnh</button>
                                     <button class="btn-printQrcode"><i class="fas fa-print"></i> In Qrcode</button>
                                 </div>`;
-                    $("#contentvalueqrviet").append(btnhtml);
+                    $(".createVietQRfomr").find("#logoVietQR").before(btnhtml);
+                    $(".btn-saveToImg").unbind();
                     $(".btn-saveToImg").click(function () {
+
                         saveBase64AsFile(img[0].src.replace('data:image/png;base64,',""), "qrcode.png");
                     })
+                    $(".btn-printQrcode").unbind();
                     $(".btn-printQrcode").click(function () {
                         var WindowObject = window.open('', 'PrintWindow', 'width=1200,height=800,top=50,left=50,toolbars=no,scrollbars=yes,status=no,resizable=yes');
 
-                        var strHtml = "<html>\n<head>\n <link rel=\"stylesheet\" type=\"text/css\">\n</head><body onload='window.print();window.close()'><div id=\"printvietqr\" style=\" display:flex;justify-content:center;align-items:center;\">\n" + $('#logoVietQR').html() + "\n</div>\n</body>\n</html>";
+                        var strHtml = "<html>\n<head>\n <link rel=\"stylesheet\" type=\"text/css\">\n</head><body onload='window.print();window.close()'><div id=\"printvietqr\" style=\" display:flex;justify-content:center;align-items:center;\">\n" + $(".createVietQRfomr").find("#logoVietQR").html() + "\n</div>\n</body>\n</html>";
 
                         WindowObject.document.writeln(strHtml);
                         WindowObject.document.close();
@@ -14981,7 +15049,7 @@ var eventBanle = {
                 totalsaudiscount = parseFloat((IsProductVAT ? totalIsVatPro - discountamount : totals - discountamount).toFixed(3));
 
                 Vatrate = parseFloat($("#Vatrate").val());
-                debugger
+                
                 if (IsDiscountAfterTax == 1 && IsProductVAT) {//nếu có cấu hình tính theo giá sau chiết khấu thì phần thuế gtgt phải lấy giá gốc sau thuế chưa trừ chiết khấu để tính thuế
                     vatamount = parseFloat((totalIsVatPro * parseFloat(Vatrate / 100)).toFixedSpos(3));
                    // vatamount = totals * parseFloat(Vatrate / 100).toFixed(3);
@@ -17136,7 +17204,7 @@ var loadeventPos = {
                     } else if (parseFloat(item.DiscountAmount) != 0) {
                         htmldiscount = "<span class='discounttxt'>-" + item.DiscountAmount.format0VND(3, 3) + "</span>";
                     }
-                    debugger
+                    
                     index = index + 1;
                     html += ` <li class='itemorder` + (item.IsServiceDate ? " isServiceDate" : "") + `' data-isservicedate="` + (item.IsServiceDate?"1":"0") + `"
                         data-datecreateservice="` + (item.IsServiceDate ? item.DateCreateService : "") + `"
@@ -17199,7 +17267,7 @@ var loadeventPos = {
             let isvat = $(this).data("isvat");
             let isenterinorder = $(this).data("isenterinorder");
             let pricenew = parseFloat($(this).data("pricenew")) || 0;
-            debugger
+            
             let discountamount = parseFloat($(this).data("discountamount")) || 0;
             let discount = parseFloat($(this).data("discount")) || 0;
             //let a = $(this).data("typediscount");
@@ -20289,7 +20357,7 @@ var loadeventPos = {
                         if (getisprintloca == "true") {
                             if (getisprintlocaapp == "true") {
                                 if (getlienin > 1) {
-                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.7);display: block;} </style>');
                                     let html = htmlPrint;
                                     for (var i = 0; i < getlienin; i++) {
                                         await loadeventPos.eventPrintbyApp(html).then(function (data) {
@@ -20299,7 +20367,7 @@ var loadeventPos = {
                                         });
                                     }
                                 } else {
-                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                    htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.7);display: block;} </style>');
                                     loadeventPos.eventPrintbyApp(htmlPrint);
                                 }
                             } else {
@@ -20505,7 +20573,7 @@ var loadeventPos = {
                                             //    loadeventPos.eventPrintbyApp(res.html);
                                             //}
                                             if (getlienin > 1) {
-                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.7);display: block;} </style>');
                                                 let html = res.html;
                                                 for (var i = 0; i < getlienin; i++) {
                                                     await loadeventPos.eventPrintbyApp(html).then(function (data) {
@@ -20517,7 +20585,7 @@ var loadeventPos = {
                                                 //html += res.html
 
                                             } else {
-                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                                res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.7);display: block;} </style>');
                                                 loadeventPos.eventPrintbyApp(res.html);
                                             }
 
@@ -20568,7 +20636,7 @@ var loadeventPos = {
                                     //    loadeventPos.eventPrintbyApp(res.html);
                                     //}
                                     if (getlienin > 1) {
-                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} img { transform: scale(3.7);display: block;}</style>');
                                         let html = res.html;
                                         for (var i = 0; i < getlienin; i++) {
                                             await loadeventPos.eventPrintbyApp(html).then(function (data) {
@@ -20580,7 +20648,7 @@ var loadeventPos = {
                                         //html += res.html
                                       
                                     } else {
-                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} </style>');
+                                        res.html = res.html.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;} img { transform: scale(3.7);display: block;}</style>');
                                         loadeventPos.eventPrintbyApp(res.html);
                                     }
 

@@ -18,7 +18,12 @@ namespace Domain.Entities
         public string Slug { get; set; }
         public string Template { get; set; }
         public bool Active { get; set; }
+       
+        public bool IsShowQrCodeVietQR { get; set; }
+        public string HtmlQrCodeVietQR { get; set; }
         public string Note { get; set; }
+        [NotMapped]
+        public bool IsRegisterQrCodeVietQR { get; set; }
         [NotMapped]
         public List<SelectListItem> Selectlist { get; set; }
     }

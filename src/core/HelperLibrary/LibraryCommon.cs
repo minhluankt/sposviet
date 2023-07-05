@@ -610,6 +610,10 @@ namespace HelperLibrary
                 string linktracuu = string.Empty;
                 string matracuu = string.Empty;
                 string macoquanthue = string.Empty;
+                string infoqrcodethanhtoan = string.Empty;
+                string chu_tai_khoan = string.Empty;
+                string so_tai_khoan = string.Empty;
+                string ten_ngan_hang = string.Empty;
 
                 string lienhehotline = string.Empty;
                 if (enumType == EnumTypeTemplate.PRINT_BEP)
@@ -652,6 +656,18 @@ namespace HelperLibrary
                         }
                         switch (propertyInfo.Name)
                         {
+                            case "infoqrcodethanhtoan":
+                                infoqrcodethanhtoan = value;
+                                break; 
+                            case "chu_tai_khoan":
+                                chu_tai_khoan = value;
+                                break;
+                            case "so_tai_khoan":
+                                so_tai_khoan = value;
+                                break;
+                            case "ten_ngan_hang":
+                                ten_ngan_hang = value;
+                                break; 
                             case "macoquanthue":
                                 macoquanthue = value;
                                 break; 
@@ -753,6 +769,10 @@ namespace HelperLibrary
                 var template = HttpUtility.HtmlDecode(content);
                 var arrtoken = new Dictionary<string, string>()
                 {
+                    { "{chu_tai_khoan}",chu_tai_khoan},
+                    { "{so_tai_khoan}",so_tai_khoan},
+                    { "{ten_ngan_hang}",ten_ngan_hang},
+                    { "{infoqrcodethanhtoan}",infoqrcodethanhtoan},
                     { "{matracuu}",matracuu},
                     { "{linktracuu}",linktracuu},
                     { "{macoquanthue}",macoquanthue},

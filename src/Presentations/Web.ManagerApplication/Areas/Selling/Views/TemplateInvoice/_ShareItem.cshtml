@@ -36,6 +36,23 @@
                 <label asp-for="Name" class="control-label">Ghi chú</label>
                 <textarea asp-for="Note" rows="5" class="form-control" placeholder="Ghi chú"></textarea>
             </div>
+            @if (Model.IsRegisterQrCodeVietQR)
+            {
+                <hr />
+                <div class="form-group" >
+                    <div style="display: flex;/* align-items: center; */flex-direction: column;">
+                        <label asp-for="IsShowQrCodeVietQR" class="control-label" style="margin-bottom:0px">Tích hợp QRcode</label>
+                        <small><i>Hiển thị mã Qrcode VietQR lên bill để dễ dàng quét mã thanh toán trên bill</i></small>
+                    </div>
+                    <input asp-for="IsShowQrCodeVietQR" style="width:25px;height:25px; margin-top:10px" />
+                    <span asp-validation-for="IsShowQrCodeVietQR" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <textarea asp-for="HtmlQrCodeVietQR" rows="5" class="form-control" placeholder=""></textarea>
+                </div>
+
+            }
+          
         </div>
         <div class="col-lg-9 col-xl-6">
             <div class="form-group">

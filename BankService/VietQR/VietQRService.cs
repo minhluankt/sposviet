@@ -52,9 +52,9 @@ namespace BankService.VietQR
 
                 var getapi = await restClientHelper.PostAsync(URIQR, json, header); 
                 var data = ConvertSupport.ConverJsonToModel<ApiResponseVietQR>(getapi);
-                if (data.code==0)
+                if (data.code!=0)
                 {
-                    data.isError = false;
+                    data.isError = true;
                 }
                 return data;
             }

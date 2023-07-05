@@ -3,10 +3,12 @@ using Application.Enums;
 using Application.Features.RoomAndTables.Commands;
 using Application.Features.TemplateInvoices.Commands;
 using Application.Features.TemplateInvoices.Query;
+using Application.Features.VietQRs.Query;
 using Application.Hepers;
 using Application.Providers;
 using Domain.Entities;
 using Domain.Identity;
+using Hangfire.MemoryStorage.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -170,9 +172,17 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         {
             try
             {
-              
+                var currentUser = User.Identity.GetUserClaimLogin();
+                TemplateInvoice templateInvoice = new TemplateInvoice() { TypeTemplatePrint = EnumTypeTemplatePrint.NONE, Selectlist = this.GetSelectListItem(), Active = true };
+
+
                 _logger.LogInformation(User.Identity.Name + "--> templateInvoice create");
-                var htmlview = await _viewRenderer.RenderViewToStringAsync("_Create", new TemplateInvoice() {TypeTemplatePrint=EnumTypeTemplatePrint.NONE, Selectlist = this.GetSelectListItem() , Active=true});
+                var send = await _mediator.Send(new GetByIdVietQRQuery(currentUser.ComId, null) { IsGetFirst = true });
+                if (send.Succeeded)
+                {
+                    templateInvoice.IsRegisterQrCodeVietQR = true;
+                }
+                var htmlview = await _viewRenderer.RenderViewToStringAsync("_Create", templateInvoice);
                 return new JsonResult(new { isValid = true, html = htmlview, title="Thêm mới mẫu in" });
             }
             catch (Exception e)
@@ -191,6 +201,12 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
             if (data.Succeeded)
             {
                 data.Data.Selectlist = this.GetSelectListItem(data.Data.TypeTemplatePrint);
+
+                var send = await _mediator.Send(new GetByIdVietQRQuery(currentUser.ComId, null) { IsGetFirst=true});
+                if (send.Succeeded)
+                {
+                    data.Data.IsRegisterQrCodeVietQR = true;
+                }
                 var html = await _viewRenderer.RenderViewToStringAsync("_Edit", data.Data);
                 return new JsonResult(new { isValid = true, html = html, title = "Chỉnh sửa mẫu in" });
             }

@@ -67,6 +67,8 @@ namespace Infrastructure.Infrastructure.Repositories
                 find.Template = model.Template;
                 find.TypeTemplatePrint = model.TypeTemplatePrint;
                 find.Active = model.Active;
+                find.IsShowQrCodeVietQR = model.IsShowQrCodeVietQR;
+                find.HtmlQrCodeVietQR = model.HtmlQrCodeVietQR;
                 await _repository.UpdateAsync(model);
                 await _unitOfWorkrepository.SaveChangesAsync();
                 await _unitOfWorkrepository.CommitAsync();

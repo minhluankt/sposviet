@@ -19,10 +19,21 @@ namespace Application.Constants
         public const string ImgSeo = "images/ImgSeo/logobsd.jpg";
         public const string ProductDocument = "ProductDocument";
         public const string BankAccountFolder = "BankAccount";
+        public const string VietQR = "VietQR";
+        public const string Images = "images";
     } 
     public class FileConstants
     {
     
         public const string BankAccountVietQR = "nganhangvietqr.txt";
+        public const string logAppsposviet = "logApp.png";
+
+    } 
+    public class VietQRFileConstants
+    {
+        public const string vietqr_compact = "vietqr_compact.txt";
+        public const string compact2 = "compact2.txt";
+        public const string compact = "compact.txt";
+        public const string qr_only = "qr_only.txt";
     }
 }

@@ -14,6 +14,7 @@ namespace Application.Interfaces.Repositories
         Task<Result<VietQR>> AddAsync(VietQR vietQR);
         Task<Result<VietQR>> UpdateAsync(VietQR vietQR);
         Task<VietQR> GetByIdAsync(int Comid, int id);
+        Task<Result<VietQR>> GetByFirstAsync(int Comid);
         Task<List<VietQR>> GetAllAsync(int Comid);
     }
 }

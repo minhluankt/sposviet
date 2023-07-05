@@ -108,6 +108,7 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
                 vietQRModel.BankAddress = send.Data.BankAccount?.BankAddress;
                 vietQRModel.Code = send.Data.BankAccount?.Code;
                 vietQRModel.ShortName = send.Data.BankAccount?.ShortName;
+                vietQRModel.template = send.Data.Template;
                 return View("AddVietQR", vietQRModel);
             }
             _notify.Error(GeneralMess.ConvertStatusToString(send.Message));

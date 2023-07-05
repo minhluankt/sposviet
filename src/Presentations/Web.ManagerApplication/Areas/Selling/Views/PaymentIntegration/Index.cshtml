@@ -26,13 +26,17 @@
             @foreach (var vietqr in Model.VietQRs)
             {
                 <li class="itemCardsetting">
-                    <div class="row">
-                        <div class="col-md-7">
+                    <div class="row" id="contentvalueqrviet">
+                        <div class="col-md-7 leftcontentqr">
                             <img class="" src="~/images/bank/vietqr.png" />
                             <p class="mt-3 text-success content">VietQR thanh toán, chuyển khoản bằng mã QR nhanh chóng và tiện lợi </p>
+                            <div class="bodyQrcode">
+                                <button class="btn-saveToImg"><i class="fas fa-download"></i> Lưu hình ảnh</button>
+                                <button class="btn-printQrcode"><i class="fas fa-print"></i> In Qrcode</button>
+                            </div>
                         </div>
-                        <div class="col-md-5 infoimgvietqr text-center">
-                            <img src='https://img.vietqr.io/image/@(vietqr.BankAccount.ShortName)-@(vietqr.BankAccount.BankNumber)-@(vietqr.Template).jpg?accountName=@(vietqr.BankAccount.AccountName)' />
+                        <div class="col-md-5 infoimgvietqr text-center" id="logoVietQR">
+                            <img class="vietqrimageio" src='https://img.vietqr.io/image/@(vietqr.BankAccount.ShortName)-@(vietqr.BankAccount.BankNumber)-@(vietqr.Template).jpg?accountName=@(vietqr.BankAccount.AccountName)' />
                         </div>
                         <div class="col-md-12 text-center">
                             <div class="sltbtn mt-3">

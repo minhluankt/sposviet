@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Application.Features.BankAccounts.Commands
 {
 
-    public class DeleteBankAccountCommand : IRequest<Result<int>>
+    public class DeleteBankAccountCommand : IRequest<Result>
     {
         public DeleteBankAccountCommand(int _comId, int _id)
         {
@@ -21,40 +21,26 @@ namespace Application.Features.BankAccounts.Commands
         }
         public int ComId { get; set; }
         public int Id { get; set; }
-        public class DeleteBankAccountHandler : IRequestHandler<DeleteBankAccountCommand, Result<int>>
+        public class DeleteBankAccountHandler : IRequestHandler<DeleteBankAccountCommand, Result>
         {
-            private readonly IFormFileHelperRepository _fileHelper;
-            private readonly IRepositoryAsync<BankAccount> _Repository;
-            private readonly IRepositoryAsync<Product> _ProductRepository;
-            private readonly IRepositoryAsync<District> _DistrictRepository;
-            private readonly IMapper _mapper;
-            private readonly IDistributedCache _distributedCache;
-            private IUnitOfWork _unitOfWork { get; set; }
 
-            public DeleteBankAccountHandler(IRepositoryAsync<Product> ProductRepository,
-                IRepositoryAsync<District> DistrictRepository,
-                IRepositoryAsync<BankAccount> brandRepository,
-                   IFormFileHelperRepository fileHelper,
-                IUnitOfWork unitOfWork, IMapper mapper, IDistributedCache distributedCach)
+            private readonly IBankAccountRepository _Repository;
+
+            public DeleteBankAccountHandler(IBankAccountRepository repository)
             {
-                _DistrictRepository = DistrictRepository;
-                _ProductRepository = ProductRepository;
-                _fileHelper = fileHelper;
-                _Repository = brandRepository;
-                _unitOfWork = unitOfWork;
-                _mapper = mapper;
-                _distributedCache = distributedCach;
+                _Repository = repository;
             }
-            public async Task<Result<int>> Handle(DeleteBankAccountCommand command, CancellationToken cancellationToken)
+            public async Task<Result> Handle(DeleteBankAccountCommand command, CancellationToken cancellationToken)
             {
-                var product = await _Repository.GetByIdAsync(command.Id);
-                if (product != null)
+                try
                 {
-                    await _Repository.DeleteAsync(product);
-                    await _unitOfWork.SaveChangesAsync(cancellationToken);
-                    return Result<int>.Success(product.Id);
+                    return await _Repository.DeleteAsync(command.ComId,command.Id);
                 }
-                return Result<int>.Fail(HeperConstantss.ERR012);
+                catch (System.Exception e)
+                {
+                    return Result<int>.Fail(e.Message);
+                }
+                
             }
         }
     }

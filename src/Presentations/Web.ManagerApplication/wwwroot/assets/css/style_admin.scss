@@ -1739,8 +1739,7 @@ input.select2-search__field {
                 .bodyQrcode {
                     WIDTH: 100%;
                     text-align: center;
-                    border-top: #eee solid thin;
-                    padding-top: 20px;
+                    padding-bottom: 10px;
 
                     button {
                         background-color: #00457d;
@@ -1779,12 +1778,37 @@ input.select2-search__field {
 
     .lstSuplerinvoice, .lstsettingCard {
         margin-left: 0px;
+        padding-left: 0;
 
         .item-infoEinvoice {
             .infoaccount {
                 display: flex;
                 flex-direction: column;
                 gap: 10px;
+            }
+        }
+
+        li.itemCardsetting {
+            .leftcontentqr {
+                .content {
+                    margin-bottom: 0px;
+                }
+
+                .bodyQrcode {
+                    WIDTH: 100%;
+                    text-align: center;
+                    border-top: none;
+                    padding-top: 20px;
+
+                    button {
+                        background-color: transparent;
+                        border: #16aaff solid thin;
+                        border-radius: 5px;
+                        font-size: 12px;
+                        color: #16aaff;
+                        padding: 6px 16px;
+                    }
+                }
             }
         }
 

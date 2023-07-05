@@ -59,6 +59,10 @@ namespace Domain.ViewModel
         public string linktracuu { get; set; }//thong tin tra cứu hóa đơn
         public string matracuu { get; set; }//mã tra cứu
         public string macoquanthue { get; set; }//mã cơ quan thuế
+        public string chu_tai_khoan { get; set; }
+        public string so_tai_khoan { get; set; }
+        public string ten_ngan_hang { get; set; }
+        public string infoqrcodethanhtoan { get; set; }//thông tin qrocde thanh toán
         public EnumTypeTemplatePrint TypeTemplatePrint { get; set; }
 
     }

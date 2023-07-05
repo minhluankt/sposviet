@@ -17,10 +17,12 @@ namespace Infrastructure.Infrastructure.Repositories
         private IUnitOfWork _unitOfWork { get; set; }
 
         private readonly IRepositoryAsync<VietQR> _vietQRRepository;
-        public VietQRRepository(IRepositoryAsync<VietQR> _vietQRRepository, IUnitOfWork unitOfWork)
+        private readonly IRepositoryAsync<BankAccount> _bankAccountRepository;
+        public VietQRRepository(IRepositoryAsync<VietQR> _vietQRRepository, IUnitOfWork unitOfWork, IRepositoryAsync<BankAccount> bankAccountRepository)
         {
             _unitOfWork = unitOfWork;
             this._vietQRRepository = _vietQRRepository;
+            _bankAccountRepository = bankAccountRepository;
         }
         public async Task<List<VietQR>> GetAllAsync(int Comid)
         {
@@ -41,7 +43,11 @@ namespace Infrastructure.Infrastructure.Repositories
                 getData.qrCode= vietQR.qrCode;
                 await _vietQRRepository.UpdateAsync(getData);
                 await _unitOfWork.SaveChangesAsync();
-                return await Result<VietQR>.SuccessAsync(vietQR,HeperConstantss.SUS006);
+                if (getData.BankAccount==null)
+                {
+                    getData.BankAccount = await _bankAccountRepository.Entities.AsNoTracking().Where(x => x.Id == vietQR.IdBankAccount).SingleOrDefaultAsync();
+                }
+                return await Result<VietQR>.SuccessAsync(getData, HeperConstantss.SUS006);
             }
             return await Result<VietQR>.FailAsync(HeperConstantss.ERR012);
         }
@@ -54,6 +60,7 @@ namespace Infrastructure.Infrastructure.Repositories
             }
             await _vietQRRepository.AddAsync(vietQR);
             await _unitOfWork.SaveChangesAsync();
+            vietQR.BankAccount = await _bankAccountRepository.Entities.AsNoTracking().Where(x=>x.Id==vietQR.IdBankAccount).SingleOrDefaultAsync();
             return await Result<VietQR>.SuccessAsync(vietQR,HeperConstantss.ERR012);
         }
 
@@ -65,6 +72,16 @@ namespace Infrastructure.Infrastructure.Repositories
                 await _vietQRRepository.DeleteAsync(getData);
                 await _unitOfWork.SaveChangesAsync();
                 return Result<VietQR>.Success(HeperConstantss.SUS007);
+            }
+            return await Result<VietQR>.FailAsync(HeperConstantss.ERR012);
+        }
+
+        public async Task<Result<VietQR>> GetByFirstAsync(int Comid)
+        {
+            var getData = await _vietQRRepository.Entities.AsNoTracking().Include(x => x.BankAccount).Where(x => x.ComId == Comid).FirstOrDefaultAsync();
+            if (getData != null)
+            {
+                return Result<VietQR>.Success(getData);
             }
             return await Result<VietQR>.FailAsync(HeperConstantss.ERR012);
         }
