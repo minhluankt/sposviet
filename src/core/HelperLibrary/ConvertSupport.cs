@@ -51,7 +51,7 @@ namespace Library
                 var qrCodeImageAsBase64inlofo = qrCode.GetGraphic(pixelsPerModule, Color.Black, Color.White,logo, iconSizePercent, iconBorderWidth, false, imgType);
                 return $"data:image/{imgType.ToString().ToLower()};base64,{qrCodeImageAsBase64inlofo}";
             }
-            var qrCodeImageAsBase64 = qrCode.GetGraphic(pixelsPerModule, Color.Black, Color.Black, false, imgType);
+            var qrCodeImageAsBase64 = qrCode.GetGraphic(pixelsPerModule, Color.Black, Color.White, false, imgType);
             return $"data:image/{imgType.ToString().ToLower()};base64,{qrCodeImageAsBase64}";
            
         }

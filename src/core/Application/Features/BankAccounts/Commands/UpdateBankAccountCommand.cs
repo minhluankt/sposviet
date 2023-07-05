@@ -64,7 +64,7 @@ namespace Application.Features.BankAccounts.Commands
                 }
                 if (command.IsSetDefault != brand.IsSetDefault && command.IsSetDefault)
                 {
-
+                    await _Repository.Entities.Where(x => x.ComId == command.ComId && x.Active).ForEachAsync(x => x.Active = false);
                 }
                 await _Repository.UpdateAsync(brand);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
