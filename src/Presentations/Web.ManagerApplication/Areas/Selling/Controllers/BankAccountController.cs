@@ -63,7 +63,7 @@ namespace Web.ManagerApplication.BankAccounts.Selling.Controllers
                 var jsonselect2 = listbank.Select(x => new
                 {
                     id = x.Id,
-                    selected = x.BinVietQR == bin,
+                    selected = bin==null? x.IsSetDefault: x.BinVietQR == bin,
                     text = $"{x.AccountName} - {x.BankNumber}",
                     binVietQR = x.BinVietQR,
                     shortName = x.ShortName,

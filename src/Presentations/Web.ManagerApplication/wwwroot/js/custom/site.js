@@ -12551,7 +12551,10 @@ var VietQR = {
                                 $("#BankName").val(info.bankName);
                                 $("#BankNumber").val(info.bankNumber);
                                 $("#AccountName").val(info.accountName);
-                            })
+                            });
+                            if ($("#selectAccountName").val() != "" && $("#selectAccountName").val() != null) {
+                                $("#selectAccountName").trigger("change");
+                            }
                             $(".btn-createVietQR").click(function () {
                                 VietQR.generateVietQR();
                             });

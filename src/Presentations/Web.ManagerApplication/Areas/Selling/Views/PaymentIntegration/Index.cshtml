@@ -74,6 +74,7 @@
                         <th>Ngân hàng</th>
                         <th>Số tài khoản</th>
                         <th>Tên chủ tài khoản</th>
+                        <th>Mặc định</th>
                         <th>Ngày tạo</th>
                         <th>Hành động</th>
                     </tr>
@@ -164,6 +165,18 @@
 
                 },
 
+                {
+                    "data": "isSetDefault", "name": "IsSetDefault",
+                    "render": function (data, type, full, meta) {
+
+                        if (full.isSetDefault == true) {
+
+                            return "<i class='fas fa-check'></i>";
+                        }
+                        return "";
+                    }
+
+                },
                 {
                     "data": "createdOn", "name": "createdOn",
                     "render": function (data, type, full, meta) {

@@ -13,6 +13,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -32,6 +33,7 @@ namespace Application.Features.OrderTablePos.Querys
         public Guid? IdOrder { get; set; }
         public class PrintOrderTaleQueryHandler : IRequestHandler<PrintOrderTaleQuery, Result<string>>
         {
+            private IFormFileHelperRepository _iFormFileHelperRepository;
             private readonly IVietQRService _vietQservice;
             private readonly IBankAccountRepository _bankaccountQRrepository;
             private readonly IVietQRRepository<VietQR> _vietQRrepository;
@@ -39,7 +41,7 @@ namespace Application.Features.OrderTablePos.Querys
             private readonly ICompanyAdminInfoRepository _companyProductRepository;
             private readonly IRepositoryAsync<OrderTable> _repository;
             public PrintOrderTaleQueryHandler(IRepositoryAsync<OrderTable> repository,
-                ICompanyAdminInfoRepository companyProductRepository, ITemplateInvoiceRepository<TemplateInvoice> templateInvoicerepository, IVietQRService vietQservice, IVietQRRepository<VietQR> vietQRrepository, IBankAccountRepository bankaccountQRrepository)
+                ICompanyAdminInfoRepository companyProductRepository, ITemplateInvoiceRepository<TemplateInvoice> templateInvoicerepository, IVietQRService vietQservice, IVietQRRepository<VietQR> vietQRrepository, IBankAccountRepository bankaccountQRrepository, IFormFileHelperRepository iFormFileHelperRepository)
             {
                 _templateInvoicerepository = templateInvoicerepository;
                 _companyProductRepository = companyProductRepository;
@@ -47,6 +49,7 @@ namespace Application.Features.OrderTablePos.Querys
                 _vietQservice = vietQservice;
                 _vietQRrepository = vietQRrepository;
                 _bankaccountQRrepository = bankaccountQRrepository;
+                _iFormFileHelperRepository = iFormFileHelperRepository;
             }
             public async Task<Result<string>> Handle(PrintOrderTaleQuery query, CancellationToken cancellationToken)
             {
@@ -203,11 +206,19 @@ namespace Application.Features.OrderTablePos.Querys
                                 var qrcode = await _vietQservice.GetQRCode(infoPayQrcode);
                                 if (!qrcode.isError)
                                 {
+                                    string path = _iFormFileHelperRepository.GetFileTemplate(FileConstants.logAppsposviet, string.Empty, FolderUploadConstants.Images);
+                                   
+                                    string qrcodedata = string.Empty;
+                                    Bitmap image1 = null;
+                                    if (!string.IsNullOrEmpty(path))
+                                    {
+                                         image1 = (Bitmap)Image.FromFile(path, true);
+                                    }
                                     var data = ConvertSupport.ConverJsonToModel<VietQRData>(qrcode.data);
                                     templateInvoiceParameter.chu_tai_khoan = infoPayQrcode.accountName;
                                     templateInvoiceParameter.so_tai_khoan = infoPayQrcode.accountNo;
                                     templateInvoiceParameter.ten_ngan_hang = getvietqr.Data.BankAccount?.BankName;
-                                    templateInvoiceParameter.infoqrcodethanhtoan = templateInvoice.HtmlQrCodeVietQR.Replace("{qrDataURL}", ConvertSupport.ConverStringToQrcode(data.qrCode));
+                                    templateInvoiceParameter.infoqrcodethanhtoan = templateInvoice.HtmlQrCodeVietQR.Replace("{qrDataURL}", ConvertSupport.ConverStringToQrcode(data.qrCode,20, image1));
                                 }
                             }
                         }

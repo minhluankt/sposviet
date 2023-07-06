@@ -64,16 +64,12 @@ namespace Application.Features.VietQRs.Commands
                     data.qrCode = data.qrCode.ReplaceAt(10,2,"11");//12 là chỉ quét 1 lần
                     string path = _iFormFileHelperRepository.GetFileTemplate(FileConstants.logAppsposviet,string.Empty, FolderUploadConstants.Images);
                     int widthqrcode = 0;
-                    string qrcodedata = string.Empty;
+                    Bitmap image1 = null;
                     if (!string.IsNullOrEmpty(path))
                     {
-                        Bitmap image1 = (Bitmap)Image.FromFile(path, true);
-                        qrcodedata = ConvertSupport.ConverStringToQrcode(data.qrCode, 20, image1);
+                       image1 = (Bitmap)Image.FromFile(path, true);
                     }
-                    else
-                    {
-                        qrcodedata = ConvertSupport.ConverStringToQrcode(data.qrCode, 20);
-                    }
+                    string qrcodedata = ConvertSupport.ConverStringToQrcode(data.qrCode, 20, image1,20);
 
                     var listbank = Common.ConverJsonToModel<List<BankAccountModel>>(getjsonbank);
                     var bank = listbank.SingleOrDefault(x => x.bin == request.infoPayQrcode.acqId);

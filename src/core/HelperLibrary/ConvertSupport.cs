@@ -42,8 +42,6 @@ namespace Library
             //https://github.com/codebude/QRCoder/wiki/Advanced-usage---QR-Code-renderers#25-pngbyteqrcode-renderer-in-detail
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
-            //QRCode qrCode = new QRCode(qrCodeData);
-            // Bitmap qrCodeImage = qrCode.GetGraphic(20);
             Base64QRCode qrCode = new Base64QRCode(qrCodeData);
             var imgType = Base64QRCode.ImageType.Png;
             if (logo!=null)

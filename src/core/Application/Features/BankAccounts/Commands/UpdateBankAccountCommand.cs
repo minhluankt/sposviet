@@ -55,7 +55,7 @@ namespace Application.Features.BankAccounts.Commands
                 brand.AccountName = command.AccountName;
                 brand.BinVietQR = command.BinVietQR;
                 brand.Active = command.Active;
-                brand.IsSetDefault = command.IsSetDefault;
+               
 
                 var checkcode = await _Repository.Entities.CountAsync(predicate: m => m.BankNumber == brand.BankNumber && m.Id != brand.Id && m.ComId==brand.ComId);
                 if (checkcode > 0)
@@ -64,8 +64,9 @@ namespace Application.Features.BankAccounts.Commands
                 }
                 if (command.IsSetDefault != brand.IsSetDefault && command.IsSetDefault)
                 {
-                    await _Repository.Entities.Where(x => x.ComId == command.ComId && x.Active).ForEachAsync(x => x.Active = false);
+                    await _Repository.Entities.Where(x => x.ComId == command.ComId && x.Id!= brand.Id).ForEachAsync(x => x.IsSetDefault = false);
                 }
+                brand.IsSetDefault = command.IsSetDefault;
                 await _Repository.UpdateAsync(brand);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 return Result<int>.Success(brand.Id);
