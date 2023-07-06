@@ -20385,7 +20385,7 @@ var loadeventPos = {
                                                 return false;
                                             }
                                         });
-                                    }
+                                    } 
                                 } else {
                                     htmlPrint = htmlPrint.replace("<body>", '<body style="font-size: 380% !important;"><style type="text/css">table {font-weight: normal;font-size: inherit;font-style: normal;}img { transform: scale(3.6);display: block;margin-top:165px;margin-bottom:165px;} </style>');
                                     loadeventPos.eventPrintbyApp(htmlPrint);
@@ -20399,7 +20399,7 @@ var loadeventPos = {
                                     // htmlpr += '<div style="page-break-after: always;">&nbsp;</div>' + htmlPrint;
                                     printDiv(htmlpr);
                                 } else {
-                                    printDiv(htmlPrint);
+                                    printDiv(htmlPrint); 
                                 }
 
                             }

@@ -8,7 +8,7 @@
     }
     if (Model.IsRegisterQrCodeVietQR && string.IsNullOrEmpty(Model.HtmlQrCodeVietQR))
     {
-        Model.HtmlQrCodeVietQR = "<img src='{qrDataURL}' width='150px;margin:auto'/>";
+        Model.HtmlQrCodeVietQR = "<img src='{qrDataURL}' width='150px;margin-left:auto;margin-right:auto'/>";
     }
 }
 @Html.HiddenFor(m => m.Id)

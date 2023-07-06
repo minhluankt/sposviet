@@ -15,11 +15,13 @@ using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using SystemVariable;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application.Features.OrderTablePos.Commands
 {
@@ -45,6 +47,8 @@ namespace Application.Features.OrderTablePos.Commands
             public int? ManagerPatternEInvoices { get; set; }
         public class CheckOutOrderHandler : IRequestHandler<CheckOutOrderCommand, Result<string>>
         {
+            private readonly IBankAccountRepository _bankaccountQRrepository;
+            private readonly IFormFileHelperRepository _iFormFileHelperRepository;
             private readonly IVietQRService _vietQservice;
             private readonly IVietQRRepository<VietQR> _vietQRrepository;
             private readonly IManagerPatternEInvoiceRepository<ManagerPatternEInvoice> _managerPatternEInvoicerepository;
@@ -61,7 +65,7 @@ namespace Application.Features.OrderTablePos.Commands
                 ICompanyAdminInfoRepository companyProductRepository,
                 IOrderTableRepository brandRepository, ITemplateInvoiceRepository<TemplateInvoice> templateInvoicerepository,
 
-                IUnitOfWork unitOfWork, IMapper mapper, IDistributedCache distributedCach, IVietQRRepository<VietQR> vietQRrepository, IVietQRService vietQservice)
+                IUnitOfWork unitOfWork, IMapper mapper, IDistributedCache distributedCach, IVietQRRepository<VietQR> vietQRrepository, IVietQRService vietQservice, IFormFileHelperRepository iFormFileHelperRepository, IBankAccountRepository bankaccountQRrepository)
             {
 
                 _companyProductRepository = companyProductRepository;
@@ -74,6 +78,8 @@ namespace Application.Features.OrderTablePos.Commands
                 _distributedCache = distributedCach;
                 _vietQRrepository = vietQRrepository;
                 _vietQservice = vietQservice;
+                _iFormFileHelperRepository = iFormFileHelperRepository;
+                _bankaccountQRrepository = bankaccountQRrepository;
             }
             public async Task<Result<string>> Handle(CheckOutOrderCommand command, CancellationToken cancellationToken)
             {
@@ -193,11 +199,11 @@ namespace Application.Features.OrderTablePos.Commands
                                 templateInvoiceParameter.macoquanthue = product.Data.MCQT;
                             }
                         }
-                       
+
 
                         try
                         {
-                            if (templateInvoice.IsShowQrCodeVietQR)
+                            if (templateInvoice.IsShowQrCodeVietQR && !string.IsNullOrEmpty(templateInvoice.HtmlQrCodeVietQR))
                             {
                                 var getvietqr = await _vietQRrepository.GetByFirstAsync(command.ComId);
                                 if (getvietqr.Succeeded)
@@ -208,26 +214,44 @@ namespace Application.Features.OrderTablePos.Commands
                                         accountNo = getvietqr.Data.BankAccount.BankNumber,
                                         acqId = getvietqr.Data.BankAccount.BinVietQR,
                                         template = getvietqr.Data.Template,
-                                        amount = templateInvoiceParameter.khachcantra,
-                                        addInfo = product.Data.Invoice.InvoiceCode.Replace("-","")
+                                        amount = templateInvoiceParameter.khachcantra.Replace(",", ""),
+                                        addInfo = product.Data.Invoice.InvoiceCode.Replace("-", "")
                                     };
-                                    var qrcode = await _vietQservice.GetQRCode(infoPayQrcode); 
+                                    var qrcode = await _vietQservice.GetQRCode(infoPayQrcode);
                                     if (!qrcode.isError)
                                     {
+                                        string path = _iFormFileHelperRepository.GetFileTemplate(FileConstants.logAppsposviet, string.Empty, FolderUploadConstants.Images);
+
+                                        string qrcodedata = string.Empty;
+                                        Bitmap image1 = null;
+                                        if (!string.IsNullOrEmpty(path))
+                                        {
+                                            image1 = (Bitmap)Image.FromFile(path, true);
+                                        }
                                         var data = ConvertSupport.ConverJsonToModel<VietQRData>(qrcode.data);
-                                        templateInvoiceParameter.infoqrcodethanhtoan = $"<img src='{data.qrDataURL}' style='width:150px'/>";
+                                        templateInvoiceParameter.chu_tai_khoan = infoPayQrcode.accountName;
+                                        templateInvoiceParameter.so_tai_khoan = infoPayQrcode.accountNo;
+                                        templateInvoiceParameter.ten_ngan_hang = getvietqr.Data.BankAccount?.BankName;
+                                        templateInvoiceParameter.infoqrcodethanhtoan = templateInvoice.HtmlQrCodeVietQR.Replace("{qrDataURL}", ConvertSupport.ConverStringToQrcode(data.qrCode, 20, image1));
                                     }
                                 }
                             }
-
-                            string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, listitemnew.ToList(), templateInvoice.Template);
-                            return Result<string>.Success(content, HeperConstantss.SUS014);
+                            else
+                            {
+                                var bank = await _bankaccountQRrepository.GetDefaultAsync(command.ComId);
+                                if (bank.Succeeded)
+                                {
+                                    templateInvoiceParameter.chu_tai_khoan = bank.Data.AccountName;
+                                    templateInvoiceParameter.so_tai_khoan = bank.Data.BankNumber;
+                                    templateInvoiceParameter.ten_ngan_hang = bank.Data.BankName;
+                                }
+                            }
                         }
                         catch (Exception e)
                         {
-                            return Result<string>.Success("Lỗi khi tìm mẫu in", HeperConstantss.SUS014);
                         }
-                       
+                        string content = PrintTemplate.PrintInvoice(templateInvoiceParameter, listitemnew.ToList(), templateInvoice.Template);
+                        return Result<string>.Success(content, HeperConstantss.SUS014);
                     }
                     return Result<string>.Success("Công ty chưa cấu hình mẫu in", HeperConstantss.SUS014);
                 }
