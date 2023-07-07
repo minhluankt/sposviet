@@ -51,6 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\IISServerManager\IISServerManager.csproj" />
     <ProjectReference Include="..\..\core\Application\Application.csproj" />
     <ProjectReference Include="..\..\core\PagedList.Core\PagedList.Core.csproj" />
     <ProjectReference Include="..\..\core\SmartBreadcrumbs\SmartBreadcrumbs.csproj" />

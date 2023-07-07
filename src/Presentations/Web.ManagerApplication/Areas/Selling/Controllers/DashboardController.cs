@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.ManagerApplication.Abstractions;
+using IISServerManager;
 
 namespace Web.ManagerApplication.Areas.Selling.Controllers
 {
@@ -29,6 +30,8 @@ namespace Web.ManagerApplication.Areas.Selling.Controllers
         [Authorize(Policy = PermissionUser.quanlyketoan)]
         public IActionResult IndexAsync()
         {
+            ManagerIIS managerIIS = new ManagerIIS();
+            managerIIS.AddBingding();
             return View();
         }
         public async Task<IActionResult> GetDashBoardIndex()// báo cáo doanh thu
